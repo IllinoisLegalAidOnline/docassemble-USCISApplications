@@ -1,0 +1,88 @@
+objects:
+  - users: ALPeopleList.using(ask_number=True, target_number=1)
+  - preparer: ALPeopleList.using(ask_number=True, target_number=1)
+  - interpreter: ALPeopleList.using(ask_number=True, target_number=1)
+  - current_spouse: ALPeopleList.using(ask_number=True, target_number=1) # need there_are_any to be asked, but of course we're limiting to one current spouse
+  - former_spouse: ALPeopleList.using(ask_number=True, target_number=1)
+  - prior_countries_entered: DAList.using(object_type=DAObject, there_is_another=False)
+---
+mandatory: True
+code: |
+  last_country_of_residence
+  if prior_countries_entered.there_are_any:
+    prior_countries_entered.gather()
+    prior_countries_entered_review
+  final_screen
+---
+id: applicant nationality or country of origin
+question: Applicant's Nationality or Country of Origin
+fields:
+  - "Applicant a national of (or a person having no nationality who last habitually resided in the country of)": last_country_of_residence
+    code: countries_list()
+---
+id: did applicant enter other countries
+question: Has Applicant ever traveled to and entered **another** country, **other** than ${ last_country_of_residence }?
+yesno: prior_countries_entered.there_are_any
+---
+id: other countries entered
+question: Other Countries Applicant Has Entered or Lived In
+subquestion: |
+  Applicant has traveled to or entered the following countries:
+  
+  % for country in prior_countries_entered:
+  **${ country }**
+  % endfor  
+fields:
+  - "Select Country": prior_countries_entered[i].name
+    code: countries_list()[1]
+#validation code: |
+#  prior_countries_entered[i] = country_name(prior_countries_entered[i])
+---
+id: other country dates and immigration status
+question: Dates Applicant Entered & Departed ${ prior_countries_entered[i] }
+fields:
+  - "Date Applicant entered ${ prior_countries_entered[i] }": prior_countries_entered[i].entry_date
+    datatype: date
+  - "Date Applicant departed ${ prior_countries_entered[i] }": prior_countries_entered[i].departure_date
+    datatype: date
+  - "Applicant's immigration status in ${ prior_countries_entered[i] }": prior_countries_entered[i].immigration_status
+    datatype: combobox
+    choices:
+      - citizen
+      - legal permanent resident
+      - refugee
+      - asylee
+      - visitor
+      - student
+      - temporary resident
+      - no status
+---
+id: applicant entered another country
+question: Is there another country that Applicant ever traveled to and entered, other than those countries listed below? 
+subquestion: |
+  ${ prior_countries_entered.table }
+  ${ prior_countries_entered.add_action(label='Add Another Country', color='warning', size='md') }
+continue button field: prior_countries_entered_review
+---
+table: prior_countries_entered.table
+rows: prior_countries_entered
+columns:
+  - Country: row_item.name
+  - Date Entered: row_item.entry_date
+  - Departure Date: row_item.departure_date
+edit:
+  - row_item
+allow reordering: True
+---
+event: final_screen
+question: Applicant data
+subquestion: |
+  Applicant's nationality or Country of Origin is *${ last_country_of_residence }*.
+
+  % if prior_countries_entered.there_are_any:
+    Applicant has entered the following additional countries:
+    % for country in prior_countries_entered:
+    *${ country }*
+    % endfor
+  % endif
+---

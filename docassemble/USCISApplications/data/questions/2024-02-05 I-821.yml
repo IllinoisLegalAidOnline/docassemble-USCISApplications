@@ -1,0 +1,2555 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+---
+metadata:
+  title: >-
+    Apply for temporary protected status
+  short title: >-
+    Apply for TPS
+  description: |-
+    This interview helps someone in Illinois apply for temporary protected status.
+  tags:
+    - "IM-00-00-00-00"
+  authors:
+    - Quinten Steenhuis
+    - Anthony Danielson
+  allowed_courts: []
+  typical_role: "na"
+  al_weaver_version: "playground"
+  generated_on: "2024-02-04"
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "IL"
+---
+code: |
+  github_repo_name =  'docassemble-ApplyForTemporaryProtectedStatu'
+---
+code: |
+  interview_short_title = "Apply for temporary protected status"
+---
+code: |
+  al_form_type = "other_form" 
+---
+objects:
+  - interpreter: ALPeopleList.using(ask_number=True,target_number=1)
+  - users: ALPeopleList.using(there_are_any=True)
+  - preparer: ALPeopleList.using(ask_number=True,target_number=1)
+---
+sections:
+  - review_Apply_for_temporary_protected_statu: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_Apply_for_temporary_protected_statu
+code: |
+  # Set the allowed courts for this interview
+  nav.set_section("review_Apply_for_temporary_protected_statu")
+  user_role = "na"
+  user_ask_role = "na"
+  is_form_g28_attached
+  is_first_application
+  users.gather()
+  set_parts(subtitle=str(users))
+  users1_a_number
+  Page_Number_3
+  users[0].birthdate
+  users[0].gender
+  set_progress(12)
+  users[0].mailing_address.address
+  users[0].address.address
+  users[1].address.address
+  users[1].birthdate
+  users[3].birthdate
+  set_progress(24)
+  users[2].birthdate
+  children.gather()
+  children[1].birthdate
+  children[1].address.address
+  children[0].birthdate
+  set_progress(36)
+  children[0].address.address
+  users[0].phone_number
+  interpreter.gather()
+  users[0].mobile_number
+  set_progress(48)
+  users[0].email
+  #interpreter[0].phone_number
+  #interpreter[0].mobile_number
+  #interpreter[0].email
+  set_progress(60)
+  signature_date
+  preparer.gather()
+  #preparer[0].phone_number
+  #preparer[0].mobile_number
+  set_progress(72)
+  preparer[0].email
+  interview_order_Apply_for_temporary_protected_statu = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  #al_intro_screen
+  #Apply_for_temporary_protected_statu_intro
+  interview_order_Apply_for_temporary_protected_statu
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  Apply_for_temporary_protected_statu_download
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: Apply_for_temporary_protected_status
+continue button field: Apply_for_temporary_protected_statu_intro
+question: |
+  Apply for temporary protected status
+subquestion: |
+  This interview will help you apply for temporary protected status.
+  
+  Before you get started, please gather:
+  
+  1. 
+  1. 
+  1. 
+  
+  When you are finished, you will need to:
+  
+  1. 
+  1. 
+  
+  Most people take about _______ minutes to finish this interview.
+---
+id: Screen one
+question: Screen one
+fields:
+  - "Select this box if Form G-28 or G-28I is attached": is_form_g28_attached
+    datatype: yesno
+  - "Attorney State Bar Number (if applicable)": attorneys1_bar_number
+    maxlength: 19
+  - "Attorney or Accredited Representative USCIS Online Account Number (if any)": attorney_online_account_number
+    maxlength: 28
+---
+id: your name
+sets:
+    - users[0].name.first
+    - users[0].name.last
+    - users[0].name.middle
+    - users[0].name.suffix
+question:  |
+  What is the Applicant's name?
+fields:
+  - code: |
+      users[0].name_fields()
+---
+id: type of application
+question: Type of Application
+fields:
+  - "This is my initial (first time) application for Temporary Protected Status (TPS).  I do not currently have TPS.": is_first_application
+    datatype: yesno
+  - "This is my re-registration application for TPS.  I currently have TPS, and am applying to re-register.": is_re_application
+    datatype: yesno
+  - "TPS application country": tps_application_country
+    maxlength: 38
+  - "Who Granted you TPS?": xxxxx
+    datatype: checkboxes
+    choices:
+      - USCIS
+      - Immigration Judge/Board of Immigration Appeals
+    show if: xxxxxx
+################
+  - "Is USCIS re-application": is_USCIS_re_application
+    datatype: yesno
+  - "Is judge re applicatioin": is_judge_re_applicatioin
+    datatype: yesno
+---
+id: part 2. information about you
+question: Part 2. Information About You
+subquestion: |
+  ***Other Information***
+fields:
+  - "Users1 a number": users1_a_number
+    maxlength: 20
+  - "Users1 uscis account number": users1_uscis_account_number
+    maxlength: 28
+  - "Users1 ssn": users1_ssn
+    maxlength: 21
+  - "Users1 alternate birthdate": users1_alternate_birthdate
+    datatype: date
+  - "Users1 mailing address in care of": users1_mailing_address_in_care_of
+    maxlength: 38
+  - "City of birth": city_of_birth
+    maxlength: 38
+  - "Users1 mailing address is apt": users1_mailing_address_is_apt
+    datatype: yesno
+  - "Users1 mailing address is suite": users1_mailing_address_is_suite
+    datatype: yesno
+  - "Users1 mailing address is floor": users1_mailing_address_is_floor
+    datatype: yesno
+  - "Country of birth": country_of_birth
+    maxlength: 38
+  - "Mailing address is physical address": mailing_address_is_physical_address
+    datatype: yesno
+  - "Users1 countries of residence": users1_countries_of_residence
+    input type: area
+    maxlength: 234
+  - "Users1 address is apt": users1_address_is_apt
+    datatype: yesno
+  - "Users1 address is suite": users1_address_is_suite
+    datatype: yesno
+  - "Users1 address is floor": users1_address_is_floor
+    datatype: yesno
+  - "Users1 coutnries of citizenship": users1_coutnries_of_citizenship
+    input type: area
+    maxlength: 228
+  - "Is married": is_married
+    datatype: yesno
+  - "Is unmarried": is_unmarried
+    datatype: yesno
+  - "Is divorced": is_divorced
+    datatype: yesno
+  - "Is widowed": is_widowed
+    datatype: yesno
+  - "Is separated": is_separated
+    datatype: yesno
+  - "Is annulled": is_annulled
+    datatype: yesno
+  - "Is other marital status": is_other_marital_status
+    datatype: yesno
+  - "Marital status other explanation": marital_status_other_explanation
+    maxlength: 27
+  - "Date of marriage": marriage_date
+    datatype: date
+  - "Current immigration status": current_immigration_status
+    maxlength: 38
+  - "Has been in immigration proceedings": has_been_in_immigration_proceedings
+    input type: radio
+    choices:
+      - Yes 2: Yes_2
+      - No 2: No_2
+  - "Date of last arrival": date_of_last_arrival
+    maxlength: 13
+  - "Proceedings was immigration court": proceedings_was_immigration_court
+    datatype: yesno
+  - "Proceedings was bia": proceedings_was_bia
+    datatype: yesno
+  - "Date of last entry": date_of_last_entry
+    maxlength: 38
+  - "Proceedings was federal court": proceedings_was_federal_court
+    datatype: yesno
+  - "Port of entry": port_of_entry
+    maxlength: 38
+  - "City of entry": city_of_entry
+    maxlength: 38
+  - "Proceedings dhs or doj hearing location": proceedings_dhs_or_doj_hearing_location
+    maxlength: 38
+  - "State of entry": state_of_entry
+    maxlength: 5
+  - "I94 arrival number": i94_arrival_number
+    maxlength: 26
+  - "Proceedings federal court location": proceedings_federal_court_location
+    maxlength: 38
+  - "Date of authorized stay ending": authorized_stay_ending_date
+    datatype: date
+  - "Date of proceedings start": proceedings_start_date
+    datatype: date
+  - "Date of proceedings end": proceedings_end_date
+    datatype: date
+  - "Proceedings continuing to present": proceedings_continuing_to_present
+    datatype: yesno
+  - "Passport number": passport_number
+    maxlength: 38
+  - "Travel document number": travel_document_number
+    maxlength: 38
+  - "Ethnicity hispanic": ethnicity_hispanic
+    datatype: yesno
+  - "Additional passport number 1": additional_passport_number_1
+    maxlength: 38
+  - "Additional passport number 2": additional_passport_number_2
+    maxlength: 38
+  - "Race white": race_white
+    datatype: yesno
+  - "Race asian": race_asian
+    datatype: yesno
+  - "Most recent passport country issuing": most_recent_passport_country_issuing
+    maxlength: 38
+  - "Race black": race_black
+    datatype: yesno
+  - "Race american indian": race_american_indian
+    datatype: yesno
+  - "Date of passport or travel document expiration": passport_or_travel_document_expiration_date
+    datatype: date
+  - "Race native hawaiian": race_native_hawaiian
+    datatype: yesno
+  - "Height feet": height_feet
+    maxlength: 5
+  - "Height inches": height_inches
+    maxlength: 5
+  - "Users2 address is apt": users2_address_is_apt
+    datatype: yesno
+  - "Users2 address is suite": users2_address_is_suite
+    datatype: yesno
+  - "Users2 address is floor": users2_address_is_floor
+    datatype: yesno
+  - "Weight pounds": weight_pounds
+    maxlength: 7
+  - "Eye color black": eye_color_black
+    datatype: yesno
+  - "Eye color blue": eye_color_blue
+    datatype: yesno
+  - "Eye color brown": eye_color_brown
+    datatype: yesno
+  - "Eye color gray": eye_color_gray
+    datatype: yesno
+  - "Eye color green": eye_color_green
+    datatype: yesno
+  - "Eye color hazel": eye_color_hazel
+    datatype: yesno
+  - "Eye color marooon": eye_color_marooon
+    datatype: yesno
+  - "Eye color pink": eye_color_pink
+    datatype: yesno
+  - "Users2 address province": users2_address_province
+    maxlength: 28
+  - "Eye color unknown": eye_color_unknown
+    datatype: yesno
+  - "Users2 address postal code": users2_address_postal_code
+    maxlength: 28
+  - "Hair bald": hair_bald
+    datatype: yesno
+  - "Hair black": hair_black
+    datatype: yesno
+  - "Hair blond": hair_blond
+    datatype: yesno
+  - "Hair brown": hair_brown
+    datatype: yesno
+  - "Hair gray": hair_gray
+    datatype: yesno
+  - "Hair red": hair_red
+    datatype: yesno
+  - "Hair sandy": hair_sandy
+    datatype: yesno
+  - "White 2": White_2
+    datatype: yesno
+  - "Hair unknown": hair_unknown
+    datatype: yesno
+  - "Marriage location": marriage_location
+    maxlength: 38
+  - "Marriage city": marriage_city
+    maxlength: 24
+  - "Marriage state": marriage_state
+    maxlength: 5
+  - "Marriage province": marriage_province
+    maxlength: 24
+  - "Marriage country": marriage_country
+    maxlength: 38
+  - "Users2 online account number": users2_online_account_number
+    maxlength: 28
+  - "Spouse had tps": spouse_had_tps
+    input type: radio
+    choices:
+      - Yes 3: Yes_3
+      - No 3: No_3
+  - "Users2 a number": users2_a_number
+    maxlength: 20
+  - "Date of spouse tps": spouse_tps_date
+    datatype: date
+  - "Date of spouse tps ending": spouse_tps_ending_date
+    datatype: date
+  - "Spouse tps continuing": spouse_tps_continuing
+    datatype: yesno
+  - "Spouse tps dates unknown": spouse_tps_dates_unknown
+    datatype: yesno
+  - "Spouse is tps valid": spouse_is_tps_valid
+    input type: radio
+    choices:
+      - Yes 4: Yes_4
+      - No 4: No_4
+      - I do not know: I Do Not Know
+  - "Users4 nationality": users4_nationality
+    maxlength: 38
+  - "Users4 a number": users4_a_number
+    maxlength: 20
+  - "Date of users4 death": users4_death_date
+    datatype: date
+  - "Users3 nationality": users3_nationality
+    maxlength: 38
+  - "Date of users4 marriage start": users4_marriage_start_date
+    datatype: date
+  - "Date of users4 marriage end": users4_marriage_end_date
+    datatype: date
+  - "Users3 a number": users3_a_number
+    maxlength: 20
+  - "Users4 marriage ending reason": users4_marriage_ending_reason
+    maxlength: 38
+  - "Date of users3 death": users3_death_date
+    datatype: date
+  - "Second spouse has tps": second_spouse_has_tps
+    input type: radio
+    choices:
+      - Yes 6: Yes_6
+      - No 6: No_6
+      - I do not know 3: I Do Not Know_3
+  - "Date of users3 marriage": users3_marriage_date
+    datatype: date
+  - "Date of second spouse tps start": second_spouse_tps_start_date
+    datatype: date
+  - "Date of users3 marriage ending": users3_marriage_ending_date
+    datatype: date
+  - "Date of second spouse tps end": second_spouse_tps_end_date
+    datatype: date
+  - "Second spouse tps continues": second_spouse_tps_continues
+    datatype: yesno
+  - "Second spouse tps dates unknown": second_spouse_tps_dates_unknown
+    datatype: yesno
+  - "Users3 marriage ending reason": users3_marriage_ending_reason
+    maxlength: 38
+  - "First spouse had tps": first_spouse_had_tps
+    input type: radio
+    choices:
+      - Yes 7: Yes_7
+      - I do not know 4: I Do Not Know_4
+      - Yes 8: Yes_8
+      - No 8: No_8
+      - I do not know 5: I Do Not Know_5
+      - No 7: No_7
+  - "Date of first spouse tps start": first_spouse_tps_start_date
+    datatype: date
+  - "Date of first spouse tps end": first_spouse_tps_end_date
+    datatype: date
+  - "First spouse tps continuing": first_spouse_tps_continuing
+    datatype: yesno
+  - "First spouse tps dates unknown": first_spouse_tps_dates_unknown
+    datatype: yesno
+  - "First spouse applying for tps": first_spouse_applying_for_tps
+    input type: radio
+    choices:
+      - Yes 5: Yes_5
+      - No 5: No_5
+      - I do not know 2: I Do Not Know_2
+  - "Children2 online account number": children2_online_account_number
+    maxlength: 28
+  - "Children2 a number": children2_a_number
+    maxlength: 20
+  - "Children2 address is apt": children2_address_is_apt
+    datatype: yesno
+  - "Children2 address is suite": children2_address_is_suite
+    datatype: yesno
+  - "Children2 address is floor": children2_address_is_floor
+    datatype: yesno
+  - "Children1 online account number": children1_online_account_number
+    maxlength: 28
+  - "Children1 a number": children1_a_number
+    maxlength: 20
+  - "Children2 address province": children2_address_province
+    maxlength: 28
+  - "Children2 address postal code": children2_address_postal_code
+    maxlength: 28
+  - "Children1 address is apt": children1_address_is_apt
+    datatype: yesno
+  - "Children1 address is suite": children1_address_is_suite
+    datatype: yesno
+  - "Children1 address is floor": children1_address_is_floor
+    datatype: yesno
+  - "Date of children2 tps start": children2_tps_start_date
+    datatype: date
+  - "Date of children2 tps end": children2_tps_end_date
+    datatype: date
+  - "Children1 address province": children1_address_province
+    maxlength: 28
+  - "Children2 applying for tps": children2_applying_for_tps
+    input type: radio
+    choices:
+      - Yes 10: Yes_10
+      - No 10: No_10
+  - "Children1 address postal code": children1_address_postal_code
+    maxlength: 28
+  - "Date of children1 tps start": children1_tps_start_date
+    datatype: date
+  - "Date of children1 tps end": children1_tps_end_date
+    datatype: date
+  - "Last country of residence": last_country_of_residence
+    maxlength: 38
+  - "Children1 applying for tps": children1_applying_for_tps
+    input type: radio
+    choices:
+      - Yes 9: Yes_9
+      - No 9: No_9
+  - "Date started us residence": date_started_us_residence
+    maxlength: 13
+  - "Entered country other than residence country before us": entered_country_other_than_residence_country_before_us
+    input type: radio
+    choices:
+      - Yes 11: Yes_11
+      - No 11: No_11
+  - "Other countries entered list": other_countries_entered_list
+    maxlength: 38
+  - "Date of other country entered start": other_country_entered_start_date
+    datatype: date
+  - "Date of other country entered end": other_country_entered_end_date
+    datatype: date
+  - "Other country immigration status": other_country_immigration_status
+    maxlength: 38
+  - "Other country immigration status offered": other_country_immigration_status_offered
+    input type: radio
+    choices:
+      - Yes 12: Yes_12
+      - No 12: No_12
+  - "Other country immigration status names and status": other_country_immigration_status_names_and_status
+    input type: area
+    maxlength: 156
+  - "Other coutnry immigration status why refused": other_coutnry_immigration_status_why_refused
+    input type: area
+    maxlength: 156
+  - "Convicted of felony in us": convicted_of_felony_in_us
+    input type: radio
+    choices:
+      - Yes 13: Yes_13
+      - No 13: No_13
+  - "Convicted of misdemeanor us": convicted_of_misdemeanor_us
+    input type: radio
+    choices:
+      - Yes 14: Yes_14
+      - No 14: No_14
+  - "Particularly serious crime": particularly_serious_crime
+    input type: radio
+    choices:
+      - Yes 15: Yes_15
+      - No 15: No_15
+  - "Got financial benefit crime": got_financial_benefit_crime
+    input type: radio
+    choices:
+      - Yes 27: Yes_27
+      - No 27: No_27
+  - "Persecution by protected status": persecution_by_protected_status
+    input type: radio
+    choices:
+      - Yes 16: Yes_16
+      - No 16: No_16
+  - "Engaged espionage": engaged_espionage
+    input type: radio
+    choices:
+      - Yes 28: Yes_28
+      - No 28: No_28
+  - "Serious nonpolitical crime": serious_nonpolitical_crime
+    input type: radio
+    choices:
+      - Yes 17: Yes_17
+      - No 17: No_17
+  - "Yes 29": Yes_29
+    datatype: yesno
+  - "Evade export controls": evade_export_controls
+    input type: radio
+    choices:
+      - No 29: No_29
+      - No 30: No_30
+  - "Danger to us": danger_to_us
+    input type: radio
+    choices:
+      - Yes 18: Yes_18
+      - No 18: No_18
+  - "Yes 30": Yes_30
+    datatype: yesno
+  - "Convicted or committed any crime": convicted_or_committed_any_crime
+    input type: radio
+    choices:
+      - Yes 19: Yes_19
+      - No 19: No_19
+  - "Acted in overthrow of us": acted_in_overthrow_of_us
+    input type: radio
+    choices:
+      - Yes 31: Yes_31
+      - No 31: No_31
+  - "Convicted committed drugs": convicted_committed_drugs
+    input type: radio
+    choices:
+      - Yes 20: Yes_20
+      - No 20: No_20
+  - "Acted as terrorist": acted_as_terrorist
+    input type: radio
+    choices:
+      - Yes 32: Yes_32
+      - No 32: No_32
+  - "Convicted committed conspiracy drugs": convicted_committed_conspiracy_drugs
+    input type: radio
+    choices:
+      - Yes 21: Yes_21
+      - No 21: No_21
+  - "Negative foreign policy": negative_foreign_policy
+    input type: radio
+    choices:
+      - Yes 33: Yes_33
+      - No 33: No_33
+  - "Convicted 2 or more crimes totalling 5 or more years": convicted_2_or_more_crimes_totalling_5_or_more_years
+    datatype: yesno
+  - "Is communist": is_communist
+    input type: radio
+    choices:
+      - Yes 34: Yes_34
+      - No 34: No_34
+  - "Ever trafficked": ever_trafficked
+    datatype: yesno
+  - "Is nazi": is_nazi
+    input type: radio
+    choices:
+      - Yes 35: Yes_35
+      - No 35: No_35
+  - "Trafficking drugs": trafficking_drugs
+    input type: radio
+    choices:
+      - Yes 24: Yes_24
+      - No 24: No_24
+  - "Ever arrested": ever_arrested
+    input type: radio
+    choices:
+      - Yes 36: Yes_36
+      - No 36: No_36
+  - "Spouse or child of drug trafficker": spouse_or_child_of_drug_trafficker
+    input type: radio
+    choices:
+      - Yes 25: Yes_25
+      - No 25: No_25
+  - "Ever cited": ever_cited
+    input type: radio
+    choices:
+      - Yes 37: Yes_37
+      - No 37: No_37
+  - "Spouse or child drug abetter": spouse_or_child_drug_abetter
+    input type: radio
+    choices:
+      - No 26: No_26
+      - Yes 26: Yes_26
+  - "Ever fined jailed suspended": ever_fined_jailed_suspended
+    input type: radio
+    choices:
+      - Yes 38: Yes_38
+      - No 38: No_38
+  - "Has communicable disease": has_communicable_disease
+    input type: radio
+    choices:
+      - Yes 50: Yes_50
+      - No 50: No_50
+  - "Ever got clemency": ever_got_clemency
+    input type: radio
+    choices:
+      - Yes 39: Yes_39
+      - No 39: No_39
+  - "Has dangerous disorder": has_dangerous_disorder
+    input type: radio
+    choices:
+      - Yes 51: Yes_51
+      - No 51: No_51
+  - "Ever asserted immunity prosecution": ever_asserted_immunity_prosecution
+    input type: radio
+    choices:
+      - Yes 40: Yes_40
+      - No 40: No_40
+  - "Drug addict": drug_addict
+    datatype: yesno
+  - "Prostitution last 10 years": prostitution_last_10_years
+    input type: radio
+    choices:
+      - Yes 41: Yes_41
+      - No 41: No_41
+  - "Stowaway": stowaway
+    datatype: yesno
+  - "Procured prostitute 10 years": procured_prostitute_10_years
+    input type: radio
+    choices:
+      - Yes 42: Yes_42
+      - No 42: No_42
+  - "Fined for false documentation": fined_for_false_documentation
+    input type: radio
+    choices:
+      - Yes 52: Yes_52
+      - No 54: No_54
+  - "Pimped 10 years": pimped_10_years
+    input type: radio
+    choices:
+      - Yes 43: Yes_43
+      - No 43: No_43
+  - "Immigration and nationality act": Immigration_and_Nationality_Act
+    input type: radio
+    choices:
+      - Yes 53: Yes_53
+      - No 55: No_55
+      - Yes 54: Yes_54
+      - No 56: No_56
+  - "Do you now practice polygamy": Do_you_NOW_practice_polygamy
+    input type: radio
+    choices:
+      - Yes 58: Yes_58
+      - No 58: No_58
+  - "Involved in commercial vice": involved_in_commercial_vice
+    input type: radio
+    choices:
+      - Yes 44: Yes_44
+      - No 44: No_44
+  - "Ever ordered removed": ever_ordered_removed
+    input type: radio
+    choices:
+      - Yes 45: Yes_45
+      - No 45: No_45
+  - "Examiner to be helpless due to sickness physical or": examiner_to_be_helpless_due_to_sickness_physical_or
+    input type: radio
+    choices:
+      - Yes 59: Yes_59
+      - No 59: No_59
+  - "Ever departed removal order": ever_departed_removal_order
+    input type: radio
+    choices:
+      - Yes 46: Yes_46
+      - No 46: No_46
+  - "Citizenship outside the united states from a us citizen": citizenship_outside_the_United_States_from_a_US_citizen
+    input type: radio
+    choices:
+      - Yes 60: Yes_60
+      - No 60: No_60
+  - "Dhs reinstated before removal": dhs_reinstated_before_removal
+    input type: radio
+    choices:
+      - Yes 55: Yes_55
+      - No 57: No_57
+      - I do not know 6: I Do Not Know_6
+  - "Genocide": genocide
+    datatype: yesno
+  - "Ever failed to attend deportation hearing": ever_failed_to_attend_deportation_hearing
+    input type: radio
+    choices:
+      - Yes 47: Yes_47
+      - No 47: No_47
+  - "Killing": killing
+    datatype: yesno
+  - "Severe injury": severe_injury
+    datatype: yesno
+  - "Ever lied visa or admission": ever_lied_visa_or_admission
+    input type: radio
+    choices:
+      - Yes 48: Yes_48
+      - No 48: No_48
+  - "Ever helped someone enter illegally": ever_helped_someone_enter_illegally
+    input type: radio
+    choices:
+      - Yes 49: Yes_49
+      - No 49: No_49
+  - "Forced sex": forced_sex
+    input type: radio
+    choices:
+      - Yes 64: Yes_64
+      - No 64: No_64
+  - "Denied religious exercise": denied_religious_exercise
+    input type: radio
+    choices:
+      - Yes 65: Yes_65
+      - No 65: No_65
+  - "Spouse child helped human trafficker": spouse_child_helped_human_trafficker
+    input type: radio
+    choices:
+      - Yes 78: Yes_78
+      - No 78: No_78
+  - "Served military": served_military
+    input type: radio
+    choices:
+      - Yes 66: Yes_66
+      - No 66: No_66
+  - "Worked detention facility": worked_detention_facility
+    input type: radio
+    choices:
+      - Yes 67: Yes_67
+      - No 67: No_67
+  - "Benefited human trafficking": benefited_human_trafficking
+    input type: radio
+    choices:
+      - Yes 79: Yes_79
+      - No 79: No_79
+  - "Laundering as described in section 1956 or 1957 of title": laundering_as_described_in_section_1956_or_1957_of_Title
+    input type: radio
+    choices:
+      - Yes 80: Yes_80
+      - No 80: No_80
+  - "Group using weapons": group_using_weapons
+    input type: radio
+    choices:
+      - Yes 68: Yes_68
+      - No 68: No_68
+  - "Helped money laundering": helped_money_laundering
+    input type: radio
+    choices:
+      - Yes 81: Yes_81
+      - No 81: No_81
+  - "Helped weapons": helped_weapons
+    datatype: yesno
+  - "Weapon training": weapon_training
+    datatype: yesno
+  - "Violated religious freedom": violated_religious_freedom
+    input type: radio
+    choices:
+      - Yes 82: Yes_82
+      - No 82: No_82
+  - "Illegal voted us": illegal_voted_us
+    input type: radio
+    choices:
+      - Yes 71: Yes_71
+      - No 71: No_71
+  - "Past determination of frivolous asylum": past_determination_of_frivolous_asylum
+    input type: radio
+    choices:
+      - Yes 83: Yes_83
+      - No 83: No_83
+  - "Claimed us citizen": claimed_us_citizen
+    input type: radio
+    choices:
+      - Yes 72: Yes_72
+      - No 72: No_72
+  - "Conscripted child soldier": conscripted_child_soldier
+    input type: radio
+    choices:
+      - Yes 73: Yes_73
+      - No 73: No_73
+  - "Used child soldier": used_child_soldier
+    input type: radio
+    choices:
+      - Yes 74: Yes_74
+      - No 74: No_74
+  - "User reads english": user_reads_english
+    datatype: yesno
+  - "Committed human trafficking": committed_human_trafficking
+    input type: radio
+    choices:
+      - Yes 75: Yes_75
+      - No 75: No_75
+  - "User used interpreter": user_used_interpreter
+    datatype: yesno
+  - "Helped human trafficking": helped_human_trafficking
+    input type: radio
+    choices:
+      - Yes 76: Yes_76
+      - No 76: No_76
+  - "Interpreter spoke language": interpreter_spoke_language
+    maxlength: 16
+  - "User used preparer": user_used_preparer
+    datatype: yesno
+  - "Spouse child human trafficker": spouse_child_human_trafficker
+    input type: radio
+    choices:
+      - Yes 77: Yes_77
+      - No 77: No_77
+  - "Interpreter organization": interpreter_organization
+    maxlength: 38
+  - "Interpreted into language": interpreted_into_language
+    maxlength: 23
+  - "Preparer is attorney": preparer_is_attorney
+    datatype: yesno
+  - "Preparer full rep": preparer_full_rep
+    datatype: yesno
+  - "Preparer limited rep": preparer_limited_rep
+    datatype: yesno
+  - "Preparer organization": preparer_organization
+    maxlength: 38
+---
+id: Addendum skip these
+question: |
+  Addendum (skip these)
+fields:
+  - "Page number 3": Page_Number_3
+    maxlength: 8
+  - "Part number 3": Part_Number_3
+    maxlength: 8
+  - "Item number 3": Item_Number_3
+    maxlength: 8
+  - "3": _3
+    maxlength: 39
+  - "Sign and date each sheet": sign_and_date_each_sheet
+    maxlength: 28
+  - "First name 9": First_Name_9
+    maxlength: 28
+  - "Middle name 8": Middle_Name_8
+    maxlength: 28
+  - "A 3": A_3
+    maxlength: 21
+  - "Page number": Page_Number
+    maxlength: 8
+  - "Part number": Part_Number
+    maxlength: 8
+  - "Item number": Item_Number
+    maxlength: 8
+  - "Page number 4": Page_Number_4
+    maxlength: 8
+  - "Part number 4": Part_Number_4
+    maxlength: 8
+  - "Item number 4": Item_Number_4
+    maxlength: 8
+  - "4": _4
+    maxlength: 39
+  - "Page number 2": Page_Number_2
+    maxlength: 8
+  - "Part number 2": Part_Number_2
+    maxlength: 8
+  - "Item number 2": Item_Number_2
+    maxlength: 8
+  - "Page number 5": Page_Number_5
+    maxlength: 8
+  - "Part number 5": Part_Number_5
+    maxlength: 8
+  - "Item number 5": Item_Number_5
+    maxlength: 8
+  - "2": _2
+    maxlength: 39
+  - "5": _5
+    maxlength: 39
+---
+id: preview Apply_for_temporary_protected_statu
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_recipient_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_Apply_for_temporary_protected_statu'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: Apply_for_temporary_protected_statu_preview_question    
+---
+code: |
+  signature_fields = []
+---
+code: |
+  users1_alternate_birthdate_2 = DAEmpty()
+---
+id: Apply for temporary protected statu review screen
+event: review_Apply_for_temporary_protected_statu
+question: |
+  Review your answers
+review:
+  - Edit: is_form_g28_attached
+    button: |
+      **Is form g28 attached**:
+      ${ word(yesno(is_form_g28_attached)) }
+  - Edit: attorneys1_bar_number
+    button: |
+      **Attorneys1 bar number**:
+      ${ attorneys1_bar_number }
+  - Edit: attorney_online_account_number
+    button: |
+      **Attorney online account number**:
+      ${ attorney_online_account_number }
+  - Edit: is_first_application
+    button: |
+      **Is first application**:
+      ${ word(yesno(is_first_application)) }
+  - Edit: is_re_application
+    button: |
+      **Is re application**:
+      ${ word(yesno(is_re_application)) }
+  - Edit: tps_application_country
+    button: |
+      **Tps application country**:
+      ${ tps_application_country }
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: is_USCIS_re_application
+    button: |
+      **Is uscis re application**:
+      ${ word(yesno(is_USCIS_re_application)) }
+  - Edit: is_judge_re_applicatioin
+    button: |
+      **Is judge re applicatioin**:
+      ${ word(yesno(is_judge_re_applicatioin)) }
+  - Edit: users1_a_number
+    button: |
+      **Users1 a number**:
+      ${ users1_a_number }
+  - Edit: users1_uscis_account_number
+    button: |
+      **Users1 uscis account number**:
+      ${ users1_uscis_account_number }
+  - Edit: users1_ssn
+    button: |
+      **Users1 ssn**:
+      ${ users1_ssn }
+  - Edit: users1_alternate_birthdate
+    button: |
+      **Users1 alternate birthdate**:
+      ${ users1_alternate_birthdate }
+  - Edit: users1_mailing_address_in_care_of
+    button: |
+      **Users1 mailing address in care of**:
+      ${ users1_mailing_address_in_care_of }
+  - Edit: city_of_birth
+    button: |
+      **City of birth**:
+      ${ city_of_birth }
+  - Edit: users1_mailing_address_is_apt
+    button: |
+      **Users1 mailing address is apt**:
+      ${ word(yesno(users1_mailing_address_is_apt)) }
+  - Edit: users1_mailing_address_is_suite
+    button: |
+      **Users1 mailing address is suite**:
+      ${ word(yesno(users1_mailing_address_is_suite)) }
+  - Edit: users1_mailing_address_is_floor
+    button: |
+      **Users1 mailing address is floor**:
+      ${ word(yesno(users1_mailing_address_is_floor)) }
+  - Edit: country_of_birth
+    button: |
+      **Country of birth**:
+      ${ country_of_birth }
+  - Edit: mailing_address_is_physical_address
+    button: |
+      **Mailing address is physical address**:
+      ${ word(yesno(mailing_address_is_physical_address)) }
+  - Edit: users1_countries_of_residence
+    button: |
+      **Users1 countries of residence**:
+      > ${ single_paragraph(users1_countries_of_residence) }
+  - Edit: users1_address_is_apt
+    button: |
+      **Users1 address is apt**:
+      ${ word(yesno(users1_address_is_apt)) }
+  - Edit: users1_address_is_suite
+    button: |
+      **Users1 address is suite**:
+      ${ word(yesno(users1_address_is_suite)) }
+  - Edit: users1_address_is_floor
+    button: |
+      **Users1 address is floor**:
+      ${ word(yesno(users1_address_is_floor)) }
+  - Edit: users1_coutnries_of_citizenship
+    button: |
+      **Users1 coutnries of citizenship**:
+      > ${ single_paragraph(users1_coutnries_of_citizenship) }
+  - Edit: is_married
+    button: |
+      **Is married**:
+      ${ word(yesno(is_married)) }
+  - Edit: is_unmarried
+    button: |
+      **Is unmarried**:
+      ${ word(yesno(is_unmarried)) }
+  - Edit: is_divorced
+    button: |
+      **Is divorced**:
+      ${ word(yesno(is_divorced)) }
+  - Edit: is_widowed
+    button: |
+      **Is widowed**:
+      ${ word(yesno(is_widowed)) }
+  - Edit: is_separated
+    button: |
+      **Is separated**:
+      ${ word(yesno(is_separated)) }
+  - Edit: is_annulled
+    button: |
+      **Is annulled**:
+      ${ word(yesno(is_annulled)) }
+  - Edit: is_other_marital_status
+    button: |
+      **Is other marital status**:
+      ${ word(yesno(is_other_marital_status)) }
+  - Edit: marital_status_other_explanation
+    button: |
+      **Marital status other explanation**:
+      ${ marital_status_other_explanation }
+  - Edit: marriage_date
+    button: |
+      **Date of marriage**:
+      ${ marriage_date }
+  - Edit: current_immigration_status
+    button: |
+      **Current immigration status**:
+      ${ current_immigration_status }
+  - Edit: has_been_in_immigration_proceedings
+    button: |
+      **Has been in immigration proceedings**:
+      ${ has_been_in_immigration_proceedings }
+  - Edit: date_of_last_arrival
+    button: |
+      **Date of last arrival**:
+      ${ date_of_last_arrival }
+  - Edit: proceedings_was_immigration_court
+    button: |
+      **Proceedings was immigration court**:
+      ${ word(yesno(proceedings_was_immigration_court)) }
+  - Edit: proceedings_was_bia
+    button: |
+      **Proceedings was bia**:
+      ${ word(yesno(proceedings_was_bia)) }
+  - Edit: date_of_last_entry
+    button: |
+      **Date of last entry**:
+      ${ date_of_last_entry }
+  - Edit: proceedings_was_federal_court
+    button: |
+      **Proceedings was federal court**:
+      ${ word(yesno(proceedings_was_federal_court)) }
+  - Edit: port_of_entry
+    button: |
+      **Port of entry**:
+      ${ port_of_entry }
+  - Edit: city_of_entry
+    button: |
+      **City of entry**:
+      ${ city_of_entry }
+  - Edit: proceedings_dhs_or_doj_hearing_location
+    button: |
+      **Proceedings dhs or doj hearing location**:
+      ${ proceedings_dhs_or_doj_hearing_location }
+  - Edit: state_of_entry
+    button: |
+      **State of entry**:
+      ${ state_of_entry }
+  - Edit: i94_arrival_number
+    button: |
+      **I94 arrival number**:
+      ${ i94_arrival_number }
+  - Edit: proceedings_federal_court_location
+    button: |
+      **Proceedings federal court location**:
+      ${ proceedings_federal_court_location }
+  - Edit: authorized_stay_ending_date
+    button: |
+      **Date of authorized stay ending**:
+      ${ authorized_stay_ending_date }
+  - Edit: proceedings_start_date
+    button: |
+      **Date of proceedings start**:
+      ${ proceedings_start_date }
+  - Edit: proceedings_end_date
+    button: |
+      **Date of proceedings end**:
+      ${ proceedings_end_date }
+  - Edit: proceedings_continuing_to_present
+    button: |
+      **Proceedings continuing to present**:
+      ${ word(yesno(proceedings_continuing_to_present)) }
+  - Edit: passport_number
+    button: |
+      **Passport number**:
+      ${ passport_number }
+  - Edit: travel_document_number
+    button: |
+      **Travel document number**:
+      ${ travel_document_number }
+  - Edit: ethnicity_hispanic
+    button: |
+      **Ethnicity hispanic**:
+      ${ word(yesno(ethnicity_hispanic)) }
+  - Edit: additional_passport_number_1
+    button: |
+      **Additional passport number 1**:
+      ${ additional_passport_number_1 }
+  - Edit: additional_passport_number_2
+    button: |
+      **Additional passport number 2**:
+      ${ additional_passport_number_2 }
+  - Edit: race_white
+    button: |
+      **Race white**:
+      ${ word(yesno(race_white)) }
+  - Edit: race_asian
+    button: |
+      **Race asian**:
+      ${ word(yesno(race_asian)) }
+  - Edit: most_recent_passport_country_issuing
+    button: |
+      **Most recent passport country issuing**:
+      ${ most_recent_passport_country_issuing }
+  - Edit: race_black
+    button: |
+      **Race black**:
+      ${ word(yesno(race_black)) }
+  - Edit: race_american_indian
+    button: |
+      **Race american indian**:
+      ${ word(yesno(race_american_indian)) }
+  - Edit: passport_or_travel_document_expiration_date
+    button: |
+      **Date of passport or travel document expiration**:
+      ${ passport_or_travel_document_expiration_date }
+  - Edit: race_native_hawaiian
+    button: |
+      **Race native hawaiian**:
+      ${ word(yesno(race_native_hawaiian)) }
+  - Edit: height_feet
+    button: |
+      **Height feet**:
+      ${ height_feet }
+  - Edit: height_inches
+    button: |
+      **Height inches**:
+      ${ height_inches }
+  - Edit: users2_address_is_apt
+    button: |
+      **Users2 address is apt**:
+      ${ word(yesno(users2_address_is_apt)) }
+  - Edit: users2_address_is_suite
+    button: |
+      **Users2 address is suite**:
+      ${ word(yesno(users2_address_is_suite)) }
+  - Edit: users2_address_is_floor
+    button: |
+      **Users2 address is floor**:
+      ${ word(yesno(users2_address_is_floor)) }
+  - Edit: weight_pounds
+    button: |
+      **Weight pounds**:
+      ${ weight_pounds }
+  - Edit: eye_color_black
+    button: |
+      **Eye color black**:
+      ${ word(yesno(eye_color_black)) }
+  - Edit: eye_color_blue
+    button: |
+      **Eye color blue**:
+      ${ word(yesno(eye_color_blue)) }
+  - Edit: eye_color_brown
+    button: |
+      **Eye color brown**:
+      ${ word(yesno(eye_color_brown)) }
+  - Edit: eye_color_gray
+    button: |
+      **Eye color gray**:
+      ${ word(yesno(eye_color_gray)) }
+  - Edit: eye_color_green
+    button: |
+      **Eye color green**:
+      ${ word(yesno(eye_color_green)) }
+  - Edit: eye_color_hazel
+    button: |
+      **Eye color hazel**:
+      ${ word(yesno(eye_color_hazel)) }
+  - Edit: eye_color_marooon
+    button: |
+      **Eye color marooon**:
+      ${ word(yesno(eye_color_marooon)) }
+  - Edit: eye_color_pink
+    button: |
+      **Eye color pink**:
+      ${ word(yesno(eye_color_pink)) }
+  - Edit: users2_address_province
+    button: |
+      **Users2 address province**:
+      ${ users2_address_province }
+  - Edit: eye_color_unknown
+    button: |
+      **Eye color unknown**:
+      ${ word(yesno(eye_color_unknown)) }
+  - Edit: users2_address_postal_code
+    button: |
+      **Users2 address postal code**:
+      ${ users2_address_postal_code }
+  - Edit: hair_bald
+    button: |
+      **Hair bald**:
+      ${ word(yesno(hair_bald)) }
+  - Edit: hair_black
+    button: |
+      **Hair black**:
+      ${ word(yesno(hair_black)) }
+  - Edit: hair_blond
+    button: |
+      **Hair blond**:
+      ${ word(yesno(hair_blond)) }
+  - Edit: hair_brown
+    button: |
+      **Hair brown**:
+      ${ word(yesno(hair_brown)) }
+  - Edit: hair_gray
+    button: |
+      **Hair gray**:
+      ${ word(yesno(hair_gray)) }
+  - Edit: hair_red
+    button: |
+      **Hair red**:
+      ${ word(yesno(hair_red)) }
+  - Edit: hair_sandy
+    button: |
+      **Hair sandy**:
+      ${ word(yesno(hair_sandy)) }
+  - Edit: White_2
+    button: |
+      **White 2**:
+      ${ word(yesno(White_2)) }
+  - Edit: hair_unknown
+    button: |
+      **Hair unknown**:
+      ${ word(yesno(hair_unknown)) }
+  - Edit: marriage_location
+    button: |
+      **Marriage location**:
+      ${ marriage_location }
+  - Edit: marriage_city
+    button: |
+      **Marriage city**:
+      ${ marriage_city }
+  - Edit: marriage_state
+    button: |
+      **Marriage state**:
+      ${ marriage_state }
+  - Edit: marriage_province
+    button: |
+      **Marriage province**:
+      ${ marriage_province }
+  - Edit: marriage_country
+    button: |
+      **Marriage country**:
+      ${ marriage_country }
+  - Edit: users2_online_account_number
+    button: |
+      **Users2 online account number**:
+      ${ users2_online_account_number }
+  - Edit: spouse_had_tps
+    button: |
+      **Spouse had tps**:
+      ${ spouse_had_tps }
+  - Edit: users2_a_number
+    button: |
+      **Users2 a number**:
+      ${ users2_a_number }
+  - Edit: spouse_tps_date
+    button: |
+      **Date of spouse tps**:
+      ${ spouse_tps_date }
+  - Edit: spouse_tps_ending_date
+    button: |
+      **Date of spouse tps ending**:
+      ${ spouse_tps_ending_date }
+  - Edit: spouse_tps_continuing
+    button: |
+      **Spouse tps continuing**:
+      ${ word(yesno(spouse_tps_continuing)) }
+  - Edit: spouse_tps_dates_unknown
+    button: |
+      **Spouse tps dates unknown**:
+      ${ word(yesno(spouse_tps_dates_unknown)) }
+  - Edit: spouse_is_tps_valid
+    button: |
+      **Spouse is tps valid**:
+      ${ spouse_is_tps_valid }
+  - Edit: users4_nationality
+    button: |
+      **Users4 nationality**:
+      ${ users4_nationality }
+  - Edit: users4_a_number
+    button: |
+      **Users4 a number**:
+      ${ users4_a_number }
+  - Edit: users4_death_date
+    button: |
+      **Date of users4 death**:
+      ${ users4_death_date }
+  - Edit: users3_nationality
+    button: |
+      **Users3 nationality**:
+      ${ users3_nationality }
+  - Edit: users4_marriage_start_date
+    button: |
+      **Date of users4 marriage start**:
+      ${ users4_marriage_start_date }
+  - Edit: users4_marriage_end_date
+    button: |
+      **Date of users4 marriage end**:
+      ${ users4_marriage_end_date }
+  - Edit: users3_a_number
+    button: |
+      **Users3 a number**:
+      ${ users3_a_number }
+  - Edit: users4_marriage_ending_reason
+    button: |
+      **Users4 marriage ending reason**:
+      ${ users4_marriage_ending_reason }
+  - Edit: users3_death_date
+    button: |
+      **Date of users3 death**:
+      ${ users3_death_date }
+  - Edit: second_spouse_has_tps
+    button: |
+      **Second spouse has tps**:
+      ${ second_spouse_has_tps }
+  - Edit: users3_marriage_date
+    button: |
+      **Date of users3 marriage**:
+      ${ users3_marriage_date }
+  - Edit: second_spouse_tps_start_date
+    button: |
+      **Date of second spouse tps start**:
+      ${ second_spouse_tps_start_date }
+  - Edit: users3_marriage_ending_date
+    button: |
+      **Date of users3 marriage ending**:
+      ${ users3_marriage_ending_date }
+  - Edit: second_spouse_tps_end_date
+    button: |
+      **Date of second spouse tps end**:
+      ${ second_spouse_tps_end_date }
+  - Edit: second_spouse_tps_continues
+    button: |
+      **Second spouse tps continues**:
+      ${ word(yesno(second_spouse_tps_continues)) }
+  - Edit: second_spouse_tps_dates_unknown
+    button: |
+      **Second spouse tps dates unknown**:
+      ${ word(yesno(second_spouse_tps_dates_unknown)) }
+  - Edit: users3_marriage_ending_reason
+    button: |
+      **Users3 marriage ending reason**:
+      ${ users3_marriage_ending_reason }
+  - Edit: first_spouse_had_tps
+    button: |
+      **First spouse had tps**:
+      ${ first_spouse_had_tps }
+  - Edit: first_spouse_tps_start_date
+    button: |
+      **Date of first spouse tps start**:
+      ${ first_spouse_tps_start_date }
+  - Edit: first_spouse_tps_end_date
+    button: |
+      **Date of first spouse tps end**:
+      ${ first_spouse_tps_end_date }
+  - Edit: first_spouse_tps_continuing
+    button: |
+      **First spouse tps continuing**:
+      ${ word(yesno(first_spouse_tps_continuing)) }
+  - Edit: first_spouse_tps_dates_unknown
+    button: |
+      **First spouse tps dates unknown**:
+      ${ word(yesno(first_spouse_tps_dates_unknown)) }
+  - Edit: first_spouse_applying_for_tps
+    button: |
+      **First spouse applying for tps**:
+      ${ first_spouse_applying_for_tps }
+  - Edit: children.revisit
+    button: |
+      **Children**
+
+      % for item in children:
+        * ${ item }
+      % endfor
+  - Edit: children2_online_account_number
+    button: |
+      **Children2 online account number**:
+      ${ children2_online_account_number }
+  - Edit: children2_a_number
+    button: |
+      **Children2 a number**:
+      ${ children2_a_number }
+  - Edit: children2_address_is_apt
+    button: |
+      **Children2 address is apt**:
+      ${ word(yesno(children2_address_is_apt)) }
+  - Edit: children2_address_is_suite
+    button: |
+      **Children2 address is suite**:
+      ${ word(yesno(children2_address_is_suite)) }
+  - Edit: children2_address_is_floor
+    button: |
+      **Children2 address is floor**:
+      ${ word(yesno(children2_address_is_floor)) }
+  - Edit: children1_online_account_number
+    button: |
+      **Children1 online account number**:
+      ${ children1_online_account_number }
+  - Edit: children1_a_number
+    button: |
+      **Children1 a number**:
+      ${ children1_a_number }
+  - Edit: children2_address_province
+    button: |
+      **Children2 address province**:
+      ${ children2_address_province }
+  - Edit: children2_address_postal_code
+    button: |
+      **Children2 address postal code**:
+      ${ children2_address_postal_code }
+  - Edit: children1_address_is_apt
+    button: |
+      **Children1 address is apt**:
+      ${ word(yesno(children1_address_is_apt)) }
+  - Edit: children1_address_is_suite
+    button: |
+      **Children1 address is suite**:
+      ${ word(yesno(children1_address_is_suite)) }
+  - Edit: children1_address_is_floor
+    button: |
+      **Children1 address is floor**:
+      ${ word(yesno(children1_address_is_floor)) }
+  - Edit: children2_tps_start_date
+    button: |
+      **Date of children2 tps start**:
+      ${ children2_tps_start_date }
+  - Edit: children2_tps_end_date
+    button: |
+      **Date of children2 tps end**:
+      ${ children2_tps_end_date }
+  - Edit: children1_address_province
+    button: |
+      **Children1 address province**:
+      ${ children1_address_province }
+  - Edit: children2_applying_for_tps
+    button: |
+      **Children2 applying for tps**:
+      ${ children2_applying_for_tps }
+  - Edit: children1_address_postal_code
+    button: |
+      **Children1 address postal code**:
+      ${ children1_address_postal_code }
+  - Edit: children1_tps_start_date
+    button: |
+      **Date of children1 tps start**:
+      ${ children1_tps_start_date }
+  - Edit: children1_tps_end_date
+    button: |
+      **Date of children1 tps end**:
+      ${ children1_tps_end_date }
+  - Edit: last_country_of_residence
+    button: |
+      **Last country of residence**:
+      ${ last_country_of_residence }
+  - Edit: children1_applying_for_tps
+    button: |
+      **Children1 applying for tps**:
+      ${ children1_applying_for_tps }
+  - Edit: date_started_us_residence
+    button: |
+      **Date started us residence**:
+      ${ date_started_us_residence }
+  - Edit: entered_country_other_than_residence_country_before_us
+    button: |
+      **Entered country other than residence country before us**:
+      ${ entered_country_other_than_residence_country_before_us }
+  - Edit: other_countries_entered_list
+    button: |
+      **Other countries entered list**:
+      ${ other_countries_entered_list }
+  - Edit: other_country_entered_start_date
+    button: |
+      **Date of other country entered start**:
+      ${ other_country_entered_start_date }
+  - Edit: other_country_entered_end_date
+    button: |
+      **Date of other country entered end**:
+      ${ other_country_entered_end_date }
+  - Edit: other_country_immigration_status
+    button: |
+      **Other country immigration status**:
+      ${ other_country_immigration_status }
+  - Edit: other_country_immigration_status_offered
+    button: |
+      **Other country immigration status offered**:
+      ${ other_country_immigration_status_offered }
+  - Edit: other_country_immigration_status_names_and_status
+    button: |
+      **Other country immigration status names and status**:
+      > ${ single_paragraph(other_country_immigration_status_names_and_status) }
+  - Edit: other_coutnry_immigration_status_why_refused
+    button: |
+      **Other coutnry immigration status why refused**:
+      > ${ single_paragraph(other_coutnry_immigration_status_why_refused) }
+  - Edit: convicted_of_felony_in_us
+    button: |
+      **Convicted of felony in us**:
+      ${ convicted_of_felony_in_us }
+  - Edit: convicted_of_misdemeanor_us
+    button: |
+      **Convicted of misdemeanor us**:
+      ${ convicted_of_misdemeanor_us }
+  - Edit: particularly_serious_crime
+    button: |
+      **Particularly serious crime**:
+      ${ particularly_serious_crime }
+  - Edit: got_financial_benefit_crime
+    button: |
+      **Got financial benefit crime**:
+      ${ got_financial_benefit_crime }
+  - Edit: persecution_by_protected_status
+    button: |
+      **Persecution by protected status**:
+      ${ persecution_by_protected_status }
+  - Edit: engaged_espionage
+    button: |
+      **Engaged espionage**:
+      ${ engaged_espionage }
+  - Edit: serious_nonpolitical_crime
+    button: |
+      **Serious nonpolitical crime**:
+      ${ serious_nonpolitical_crime }
+  - Edit: Yes_29
+    button: |
+      **Yes 29**:
+      ${ word(yesno(Yes_29)) }
+  - Edit: evade_export_controls
+    button: |
+      **Evade export controls**:
+      ${ evade_export_controls }
+  - Edit: danger_to_us
+    button: |
+      **Danger to us**:
+      ${ danger_to_us }
+  - Edit: Yes_30
+    button: |
+      **Yes 30**:
+      ${ word(yesno(Yes_30)) }
+  - Edit: convicted_or_committed_any_crime
+    button: |
+      **Convicted or committed any crime**:
+      ${ convicted_or_committed_any_crime }
+  - Edit: acted_in_overthrow_of_us
+    button: |
+      **Acted in overthrow of us**:
+      ${ acted_in_overthrow_of_us }
+  - Edit: convicted_committed_drugs
+    button: |
+      **Convicted committed drugs**:
+      ${ convicted_committed_drugs }
+  - Edit: acted_as_terrorist
+    button: |
+      **Acted as terrorist**:
+      ${ acted_as_terrorist }
+  - Edit: convicted_committed_conspiracy_drugs
+    button: |
+      **Convicted committed conspiracy drugs**:
+      ${ convicted_committed_conspiracy_drugs }
+  - Edit: negative_foreign_policy
+    button: |
+      **Negative foreign policy**:
+      ${ negative_foreign_policy }
+  - Edit: convicted_2_or_more_crimes_totalling_5_or_more_years
+    button: |
+      **Convicted 2 or more crimes totalling 5 or more years**:
+      ${ word(yesno(convicted_2_or_more_crimes_totalling_5_or_more_years)) }
+  - Edit: is_communist
+    button: |
+      **Is communist**:
+      ${ is_communist }
+  - Edit: ever_trafficked
+    button: |
+      **Ever trafficked**:
+      ${ word(yesno(ever_trafficked)) }
+  - Edit: is_nazi
+    button: |
+      **Is nazi**:
+      ${ is_nazi }
+  - Edit: trafficking_drugs
+    button: |
+      **Trafficking drugs**:
+      ${ trafficking_drugs }
+  - Edit: ever_arrested
+    button: |
+      **Ever arrested**:
+      ${ ever_arrested }
+  - Edit: spouse_or_child_of_drug_trafficker
+    button: |
+      **Spouse or child of drug trafficker**:
+      ${ spouse_or_child_of_drug_trafficker }
+  - Edit: ever_cited
+    button: |
+      **Ever cited**:
+      ${ ever_cited }
+  - Edit: spouse_or_child_drug_abetter
+    button: |
+      **Spouse or child drug abetter**:
+      ${ spouse_or_child_drug_abetter }
+  - Edit: ever_fined_jailed_suspended
+    button: |
+      **Ever fined jailed suspended**:
+      ${ ever_fined_jailed_suspended }
+  - Edit: has_communicable_disease
+    button: |
+      **Has communicable disease**:
+      ${ has_communicable_disease }
+  - Edit: ever_got_clemency
+    button: |
+      **Ever got clemency**:
+      ${ ever_got_clemency }
+  - Edit: has_dangerous_disorder
+    button: |
+      **Has dangerous disorder**:
+      ${ has_dangerous_disorder }
+  - Edit: ever_asserted_immunity_prosecution
+    button: |
+      **Ever asserted immunity prosecution**:
+      ${ ever_asserted_immunity_prosecution }
+  - Edit: drug_addict
+    button: |
+      **Drug addict**:
+      ${ word(yesno(drug_addict)) }
+  - Edit: prostitution_last_10_years
+    button: |
+      **Prostitution last 10 years**:
+      ${ prostitution_last_10_years }
+  - Edit: stowaway
+    button: |
+      **Stowaway**:
+      ${ word(yesno(stowaway)) }
+  - Edit: procured_prostitute_10_years
+    button: |
+      **Procured prostitute 10 years**:
+      ${ procured_prostitute_10_years }
+  - Edit: fined_for_false_documentation
+    button: |
+      **Fined for false documentation**:
+      ${ fined_for_false_documentation }
+  - Edit: pimped_10_years
+    button: |
+      **Pimped 10 years**:
+      ${ pimped_10_years }
+  - Edit: Immigration_and_Nationality_Act
+    button: |
+      **Immigration and nationality act**:
+      ${ Immigration_and_Nationality_Act }
+  - Edit: Do_you_NOW_practice_polygamy
+    button: |
+      **Do you now practice polygamy**:
+      ${ Do_you_NOW_practice_polygamy }
+  - Edit: involved_in_commercial_vice
+    button: |
+      **Involved in commercial vice**:
+      ${ involved_in_commercial_vice }
+  - Edit: ever_ordered_removed
+    button: |
+      **Ever ordered removed**:
+      ${ ever_ordered_removed }
+  - Edit: examiner_to_be_helpless_due_to_sickness_physical_or
+    button: |
+      **Examiner to be helpless due to sickness physical or**:
+      ${ examiner_to_be_helpless_due_to_sickness_physical_or }
+  - Edit: ever_departed_removal_order
+    button: |
+      **Ever departed removal order**:
+      ${ ever_departed_removal_order }
+  - Edit: citizenship_outside_the_United_States_from_a_US_citizen
+    button: |
+      **Citizenship outside the united states from a us citizen**:
+      ${ citizenship_outside_the_United_States_from_a_US_citizen }
+  - Edit: dhs_reinstated_before_removal
+    button: |
+      **Dhs reinstated before removal**:
+      ${ dhs_reinstated_before_removal }
+  - Edit: genocide
+    button: |
+      **Genocide**:
+      ${ word(yesno(genocide)) }
+  - Edit: ever_failed_to_attend_deportation_hearing
+    button: |
+      **Ever failed to attend deportation hearing**:
+      ${ ever_failed_to_attend_deportation_hearing }
+  - Edit: killing
+    button: |
+      **Killing**:
+      ${ word(yesno(killing)) }
+  - Edit: severe_injury
+    button: |
+      **Severe injury**:
+      ${ word(yesno(severe_injury)) }
+  - Edit: ever_lied_visa_or_admission
+    button: |
+      **Ever lied visa or admission**:
+      ${ ever_lied_visa_or_admission }
+  - Edit: ever_helped_someone_enter_illegally
+    button: |
+      **Ever helped someone enter illegally**:
+      ${ ever_helped_someone_enter_illegally }
+  - Edit: forced_sex
+    button: |
+      **Forced sex**:
+      ${ forced_sex }
+  - Edit: denied_religious_exercise
+    button: |
+      **Denied religious exercise**:
+      ${ denied_religious_exercise }
+  - Edit: spouse_child_helped_human_trafficker
+    button: |
+      **Spouse child helped human trafficker**:
+      ${ spouse_child_helped_human_trafficker }
+  - Edit: served_military
+    button: |
+      **Served military**:
+      ${ served_military }
+  - Edit: worked_detention_facility
+    button: |
+      **Worked detention facility**:
+      ${ worked_detention_facility }
+  - Edit: benefited_human_trafficking
+    button: |
+      **Benefited human trafficking**:
+      ${ benefited_human_trafficking }
+  - Edit: laundering_as_described_in_section_1956_or_1957_of_Title
+    button: |
+      **Laundering as described in section 1956 or 1957 of title**:
+      ${ laundering_as_described_in_section_1956_or_1957_of_Title }
+  - Edit: group_using_weapons
+    button: |
+      **Group using weapons**:
+      ${ group_using_weapons }
+  - Edit: helped_money_laundering
+    button: |
+      **Helped money laundering**:
+      ${ helped_money_laundering }
+  - Edit: helped_weapons
+    button: |
+      **Helped weapons**:
+      ${ word(yesno(helped_weapons)) }
+  - Edit: weapon_training
+    button: |
+      **Weapon training**:
+      ${ word(yesno(weapon_training)) }
+  - Edit: violated_religious_freedom
+    button: |
+      **Violated religious freedom**:
+      ${ violated_religious_freedom }
+  - Edit: illegal_voted_us
+    button: |
+      **Illegal voted us**:
+      ${ illegal_voted_us }
+  - Edit: past_determination_of_frivolous_asylum
+    button: |
+      **Past determination of frivolous asylum**:
+      ${ past_determination_of_frivolous_asylum }
+  - Edit: claimed_us_citizen
+    button: |
+      **Claimed us citizen**:
+      ${ claimed_us_citizen }
+  - Edit: conscripted_child_soldier
+    button: |
+      **Conscripted child soldier**:
+      ${ conscripted_child_soldier }
+  - Edit: used_child_soldier
+    button: |
+      **Used child soldier**:
+      ${ used_child_soldier }
+  - Edit: user_reads_english
+    button: |
+      **User reads english**:
+      ${ word(yesno(user_reads_english)) }
+  - Edit: committed_human_trafficking
+    button: |
+      **Committed human trafficking**:
+      ${ committed_human_trafficking }
+  - Edit: user_used_interpreter
+    button: |
+      **User used interpreter**:
+      ${ word(yesno(user_used_interpreter)) }
+  - Edit: helped_human_trafficking
+    button: |
+      **Helped human trafficking**:
+      ${ helped_human_trafficking }
+  - Edit: interpreter_spoke_language
+    button: |
+      **Interpreter spoke language**:
+      ${ interpreter_spoke_language }
+  - Edit: user_used_preparer
+    button: |
+      **User used preparer**:
+      ${ word(yesno(user_used_preparer)) }
+  - Edit: spouse_child_human_trafficker
+    button: |
+      **Spouse child human trafficker**:
+      ${ spouse_child_human_trafficker }
+  - Edit: preparer.revisit
+    button: |
+      **Preparer**
+
+      % for item in preparer:
+        * ${ item }
+      % endfor
+  - Edit: interpreter.revisit
+    button: |
+      **Interpreter**
+
+      % for item in interpreter:
+        * ${ item }
+      % endfor
+  - Edit: interpreter_organization
+    button: |
+      **Interpreter organization**:
+      ${ interpreter_organization }
+  - Edit: interpreted_into_language
+    button: |
+      **Interpreted into language**:
+      ${ interpreted_into_language }
+  - Edit: signature_date
+    button: |
+      **Date of signature**:
+      ${ signature_date }
+  - Edit: preparer_is_attorney
+    button: |
+      **Preparer is attorney**:
+      ${ word(yesno(preparer_is_attorney)) }
+  - Edit: preparer_full_rep
+    button: |
+      **Preparer full rep**:
+      ${ word(yesno(preparer_full_rep)) }
+  - Edit: preparer_limited_rep
+    button: |
+      **Preparer limited rep**:
+      ${ word(yesno(preparer_limited_rep)) }
+  - Edit: preparer_organization
+    button: |
+      **Preparer organization**:
+      ${ preparer_organization }
+  - Edit: Page_Number_3
+    button: |
+      **Page number 3**:
+      ${ Page_Number_3 }
+  - Edit: Part_Number_3
+    button: |
+      **Part number 3**:
+      ${ Part_Number_3 }
+  - Edit: Item_Number_3
+    button: |
+      **Item number 3**:
+      ${ Item_Number_3 }
+  - Edit: _3
+    button: |
+      **3**:
+      ${ _3 }
+  - Edit: sign_and_date_each_sheet
+    button: |
+      **Sign and date each sheet**:
+      ${ sign_and_date_each_sheet }
+  - Edit: First_Name_9
+    button: |
+      **First name 9**:
+      ${ First_Name_9 }
+  - Edit: Middle_Name_8
+    button: |
+      **Middle name 8**:
+      ${ Middle_Name_8 }
+  - Edit: A_3
+    button: |
+      **A 3**:
+      ${ A_3 }
+  - Edit: Page_Number
+    button: |
+      **Page number**:
+      ${ Page_Number }
+  - Edit: Part_Number
+    button: |
+      **Part number**:
+      ${ Part_Number }
+  - Edit: Item_Number
+    button: |
+      **Item number**:
+      ${ Item_Number }
+  - Edit: Page_Number_4
+    button: |
+      **Page number 4**:
+      ${ Page_Number_4 }
+  - Edit: Part_Number_4
+    button: |
+      **Part number 4**:
+      ${ Part_Number_4 }
+  - Edit: Item_Number_4
+    button: |
+      **Item number 4**:
+      ${ Item_Number_4 }
+  - Edit: _4
+    button: |
+      **4**:
+      ${ _4 }
+  - Edit: Page_Number_2
+    button: |
+      **Page number 2**:
+      ${ Page_Number_2 }
+  - Edit: Part_Number_2
+    button: |
+      **Part number 2**:
+      ${ Part_Number_2 }
+  - Edit: Item_Number_2
+    button: |
+      **Item number 2**:
+      ${ Item_Number_2 }
+  - Edit: Page_Number_5
+    button: |
+      **Page number 5**:
+      ${ Page_Number_5 }
+  - Edit: Part_Number_5
+    button: |
+      **Part number 5**:
+      ${ Part_Number_5 }
+  - Edit: Item_Number_5
+    button: |
+      **Item number 5**:
+      ${ Item_Number_5 }
+  - Edit: _2
+    button: |
+      **2**:
+      ${ _2 }
+  - Edit: _5
+    button: |
+      **5**:
+      ${ _5 }
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.middle") else ""
+  - Previous names[0]: |
+      row_item.previous_names[0] if defined("row_item.previous_names[0].middle") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+  - Previous names[1]: |
+      row_item.previous_names[1] if defined("row_item.previous_names[1].middle") else ""
+  - Gender: |
+      row_item.gender if defined("row_item.gender") else ""
+  - Mailing address: |
+      row_item.mailing_address.block() if defined("row_item.mailing_address.zip") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.country") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Mobile number: |
+      row_item.mobile_number if defined("row_item.mobile_number") else ""
+  - Email: |
+      row_item.email if defined("row_item.email") else ""
+edit:
+  - name.middle
+  - previous_names[0].middle
+  - birthdate
+  - previous_names[1].middle
+  - gender
+  - mailing_address.zip
+  - address.country
+  - phone_number
+  - mobile_number
+  - email
+confirm: True
+
+---
+continue button field: children.revisit
+question: |
+  Edit children
+subquestion: |
+  ${ children.table }
+
+  ${ children.add_action() }
+---
+table: children.table
+rows: children
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.middle") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.country") else ""
+edit:
+  - name.middle
+  - birthdate
+  - address.country
+confirm: True
+
+---
+continue button field: preparer.revisit
+question: |
+  Edit preparer
+subquestion: |
+  ${ preparer.table }
+
+  ${ preparer.add_action() }
+---
+table: preparer.table
+rows: preparer
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Mobile number: |
+      row_item.mobile_number if defined("row_item.mobile_number") else ""
+  - Email: |
+      row_item.email if defined("row_item.email") else ""
+edit:
+  - name.first
+  - phone_number
+  - mobile_number
+  - email
+confirm: True
+
+---
+continue button field: interpreter.revisit
+question: |
+  Edit interpreter
+subquestion: |
+  ${ interpreter.table }
+
+  ${ interpreter.add_action() }
+---
+table: interpreter.table
+rows: interpreter
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Mobile number: |
+      row_item.mobile_number if defined("row_item.mobile_number") else ""
+  - Email: |
+      row_item.email if defined("row_item.email") else ""
+edit:
+  - name.first
+  - phone_number
+  - mobile_number
+  - email
+confirm: True
+
+---
+id: download Apply_for_temporary_protected_statu
+event: Apply_for_temporary_protected_statu_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_Apply_for_temporary_protected_statu'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - Apply_for_temporary_protected_statu_attachment: ALDocument.using(title="Apply for temporary protected status", filename="Apply_for_temporary_protected_statu", enabled=True, has_addendum=False, )
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[Apply_for_temporary_protected_statu_attachment], filename="Apply_for_temporary_protected_statu", title="All forms to download for your records", enabled=True)
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[Apply_for_temporary_protected_statu_attachment],  filename="Apply_for_temporary_protected_statu", title="All forms to file", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+---
+attachment:
+  name: Apply for temporary protected statu
+  filename: Apply_for_temporary_protected_statu
+  variable name: Apply_for_temporary_protected_statu_attachment[i]
+  skip undefined: True
+  pdf template file: Apply_for_temporary_protected_statu.pdf
+  fields:
+      - "is_form_g28_attached": ${ is_form_g28_attached }
+      - "attorneys1_bar_number": ${ attorneys1_bar_number }
+      - "attorney_online_account_number": ${ attorney_online_account_number }
+      - "is_first_application": ${ is_first_application }
+      - "is_re_application": ${ is_re_application }
+      - "tps_application_country": ${ tps_application_country }
+      - "users1_name_last": ${ users[0].name.last }
+      - "users1_name_first": ${ users[0].name.first }
+      - "users1_name_middle": ${ users[0].name.middle }
+      - "is_USCIS_re_application": ${ xxxxx["USCIS"] }
+      - "is_judge_re_applicatioin": ${ is_judge_re_applicatioin }
+      - "users1_a_number": ${ users1_a_number }
+      - "users1_uscis_account_number": ${ users1_uscis_account_number }
+      - "users1_previous_names1_last": ${ users[0].previous_names[0].last }
+      - "users1_ssn": ${ users1_ssn }
+      - "users1_previous_names1_first": ${ users[0].previous_names[0].first }
+      - "users1_birthdate": ${ users[0].birthdate.format() }
+      - "users1_previous_names1_middle": ${ users[0].previous_names[0].middle }
+      - "users1_previous_names2_last": ${ users[0].previous_names[1].last }
+      - "users1_previous_names2_first": ${ users[0].previous_names[1].first }
+      - "users1_alternate_birthdate": ${ users1_alternate_birthdate.format() }
+      - "users1_previous_names2_middle": ${ users[0].previous_names[1].middle }
+      - "users1_alternate_birthdate_2": ${ users1_alternate_birthdate_2 }
+      - "users1_gender": ${ users[0].gender }
+      - "users1_mailing_address_in_care_of": ${ users1_mailing_address_in_care_of }
+      - "users1_mailing_address_address": ${ users[0].mailing_address.address }
+      - "city_of_birth": ${ city_of_birth }
+      - "users1_mailing_address_is_apt": ${ users1_mailing_address_is_apt }
+      - "users1_mailing_address_is_suite": ${ users1_mailing_address_is_suite }
+      - "users1_mailing_address_is_floor": ${ users1_mailing_address_is_floor }
+      - "users1_mailing_address_unit": ${ users[0].mailing_address.unit }
+      - "country_of_birth": ${ country_of_birth }
+      - "users1_mailing_address_city": ${ users[0].mailing_address.city }
+      - "users1_mailing_address_state": ${ users[0].mailing_address.state }
+      - "users1_mailing_address_zip": ${ users[0].mailing_address.zip }
+      - "mailing_address_is_physical_address": ${ mailing_address_is_physical_address }
+      - "mailing_address_is_physical_address": ${ mailing_address_is_physical_address }
+      - "users1_countries_of_residence": ${ users1_countries_of_residence }
+      - "users1_address_address": ${ users[0].address.address }
+      - "users1_address_is_apt": ${ users1_address_is_apt }
+      - "users1_address_is_suite": ${ users1_address_is_suite }
+      - "users1_address_is_floor": ${ users1_address_is_floor }
+      - "users1_address_unit": ${ users[0].address.unit }
+      - "users1_coutnries_of_citizenship": ${ users1_coutnries_of_citizenship }
+      - "users1_address_city": ${ users[0].address.city }
+      - "users1_address_state": ${ users[0].address.state }
+      - "users1_address_zip": ${ users[0].address.zip }
+      - "is_married": ${ is_married }
+      - "is_unmarried": ${ is_unmarried }
+      - "is_divorced": ${ is_divorced }
+      - "is_widowed": ${ is_widowed }
+      - "is_separated": ${ is_separated }
+      - "is_annulled": ${ is_annulled }
+      - "is_other_marital_status": ${ is_other_marital_status }
+      - "marital_status_other_explanation": ${ marital_status_other_explanation }
+      - "marriage_date": ${ marriage_date.format() }
+      - "marriage_date__2": ${ marriage_date.format() }
+      - "current_immigration_status": ${ current_immigration_status }
+      - "has_been_in_immigration_proceedings": ${ has_been_in_immigration_proceedings }
+      - "date_of_last_arrival": ${ date_of_last_arrival }
+      - "proceedings_was_immigration_court": ${ proceedings_was_immigration_court }
+      - "proceedings_was_bia": ${ proceedings_was_bia }
+      - "date_of_last_entry": ${ date_of_last_entry }
+      - "proceedings_was_federal_court": ${ proceedings_was_federal_court }
+      - "port_of_entry": ${ port_of_entry }
+      - "city_of_entry": ${ city_of_entry }
+      - "proceedings_dhs_or_doj_hearing_location": ${ proceedings_dhs_or_doj_hearing_location }
+      - "state_of_entry": ${ state_of_entry }
+      - "i94_arrival_number": ${ i94_arrival_number }
+      - "proceedings_federal_court_location": ${ proceedings_federal_court_location }
+      - "authorized_stay_ending_date": ${ authorized_stay_ending_date.format() }
+      - "proceedings_start_date": ${ proceedings_start_date.format() }
+      - "proceedings_end_date": ${ proceedings_end_date.format() }
+      - "proceedings_continuing_to_present": ${ proceedings_continuing_to_present }
+      - "passport_number": ${ passport_number }
+      - "travel_document_number": ${ travel_document_number }
+      - "ethnicity_hispanic_yes": ${ ethnicity_hispanic }
+      - "ethnicity_hispanic_no": ${ not ethnicity_hispanic }
+      - "additional_passport_number_1": ${ additional_passport_number_1 }
+      - "additional_passport_number_2": ${ additional_passport_number_2 }
+      - "race_white": ${ race_white }
+      - "race_asian": ${ race_asian }
+      - "most_recent_passport_country_issuing": ${ most_recent_passport_country_issuing }
+      - "race_black": ${ race_black }
+      - "race_american_indian": ${ race_american_indian }
+      - "passport_or_travel_document_expiration_date": ${ passport_or_travel_document_expiration_date.format() }
+      - "race_native_hawaiian": ${ race_native_hawaiian }
+      - "height_feet": ${ height_feet }
+      - "height_inches": ${ height_inches }
+      - "users2_address_address": ${ users[1].address.address }
+      - "users2_address_is_apt": ${ users2_address_is_apt }
+      - "users2_address_is_suite": ${ users2_address_is_suite }
+      - "users2_address_is_floor": ${ users2_address_is_floor }
+      - "weight_pounds": ${ weight_pounds }
+      - "users2_address_unit": ${ users[1].address.unit }
+      - "users2_address_city": ${ users[1].address.city }
+      - "eye_color_black": ${ eye_color_black }
+      - "eye_color_blue": ${ eye_color_blue }
+      - "eye_color_brown": ${ eye_color_brown }
+      - "users2_address_state": ${ users[1].address.state }
+      - "users2_address_zip": ${ users[1].address.zip }
+      - "eye_color_gray": ${ eye_color_gray }
+      - "eye_color_green": ${ eye_color_green }
+      - "eye_color_hazel": ${ eye_color_hazel }
+      - "eye_color_marooon": ${ eye_color_marooon }
+      - "eye_color_pink": ${ eye_color_pink }
+      - "users2_address_province": ${ users2_address_province }
+      - "eye_color_unknown": ${ eye_color_unknown }
+      - "users2_address_postal_code": ${ users2_address_postal_code }
+      - "hair_bald": ${ hair_bald }
+      - "hair_black": ${ hair_black }
+      - "hair_blond": ${ hair_blond }
+      - "users2_address_country": ${ users[1].address.country }
+      - "hair_brown": ${ hair_brown }
+      - "hair_gray": ${ hair_gray }
+      - "hair_red": ${ hair_red }
+      - "hair_sandy": ${ hair_sandy }
+      - "White_2": ${ White_2 }
+      - "users2_birthdate": ${ users[1].birthdate.format() }
+      - "hair_unknown": ${ hair_unknown }
+      - "marriage_location": ${ marriage_location }
+      - "marriage_city": ${ marriage_city }
+      - "marriage_state": ${ marriage_state }
+      - "marriage_province": ${ marriage_province }
+      - "marriage_country": ${ marriage_country }
+      - "users2_online_account_number": ${ users2_online_account_number }
+      - "spouse_had_tps": ${ spouse_had_tps }
+      - "users2_a_number": ${ users2_a_number }
+      - "users2_name_last": ${ users[1].name.last }
+      - "spouse_tps_date": ${ spouse_tps_date.format() }
+      - "users2_name_first": ${ users[1].name.first }
+      - "spouse_tps_ending_date": ${ spouse_tps_ending_date.format() }
+      - "users2_name_middle": ${ users[1].name.middle }
+      - "spouse_tps_continuing": ${ spouse_tps_continuing }
+      - "spouse_tps_dates_unknown": ${ spouse_tps_dates_unknown }
+      - "spouse_is_tps_valid": ${ spouse_is_tps_valid }
+      - "users4_name_last": ${ users[3].name.last }
+      - "users4_name_first": ${ users[3].name.first }
+      - "users4_name_middle": ${ users[3].name.middle }
+      - "users4_nationality": ${ users4_nationality }
+      - "users4_a_number": ${ users4_a_number }
+      - "users3_name_last": ${ users[2].name.last }
+      - "users4_birthdate": ${ users[3].birthdate.format() }
+      - "users3_name_first": ${ users[2].name.first }
+      - "users3_name_middle": ${ users[2].name.middle }
+      - "users4_death_date": ${ users4_death_date.format() }
+      - "users3_nationality": ${ users3_nationality }
+      - "users4_marriage_start_date": ${ users4_marriage_start_date.format() }
+      - "users4_marriage_end_date": ${ users4_marriage_end_date.format() }
+      - "users3_a_number": ${ users3_a_number }
+      - "users3_birthdate": ${ users[2].birthdate.format() }
+      - "users4_marriage_ending_reason": ${ users4_marriage_ending_reason }
+      - "users3_death_date": ${ users3_death_date.format() }
+      - "second_spouse_has_tps": ${ second_spouse_has_tps }
+      - "users3_marriage_date": ${ users3_marriage_date.format() }
+      - "second_spouse_tps_start_date": ${ second_spouse_tps_start_date.format() }
+      - "users3_marriage_ending_date": ${ users3_marriage_ending_date.format() }
+      - "second_spouse_tps_end_date": ${ second_spouse_tps_end_date.format() }
+      - "second_spouse_tps_continues": ${ second_spouse_tps_continues }
+      - "second_spouse_tps_dates_unknown": ${ second_spouse_tps_dates_unknown }
+      - "users3_marriage_ending_reason": ${ users3_marriage_ending_reason }
+      - "first_spouse_had_tps": ${ first_spouse_had_tps }
+      - "first_spouse_tps_start_date": ${ first_spouse_tps_start_date.format() }
+      - "first_spouse_tps_end_date": ${ first_spouse_tps_end_date.format() }
+      - "first_spouse_tps_continuing": ${ first_spouse_tps_continuing }
+      - "first_spouse_tps_dates_unknown": ${ first_spouse_tps_dates_unknown }
+      - "first_spouse_applying_for_tps": ${ first_spouse_applying_for_tps }
+      - "children2_name_last": ${ children[1].name.last }
+      - "children2_name_first": ${ children[1].name.first }
+      - "children2_name_middle": ${ children[1].name.middle }
+      - "children2_online_account_number": ${ children2_online_account_number }
+      - "children2_a_number": ${ children2_a_number }
+      - "children2_birthdate": ${ children[1].birthdate.format() }
+      - "children1_name_last": ${ children[0].name.last }
+      - "children1_name_first": ${ children[0].name.first }
+      - "children1_name_middle": ${ children[0].name.middle }
+      - "children2_address_address": ${ children[1].address.address }
+      - "children2_address_is_apt": ${ children2_address_is_apt }
+      - "children2_address_is_suite": ${ children2_address_is_suite }
+      - "children2_address_is_floor": ${ children2_address_is_floor }
+      - "children2_address_unit": ${ children[1].address.unit }
+      - "children1_online_account_number": ${ children1_online_account_number }
+      - "children2_address_city": ${ children[1].address.city }
+      - "children1_a_number": ${ children1_a_number }
+      - "children2_address_state": ${ children[1].address.state }
+      - "children2_address_zip": ${ children[1].address.zip }
+      - "children1_birthdate": ${ children[0].birthdate.format() }
+      - "children2_address_province": ${ children2_address_province }
+      - "children2_address_postal_code": ${ children2_address_postal_code }
+      - "children1_address_street": ${ children[0].address.address }
+      - "children2_address_country": ${ children[1].address.country }
+      - "children1_address_is_apt": ${ children1_address_is_apt }
+      - "children1_address_is_suite": ${ children1_address_is_suite }
+      - "children1_address_is_floor": ${ children1_address_is_floor }
+      - "children1_address_unit": ${ children[0].address.unit }
+      - "children1_address_city": ${ children[0].address.city }
+      - "children2_tps_start_date": ${ children2_tps_start_date.format() }
+      - "children1_address_state": ${ children[0].address.state }
+      - "children1_address_zip": ${ children[0].address.zip }
+      - "children2_tps_end_date": ${ children2_tps_end_date.format() }
+      - "children1_address_province": ${ children1_address_province }
+      - "children2_applying_for_tps": ${ children2_applying_for_tps }
+      - "children1_address_postal_code": ${ children1_address_postal_code }
+      - "children1_address_country": ${ children[0].address.country }
+      - "children1_tps_start_date": ${ children1_tps_start_date.format() }
+      - "children1_tps_end_date": ${ children1_tps_end_date.format() }
+      - "last_country_of_residence": ${ last_country_of_residence }
+      - "children1_applying_for_tps": ${ children1_applying_for_tps }
+      - "date_started_us_residence": ${ date_started_us_residence }
+      - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
+      - "other_countries_entered_list": ${ other_countries_entered_list }
+      - "other_country_entered_start_date": ${ other_country_entered_start_date.format() }
+      - "other_country_entered_end_date": ${ other_country_entered_end_date.format() }
+      - "other_country_immigration_status": ${ other_country_immigration_status }
+      - "other_country_immigration_status_offered": ${ other_country_immigration_status_offered }
+      - "other_country_immigration_status_names_and_status": ${ other_country_immigration_status_names_and_status }
+      - "other_coutnry_immigration_status_why_refused": ${ other_coutnry_immigration_status_why_refused }
+      - "convicted_of_felony_in_us": ${ convicted_of_felony_in_us }
+      - "convicted_of_misdemeanor_us": ${ convicted_of_misdemeanor_us }
+      - "particularly_serious_crime": ${ particularly_serious_crime }
+      - "got_financial_benefit_crime": ${ got_financial_benefit_crime }
+      - "persecution_by_protected_status": ${ persecution_by_protected_status }
+      - "engaged_espionage": ${ engaged_espionage }
+      - "serious_nonpolitical_crime": ${ serious_nonpolitical_crime }
+      - "Yes_29": ${ Yes_29 }
+      - "evade_export_controls": ${ evade_export_controls }
+      - "danger_to_us": ${ danger_to_us }
+      - "Yes_30": ${ Yes_30 }
+      - "convicted_or_committed_any_crime": ${ convicted_or_committed_any_crime }
+      - "acted_in_overthrow_of_us": ${ acted_in_overthrow_of_us }
+      - "convicted_committed_drugs": ${ convicted_committed_drugs }
+      - "acted_as_terrorist": ${ acted_as_terrorist }
+      - "convicted_committed_conspiracy_drugs": ${ convicted_committed_conspiracy_drugs }
+      - "negative_foreign_policy": ${ negative_foreign_policy }
+      - "convicted_2_or_more_crimes_totalling_5_or_more_years_yes": ${ convicted_2_or_more_crimes_totalling_5_or_more_years }
+      - "convicted_2_or_more_crimes_totalling_5_or_more_years_no": ${ not convicted_2_or_more_crimes_totalling_5_or_more_years }
+      - "is_communist": ${ is_communist }
+      - "ever_trafficked_yes": ${ ever_trafficked }
+      - "ever_trafficked_no": ${ not ever_trafficked }
+      - "is_nazi": ${ is_nazi }
+      - "trafficking_drugs": ${ trafficking_drugs }
+      - "ever_arrested": ${ ever_arrested }
+      - "spouse_or_child_of_drug_trafficker": ${ spouse_or_child_of_drug_trafficker }
+      - "ever_cited": ${ ever_cited }
+      - "spouse_or_child_drug_abetter": ${ spouse_or_child_drug_abetter }
+      - "ever_fined_jailed_suspended": ${ ever_fined_jailed_suspended }
+      - "has_communicable_disease": ${ has_communicable_disease }
+      - "ever_got_clemency": ${ ever_got_clemency }
+      - "has_dangerous_disorder": ${ has_dangerous_disorder }
+      - "ever_asserted_immunity_prosecution": ${ ever_asserted_immunity_prosecution }
+      - "drug_addict_yes": ${ drug_addict }
+      - "drug_addict_no": ${ not drug_addict }
+      - "prostitution_last_10_years": ${ prostitution_last_10_years }
+      - "stowaway_yes": ${ stowaway }
+      - "stowaway_no": ${ not stowaway }
+      - "procured_prostitute_10_years": ${ procured_prostitute_10_years }
+      - "fined_for_false_documentation": ${ fined_for_false_documentation }
+      - "pimped_10_years": ${ pimped_10_years }
+      - "Immigration and Nationality Act": ${ Immigration_and_Nationality_Act }
+      - "Do you NOW practice polygamy": ${ Do_you_NOW_practice_polygamy }
+      - "involved_in_commercial_vice": ${ involved_in_commercial_vice }
+      - "ever_ordered_removed": ${ ever_ordered_removed }
+      - "examiner to be helpless due to sickness physical or": ${ examiner_to_be_helpless_due_to_sickness_physical_or }
+      - "ever_departed_removal_order": ${ ever_departed_removal_order }
+      - "citizenship outside the United States from a US citizen": ${ citizenship_outside_the_United_States_from_a_US_citizen }
+      - "dhs_reinstated_before_removal": ${ dhs_reinstated_before_removal }
+      - "genocide_yes": ${ genocide }
+      - "genocide_no": ${ not genocide }
+      - "ever_failed_to_attend_deportation_hearing": ${ ever_failed_to_attend_deportation_hearing }
+      - "killing_yes": ${ killing }
+      - "killing_no": ${ not killing }
+      - "severe_injury_yes": ${ severe_injury }
+      - "severe_injury_no": ${ not severe_injury }
+      - "ever_lied_visa_or_admission": ${ ever_lied_visa_or_admission }
+      - "ever_helped_someone_enter_illegally": ${ ever_helped_someone_enter_illegally }
+      - "forced_sex": ${ forced_sex }
+      - "denied_religious_exercise": ${ denied_religious_exercise }
+      - "spouse_child_helped_human_trafficker": ${ spouse_child_helped_human_trafficker }
+      - "served_military": ${ served_military }
+      - "worked_detention_facility": ${ worked_detention_facility }
+      - "benefited_human_trafficking": ${ benefited_human_trafficking }
+      - "laundering as described in section 1956 or 1957 of Title": ${ laundering_as_described_in_section_1956_or_1957_of_Title }
+      - "group_using_weapons": ${ group_using_weapons }
+      - "helped_money_laundering": ${ helped_money_laundering }
+      - "helped_weapons_yes": ${ helped_weapons }
+      - "helped_weapons_no": ${ not helped_weapons }
+      - "weapon_training_yes": ${ weapon_training }
+      - "weapon_training_no": ${ not weapon_training }
+      - "violated_religious_freedom": ${ violated_religious_freedom }
+      - "illegal_voted_us": ${ illegal_voted_us }
+      - "past_determination_of_frivolous_asylum": ${ past_determination_of_frivolous_asylum }
+      - "claimed_us_citizen": ${ claimed_us_citizen }
+      - "conscripted_child_soldier": ${ conscripted_child_soldier }
+      - "used_child_soldier": ${ used_child_soldier }
+      - "user_reads_english": ${ user_reads_english }
+      - "committed_human_trafficking": ${ committed_human_trafficking }
+      - "user_used_interpreter": ${ user_used_interpreter }
+      - "helped_human_trafficking": ${ helped_human_trafficking }
+      - "interpreter_spoke_language": ${ interpreter_spoke_language }
+      - "user_used_preparer": ${ user_used_preparer }
+      - "spouse_child_human_trafficker": ${ spouse_child_human_trafficker }
+      - "preparer_name": ${ preparer[0] }
+      - "users1_phone_number": ${ users[0].phone_number }
+      - "interpreter_name_last": ${ interpreter[0].name.last }
+      - "users1_mobile_number": ${ users[0].mobile_number }
+      - "interpreter_name_first": ${ interpreter[0].name.first }
+      - "users1_email": ${ users[0].email }
+      - "interpreter_organization": ${ interpreter_organization }
+      - "interpreter_phone_number": ${ interpreter[0].phone_number }
+      - "interpreter_mobile_number": ${ interpreter[0].mobile_number }
+      - "interpreter_email": ${ interpreter[0].email }
+      - "interpreted_into_language": ${ interpreted_into_language }
+      - "signature_date": ${ signature_date }
+      - "signature_date__1": ${ signature_date }
+      - "signature_date__2": ${ signature_date }
+      - "preparer_is_attorney_yes": ${ preparer_is_attorney }
+      - "preparer_is_attorney_no": ${ not preparer_is_attorney }
+      - "preparer_full_rep": ${ preparer_full_rep }
+      - "preparer_limited_rep": ${ preparer_limited_rep }
+      - "preparer_name_last": ${ preparer[0].name.last }
+      - "preparer_name_first": ${ preparer[0].name.first }
+      - "preparer_organization": ${ preparer_organization }
+      - "preparer_phone_number": ${ preparer[0].phone_number }
+      - "preparer_mobile_number": ${ preparer[0].mobile_number }
+      - "preparer_email": ${ preparer[0].email }
+      - "Page Number_3": ${ Page_Number_3 }
+      - "Part Number_3": ${ Part_Number_3 }
+      - "Item Number_3": ${ Item_Number_3 }
+      - "1_3": ${ _3 }
+      - "2_3": ${ _3 }
+      - "3_3": ${ _3 }
+      - "4_3": ${ _3 }
+      - "5_3": ${ _3 }
+      - "6_3": ${ _3 }
+      - "7_3": ${ _3 }
+      - "8_3": ${ _3 }
+      - "9_3": ${ _3 }
+      - "10_3": ${ _3 }
+      - "sign and date each sheet": ${ sign_and_date_each_sheet }
+      - "First Name_9": ${ First_Name_9 }
+      - "Middle Name_8": ${ Middle_Name_8 }
+      - "A_3": ${ A_3 }
+      - "Page Number": ${ Page_Number }
+      - "Part Number": ${ Part_Number }
+      - "Item Number": ${ Item_Number }
+      - "Page Number_4": ${ Page_Number_4 }
+      - "Part Number_4": ${ Part_Number_4 }
+      - "Item Number_4": ${ Item_Number_4 }
+      - "1_4": ${ _4 }
+      - "2_4": ${ _4 }
+      - "3_4": ${ _4 }
+      - "4_4": ${ _4 }
+      - "5_4": ${ _4 }
+      - "6_4": ${ _4 }
+      - "7_4": ${ _4 }
+      - "8_4": ${ _4 }
+      - "9_4": ${ _4 }
+      - "10_4": ${ _4 }
+      - "Page Number_2": ${ Page_Number_2 }
+      - "Part Number_2": ${ Part_Number_2 }
+      - "Item Number_2": ${ Item_Number_2 }
+      - "Page Number_5": ${ Page_Number_5 }
+      - "Part Number_5": ${ Part_Number_5 }
+      - "Item Number_5": ${ Item_Number_5 }
+      - "1_2": ${ _2 }
+      - "2_2": ${ _2 }
+      - "3_2": ${ _2 }
+      - "4_2": ${ _2 }
+      - "5_2": ${ _2 }
+      - "6_2": ${ _2 }
+      - "7_2": ${ _2 }
+      - "8_2": ${ _2 }
+      - "9_2": ${ _2 }
+      - "10_2": ${ _2 }
+      - "1_5": ${ _5 }
+      - "2_5": ${ _5 }
+      - "3_5": ${ _5 }
+      - "4_5": ${ _5 }
+      - "5_5": ${ _5 }
+      - "6_5": ${ _5 }
+      - "7_5": ${ _5 }
+      - "8_5": ${ _5 }
+      - "9_5": ${ _5 }
+      - "10_5": ${ _5 }
+
+
+

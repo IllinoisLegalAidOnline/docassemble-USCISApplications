@@ -1,0 +1,378 @@
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+---
+metadata:
+  title: >-
+    test
+  short title: >-
+    test
+  description: |-
+    This is a test interview.
+  authors:
+    - Anthony Danielson
+  allowed_courts: []
+  typical_role: "na"
+  al_weaver_version: "playground"
+  generated_on: "2024-02-09"
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "IL"
+---
+code: |
+  interview_short_title = "Apply for temporary protected status"
+---
+code: |
+  al_form_type = "other_form" 
+---
+mandatory: True
+code: |
+  intro_screen
+  users.gather()
+  final_screen
+---
+code: |
+  users[i].name.first
+  users[i].birthdate
+  users[i].address.address
+  users[i].address.render
+  users[i].countries_of_residence.gather()
+  if users[i].countries_of_residence.there_are_any:
+    users[i].countries_of_residence_review
+  users[i].countries_traveled_through.gather()
+  users[i].countries_traveled_through_review
+  users[i].prior_immigration_proceedings.gather()
+  if users[i].prior_immigration_proceedings.there_are_any:
+    users[i].prior_immigration_proceedings_review
+  users[i].travel_documents.gather()
+  if users[i].travel_documents.there_are_any:
+    users[i].travel_documents_review
+  users[i].complete = True
+---
+objects:
+  - users: ALPeopleList.using(there_are_any=True, complete_attribute='complete')
+  - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
+  - users[i].prior_immigration_proceedings: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='jurisdiction')
+  - users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
+  - users[i].countries_of_residence: DAList.using(there_is_another=False)
+---
+id: intro screen
+question: Intro Screen
+continue button field: intro_screen
+---
+id: U.S. physical address
+question: Applicant's U.S. Physical Address
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+    maxlength: 38
+  - Suite/Unit/Floor/Room: users[0].address.unit
+    required: False
+    maxlength: 28
+  - City: users[0].address.city
+    maxlength: 28
+  - State: users[0].address.state
+    code: |
+      states_list()
+  - ZIP code: users[0].address.zip
+    datatype: integer
+    maxlength: 5
+---
+id: applicant's birthplace
+question: Applicant's Birthplace
+fields:
+  - City/Town/Village: users[i].birthplace_city
+    maxlength: 38
+  - Country: users[i].birthplace_country
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+---
+id: countries of residence are there any
+question: Did Applicant **live** in another country before entering the U.S.?
+yesno: users[i].countries_of_residence.there_are_any # the wording of this question is taken from the sample I-821, page 2, question 15. It seems to me this question will almost always be yes, since a person has to "live" somewhere, but perhaps there's a definitional problem here...
+---
+id: other countries traveled to before US
+question: Which country or countries did you enter/travel through before entering the U.S.?
+subquestion: |
+  % if len(users[i].countries_of_residence.complete_elements()):
+  **Countries you **lived in** before entering the U.S.:**[BR]
+  
+  % for country in users[i].countries_of_residence.complete_elements():
+  **${ country }**
+  % endfor
+  
+  [NEWLINE]
+  % endif
+fields:
+  - Select a Country: users[i].countries_of_residence[j]
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+---
+id: former countries review screen
+question: Review the countries you **lived in** before entering the U.S.
+subquestion: |
+  ${ users[i].countries_of_residence.table }
+  ${ users[i].countries_of_residence.add_action(label=bold('Add Another Country'), color='warning') }
+continue button field:  users[i].countries_of_residence_review
+---
+table:  users[i].countries_of_residence.table
+rows:  users[i].countries_of_residence
+columns:
+  - Country: row_item
+edit: true
+---
+#id: birth place
+#question: |
+#  Where were you born?
+#fields:
+#  - Were you born in the United States?: users[0].in_america
+#    datatype: yesnoradio
+#    default: True
+#  - City: users[0].birthplace.city
+#  - County: users[0].birthplace.county
+#    show if: 
+#      variable: users[0].in_america
+#      is: True
+#  - State: users[0].birthplace.state
+#    show if: 
+#      variable: users[0].in_america
+#      is: True
+#    code: |
+#      states_list() 
+#  - County and State or Province (separated by a comma): users[0].birthplace.intl_text
+#    help: |
+#      List the county and list the state or province if the country has them.
+#    required: False
+#    show if: 
+#      variable: users[0].in_america
+#      is: False
+#  - Country (outside US): users[0].birthplace.country
+#    show if: 
+#      variable: users[0].in_america
+#      is: False
+#---
+id: render address
+continue button field: users[i].address.render
+question: Verify correct format of address.
+subquestion: |
+  'users[0].address.block()' is:
+  
+  ${ users[0].address.block() }
+  
+  'users[0].address_block()' is:
+  
+  ${ users[0].address_block() }
+---
+id: other countries traveled to before US
+question: Which country or countries did you enter/travel through before entering the U.S.?
+subquestion: |
+  % if len(users[i].countries_traveled_through.complete_elements()):
+  **Countries you entered/traveled through before entering the U.S.:**[BR]
+  
+  Country  |Entry Date  |Departure Date
+  -------------|------------|------------
+  % for country in users[i].countries_traveled_through.complete_elements():
+  ${ country }  |${ country.entry_date }  |${ country.departure_date }
+  % endfor
+  
+  [NEWLINE]
+  % endif
+fields:
+  - Select a Country: users[i].countries_traveled_through[j].name
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+  - Date you entered: users[i].countries_traveled_through[j].entry_date
+    datatype: date
+    max: ${ today() }
+  - Date you departed/exited: users[i].countries_traveled_through[j].departure_date
+    datatype: date
+    max: ${ today() }
+---
+id: former countries review screen
+question: Review the countries you entered/traveled through before entering the U.S.
+subquestion: |
+  ${ users[i].countries_traveled_through.table }
+  ${ users[i].countries_traveled_through.add_action(label=bold('Add Another Country'), color='warning') }
+continue button field:  users[i].countries_traveled_through_review
+---
+table:  users[i].countries_traveled_through.table
+rows:  users[i].countries_traveled_through
+columns:
+  - Country: row_item.name
+  - Entry Date: row_item.entry_date
+  - Departure Date: row_item.departure_date
+edit:
+  - row_item
+allow reordering: True
+---
+id: applicant has had prior immigration proceedings
+question: Has Applicant been involved in immigration legal proceedings before?
+yesno: users[i].prior_immigration_proceedings.there_are_any
+---
+id: prior immigration proceedings
+question: Prior Immigration Proceedings
+subquestion: |
+  % if len(users[i].prior_immigration_proceedings.complete_elements()):
+  % if len(users[i].prior_immigration_proceedings.complete_elements()) == 1:
+  The prior immigration proceeding you told us about is:
+  % else:
+  The prior immmigration proceedings you told us about are: 
+  % endif
+  
+  Jurisdiction  |Start Date  |End Date
+  -------------|------------|------------
+  % for proceeding in users[i].prior_immigration_proceedings.complete_elements():
+  ${ proceeding.jurisdiction }  |${ proceeding.start_date }  |${ proceeding.end_date }
+  % endfor
+  
+  [NEWLINE]
+  % endif
+fields:
+  - Proceeding: users[i].prior_immigration_proceedings[j].name
+    input type: hidden
+    default: ${ int(users[i].prior_immigration_proceedings[j].instanceName.split('[')[-1].split(']')[0]) + 1 }
+  - Jurisdiction: users[i].prior_immigration_proceedings[j].jurisdiction
+    datatype: radio
+    choices:
+      - Immigration Court (before an Immigration Judge): immigration_judge
+      - Board of Immigration Appeals (BIA): bia
+      - I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues: fed_court
+  - Location (City, State): users[i].prior_immigration_proceedings[j].location
+    maxlength: 38
+  - Start Date: users[i].prior_immigration_proceedings[j].start_date
+    datatype: date
+    max: ${ today() }
+  - End Date: users[i].prior_immigration_proceedings[j].end_date
+    datatype: date
+    max: ${ today() }
+---
+id: prior immigration proceedings review screen
+question: Applicant's Prior Immigration Proceedings
+subquestion: |
+  ${ users[i].prior_immigration_proceedings.table }
+  ${ users[i].prior_immigration_proceedings.add_action(label=bold('Add Another Proceeding'), color='warning') }
+continue button field: users[i].prior_immigration_proceedings_review
+---
+table: users[i].prior_immigration_proceedings.table
+rows: users[i].prior_immigration_proceedings
+columns:
+  #- Proceeding: row_item.name
+  - Jurisdiction: row_item.jurisdiction
+  - Location: row_item.location
+  - Start Date: row_item.start_date
+  - End Date: row_item.end_date
+edit:
+  - row_item
+allow reordering: True # might be moot/unnecessary here
+---
+id: applicant has travel documents
+question: Does Applicant have a Passport or travel documents?
+subquestion: |
+  ***Note: a "cedula" does not count as a travel document***
+yesno: users[i].travel_documents.there_are_any
+---
+id: travel documents
+question: Applicant's Travel Documents
+subquestion: |
+  % if len(users[i].travel_documents.complete_elements()):
+  % if len(users[i].travel_documents.complete_elements()) == 1:
+  The travel document you entered is:
+  % else:
+  The travel documents you entered are: 
+  % endif
+  
+  Type  |Issuing Country  |Document Number
+  -------------|------------|------------
+  % for document in users[i].travel_documents.complete_elements():
+  ${ document.type }  |${ document.issuing_country }  |${ document.number }
+  % endfor
+  
+  [NEWLINE]
+  % endif
+fields:
+  - Name: users[i].travel_documents[j].name
+    input type: hidden
+    default: ${ int(users[i].travel_documents[j].instanceName.split('[')[-1].split(']')[0]) + 1 }
+  - Document Type: users[i].travel_documents[j].type
+    datatype: radio
+    choices:
+      - Passport: passport
+      - Other Kind of Travel Document: other
+  - '"Other" type of travel document': users[i].travel_documents[j].other_type
+    maxlength: 38 # perhaps unnecessary here as this info will only optionally be included in the appendix and otherwise will be shown in mako tage to the user for organization purposes.
+    show if: 
+      variable: users[i].travel_documents[j].type
+      is: 'other'
+  - Issuing Country: users[i].travel_documents[j].issuing_country
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+  - Document Number: users[i].travel_documents[j].number
+    maxlength: 38
+---
+id: travel documents review screen
+question: Applicant's Travel Documents Review
+subquestion: |
+  ${ users[i].travel_documents.table }
+  ${ users[i].travel_documents.add_action(label=bold('Add Another Document'), color='warning') }
+continue button field: users[i].travel_documents_review
+---
+table: users[i].travel_documents.table
+rows: users[i].travel_documents
+columns:
+  #- Proceeding: row_item.name
+  - Type: |
+      row_item.other_type if row_item.type == 'other' else row_item.type
+  - Issuing Country: row_item.issuing_country
+  - Document Number: row_item.number
+edit:
+  - row_item
+allow reordering: True # might be moot/unnecessary here
+---
+id: master review screen
+event: master_review_screen
+question: |
+  Review your answers
+review:
+  - Edit: users[i].is_form_g28_attached
+    button: |
+      **Is form g28 attached**:
+      ${ word(yesno(users[i].is_form_g28_attached)) }
+  - Edit: users[i].attorneys1_bar_number
+    button: |
+      **Attorneys1 bar number**:
+      ${ users[i].attorneys1_bar_number }
+  - Edit: users[i].attorney_online_account_number
+    button: |
+      **Attorney online account number**:
+      ${ users[i].attorney_online_account_number }
+---
+id: final screen
+event: final_screen
+question: Final Screen
+subquestion: |
+  Here are the countries you entered/traveled through before entering the U.S.:
+  
+  % for country in users[i].countries_traveled_through.complete_elements():
+    **${ country }**
+    
+  % endfor
+  
+  % if len(users[i].prior_immigration_proceedings.complete_elements()):
+  % if len(users[i].prior_immigration_proceedings.complete_elements()) == 1:
+  The prior immigration proceeding you entered is:
+  % else:
+  The prior immigration proceedings you entered are: 
+  % endif
+  
+  Jurisdiction  |Start Date  |End Date
+  -------------|------------|------------
+  % for proceeding in users[i].prior_immigration_proceedings.complete_elements():
+  ${ proceeding.jurisdiction }  |${ proceeding.start_date }  |${ proceeding.end_date }
+  % endfor
+  
+  [NEWLINE]
+  % endif

@@ -160,3 +160,15 @@ buttons:
     image: shield-halved
   - EAD only: ead_only
     image: briefcase
+---
+objects:
+  - users[i].military_service_addendum: ALDocument.using(title=f"{users[i]} - Military Service Addendum", filename=space_to_underscore(f"{users[i]} - Military Service Addendum"), has_addendum=False)
+---
+code: |
+  users[i].military_service_addendum.enabled = users[i].addenda.get("military_service")
+---
+attachment:
+  variable name: users[i].military_service_addendum[j]
+  name: ${ users[i] } - Military Service Addendum
+  filename: ${ space_to_underscore(f"{users[i]} - Military Service Addendum") }
+  docx template: TPS_addendum_military_service.docx

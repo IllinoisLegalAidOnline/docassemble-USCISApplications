@@ -226,3 +226,5 @@ fields:
       - Child of Venezuelan nationals: child_venezuelan_nationals
       - Smuggling: smuggling
       - Affidavit of continuous residence: continuous_residence
+      - EAD interim parole: ead_interim_parole
+      

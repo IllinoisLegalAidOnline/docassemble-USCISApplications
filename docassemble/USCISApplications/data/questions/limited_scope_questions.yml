@@ -9,7 +9,6 @@ code: |
   limited_scope_para_4
   limited_scope_para_5
   limited_scope_para_6
-  # agree_to_limited_scope
   interview_order_limited_scope = True
 ---
 id: intro
@@ -59,18 +58,8 @@ subquestion: |
   ##### en español
   
   Entiendo que las organizaciones están aquí hoy para ayudarme e informarme sobre mis derechos legales, ayudarme a comprender el proceso legal y para ayudarme con mi solicitud de inmigración. Las organizaciones y abogados aquí hoy no sirven como mi representante legal y no me representará después de hoy a menos que se discuta explícitamente.
-fields:
-  - no label: accept_1
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    choices:
-      - All of the above is understood and acknowledged
-      - Todo lo anterior es entendido y comprendido
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree.
 
+continue button label: I accept / Acepto
 ---
 id: limted scope paragraph 2
 continue button field: limited_scope_para_2
@@ -82,18 +71,7 @@ subquestion: |
   ##### en español
   
   Entiendo que si quiero representación legal para mi caso de inmigración, debo buscar un abogado por mi cuenta y hacer un seguimiento de todos mis esfuerzos para encontrar un abogado para poder compartir esta información con el juez de inmigración en mi próxima audiencia judicial.
-fields:
-  - no label: accept_2
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    choices:
-      - All of the above is understood and acknowledged
-      - Todo lo anterior es entendido y comprendido
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree.
-
+continue button label: I accept / Acepto
 ---
 id: limted scope paragraph 3
 continue button field: limited_scope_para_3
@@ -105,18 +83,7 @@ subquestion: |
   ##### en español
   
   He dado voluntariamente mi información a las organizaciones presentes hoy y entiendo que la información que doy sobre mi caso puede ser dada a otras personas con el propósito de ayudarme con mi solicitud de permiso de trabajo u otros beneficios de inmigración para los que puedo ser elegible, y para evaluar y continuar con el taller. Esto incluye representantes de la ciudad, el estado y el gobierno federal.
-fields:
-  - no label: accept_3
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    choices:
-      - All of the above is understood and acknowledged
-      - Todo lo anterior es entendido y comprendido
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree.
-
+continue button label: I accept / Acepto
 ---
 id: limted scope paragraph 4
 continue button field: limited_scope_para_4
@@ -128,18 +95,7 @@ subquestion: |
   ##### en español
   
   Si hay servicios adicionales disponibles después de este taller (como asistencia con el cambio de sede para la corte de inmigración o asilo), acepto permitir que TRP comparta mi información de contacto con otra organización sin fines de lucro para evaluar si puedo recibir servicios adicionales.
-fields:
-  - no label: accept_4
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    choices:
-      - All of the above is understood and acknowledged
-      - Todo lo anterior es entendido y comprendido
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree.
-
+continue button label: I accept / Acepto
 ---
 id: limted scope paragraph 5
 continue button field: limited_scope_para_5
@@ -151,18 +107,7 @@ subquestion: |
   ##### en español
   
   NO doy mi consentimiento para que se comparta mi información fuera de los contextos descritos anteriormente.
-fields:
-  - no label: accept_5
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    choices:
-      - All of the above is understood and acknowledged
-      - Todo lo anterior es entendido y comprendido
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree.
-
+continue button label: I accept / Acepto
 ---
 id: limted scope paragraph 6
 continue button field: limited_scope_para_6
@@ -174,31 +119,4 @@ subquestion: |
   ##### en español
   
   Este Alcance de los Servicios y la Autorización me ha sido explicado y traducido en un idioma que entiendo.
-fields:
-  - no label: accept_6
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
-    choices:
-      - All of the above is understood and acknowledged
-      - Todo lo anterior es entendido y comprendido
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree.
-
----
-id: agree to limited scope
-question: |
-  Agreement OPTIONAL
-subquestion: |
-  **ALL OF THE ABOVE IS UNDERSTOOD AND ACKNOWLEDGED**
-  
-  ##### en español
-  
-  **TODO LO ANTERIOR ES ENTENDIDO Y COMPRENDIDO**
-fields:
-  - no label: agree_to_limited_scope
-    datatype: radio
-    choices:
-      - "Yes / Sí": True
-      - "No / No": False
+continue button label: I accept / Acepto

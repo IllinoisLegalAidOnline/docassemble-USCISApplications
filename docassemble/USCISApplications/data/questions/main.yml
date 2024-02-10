@@ -22,6 +22,10 @@ code: |
     for user in users:
       user.ead_screening_questions
       user.review_ead_screening_questions
+  else:
+    for user in users:
+      user.tps_screening_questions
+      user.review_tps_screening_questions
 ---
 id: intro_main
 question: |
@@ -75,7 +79,14 @@ fields:
   - Suffix: users[0].name.suffix
     required: False
     datatype: combobox
-    code: name_suffix()
+    code: |
+      name_suffix()
+  - Country of Birth: users[0].country_of_birth
+    datatype: combobox
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+  - Birthdate: users[0].birthdate
+    datatype: Birthdate
   - note: |
       <h2 class="h4">We'll get the name of the remaining applicants on the next screen</h2>
     js show if: |
@@ -103,6 +114,14 @@ subquestion: |
 fields:
   - code: |
       users[i].name_fields(person_or_business="person")
+  - Country of Birth: users[i].country_of_birth
+    datatype: combobox
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+    default: |
+      ${ users[-1].country_of_birth if i > 0 else '' }
+  - Birthdate: users[i].birthdate
+    datatype: Birthdate
 ---
 table: users.initial_review_table
 rows: users

@@ -1,0 +1,143 @@
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - limited_scope_questions.yml
+  - screeners.yml
+---
+objects:
+  - users: ALPeopleList.using(ask_number=True)
+  - preparer: ALPeopleList.using(ask_number=True, target_number=1)
+---
+id: interview_order_main
+mandatory: True
+code: |
+  intro_main
+  preparer.gather()
+  users.gather()
+  review_initial_user_list
+  interview_order_limited_scope
+  for user in users:
+    user.signature
+  application_kind
+  if application_kind == "ead_only":
+    for user in users:
+      user.ead_screening_questions
+      user.review_ead_screening_questions
+---
+id: intro_main
+question: |
+  Let's get started
+subquestion: |
+  Here's what you'll do today:
+
+  1. Get names of the people who are applying for work authorization
+  2. Review the limited scope retainer
+  3. Go through the screener questions for each applicant
+  4. Complete the application, for the I-765 or the I-821
+  5. Review the application
+  6. Print the final application and get the applicants signatures.
+     We will make a separate set of documents for each applicant.
+continue button field: intro_main
+---
+sets:
+  - preparer[0].name.first
+id: supervisor name
+question: |
+  What is the name of the volunteer or person asking questions today?
+fields:
+  - code: preparer[0].name_fields(person_or_business="person")
+---
+code: |
+  if user_logged_in():
+    preparer[0].name.first = user_info().first_name
+    preparer[0].name.last = user_info().last_name
+    preparer[0].email = user_info().email
+---
+id: people
+question: |
+  How many people are applying for work authorization at this station?
+subquestion: |
+  Get the names of all people who have a **family relationship** and are here
+  to get work authorization together today. For example: siblings, aunts, 
+  uncles, parents, children, and spouses.
+
+  Please complete a separate interview for each person who is not in 
+  a family relationship with the others.
+
+fields:
+  - How many?: users.target_number
+    datatype: integer
+  - note: |
+      <h2 class="h4">Name of the head of household</h2>
+  - First name: users[0].name.first
+  - Middle name: users[0].name.middle
+    required: False
+  - Last name: users[0].name.last
+  - Suffix: users[0].name.suffix
+    required: False
+    datatype: combobox
+    code: name_suffix()
+  - note: |
+      <h2 class="h4">We'll get the name of the remaining applicants on the next screen</h2>
+    js show if: |
+      val("users.target_number") > 1
+right: |
+  % if user_logged_in():
+  <div class="alert alert-info">
+  <h2 class="h4">Is this ${ user_info().first_name }?</h2>
+  <p>If not, please <a href="${ url_of('logout') }">log out</a> and log back in as the correct person.</p>
+  </div>
+  % endif
+---
+sets:
+  - users[i].name.first
+id: add another applicant
+question: |
+  What is the name of the ${ ordinal(i) } applicant?
+subquestion: |
+  % if len(users.complete_elements()) == 1:
+  You can give the names in any order, but you may want
+  to start with the second oldest applicant.
+  % endif
+
+  So far you have named ${ bold(users.complete_elements()) }.
+fields:
+  - code: |
+      users[i].name_fields(person_or_business="person")
+---
+table: users.initial_review_table
+rows: users
+columns:
+  - Name: |
+      row_item
+edit:
+  - name.first
+confirm: True
+---
+id: review_initial_user_list
+question: |
+  OK, we'll make documents for the following people
+subquestion: |
+  ${ users.initial_review_table }
+
+  ${ users.add_action() }
+
+  On the next screen, we'll review the limited scope retainer.
+continue button field: review_initial_user_list
+---
+id: signatures for users i
+question: |
+  ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
+signature: users[i].signature
+under: |
+  ${ users[i] }
+required: False
+---
+id: kind of interview
+question: |
+  What kind of application will this group complete?
+field: application_kind
+buttons:
+  - TPS and EAD: ead_and_tps
+    image: shield-halved
+  - EAD only: ead_only
+    image: briefcase

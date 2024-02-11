@@ -26,6 +26,7 @@ code: |
     for user in users:
       user.tps_screening_questions
       user.review_tps_screening_questions
+  download_completed_ea_application
 ---
 id: intro_main
 question: |
@@ -87,6 +88,8 @@ fields:
       [next(iter(item.values())) for item in countries_list()]
   - Birthdate: users[0].birthdate
     datatype: Birthdate
+  - A Number: users[0].a_number
+    required: False
   - note: |
       <h2 class="h4">We'll get the name of the remaining applicants on the next screen</h2>
     js show if: |
@@ -119,9 +122,11 @@ fields:
     code: |
       [next(iter(item.values())) for item in countries_list()]
     default: |
-      ${ users[-1].country_of_birth if i > 0 else '' }
+      ${ users[0].country_of_birth }
   - Birthdate: users[i].birthdate
     datatype: Birthdate
+  - A Number: users[i].a_number
+    required: False
 ---
 table: users.initial_review_table
 rows: users
@@ -153,7 +158,7 @@ required: False
 ---
 id: kind of interview
 question: |
-  What kind of application will this group complete?
+  What kind of application will this family complete?
 field: application_kind
 buttons:
   - TPS and EAD: ead_and_tps
@@ -161,14 +166,113 @@ buttons:
   - EAD only: ead_only
     image: briefcase
 ---
+id: download_completed_ea_application
+event: download_completed_ea_application
+question: |
+  Download the completed application
+subquestion: |
+  % for user in users:
+  <h2 class="h4">${ user.name.first }'s application</h2>
+
+  ${ user.document_bundle.download_list_html() }
+  % endfor
+---
 objects:
   - users[i].military_service_addendum: ALDocument.using(title=f"{users[i]} - Military Service Addendum", filename=space_to_underscore(f"{users[i]} - Military Service Addendum"), has_addendum=False)
+  - users[i].transit_through_ca_addendum: ALDocument.using(title=f"{users[i]} - Transit Through Central America Addendum", filename=space_to_underscore(f"{users[i]} - Transit Through Central America Addendum"), has_addendum=False)
+  - users[i].child_venezuelan_nationals_addendum: ALDocument.using(title=f"{users[i]} - Child of Venezuelan Nationals Addendum", filename=space_to_underscore(f"{users[i]} - Child of Venezuelan Nationals Addendum"), has_addendum=False)
+  - users[i].smuggling_addendum: ALDocument.using(title=f"{users[i]} - Smuggling Addendum", filename=space_to_underscore(f"{users[i]} - Smuggling Addendum"), has_addendum=False)
+  - users[i].continuous_residence_addendum: ALDocument.using(title=f"{users[i]} - Affidavit of Continuous Residence Addendum", filename=space_to_underscore(f"{users[i]} - Affidavit of Continuous Residence Addendum"), has_addendum=False)
+  - users[i].ead_interim_parole_addendum: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Interim Parole Addendum"), has_addendum=False)
+  - users[i].ead_legal_screener: ALDocument.using(title=f"{users[i]} - EAD Legal Screener", filename=space_to_underscore(f"{users[i]} - EAD Legal Screener"), has_addendum=False)
+  - users[i].tps_legal_screener: ALDocument.using(title=f"{users[i]} - TPS Legal Screener", filename=space_to_underscore(f"{users[i]} - TPS Legal Screener"), has_addendum=False)
+---
+objects:
+  - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
+  - users[i].document_bundle: ALDocumentBundle.using(title=f"{users[i]} - All documents to print and file", filename=space_to_underscore(f"{users[i]} - all_documents"), enabled=True, elements=[
+        users[i].military_service_addendum,
+        users[i].transit_through_ca_addendum,
+        users[i].child_venezuelan_nationals_addendum,
+        users[i].smuggling_addendum,
+        users[i].continuous_residence_addendum,
+        users[i].ead_interim_parole_addendum,
+        users[i].ead_legal_screener,
+        users[i].tps_legal_screener
+      ])
 ---
 code: |
   users[i].military_service_addendum.enabled = users[i].addenda.get("military_service")
+---
+code: |
+  users[i].transit_through_ca_addendum.enabled = users[i].addenda.get("transit_through_ca")
+---
+code: |
+  users[i].child_venezuelan_nationals_addendum.enabled = users[i].addenda.get("child_venezuelan_nationals")
+---
+code: |
+  users[i].smuggling_addendum.enabled = users[i].addenda.get("smuggling")
+---
+code: |
+  users[i].continuous_residence_addendum.enabled = users[i].addenda.get("continuous_residence")
+---
+code: |
+  users[i].ead_interim_parole_addendum.enabled = users[i].addenda.get("ead_interim_parole")
 ---
 attachment:
   variable name: users[i].military_service_addendum[j]
   name: ${ users[i] } - Military Service Addendum
   filename: ${ space_to_underscore(f"{users[i]} - Military Service Addendum") }
-  docx template: TPS_addendum_military_service.docx
+  docx template file: TPS_addendum_military_service.docx
+---
+attachment:
+  variable name: users[i].transit_through_ca_addendum[j]
+  name: ${ users[i] } - Transit Through Central America Addendum
+  filename: ${ space_to_underscore(f"{users[i]} - Transit Through Central America Addendum") }
+  docx template file: TPS_addendum_transit.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].child_venezuelan_nationals_addendum[j]
+  name: ${ users[i] } - Child of Venezuelan Nationals Addendum
+  filename: ${ space_to_underscore(f"{users[i]} - Child of Venezuelan Nationals Addendum") }
+  docx template file: TPS_addendum_child_venezuelan_nationality.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].smuggling_addendum[j]
+  name: ${ users[i] } - Smuggling Addendum
+  filename: ${ space_to_underscore(f"{users[i]} - Smuggling Addendum") }
+  docx template file: TPS_addendum_smuggling.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].continuous_residence_addendum[j]
+  name: ${ users[i] } - Affidavit of Continuous Residence Addendum
+  filename: ${ space_to_underscore(f"{users[i]} - Affidavit of Continuous Residence Addendum") }
+  docx template file: TPS_legal_screener.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].ead_interim_parole_addendum[j]
+  name: ${ users[i] } - EAD Interim Parole Addendum
+  filename: ${ space_to_underscore(f"{users[i]} - EAD Interim Parole Addendum") }
+  docx template file: EAD_addendum_interim_parole.docx
+  skip undefined: True
+---
+code: |
+  users[i].ead_legal_screener.enabled = application_kind == "ead_only"
+  users[i].tps_legal_screener.enabled = not application_kind == "ead_only"
+---
+attachment:
+  variable name: users[i].ead_legal_screener[j]
+  name: ${ users[i] } - EAD Legal Screener
+  filename: ${ space_to_underscore(f"{users[i]} - EAD Legal Screener") }
+  docx template file: EAD_legal_screener.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].tps_legal_screener[j]
+  name: ${ users[i] } - TPS Legal Screener
+  filename: ${ space_to_underscore(f"{users[i]} - TPS Legal Screener") }
+  docx template file: TPS_legal_screener.docx
+  skip undefined: True

@@ -111,6 +111,8 @@ fields:
       - Passport
       - National ID
       - Other
+    default: |
+      ${ users[-1].proof_of_birthplace if i > 0 else '' }
   - Are both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnowide
     show if:
@@ -192,7 +194,7 @@ fields:
 id: review_tps_screening_questions
 continue button field: users[i].review_tps_screening_questions
 question: | 
-  % if users[i].claimed_us_citizenship or users[i].gang_affiliation or users[i].served_paramilitary or users[i].acted_as_terrorist:
+  % if users[i].claimed_us_citizenship or users[i].gang_affiliation or users[i].served_military or users[i].acted_as_terrorist:
   ${ fa_icon('exclamation-triangle', size="lg", color="warning") }
   % endif
   Review TPS screening questions for ${ users[i] }
@@ -227,4 +229,3 @@ fields:
       - Smuggling: smuggling
       - Affidavit of continuous residence: continuous_residence
       - EAD interim parole: ead_interim_parole
-      

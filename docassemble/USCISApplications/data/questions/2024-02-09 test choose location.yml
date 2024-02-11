@@ -24,19 +24,47 @@ code: |
   AL_DEFAULT_STATE = "IL"
 ---
 code: |
-  interview_short_title = "Apply for temporary protected status"
+  interview_short_title = "Apply for EAD or TPS"
 ---
 code: |
   al_form_type = "other_form" 
 ---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_block
+code: |
+  nav.set_section("master_review_screen")
+  user_role = "na"
+  user_ask_role = "na"
+  users.gather()
+  set_parts(subtitle=str(users))
+  review_screen_question
+  interview_order_block_complete = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
 mandatory: True
 code: |
   intro_screen
-  users.gather()
+  interview_order_block_complete
   final_screen
+---
+objects:
+  - users: ALPeopleList.using(there_are_any=True, complete_attribute='complete')
+  - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
+  - users[i].prior_immigration_proceedings: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='jurisdiction')
+  - users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
+  - users[i].countries_of_residence: DAList.using(there_is_another=False)
+---
+sections:
+  - review_Apply_for_temporary_protected_statu: Review your answers
 ---
 code: |
   users[i].name.first
+  users[i].is_form_g28_attached
   users[i].birthdate
   users[i].address.address
   users[i].address.render
@@ -53,16 +81,29 @@ code: |
     users[i].travel_documents_review
   users[i].complete = True
 ---
-objects:
-  - users: ALPeopleList.using(there_are_any=True, complete_attribute='complete')
-  - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
-  - users[i].prior_immigration_proceedings: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='jurisdiction')
-  - users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
-  - users[i].countries_of_residence: DAList.using(there_is_another=False)
----
 id: intro screen
 question: Intro Screen
 continue button field: intro_screen
+---
+id: xxxxx
+question: xxxxx
+fields:
+  - "Form *G-28* or *G-28I* is attached": users[i].is_form_g28_attached
+    datatype: yesno
+  - "Attorney State Bar Number (if applicable)": users[i].attorneys1_bar_number
+    maxlength: 19
+  - "Attorney or Accredited Representative USCIS Online Account Number (if any)": users[i].attorney_online_account_number
+    maxlength: 28
+---
+id: applicant's name
+sets:
+    - users[0].name.first
+    - users[0].name.last
+    - users[0].name.middle
+question:  Applicant's Name
+fields:
+  - code: |
+      users[0].name_fields(show_suffix=False)
 ---
 id: U.S. physical address
 question: Applicant's U.S. Physical Address
@@ -125,36 +166,6 @@ columns:
   - Country: row_item
 edit: true
 ---
-#id: birth place
-#question: |
-#  Where were you born?
-#fields:
-#  - Were you born in the United States?: users[0].in_america
-#    datatype: yesnoradio
-#    default: True
-#  - City: users[0].birthplace.city
-#  - County: users[0].birthplace.county
-#    show if: 
-#      variable: users[0].in_america
-#      is: True
-#  - State: users[0].birthplace.state
-#    show if: 
-#      variable: users[0].in_america
-#      is: True
-#    code: |
-#      states_list() 
-#  - County and State or Province (separated by a comma): users[0].birthplace.intl_text
-#    help: |
-#      List the county and list the state or province if the country has them.
-#    required: False
-#    show if: 
-#      variable: users[0].in_america
-#      is: False
-#  - Country (outside US): users[0].birthplace.country
-#    show if: 
-#      variable: users[0].in_america
-#      is: False
-#---
 id: render address
 continue button field: users[i].address.render
 question: Verify correct format of address.
@@ -332,15 +343,44 @@ edit:
   - row_item
 allow reordering: True # might be moot/unnecessary here
 ---
+id: review screen link
+continue button field: review_screen_question
+question: Preview your form before you sign it
+subquestion: |
+  Click the "Edit answers" button to edit your answers.
+
+  ${ action_button_html(url_action('master_review_screen'), label='Edit answers', color='info') }
+---
 id: master review screen
 event: master_review_screen
-question: |
-  Review your answers
+question: Review your answers
 review:
   - Edit: users[i].is_form_g28_attached
     button: |
       **Is form g28 attached**:
-      ${ word(yesno(users[i].is_form_g28_attached)) }
+      ${ word(yesno(users[0].is_form_g28_attached)) }
+  - Edit: users[i].attorneys1_bar_number
+    button: |
+      **Attorneys1 bar number**:
+      ${ users[i].attorneys1_bar_number }
+  - Edit: users[i].attorney_online_account_number
+    button: |
+      **Attorney online account number**:
+      ${ users[i].attorney_online_account_number }
+  - Edit: users.revisit
+    button: |
+      **Applicant**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+  - Edit: users[i].countries_of_residence.revisit
+    button: |
+      **Countries of Residence**:
+      
+      % for country in users[i].countries_of_residence:
+        * ${ country }
+      % endfor
   - Edit: users[i].attorneys1_bar_number
     button: |
       **Attorneys1 bar number**:
@@ -350,19 +390,64 @@ review:
       **Attorney online account number**:
       ${ users[i].attorney_online_account_number }
 ---
+continue button field: users.revisit
+question: |
+  Edit Applicant
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.middle") else ""
+  - Previous names[0]: |
+      row_item.previous_names[0] if defined("row_item.previous_names[0].middle") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+  - Previous names[1]: |
+      row_item.previous_names[1] if defined("row_item.previous_names[1].middle") else ""
+  - Gender: |
+      row_item.gender if defined("row_item.gender") else ""
+  - Mailing address: |
+      row_item.mailing_address.block() if defined("row_item.mailing_address.zip") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.country") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Mobile number: |
+      row_item.mobile_number if defined("row_item.mobile_number") else ""
+  - Email: |
+      row_item.email if defined("row_item.email") else ""
+edit:
+  - name.middle
+  - previous_names[0].middle
+  - birthdate
+  - previous_names[1].middle
+  - gender
+  - mailing_address.zip
+  - address.country
+  - phone_number
+  - mobile_number
+  - email
+confirm: True
+---
 id: final screen
 event: final_screen
 question: Final Screen
 subquestion: |
+  % for user in users:
   Here are the countries you entered/traveled through before entering the U.S.:
   
-  % for country in users[i].countries_traveled_through.complete_elements():
+  % for country in user.countries_traveled_through.complete_elements():
     **${ country }**
     
   % endfor
   
-  % if len(users[i].prior_immigration_proceedings.complete_elements()):
-  % if len(users[i].prior_immigration_proceedings.complete_elements()) == 1:
+  % if len(user.prior_immigration_proceedings.complete_elements()):
+  % if len(user.prior_immigration_proceedings.complete_elements()) == 1:
   The prior immigration proceeding you entered is:
   % else:
   The prior immigration proceedings you entered are: 
@@ -370,9 +455,10 @@ subquestion: |
   
   Jurisdiction  |Start Date  |End Date
   -------------|------------|------------
-  % for proceeding in users[i].prior_immigration_proceedings.complete_elements():
+  % for proceeding in user.prior_immigration_proceedings.complete_elements():
   ${ proceeding.jurisdiction }  |${ proceeding.start_date }  |${ proceeding.end_date }
   % endfor
   
   [NEWLINE]
   % endif
+  % endfor

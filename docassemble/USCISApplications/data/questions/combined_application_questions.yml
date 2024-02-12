@@ -41,6 +41,7 @@ objects:
   - interpreter: ALIndividual # need?
   - users: ALPeopleList.using(there_are_any=True, complete_attribute='complete')
   - users[i].countries_of_residence: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
+  - users[i].other_countries_of_citizenship: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
   - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
   - users[i].prior_immigration_proceedings: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='jurisdiction')
   - users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
@@ -67,9 +68,9 @@ code: |
   ### deleted users attributes, moved to .complete block
   Page_Number_3
   ### deleted users attributes, moved to .complete block
-  interpreter.gather()
   signature_date
   preparer.gather()
+  interpreter.gather()
   set_progress(72)
   interview_order_USCISApplications = True
 ---
@@ -97,12 +98,15 @@ code: |
 comment: |
   This block sets the required attributes and interview order to gather a 'users' object.
 code: |
+  users[i].user_reads_english # suggest to put in screener
   users[i].is_form_g28_attached
   users[i].sex
+  users[i].alternate_birthdates.gather()
   users[i].address.address
   users[i].countries_of_residence.gather()
   if users[i].countries_of_residence.there_are_any:
     users[i].countries_of_residence_review
+  users[i].other_countries_of_citizenship.gather()
   users[i].countries_traveled_through.gather()
   users[i].countries_traveled_through_review
   users[i].prior_immigration_proceedings.gather()
@@ -127,85 +131,51 @@ fields:
   - code: |
       users[0].name_fields(show_suffix=False)
 ---
-id: limited scope representation agreement
-question: Limited Scope Representation/Assistance Agreement
-subquestion: |
-  ### LIMITED SCOPE OF SERVICES AND AUTHORIZATION
-
-  The services provided by the Immigration Application Workshop are limited to the information and assistance given today at the workshop. No current or ongoing attorney-client relationship is created by the provision of today’s services.  
-
-  We need to record basic details in order to assist participants with their immigration application. During the brief legal screening meeting, participants are responsible for giving accurate and truthful information. All the information provided to the workshop organizers during this time will remain confidential with exceptions noted below.
-
-  Please review the following to acknowledge understanding and agreement, then sign and date at the bottom of the page:
-
-  1. I understand that the organizations here today will help inform me of my legal rights, help me understand the legal process, and assist me with my immigration application. The organizations or attorneys present today will not serve as my legal representative and will not represent me after today unless explicitly discussed.   
-
-  1. I understand that if I want legal representation for my immigration case, I should look for a legal representative on my own and keep track of all my efforts to find a legal representative so that I can share this information with the immigration judge if I have a court hearing in the future. 
-
-  1. I have voluntarily given my information to the organizations present today and I understand that the information I give about my case may be given to other people for the purposes of assisting me with my work permit application or other immigration benefits for which I may be eligible, and to evaluate and continue with the Immigration Application Workshop. This includes representatives from the city, state, and federal government.  
-
-  1. If additional services become available after this workshop (such as assistance with change of venue for immigration court or asylum), I agree to allow TRP to share my contact information with another nonprofit organization to evaluate whether I can receive additional services. 
-
-  1. I DO NOT consent to the sharing of my information aside from the contexts described above.
-
-  This Scope of Services and Authorization has been explained and/or translated to me in a language I understand.
-
-  ALL OF THE ABOVE IS UNDERSTOOD AND ACKNOWLEDGED
-
-  ##########################################################################################
-
-  Taller de Solicitud de Inmigración
-  ALCANCE LIMITADO DE SERVICIOS Y AUTORIZACIÓN
-
-  Los servicios proporcionados por el taller de Documentos de Aplicación de Inmigración (Taller), se limitarán a darle la información y asistirle en el taller de hoy. Los servicios que le demos y brindemos no crea una relación entre usted y nosotros de abogado a cliente, y la asistencia que le brindamos hoy es sólo por hoy.
-
-  Necesitamos registrar detalles básicos para ayudar a los participantes con su solicitud de inmigración. Durante la breve reunión de selección legal, los participantes son responsables de dar información precisa y veraz. Toda la información proporcionada a los organizadores del taller durante este tiempo será confidencial, con las excepciones que se indican a continuación.
-
-  Revise la información a continuación para reconocer la comprensión y el acuerdo, y luego firme y coloque la fecha en la parte inferior de la página:
-
-  Entiendo que las organizaciones están aquí hoy para ayudarme e informarme sobre mis derechos legales, ayudarme a comprender el proceso legal y para ayudarme con mi solicitud de inmigración. Las organizaciones y abogados aquí hoy no sirven como mi representante legal y no me representará después de hoy a menos que se discuta explícitamente.
-
-  Entiendo que si quiero representación legal para mi caso de inmigración, debo buscar un abogado por mi cuenta y hacer un seguimiento de todos mis esfuerzos para encontrar un abogado para poder compartir esta información con el juez de inmigración en mi próxima audiencia judicial.
-
-  He dado voluntariamente mi información a las organizaciones presentes hoy y entiendo que la información que doy sobre mi caso puede ser dada a otras personas con el propósito de ayudarme con mi solicitud de permiso de trabajo u otros beneficios de inmigración para los que puedo ser elegible, y para evaluar y continuar con el taller. Esto incluye representantes de la ciudad, el estado y el gobierno federal.
-
-  Si hay servicios adicionales disponibles después de este taller (como asistencia con el cambio de sede para la corte de inmigración o asilo), acepto permitir que TRP comparta mi información de contacto con otra organización sin fines de lucro para evaluar si puedo recibir servicios adicionales.
-
-  NO doy mi consentimiento para que se comparta mi información fuera de los contextos descritos anteriormente.
-
-  Este Alcance de los Servicios y la Autorización me ha sido explicado y traducido en un idioma que entiendo.
-
-  TODO LO ANTERIOR ES ENTENDIDO Y COMPRENDIDO
-fields:
-  - Do you consent to xxxxx?": users[i].approved_limited_scope_agmt
-    datatype: yesno
+################## AD Code Blurbs ###################
+code: |
+  users[i].prior_immigration_proceedings.there_are_any = users[i].has_been_in_immigration_proceedings == 'Yes_2'
 ---
 id: xxxxx
 question: xxxxx
 fields:
   - "Form *G-28* or *G-28I* is attached": users[i].is_form_g28_attached
     datatype: yesno
-  - "Attorney State Bar Number (if applicable)": users[i].attorneys1_bar_number
+---
+id: preparer info
+question: Preparer
+fields:
+  - "Preparer is attorney": preparer.preparer_is_attorney
+    datatype: yesno 
+  - "Preparer's Attorney State Bar Number (if applicable)": preparer.attorneys1_bar_number
     maxlength: 19
-  - "Attorney or Accredited Representative USCIS Online Account Number (if any)": users[i].attorney_online_account_number
+    show if: preparer.preparer_is_attorney
+  - "Preparer's USCIS Online Account Number (if any)": preparer.attorney_online_account_number
     maxlength: 28
+  - "Preparer organization": preparer.preparer_organization
+    maxlength: 38
+---
+id: interpreter info
+question: Interpreter
+fields:
+  - "Interpreter organization": interpreter.interpreter_organization
+    maxlength: 38
 ---
 ########################## Addresses, Phone, Email ##########################
 id: U.S. physical address phone and email
 question: U.S. Physical Address, Phone, and Email
 fields:
-  - Street address: users[0].address.address
+  - Street address: users[i].address.address
     address autocomplete: True
     maxlength: 38
-  - Suite/Unit/Floor/Room: users[0].address.unit
+  - Suite/Unit/Floor/Room: users[i].address.unit
     required: False
     maxlength: 28
-  - City: users[0].address.city
+  - City: users[i].address.city
     maxlength: 28
-  - State: users[0].address.state
+  - State: users[i].address.state
     code: |
       states_list()
-  - ZIP code: users[0].address.zip
+  - ZIP code: users[i].address.zip
     datatype: integer
     maxlength: 5
   - Daytime Phone Number (if any): users[i].daytime_phone
@@ -219,7 +189,7 @@ fields:
 id: applicant's birthplace
 question: Applicant's Birthplace
 fields:
-  - City/Town/Village: users[i].birthplace_city
+  - What City/Town/Village in ${ users[i].country_of_birth } was Applicant born in?: users[i].birthplace_city
     maxlength: 38
 ---
 id: countries resided in are there any
@@ -264,6 +234,29 @@ columns:
       'never citizen' if not row_item.was_ever_citizen else 'former citizen' if row_item.was_ever_citizen and not row_item.is_still_citizen else 'citizen'
 edit: 
   - row_item.name
+---
+id: any more countries of citizenship
+question: Are there any other countries where you are a citizen aside from those listed below?
+subquestion: |
+  **${ users[i].countries_of_residence.filter(is_still_citizen=True) }**
+yesno: users[i].other_countries_of_citizenship.there_are_any
+---
+id: other countries of citizenship
+question: Other Countries of Citizenship
+fields:
+  - "Country of Citizenship": users[i].other_countries_of_citizenship[j].name
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+---
+id: other countries of citizenship is there another
+question: Are there any other countries where you are a citizen aside from those listed below?
+subquestion: |
+  **${ users[i].other_countries_of_citizenship }**
+yesno: users[i].other_countries_of_citizenship.there_is_another
+---
+########## does this need reworking??
+code: |
+  users[i].countries_of_citizenship = users[i].countries_of_residence.filter(is_still_citizen=True) + showifdef('users[i].other_countries_of_citizenship')
 ---
 id: countries entered or traveled to before US
 question: Which country or countries did you enter/travel through before entering the U.S.?
@@ -382,9 +375,14 @@ fields:
   - Start Date: users[i].prior_immigration_proceedings[j].start_date
     datatype: date
     max: ${ today() }
+  - Proceedings are ongoing/pending today: users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present
+    datatype: yesno
+    grid: 6
   - End Date: users[i].prior_immigration_proceedings[j].end_date
     datatype: date
     max: ${ today() }
+    grid: 6
+    disable if: users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present
 ---
 id: prior immigration proceedings review screen
 question: Applicant's Prior Immigration Proceedings
@@ -477,7 +475,7 @@ fields:
     choices:
       - First TPS Application
       - Re-registering for TPS
-  - "TPS Application Country": users[i].tps_application_country
+  - "TPS Application Country(ies)": users[i].tps_application_country
     datatype: checkboxes
     choices:
       - Venezuela
@@ -507,6 +505,7 @@ subquestion: |
   **${ users[i].alternate_birthdates }**
 yesno: users[i].alternate_birthdates.there_is_another
 ---
+############## Physical Characteristics and Marital Status ##############
 id: ethnicity and physical characteristics
 question: Ethnicity & Physical Characteristics
 fields:
@@ -570,7 +569,7 @@ fields:
       - separated
       - marriage annulled
       - other
-  - 'Explain "Other" Marital Status': users[i].marital_status_other
+  - 'Explain "other" marital status': users[i].marital_status_other
     maxlength: 27
     show if: 
       variable: users[i].marital_status
@@ -596,19 +595,19 @@ fields:
   - "Marriage Date (to current spouse)": users[i].marriage_date
     datatype: date
     max: ${ today() }
-  - "Marriage Location": users[0].marriage_location # looking at the form, it is unknown if this solicits a street address or something like 'the holy temple of so and so'
+  - "Marriage Location": users[i].marriage_location # looking at the form, it is unknown if this solicits a street address or something like 'the holy temple of so and so'
     maxlength: 38
-  - "Marriage City": users[0].marriage_city
+  - "Marriage City": users[i].marriage_city
     maxlength: 24
-  - "Marriage State": users[0].marriage_state
+  - "Marriage State": users[i].marriage_state
     maxlength: 5
-  - "Marriage Province": users[0].marriage_province
+  - "Marriage Province": users[i].marriage_province
     maxlength: 24
-  - "Marriage Country": users[0].marriage_country
+  - "Marriage Country": users[i].marriage_country
     maxlength: 38
-  - "Spouse's USCIS Online Account Number (if any and if known)": users[0].spouse.online_account_number
+  - "Spouse's USCIS Online Account Number (if any and if known)": users[i].spouse.online_account_number
     maxlength: 28
-  - "Spouse's A-Number (if any and if known)": users[0].spouse.a_number
+  - "Spouse's A-Number (if any and if known)": users[i].spouse.a_number
     maxlength: 20
 ---
 #id: applicant spouse prior TPS are there any
@@ -674,26 +673,26 @@ fields:
 #id: spouse TPS
 #question: xxxx
 #yesno: xxxx
-#  - "Applicant's Spouse has, or once had, TPS (ever)": users[0].spouse.had_tps
+#  - "Applicant's Spouse has, or once had, TPS (ever)": users[i].spouse.had_tps
 #    datatype: yesno
-#  - "Applicant's Spouse **presently** has TPS": users[0].spouse.tps_continuing
+#  - "Applicant's Spouse **presently** has TPS": users[i].spouse.tps_continuing
 #    datatype: yesno
-#  - "Does Applicant know the beginning OR ending dates of Spouse's TPS?": users[0].spouse.knows_tps_dates
+#  - "Does Applicant know the beginning OR ending dates of Spouse's TPS?": users[i].spouse.knows_tps_dates
 #    datatype: yesno
-#    show if: users[0].spouse.had_tps
-#  - "Beginning Date of Spouse's Prior TPS": users[0].spouse.tps_date # badly worded question on form - does this mean when was TPS status officially "awarded" or granted, or xxxxx?
+#    show if: users[i].spouse.had_tps
+#  - "Beginning Date of Spouse's Prior TPS": users[i].spouse.tps_date # badly worded question on form - does this mean when was TPS status officially "awarded" or granted, or xxxxx?
 #    datatype: date
-#    show if: users[0].spouse.knows_tps_dates
-#  - "Ending Date of Spouse's Prior TPS": users[0].spouse.tps_ending_date # this needs to be made today() if users[0].spouse.tps_continuing is true
+#    show if: users[i].spouse.knows_tps_dates
+#  - "Ending Date of Spouse's Prior TPS": users[i].spouse.tps_ending_date # this needs to be made today() if users[i].spouse.tps_continuing is true
 #    datatype: date
-#    show if: users[0].spouse.knows_tps_dates
-#  - "Applicant's Spouse's TPS is still valid": users[0].spouse.spouse_is_tps_valid # badly worded question - no explanation re "valid" or explanation as to why someone would check that the spouse's TPS ""has" TPS at the "Present" while it may or may not be "valid"...
+#    show if: users[i].spouse.knows_tps_dates
+#  - "Applicant's Spouse's TPS is still valid": users[i].spouse.spouse_is_tps_valid # badly worded question - no explanation re "valid" or explanation as to why someone would check that the spouse's TPS ""has" TPS at the "Present" while it may or may not be "valid"...
 #    input type: radio
 #    choices:
 #      - Yes 4: Yes_4 # modify how this question/answer is handled
 #      - No 4: No_4
 #      - I do not know: I Do Not Know
-#    show if: users[0].spouse.tps_continuing
+#    show if: users[i].spouse.tps_continuing
 ---
 id: U.S. entry info and travel documents
 question: U.S. Entry Info & Travel Documents
@@ -710,23 +709,41 @@ fields:
   - "City/Town of Entry": users[i].city_of_entry # is this required? may not be properly applicable if applicant dod not arrive directly to a city/town...
     maxlength: 38
   - "State of Entry (abbreviation)": users[i].state_of_entry
-    maxlength: 5
-  - "Immigration Status (or Lack of Status) When You Last Entered the U.S. (e.g., visitor, student, no status)": users[i].date_of_last_entry # this variable name doesn't match question
-    maxlength: 38
+    code: states_list()
+  - "Immigration Status (or Lack of Status) When You Last Entered the U.S. (e.g., parolee, visitor, student, no status)": users[i].immigration_status_last_entry # this variable name doesn't match question
+    datatype: checkboxes
+    choices:
+      - Parolee
+      - Visitor
+      - Student
+      - DT
+      - No Status
   - "Current Immigration Status or Lack of Status": users[i].current_immigration_status # very badly worded question
-    maxlength: 38
+    datatype: checkboxes
+    choices:
+      - Parolee
+      - Visitor
+      - Student
+      - DT
+      - No Status
   - "Applicant is now, or has **EVER** been, in immigration proceedings": users[i].has_been_in_immigration_proceedings # bad wording of question, undefined "immigration proceedings"
-    datatype: yesno
+    datatype: radio
+    choices:
+      - Yes: Yes_2
+      - No: No_2
 ---
 id: other travel documents
 question: Other Travel Documents
 fields:
   - "Form I-94 Arrival-Departure Record Number (if any)": users[i].i94_arrival_number
     maxlength: 26
+    required: False
   - "Date Applicant's Authorized Period of Stay in the U.S. Expired or Will Expire (as shown on Form I-94 or Crewman's Landing Permit (Form I-95)) (mm/dd/yyyy or duration of status (D/S)": users[i].authorized_stay_ending_date # just terrible question wording
     datatype: date
+    required: False
   - "Expiration date of most recent Passport or travel document": users[i].passport_or_travel_document_expiration_date # badly worded - "most recent" presumably meaning most recently issued, i.e., "newest", and this will only apply to one of the total passports/documents in the list of course...
     datatype: date
+    required: False
 ---
 id: I-765 specific questions
 question: xxxxx
@@ -908,8 +925,11 @@ fields:
     datatype: yesno
     grid: 6
   - "Trafficking drugs": users[i].trafficking_drugs
-    datatype: yesno
-    grid: 6
+    datatype: radio
+    choices: 
+      - Yes: Yes_24
+      - No: No_24
+    default: No_24
   - "Spouse or child of drug trafficker": users[i].spouse_or_child_of_drug_trafficker
     datatype: yesno
     grid: 6
@@ -1060,18 +1080,12 @@ fields:
     maxlength: 16
   - "User used preparer": users[i].user_used_preparer
     datatype: yesno
-  - "Interpreter organization": users[i].interpreter_organization
-    maxlength: 38
   - "Interpreted into language": users[i].interpreted_into_language
     maxlength: 23
-  - "Preparer is attorney": users[i].preparer_is_attorney
-    datatype: yesno
   - "Preparer full rep": users[i].preparer_full_rep
     datatype: yesno
   - "Preparer limited rep": users[i].preparer_limited_rep
     datatype: yesno
-  - "Preparer organization": users[i].preparer_organization
-    maxlength: 38
 ---
 id: Addendum skip these
 question: Addendum (skip these)
@@ -1225,167 +1239,167 @@ review:
   - Edit: users[i].current_immigration_status
     button: |
       **Current immigration status**:
-      ${ users[0].current_immigration_status }
-  - Edit: users[0].has_been_in_immigration_proceedings
+      ${ users[i].current_immigration_status }
+  - Edit: users[i].has_been_in_immigration_proceedings
     button: |
       **Has been in immigration proceedings**:
-      ${ users[0].has_been_in_immigration_proceedings }
-  - Edit: users[0].date_of_last_arrival
+      ${ users[i].has_been_in_immigration_proceedings }
+  - Edit: users[i].date_of_last_arrival
     button: |
       **Date of last arrival**:
-      ${ users[0].date_of_last_arrival }
-  - Edit: users[0].proceedings_was_immigration_court
+      ${ users[i].date_of_last_arrival }
+  - Edit: users[i].proceedings_was_immigration_court
     button: |
       **Proceedings was immigration court**:
-      ${ word(yesno(users[0].proceedings_was_immigration_court)) }
-  - Edit: users[0].proceedings_was_bia
+      ${ word(yesno(users[i].proceedings_was_immigration_court)) }
+  - Edit: users[i].proceedings_was_bia
     button: |
       **Proceedings was bia**:
-      ${ word(yesno(users[0].proceedings_was_bia)) }
-  - Edit: users[0].date_of_last_entry
+      ${ word(yesno(users[i].proceedings_was_bia)) }
+  - Edit: users[i].date_of_last_entry
     button: |
       **Date of last entry**:
-      ${ users[0].date_of_last_entry }
-  - Edit: users[0].proceedings_was_federal_court
+      ${ users[i].date_of_last_entry }
+  - Edit: users[i].proceedings_was_federal_court
     button: |
       **Proceedings was federal court**:
-      ${ word(yesno(users[0].proceedings_was_federal_court)) }
-  - Edit: users[0].port_of_entry
+      ${ word(yesno(users[i].proceedings_was_federal_court)) }
+  - Edit: users[i].port_of_entry
     button: |
       **Port of entry**:
-      ${ users[0].port_of_entry }
-  - Edit: users[0].city_of_entry
+      ${ users[i].port_of_entry }
+  - Edit: users[i].city_of_entry
     button: |
       **City of entry**:
-      ${ users[0].city_of_entry }
-  - Edit: users[0].proceedings_dhs_or_doj_hearing_location
+      ${ users[i].city_of_entry }
+  - Edit: users[i].proceedings_dhs_or_doj_hearing_location
     button: |
       **Proceedings dhs or doj hearing location**:
-      ${ users[0].proceedings_dhs_or_doj_hearing_location }
-  - Edit: users[0].state_of_entry
+      ${ users[i].proceedings_dhs_or_doj_hearing_location }
+  - Edit: users[i].state_of_entry
     button: |
       **State of entry**:
-      ${ users[0].state_of_entry }
-  - Edit: users[0].i94_arrival_number
+      ${ users[i].state_of_entry }
+  - Edit: users[i].i94_arrival_number
     button: |
       **I94 arrival number**:
-      ${ users[0].i94_arrival_number }
-  - Edit: users[0].proceedings_federal_court_location
+      ${ users[i].i94_arrival_number }
+  - Edit: users[i].proceedings_federal_court_location
     button: |
       **Proceedings federal court location**:
-      ${ users[0].proceedings_federal_court_location }
-  - Edit: users[0].authorized_stay_ending_date
+      ${ users[i].proceedings_federal_court_location }
+  - Edit: users[i].authorized_stay_ending_date
     button: |
       **Date of authorized stay ending**:
-      ${ users[0].authorized_stay_ending_date }
-  - Edit: users[0].proceedings_start_date
+      ${ users[i].authorized_stay_ending_date }
+  - Edit: users[i].proceedings_start_date
     button: |
       **Date of proceedings start**:
-      ${ users[0].proceedings_start_date }
-  - Edit: users[0].proceedings_end_date
+      ${ users[i].proceedings_start_date }
+  - Edit: users[i].proceedings_end_date
     button: |
       **Date of proceedings end**:
-      ${ users[0].proceedings_end_date }
-  - Edit: users[0].proceedings_continuing_to_present
+      ${ users[i].proceedings_end_date }
+  - Edit: users[i].proceedings_continuing_to_present
     button: |
       **Proceedings continuing to present**:
-      ${ word(yesno(users[0].proceedings_continuing_to_present)) }
-  - Edit: users[0].passport_number
+      ${ word(yesno(users[i].proceedings_continuing_to_present)) }
+  - Edit: users[i].passport_number
     button: |
       **Passport number**:
-      ${ users[0].passport_number }
-  - Edit: users[0].travel_document_number
+      ${ users[i].passport_number }
+  - Edit: users[i].travel_document_number
     button: |
       **Travel document number**:
-      ${ users[0].travel_document_number }
-  - Edit: users[0].additional_passport_number_1
+      ${ users[i].travel_document_number }
+  - Edit: users[i].additional_passport_number_1
     button: |
       **Additional passport number 1**:
-      ${ users[0].additional_passport_number_1 }
-  - Edit: users[0].additional_passport_number_2
+      ${ users[i].additional_passport_number_1 }
+  - Edit: users[i].additional_passport_number_2
     button: |
       **Additional passport number 2**:
-      ${ users[0].additional_passport_number_2 }
-  - Edit: users[0].race
+      ${ users[i].additional_passport_number_2 }
+  - Edit: users[i].race
     button: |
       **Race**:
-      ${ users[0].race }
-  - Edit: users[0].ethnicity
+      ${ users[i].race }
+  - Edit: users[i].ethnicity
     button: |
       **Ethnicity**:
-      ${ users[0].ethnicity }
-  - Edit: users[0].most_recent_passport_country_issuing
+      ${ users[i].ethnicity }
+  - Edit: users[i].most_recent_passport_country_issuing
     button: |
       **Most recent passport country issuing**:
-      ${ users[0].most_recent_passport_country_issuing }
-  - Edit: users[0].passport_or_travel_document_expiration_date
+      ${ users[i].most_recent_passport_country_issuing }
+  - Edit: users[i].passport_or_travel_document_expiration_date
     button: |
       **Date of passport or travel document expiration**:
-      ${ users[0].passport_or_travel_document_expiration_date }
-  - Edit: users[0].height_feet
+      ${ users[i].passport_or_travel_document_expiration_date }
+  - Edit: users[i].height_feet
     button: |
       **Height feet**:
-      ${ users[0].height_feet }
-  - Edit: users[0].height_inches
+      ${ users[i].height_feet }
+  - Edit: users[i].height_inches
     button: |
       **Height inches**:
-      ${ users[0].height_inches }
-  - Edit: users[0].weight_pounds
+      ${ users[i].height_inches }
+  - Edit: users[i].weight_pounds
     button: |
       **Weight pounds**:
-      ${ users[0].weight_pounds }
-  - Edit: users[0].spouse.address.address
+      ${ users[i].weight_pounds }
+  - Edit: users[i].spouse.address.address
     button: |
       **Current Spouse's Address**:
-      ${ users[0].spouse.address.block(show_country=True) }
-  - Edit: users[0].hair_color
+      ${ users[i].spouse.address.block(show_country=True) }
+  - Edit: users[i].hair_color
     button: |
       **Hair Color**:
-      ${ users[0].hair_color }
-  - Edit: users[0].eye_color
+      ${ users[i].hair_color }
+  - Edit: users[i].eye_color
     button: |
       **Eye Color**:
-      ${ users[0].eye_color }
-  - Edit: users[0].spouse.address_province
+      ${ users[i].eye_color }
+  - Edit: users[i].spouse.address_province
     button: |
       **Users2 address province**:
-      ${ users[0].spouse.address_province }
-  - Edit: users[0].spouse.address_postal_code
+      ${ users[i].spouse.address_province }
+  - Edit: users[i].spouse.address_postal_code
     button: |
       **Users2 address postal code**:
-      ${ users[0].spouse.address_postal_code }
-  - Edit: users[0].marriage_location
+      ${ users[i].spouse.address_postal_code }
+  - Edit: users[i].marriage_location
     button: |
       **Marriage location**:
-      ${ users[0].marriage_location }
-  - Edit: users[0].marriage_city
+      ${ users[i].marriage_location }
+  - Edit: users[i].marriage_city
     button: |
       **Marriage city**:
-      ${ users[0].marriage_city }
-  - Edit: users[0].marriage_state
+      ${ users[i].marriage_city }
+  - Edit: users[i].marriage_state
     button: |
       **Marriage state**:
-      ${ users[0].marriage_state }
-  - Edit: users[0].marriage_province
+      ${ users[i].marriage_state }
+  - Edit: users[i].marriage_province
     button: |
       **Marriage province**:
-      ${ users[0].marriage_province }
-  - Edit: users[0].marriage_country
+      ${ users[i].marriage_province }
+  - Edit: users[i].marriage_country
     button: |
       **Marriage country**:
-      ${ users[0].marriage_country }
-  - Edit: users[0].spouse.online_account_number
+      ${ users[i].marriage_country }
+  - Edit: users[i].spouse.online_account_number
     button: |
       **Users2 online account number**:
-      ${ users[0].spouse.online_account_number }
-  - Edit: users[0].spouse_had_tps
+      ${ users[i].spouse.online_account_number }
+  - Edit: users[i].spouse_had_tps
     button: |
       **Spouse had tps**:
-      ${ users[0].spouse_had_tps }
-  - Edit: users[0].spouse.a_number
+      ${ users[i].spouse_had_tps }
+  - Edit: users[i].spouse.a_number
     button: |
       **Users2 a number**:
-      ${ users[0].spouse.a_number }
+      ${ users[i].spouse.a_number }
   - Edit: spouse_tps_date
     button: |
       **Date of spouse tps**:
@@ -1513,10 +1527,10 @@ review:
     button: |
       **Children2 a number**:
       ${ children2_a_number }
-  - Edit: users[0].children[0].address.addressxxxxx # needs revision
+  - Edit: users[i].children[0].address.addressxxxxx # needs revision
     button: |
       **Childrens Address is**:
-      ${ users[0].children[0].address.block(show_country=True) }
+      ${ users[i].children[0].address.block(show_country=True) }
   - Edit: children1_online_account_number
     button: |
       **Children1 online account number**:
@@ -2030,11 +2044,11 @@ columns:
   - Name: |
       row_item.name.full() if defined("row_item.name.middle") else ""
   - Previous names[0]: |
-      row_item.previous_names[0] if defined("row_item.previous_names[0].middle") else ""
+      row_item.aliases[0] if defined("row_item.aliases[0].middle") else ""
   - Birthdate: |
       row_item.birthdate if defined("row_item.birthdate") else ""
   - Previous names[1]: |
-      row_item.previous_names[1] if defined("row_item.previous_names[1].middle") else ""
+      row_item.aliases[1] if defined("row_item.aliases[1].middle") else ""
   - Gender: |
       row_item.sex if defined("row_item.sex") else ""
   - Mailing address: |
@@ -2173,88 +2187,87 @@ objects:
 attachment:
   name: Apply for temporary protected statu
   filename: USCISApplications
-  variable name: USCISApplications_attachment[i]
+  variable name: users[i].USCISApplications_attachment[j]
   skip undefined: True
   pdf template file: USCISApplications.pdf
   fields:
-    - "is_form_g28_attached": ${ is_form_g28_attached }
-    - "attorneys1_bar_number": ${ attorneys1_bar_number }
-    - "attorney_online_account_number": ${ attorney_online_account_number }
-    - "is_first_application": ${ users[0].is_first_TPS_application == "First TPS Application" }
-    - "is_re_application": ${ not users[0].is_first_TPS_application == "First TPS Application" }
-    - "tps_application_country": ${ users[0].tps_application_country.true_values() }
-    - "users1_name_last": ${ users[0].name.last }
-    - "users1_name_first": ${ users[0].name.first }
-    - "users1_name_middle": ${ users[0].name.middle }
-    - "is_USCIS_re_application": ${ who_granted_prior_TPS["USCIS"] }
-    - "is_judge_re_application": ${ who_granted_prior_TPS["Immigration Judge/Board of Immigration Appeals"] }
-    - "users1_a_number": ${ users[0].a_number }
-    - "users1_uscis_account_number": ${ users[0].uscis_account_number }
-    - "users1_previous_names1_last": ${ users[0].previous_names[0].last }
-    - "users1_ssn": ${ users[0].ssn }
-    - "users1_previous_names1_first": ${ users[0].aliases[0].first }
-    - "users1_birthdate": ${ users[0].birthdate.format() }
-    - "users1_previous_names1_middle": ${ users[0].aliases[0].middle }
-    - "users1_previous_names2_last": ${ users[0].aliases[1].last }
-    - "users1_previous_names2_first": ${ users[0].aliases[1].first }
-    - "users1_alternate_birthdate": ${ users[0].alternate_birthdate[0].format('MM/dd/yyyy') }
-    - "users1_previous_names2_middle": ${ users[0].aliases[1].middle }
-    - "users1_alternate_birthdate_2": ${ users[0].alternate_birthdate[1].format('MM/dd/yyyy') }
-    - "users1_gender": ${ users[0].sex }
+    - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
+    - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
+    - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
+    - "is_first_application": ${ users[i].is_first_TPS_application == "First TPS Application" }
+    - "is_re_application": ${ users[i].is_first_TPS_application != "First TPS Application" }
+    - "tps_application_country": ${ users[i].tps_application_country.true_values() }
+    - "users1_name_first": ${ users[i].name.first }
+    - "users1_name_middle": ${ users[i].name.middle }
+    - "users1_name_last": ${ users[i].name.last }
+    - "is_USCIS_re_application": ${ who_granted_prior_TPS == "USCIS" }
+    - "is_judge_re_application": ${ who_granted_prior_TPS == "Immigration Judge/Board of Immigration Appeals" }
+    - "users1_a_number": ${ users[i].a_number }
+    - "users1_uscis_account_number": ${ users[i].uscis_account_number }
+    - "users1_ssn": ${ users[i].ssn }
+    - "users1_previous_names1_first": ${ users[i].aliases[0].first }
+    - "users1_previous_names1_middle": ${ users[i].aliases[0].middle }
+    - "users1_previous_names1_last": ${ users[i].aliases[0].last }
+    - "users1_previous_names2_first": ${ users[i].aliases[1].first }
+    - "users1_previous_names2_middle": ${ users[i].aliases[1].middle }
+    - "users1_previous_names2_last": ${ users[i].aliases[1].last }
+    - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
+    - "users1_alternate_birthdate": ${ users[i].alternate_birthdates[0].format('MM/dd/yyyy') }
+    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdates[1].format('MM/dd/yyyy') }
+    - "city_of_birth": ${ users[i].city_of_birth }
+    - "country_of_birth": ${ users[i].country_of_birth }
+    - "users1_gender": ${ users[i].sex }
     - "users1_mailing_address_in_care_of": 'LAS New Arrivals'
     - "users1_mailing_address_address": '101 N. Wacker Dr.'
-    - "city_of_birth": ${ users[i].city_of_birth }
-    - "users1_mailing_address_is_apt": ''
-    - "users1_mailing_address_is_suite": ''
-    - "users1_mailing_address_is_floor": ''
+    # - "users1_mailing_address_is_apt": ''
+    # - "users1_mailing_address_is_suite": ''
+    # - "users1_mailing_address_is_floor": ''
     - "users1_mailing_address_unit": 'Suite 1700'
-    - "country_of_birth": ${ users[i].country_of_birth }
     - "users1_mailing_address_city": 'Chicago'
     - "users1_mailing_address_state": 'IL'
     - "users1_mailing_address_zip": '60606'
-    - "mailing_address_is_physical_address": ${ mailing_address_is_physical_address }
-    - "mailing_address_is_physical_address": ${ mailing_address_is_physical_address }
-    - "users1_countries_of_residence": ${ users[0].countries_of_residence }
-    - "users1_address_address": ${ users[0].address.address }
-    - "users1_address_is_apt": ${ users[0].address_is_apt }
-    - "users1_address_is_suite": ${ users[0].address_is_suite }
-    - "users1_address_is_floor": ${ users[0].address_is_floor }
-    - "users1_address_unit": ${ users[0].address.unit }
-    - "users1_countries_of_citizenship": ${ users[0].countries_of_citizenship }
-    - "users1_address_city": ${ users[0].address.city }
-    - "users1_address_state": ${ users[0].address.state }
-    - "users1_address_zip": ${ users[0].address.zip }
-    - "is_married": ${ users[0].marital_status == 'married' }
-    - "is_unmarried": ${ users[0].marital_status == 'single, never married' }
-    - "is_divorced": ${ users[0].marital_status == 'divorced' }
-    - "is_widowed": ${ users[0].marital_status == 'widowed' }
-    - "is_separated": ${ users[0].marital_status == 'separated' }
-    - "is_annulled": ${ users[0].marital_status == 'marriage annulled' }
-    - "is_other_marital_status": ${ users[0].marital_status == 'other' }
-    - "marital_status_other_explanation": ${ users[0].marital_status_other }
+    - "mailing_address_is_physical_address": No
+    - "users1_countries_of_residence": ${ users[i].countries_of_residence }
+    - "users1_countries_of_citizenship": ${ comma_and_list(users[i].countries_of_citizenship }
+    - "users1_address_address": ${ users[i].address.address }
+    # - "users1_address_is_apt": ''
+    # - "users1_address_is_suite": ''
+    # - "users1_address_is_floor": ''
+    - "users1_address_unit": ${ users[i].address.unit }
+    - "users1_address_city": ${ users[i].address.city }
+    - "users1_address_state": ${ users[i].address.state }
+    - "users1_address_zip": ${ users[i].address.zip }
+    - "is_married": ${ users[i].marital_status == 'married' }
+    - "is_unmarried": ${ users[i].marital_status == 'single, never married' }
+    - "is_divorced": ${ users[i].marital_status == 'divorced' }
+    - "is_widowed": ${ users[i].marital_status == 'widowed' }
+    - "is_separated": ${ users[i].marital_status == 'separated' }
+    - "is_annulled": ${ users[i].marital_status == 'marriage annulled' }
+    - "is_other_marital_status": ${ users[i].marital_status == 'other' }
+    - "marital_status_other_explanation": ${ users[i].marital_status_other }
     - "marriage_date": ${ users[i].marriage_date.format('MM/dd/yyyy') }
-    - "marriage_date__2": ${ marriage_date.format('MM/dd/yyyy') }
-    - "current_immigration_status": ${ current_immigration_status }
-    - "has_been_in_immigration_proceedings": ${ has_been_in_immigration_proceedings }
+    # - "marriage_date__2": ${ users[i].marriage_date.format('MM/dd/yyyy') }
+    - "current_immigration_status": ${ users[i].current_immigration_status.true_values() }
     - "date_of_last_arrival": ${ users[i].date_of_last_arrival.format('MM/dd/yyyy') }
-    - "proceedings_was_immigration_court": ${ proceedings_was_immigration_court }
-    - "proceedings_was_bia": ${ proceedings_was_bia }
-    - "date_of_last_entry": ${ date_of_last_entry }
-    - "proceedings_was_federal_court": ${ proceedings_was_federal_court }
-    - "port_of_entry": ${ port_of_entry }
-    - "city_of_entry": ${ city_of_entry }
-    - "proceedings_dhs_or_doj_hearing_location": ${ proceedings_dhs_or_doj_hearing_location }
-    - "state_of_entry": ${ state_of_entry }
-    - "i94_arrival_number": ${ i94_arrival_number }
-    - "proceedings_federal_court_location": ${ proceedings_federal_court_location }
-    - "authorized_stay_ending_date": ${ authorized_stay_ending_date.format('MM/dd/yyyy') }
-    - "proceedings_start_date": ${ proceedings_start_date.format('MM/dd/yyyy') }
-    - "proceedings_end_date": ${ proceedings_end_date.format('MM/dd/yyyy') }
-    - "proceedings_continuing_to_present": ${ proceedings_continuing_to_present }
-    - "passport_number": ${ passport_number }
-    - "travel_document_number": ${ travel_document_number }
-    - "ethnicity_hispanic_yes": ${ ethnicity_hispanic }
-    - "ethnicity_hispanic_no": ${ not ethnicity_hispanic }
+    - "immigration_status_last_entry": ${ users[i].immigration_status_last_entry.true_values() }
+    - "port_of_entry": ${ users[i].port_of_entry }
+    - "city_of_entry": ${ users[i].city_of_entry }
+    - "state_of_entry": ${ users[i].state_of_entry }
+    - "i94_arrival_number": ${ users[i].i94_arrival_number }
+    - "authorized_stay_ending_date": ${ users[i].authorized_stay_ending_date.format('MM/dd/yyyy') }
+    - "has_been_in_immigration_proceedings": ${ users[i].has_been_in_immigration_proceedings }
+    - "proceedings_was_immigration_court": ${ users[i].prior_immigration_proceedings } #### need help ####
+    - "proceedings_was_bia": ${ users[i].prior_immigration_proceedings } #### need help ####
+    - "proceedings_was_federal_court": ${ users[i].prior_immigration_proceedings } #### need help ####
+    - "proceedings_federal_court_location": ${ users[i].prior_immigration_proceedings.location } #### need help ####
+    - "proceedings_dhs_or_doj_hearing_location": ${ users[i].proceedings_dhs_or_doj_hearing_location } #### need help ####
+    - "proceedings_start_date": ${ users[i].prior_immigration_proceedings[0].start_date.format('MM/dd/yyyy') } ### need help ####
+    - "proceedings_end_date": ${ users[i]prior_immigration_proceedings[0].end_date.format('MM/dd/yyyy') } ### need help ####
+    - "proceedings_continuing_to_present": ${ users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present } ### need help ####
+    - "passport_number": ${ users[i].travel_documents.xxxxxx } ### need help ####
+    - "travel_document_number": ${ users[i].travel_documents.xxxxxx } ### need help ####
+    - "ethnicity_hispanic_yes": ${ users[i].ethnicity == "Hispanic or Latino" }
+    - "ethnicity_hispanic_no": ${ users[i].ethnicity != "Hispanic or Latino" }
     - "additional_passport_number_1": ${ additional_passport_number_1 }
     - "additional_passport_number_2": ${ additional_passport_number_2 }
     - "race_white": ${ race_white }
@@ -2267,9 +2280,9 @@ attachment:
     - "height_feet": ${ height_feet }
     - "height_inches": ${ height_inches }
     - "users2_address_address": ${ users[1].address.address }
-    - "users2_address_is_apt": ${ users[0].spouse.address_is_apt }
-    - "users2_address_is_suite": ${ users[0].spouse.address_is_suite }
-    - "users2_address_is_floor": ${ users[0].spouse.address_is_floor }
+    - "users2_address_is_apt": ${ users[i].spouse.address_is_apt }
+    - "users2_address_is_suite": ${ users[i].spouse.address_is_suite }
+    - "users2_address_is_floor": ${ users[i].spouse.address_is_floor }
     - "weight_pounds": ${ weight_pounds }
     - "users2_address_unit": ${ users[1].address.unit }
     - "users2_address_city": ${ users[1].address.city }
@@ -2283,9 +2296,9 @@ attachment:
     - "eye_color_hazel": ${ eye_color_hazel }
     - "eye_color_marooon": ${ eye_color_marooon }
     - "eye_color_pink": ${ eye_color_pink }
-    - "users2_address_province": ${ users[0].spouse.address_province }
+    - "users2_address_province": ${ users[i].spouse.address_province }
     - "eye_color_unknown": ${ eye_color_unknown }
-    - "users2_address_postal_code": ${ users[0].spouse.address_postal_code }
+    - "users2_address_postal_code": ${ users[i].spouse.address_postal_code }
     - "hair_bald": ${ hair_bald }
     - "hair_black": ${ hair_black }
     - "hair_blond": ${ hair_blond }
@@ -2298,13 +2311,13 @@ attachment:
     - "users2_birthdate": ${ users[1].birthdate.format() }
     - "hair_unknown": ${ hair_unknown }
     - "marriage_location": ${ marriage_location }
-    - "marriage_city": ${ marriage_city }
+    - "marriage_city": ${ users[i].marriage_city }
     - "marriage_state": ${ marriage_state }
     - "marriage_province": ${ marriage_province }
     - "marriage_country": ${ marriage_country }
-    - "users2_online_account_number": ${ users[0].spouse.online_account_number }
+    - "users2_online_account_number": ${ users[i].spouse.online_account_number }
     - "spouse_had_tps": ${ spouse_had_tps }
-    - "users2_a_number": ${ users[0].spouse.a_number }
+    - "users2_a_number": ${ users[i].spouse.a_number }
     - "users2_name_last": ${ users[1].name.last }
     - "spouse_tps_date": ${ spouse_tps_date.format() }
     - "users2_name_first": ${ users[1].name.first }
@@ -2399,7 +2412,7 @@ attachment:
     - "particularly_serious_crime": ${ users[i].particularly_serious_crime }
     - "got_financial_benefit_crime": ${ users[i].got_financial_benefit_crime }
     - "persecution_by_protected_status": ${ users[i].persecution_by_protected_status }
-    - "engaged_espionage": ${ users[i].engaged_espionage }
+    - "engaged_espionage": ${ 'Yes_28' if users[i].engaged_espionage else 'No_28' }
     - "serious_nonpolitical_crime": ${ users[i].serious_nonpolitical_crime }
     - "evade_export_controls": ${ users[i].evade_export_controls }
     - "danger_to_us": ${ users[i].danger_to_us }
@@ -2477,11 +2490,11 @@ attachment:
     - "user_used_preparer": ${ user_used_preparer }
     - "spouse_child_human_trafficker": ${ spouse_child_human_trafficker }
     - "preparer_name": ${ preparer[0] }
-    - "users1_phone_number": ${ users[0].phone_number }
+    - "users1_phone_number": ${ users[i].phone_number }
     - "interpreter_name_last": ${ interpreter[0].name.last }
-    - "users1_mobile_number": ${ users[0].mobile_number }
+    - "users1_mobile_number": ${ users[i].mobile_number }
     - "interpreter_name_first": ${ interpreter[0].name.first }
-    - "users1_email": ${ users[0].email }
+    - "users1_email": ${ users[i].email }
     - "interpreter_organization": ${ interpreter[0].organization }
     - "interpreter_phone_number": ${ interpreter[0].phone_number }
     - "interpreter_mobile_number": ${ interpreter[0].mobile_number }

@@ -1,45 +1,9 @@
-include:
-  - docassemble.AssemblyLine:assembly_line.yml
----
-metadata:
-  title: >-
-    DHS Application for EAD or TPS
-  short title: >-
-    Apply for EAD or TPS
-  description: |-
-    This interview helps someone in Illinois apply to the DHS for an Employment Authorization Document (EAD) or Temporary Protected Status (TPS).
-  tags:
-    - "IM-00-00-00-00"
-  authors:
-    - Quinten Steenhuis
-    - Anthony Danielson
-  allowed_courts: []
-  typical_role: "na"
-  al_weaver_version: "playground"
-  generated_on: "2024-02-04"
----
-code: |
-  # This controls the default country and list of states in address field questions
-  AL_DEFAULT_COUNTRY = "US"
----
-code: |
-  # This controls the default state in address field questions
-  AL_DEFAULT_STATE = "IL"
----
-code: |
-  github_repo_name =  'docassemble-USCISApplications'
----
-code: |
-  interview_short_title = "Apply for EAD or TPS"
----
-code: |
-  al_form_type = "other_form" 
 ---
 objects:
   - supervisor: ALIndividual # need?
   - preparer: ALIndividual # need?
   - interpreter: ALIndividual # need?
-  - users: ALPeopleList.using(there_are_any=True, complete_attribute='complete')
+  - users: ALPeopleList.using(ask_number=True, complete_attribute='name.first')
   - users[i].countries_of_residence: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
   - users[i].other_countries_of_citizenship: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
   - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
@@ -50,49 +14,6 @@ objects:
   - users[i].spouse.prior_TPS: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='start_date') # need?
   - users[i].former_spouses: ALPeopleList.using(ask_number=True) # need?
   - users[i].children: ALPeopleList.using(ask_number=True) # need?
----
-sections:
-  - review_USCIS_Applications: Review your answers
----
-#################### Interview order #####################
-comment: |
-  Controls order and branching logic for questions specific to this form
-id: interview_order_USCISApplications
-code: |
-  # Set the allowed courts for this interview
-  nav.set_section("review_USCISApplications")
-  user_role = "na"
-  user_ask_role = "na"
-  users.gather()
-  set_parts(subtitle=str(users))
-  ### deleted users attributes, moved to .complete block
-  Page_Number_3
-  ### deleted users attributes, moved to .complete block
-  signature_date
-  preparer.gather()
-  interpreter.gather()
-  set_progress(72)
-  interview_order_USCISApplications = True
----
-###################### Main order ######################
-comment: |
-  This block includes the logic for standalone interviews.
-  Delete mandatory: True to include in another interview
-mandatory: True
-code: |
-  #al_intro_screen
-  #USCISApplications_intro
-  interview_order_USCISApplications
-  signature_date
-  # Store anonymous data for analytics / statistics
-  store_variables_snapshot(
-      persistent=True,
-      data={
-          "zip": showifdef("users[0].address.zip"),
-          "reached_interview_end": True,
-      },
-  )
-  USCISApplications_download
 ---
 ###################### users '.complete' block ######################
 comment: |
@@ -116,9 +37,8 @@ code: |
   if users[i].travel_documents.there_are_any:
     users[i].travel_documents_review
   users[i].i94_arrival_number
-  if users[i].fills_out_765: ################
-    if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
-      users[i].father_first_name
+  if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
+    users[i].father_first_name
   users[i].complete = True
 ---
 id: applicant's name
@@ -558,7 +478,6 @@ fields:
       - Maroon
       - Pink
       - Unknown/Other
-    show if: users[i].ever_used_other_DOB
   - Marital Status: users[i].marital_status
     datatype: radio
     choices: 
@@ -2096,7 +2015,6 @@ edit:
   - birthdate
   - address.country
 confirm: True
-
 ---
 continue button field: preparer.revisit
 question: |
@@ -2152,44 +2070,23 @@ edit:
 confirm: True
 
 ---
-id: download USCISApplications
-event: USCISApplications_download
-question: |
-  All done
-subquestion: |
-  Thank you ${users}. Your form is ready to download and deliver.
-  
-  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
-
-  ${ action_button_html(url_action('review_USCISApplications'), label='Edit answers', color='info') }
-  
-  
-  ${ al_user_bundle.download_list_html() }
-  
-
-  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
-
-progress: 100
----
 # ALDocument objects specify the metadata for each template
 objects:
-  - USCISApplications_attachment: ALDocument.using(title="Apply for temporary protected status", filename="USCISApplications", enabled=True, has_addendum=False, )
+  - users[i].i_821_attachment: ALDocument.using(title="I-821", filename=f"{users[i]} - I-821", has_addendum=False, )
 ---
-# Bundles group the ALDocuments into separate downloads, such as for court and for the user
-objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[USCISApplications_attachment], filename="USCISApplications", title="All forms to download for your records", enabled=True)
-  - al_recipient_bundle: ALDocumentBundle.using(elements=[USCISApplications_attachment],  filename="USCISApplications", title="All forms to file", enabled=True)
+code: |
+  users[i].i_821_attachment.enabled = application_kind == "ead_and_tps"
 ---
 # Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
 # used for "preview" and "final" keys, and logic in the template checks the value of 
 # `i` to show or hide the user's signature
 ---
 attachment:
-  name: Apply for temporary protected statu
-  filename: USCISApplications
-  variable name: users[i].USCISApplications_attachment[j]
+  name: I-821
+  filename: I-821
+  variable name: users[i].i_821_attachment[j]
   skip undefined: True
-  pdf template file: USCISApplications.pdf
+  pdf template file: I-821_flattened_AD_edits.pdf
   fields:
     - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
@@ -2228,7 +2125,7 @@ attachment:
     - "users1_mailing_address_zip": '60606'
     - "mailing_address_is_physical_address": No
     - "users1_countries_of_residence": ${ users[i].countries_of_residence }
-    - "users1_countries_of_citizenship": ${ comma_and_list(users[i].countries_of_citizenship }
+    - "users1_countries_of_citizenship": ${ comma_and_list(users[i].countries_of_citizenship) }
     - "users1_address_address": ${ users[i].address.address }
     # - "users1_address_is_apt": ''
     # - "users1_address_is_suite": ''
@@ -2262,7 +2159,7 @@ attachment:
     - "proceedings_federal_court_location": ${ users[i].prior_immigration_proceedings.location } #### need help ####
     - "proceedings_dhs_or_doj_hearing_location": ${ users[i].proceedings_dhs_or_doj_hearing_location } #### need help ####
     - "proceedings_start_date": ${ users[i].prior_immigration_proceedings[0].start_date.format('MM/dd/yyyy') } ### need help ####
-    - "proceedings_end_date": ${ users[i]prior_immigration_proceedings[0].end_date.format('MM/dd/yyyy') } ### need help ####
+    - "proceedings_end_date": ${ users[i].prior_immigration_proceedings[0].end_date.format('MM/dd/yyyy') } ### need help ####
     - "proceedings_continuing_to_present": ${ users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present } ### need help ####
     - "passport_number": ${ users[i].travel_documents.xxxxxx } ### need help ####
     - "travel_document_number": ${ users[i].travel_documents.xxxxxx } ### need help ####
@@ -2489,86 +2386,86 @@ attachment:
     - "interpreter_spoke_language": ${ interpreter_spoke_language }
     - "user_used_preparer": ${ user_used_preparer }
     - "spouse_child_human_trafficker": ${ spouse_child_human_trafficker }
-    - "preparer_name": ${ preparer[0] }
+    - "preparer_name": ${ preparer }
     - "users1_phone_number": ${ users[i].phone_number }
-    - "interpreter_name_last": ${ interpreter[0].name.last }
+    - "interpreter_name_last": ${ interpreter.name.last }
     - "users1_mobile_number": ${ users[i].mobile_number }
-    - "interpreter_name_first": ${ interpreter[0].name.first }
+    - "interpreter_name_first": ${ interpreter.name.first }
     - "users1_email": ${ users[i].email }
-    - "interpreter_organization": ${ interpreter[0].organization }
-    - "interpreter_phone_number": ${ interpreter[0].phone_number }
-    - "interpreter_mobile_number": ${ interpreter[0].mobile_number }
-    - "interpreter_email": ${ interpreter[0].email }
+    - "interpreter_organization": ${ interpreter.organization }
+    - "interpreter_phone_number": ${ interpreter.phone_number }
+    - "interpreter_mobile_number": ${ interpreter.mobile_number }
+    - "interpreter_email": ${ interpreter.email }
     - "interpreted_into_language": ${ interpreted_into_language }
-    - "signature_date": ${ signature_date }
-    - "signature_date__1": ${ signature_date }
-    - "signature_date__2": ${ signature_date }
+    - "signature_date": ${ today() }
+    - "signature_date__1": ${ today() }
+    - "signature_date__2": ${ today() }
     - "preparer_is_attorney_yes": ${ preparer_is_attorney }
     - "preparer_is_attorney_no": ${ not preparer_is_attorney }
     - "preparer_full_rep": ${ preparer_full_rep }
     - "preparer_limited_rep": ${ preparer_limited_rep }
-    - "preparer_name_last": ${ preparer[0].name.last }
-    - "preparer_name_first": ${ preparer[0].name.first }
-    - "preparer_organization": ${ preparer[0]organization }
-    - "preparer_phone_number": ${ preparer[0].phone_number }
-    - "preparer_mobile_number": ${ preparer[0].mobile_number }
-    - "preparer_email": ${ preparer[0].email }
-    - "Page Number_3": ${ Page_Number_3 }
-    - "Part Number_3": ${ Part_Number_3 }
-    - "Item Number_3": ${ Item_Number_3 }
-    - "1_3": ${ _3 }
-    - "2_3": ${ _3 }
-    - "3_3": ${ _3 }
-    - "4_3": ${ _3 }
-    - "5_3": ${ _3 }
-    - "6_3": ${ _3 }
-    - "7_3": ${ _3 }
-    - "8_3": ${ _3 }
-    - "9_3": ${ _3 }
-    - "10_3": ${ _3 }
-    - "sign and date each sheet": ${ sign_and_date_each_sheet }
-    - "First Name_9": ${ First_Name_9 }
-    - "Middle Name_8": ${ Middle_Name_8 }
-    - "A_3": ${ A_3 }
-    - "Page Number": ${ Page_Number }
-    - "Part Number": ${ Part_Number }
-    - "Item Number": ${ Item_Number }
-    - "Page Number_4": ${ Page_Number_4 }
-    - "Part Number_4": ${ Part_Number_4 }
-    - "Item Number_4": ${ Item_Number_4 }
-    - "1_4": ${ _4 }
-    - "2_4": ${ _4 }
-    - "3_4": ${ _4 }
-    - "4_4": ${ _4 }
-    - "5_4": ${ _4 }
-    - "6_4": ${ _4 }
-    - "7_4": ${ _4 }
-    - "8_4": ${ _4 }
-    - "9_4": ${ _4 }
-    - "10_4": ${ _4 }
-    - "Page Number_2": ${ Page_Number_2 }
-    - "Part Number_2": ${ Part_Number_2 }
-    - "Item Number_2": ${ Item_Number_2 }
-    - "Page Number_5": ${ Page_Number_5 }
-    - "Part Number_5": ${ Part_Number_5 }
-    - "Item Number_5": ${ Item_Number_5 }
-    - "1_2": ${ _2 }
-    - "2_2": ${ _2 }
-    - "3_2": ${ _2 }
-    - "4_2": ${ _2 }
-    - "5_2": ${ _2 }
-    - "6_2": ${ _2 }
-    - "7_2": ${ _2 }
-    - "8_2": ${ _2 }
-    - "9_2": ${ _2 }
-    - "10_2": ${ _2 }
-    - "1_5": ${ _5 }
-    - "2_5": ${ _5 }
-    - "3_5": ${ _5 }
-    - "4_5": ${ _5 }
-    - "5_5": ${ _5 }
-    - "6_5": ${ _5 }
-    - "7_5": ${ _5 }
-    - "8_5": ${ _5 }
-    - "9_5": ${ _5 }
-    - "10_5": ${ _5 }
+    - "preparer_name_last": ${ preparer.name.last }
+    - "preparer_name_first": ${ preparer.name.first }
+    - "preparer_organization": ${ preparer.organization }
+    - "preparer_phone_number": ${ preparer.phone_number }
+    - "preparer_mobile_number": ${ preparer.mobile_number }
+    - "preparer_email": ${ preparer.email }
+    # - "Page Number_3": ${ Page_Number_3 }
+    # - "Part Number_3": ${ Part_Number_3 }
+    # - "Item Number_3": ${ Item_Number_3 }
+    # - "1_3": ${ _3 }
+    # - "2_3": ${ _3 }
+    # - "3_3": ${ _3 }
+    # - "4_3": ${ _3 }
+    # - "5_3": ${ _3 }
+    # - "6_3": ${ _3 }
+    # - "7_3": ${ _3 }
+    # - "8_3": ${ _3 }
+    # - "9_3": ${ _3 }
+    # - "10_3": ${ _3 }
+    # - "sign and date each sheet": ${ sign_and_date_each_sheet }
+    # - "First Name_9": ${ First_Name_9 }
+    # - "Middle Name_8": ${ Middle_Name_8 }
+    # - "A_3": ${ A_3 }
+    # - "Page Number": ${ Page_Number }
+    # - "Part Number": ${ Part_Number }
+    # - "Item Number": ${ Item_Number }
+    # - "Page Number_4": ${ Page_Number_4 }
+    # - "Part Number_4": ${ Part_Number_4 }
+    # - "Item Number_4": ${ Item_Number_4 }
+    # - "1_4": ${ _4 }
+    # - "2_4": ${ _4 }
+    # - "3_4": ${ _4 }
+    # - "4_4": ${ _4 }
+    # - "5_4": ${ _4 }
+    # - "6_4": ${ _4 }
+    # - "7_4": ${ _4 }
+    # - "8_4": ${ _4 }
+    # - "9_4": ${ _4 }
+    # - "10_4": ${ _4 }
+    # - "Page Number_2": ${ Page_Number_2 }
+    # - "Part Number_2": ${ Part_Number_2 }
+    # - "Item Number_2": ${ Item_Number_2 }
+    # - "Page Number_5": ${ Page_Number_5 }
+    # - "Part Number_5": ${ Part_Number_5 }
+    # - "Item Number_5": ${ Item_Number_5 }
+    # - "1_2": ${ _2 }
+    # - "2_2": ${ _2 }
+    # - "3_2": ${ _2 }
+    # - "4_2": ${ _2 }
+    # - "5_2": ${ _2 }
+    # - "6_2": ${ _2 }
+    # - "7_2": ${ _2 }
+    # - "8_2": ${ _2 }
+    # - "9_2": ${ _2 }
+    # - "10_2": ${ _2 }
+    # - "1_5": ${ _5 }
+    # - "2_5": ${ _5 }
+    # - "3_5": ${ _5 }
+    # - "4_5": ${ _5 }
+    # - "5_5": ${ _5 }
+    # - "6_5": ${ _5 }
+    # - "7_5": ${ _5 }
+    # - "8_5": ${ _5 }
+    # - "9_5": ${ _5 }
+    # - "10_5": ${ _5 }

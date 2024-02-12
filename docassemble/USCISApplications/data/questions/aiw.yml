@@ -2,14 +2,21 @@
 id: intake worksheet
 continue button field: users[i].applicant_intake_worksheet_questions
 question: |
-  Applicant intake worksheet questions
+  ${ users[i]} Applicant intake worksheet questions
 subquestion: |
   USCIS needs demographic information about each applicant.
+  Answer these questions about ${ bold(users[i]) }.
 fields:
   - Receipt number: users[i].receipt_number
     required: False
-  - code: |
-      users[i].gender_fields()
+  - Sex: users[i].gender
+    help: |
+      The options here mirror the USCIS form.
+    datatype: radio
+    choices:
+      - Male
+      - Female
+      - Nonbinary
   - Race: users[i].race
     datatype: checkboxes
     choices:

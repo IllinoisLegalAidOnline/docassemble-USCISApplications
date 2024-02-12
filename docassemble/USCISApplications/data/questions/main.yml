@@ -3,31 +3,102 @@ include:
   - limited_scope_questions.yml
   - screeners.yml
   - aiw.yml
+  - combined_application_questions.yml
 ---
-objects:
-  - users: ALPeopleList.using(ask_number=True)
-  - preparer: ALPeopleList.using(ask_number=True, target_number=1)
+metadata:
+  title: >-
+    DHS Application for EAD or TPS
+  short title: >-
+    Apply for EAD or TPS
+  description: |-
+    This interview helps someone in Illinois apply to the DHS for an Employment Authorization Document (EAD) or Temporary Protected Status (TPS).
+  tags:
+    - "IM-00-00-00-00"
+  authors:
+    - Quinten Steenhuis
+    - Anthony Danielson
+  allowed_courts: []
+  typical_role: "na"
+  al_weaver_version: "playground"
+  generated_on: "2024-02-04"
 ---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "IL"
+---
+code: |
+  github_repo_name =  'docassemble-USCISApplications'
+---
+code: |
+  interview_short_title = "Apply for EAD or TPS"
+---
+code: |
+  al_form_type = "other_form"
+---
+features:
+  progress bar: True
+  progress bar multiplier: 0.01
+---
+sections:
+  - Family members
+  - Retainer
+  - Applicant screener
+  - EAD or TPS
+  - review_USCIS_Applications: Review your answers    
+  - Download and Print
+---
+#################### Interview order #####################
 id: interview_order_main
 mandatory: True
 code: |
   intro_main
-  preparer.gather()
+  preparer.name.first
+  if interpreter_present:
+    interpreter.name.first
   users.gather()
   review_initial_user_list
   interview_order_limited_scope
+  set_progress(10)
   for user in users:
     user.signature
   application_kind
-  for user in users:
+  for idx, user in enumerate(users):
     if application_kind == "ead_only":
-        user.ead_screening_questions
-        user.review_ead_screening_questions
+      user.ead_screening_questions
+      user.review_ead_screening_questions
     else:
       user.tps_screening_questions
       user.review_tps_screening_questions
     user.applicant_intake_worksheet_questions
+    set_progress((80/len(users.complete_elements())) * (idx + 1) + 10 )
+    # Trigger the more detailed questions on a per-user basis
+  for user in users:
+    user.complete
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "application_kind": application_kind,
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )  
   download_completed_ea_application
+---
+id: interpreter_present
+question: |
+  Is an interpreter present?
+fields:
+  - Is an interpreter present?: interpreter_present
+    datatype: yesnoradio
+  - note: |
+      Name of interepreter
+    show if: interpreter_present
+  - code: |
+      interpreter.name_fields(person_or_business="person", show_if="interpreter_present")
 ---
 id: intro_main
 question: |
@@ -45,18 +116,18 @@ subquestion: |
 continue button field: intro_main
 ---
 sets:
-  - preparer[0].name.first
+  - preparer.name.first
 id: supervisor name
 question: |
   What is the name of the volunteer or person asking questions today?
 fields:
-  - code: preparer[0].name_fields(person_or_business="person")
+  - code: preparer.name_fields(person_or_business="person")
 ---
 code: |
   if user_logged_in():
-    preparer[0].name.first = user_info().first_name
-    preparer[0].name.last = user_info().last_name
-    preparer[0].email = user_info().email
+    preparer.name.first = user_info().first_name
+    preparer.name.last = user_info().last_name
+    preparer.email = user_info().email
 ---
 id: people
 question: |
@@ -193,14 +264,15 @@ objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
   - users[i].document_bundle: ALDocumentBundle.using(title=f"{users[i]} - All documents to print and file", filename=space_to_underscore(f"{users[i]} - all_documents"), enabled=True, elements=[
         users[i].applicant_intake_worksheet,
+        users[i].i_821_attachment,
+        users[i].ead_legal_screener,
+        users[i].tps_legal_screener,
         users[i].military_service_addendum,
         users[i].transit_through_ca_addendum,
         users[i].child_venezuelan_nationals_addendum,
         users[i].smuggling_addendum,
         users[i].continuous_residence_addendum,
         users[i].ead_interim_parole_addendum,
-        users[i].ead_legal_screener,
-        users[i].tps_legal_screener
       ])
 ---
 code: |

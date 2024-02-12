@@ -21,43 +21,43 @@ fields:
     code: |
       [next(iter(item.values())) for item in countries_list()]
     default: |
-      ${ users[-1].country_of_birth if i > 0 else '' }
+      ${ users[0].country_of_birth if i > 0 else '' }
   # - Country(ies) of Citizenship: users[i].countries_of_citizenship
   - Number of ${ users[i] }'s children applying with them today: users[i].number_children_applying
     datatype: integer
   - Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnowide
     default: |
-      ${ users[-1].applied_for_other if i > 0 else '' }
+      ${ users[0].applied_for_other if i > 0 else '' }
   - Type of immigration benefit: users[i].applied_benefit_type
     show if: users[i].applied_for_other_immigration_benefit
     default: |
-      ${ users[-1].applied_benefit_type if i > 0 else '' }
+      ${ users[0].applied_benefit_type if i > 0 else '' }
   - Receipt date: users[i].applied_receipt_date
     show if: users[i].applied_for_other_immigration_benefit
     datatype: ThreePartsDate
     default: |
-      ${ users[-1].applied_receipt_date if i > 0 else '' }
+      ${ users[0].applied_receipt_date if i > 0 else '' }
   - Any other important information to note: users[i].applied_other_information
     default: |
-      ${ users[-1].applied_other_information if i > 0 else '' }
+      ${ users[0].applied_other_information if i > 0 else '' }
     show if: users[i].applied_for_other_immigration_benefit
     datatype: area
   - "What is the proof of parole? Ex: i-94, parole letter, Interim Notice of Parole": users[i].proof_of_parole
     datatype: area
     rows: 2
     default: |
-      ${ users[-1].proof_of_parole if i > 0 else '' }
+      ${ users[0].proof_of_parole if i > 0 else '' }
   - Is ${ users[i] } proof of parole valid for at least the next 90 days?: users[i].proof_of_parole_valid_for_90_days
     datatype: yesnoradio
   - Are you in removal proceedings right now?: users[i].in_removal_proceedings
     datatype: yesnowide
     default: |
-      ${ users[-1].in_removal_proceedings if i > 0 else '' }
+      ${ users[0].in_removal_proceedings if i > 0 else '' }
   - Have you been issued a Final Order of Removal?: users[i].ever_ordered_removed
     datatype: yesnowide
     default: |
-      ${ users[-1].ever_ordered_removed if i > 0 else '' }
+      ${ users[0].ever_ordered_removed if i > 0 else '' }
   - Have you ever been arrested, cited, stopped, detained, placed in handcuffs by the police?: users[i].ever_arrested
     datatype: yesnowide
   - What happened? Include the location, reason for arrest, and outcome: users[i].arrest_details
@@ -112,7 +112,7 @@ fields:
       - National ID
       - Other
     default: |
-      ${ users[-1].proof_of_birthplace if i > 0 else '' }
+      ${ users[0].proof_of_birthplace if i > 0 else '' }
   - Are both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnowide
     show if:

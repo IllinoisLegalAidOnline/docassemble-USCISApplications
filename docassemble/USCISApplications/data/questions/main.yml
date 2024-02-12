@@ -2,6 +2,7 @@ include:
   - docassemble.AssemblyLine:assembly_line.yml
   - limited_scope_questions.yml
   - screeners.yml
+  - aiw.yml
 ---
 objects:
   - users: ALPeopleList.using(ask_number=True)
@@ -18,14 +19,14 @@ code: |
   for user in users:
     user.signature
   application_kind
-  if application_kind == "ead_only":
-    for user in users:
-      user.ead_screening_questions
-      user.review_ead_screening_questions
-  else:
-    for user in users:
+  for user in users:
+    if application_kind == "ead_only":
+        user.ead_screening_questions
+        user.review_ead_screening_questions
+    else:
       user.tps_screening_questions
       user.review_tps_screening_questions
+    user.applicant_intake_worksheet_questions
   download_completed_ea_application
 ---
 id: intro_main
@@ -85,7 +86,7 @@ fields:
   - Country of Birth: users[0].country_of_birth
     datatype: combobox
     code: |
-      [next(iter(item.values())) for item in countries_list()]
+      uscis_countries_list()
   - Birthdate: users[0].birthdate
     datatype: Birthdate
   - A Number: users[0].a_number
@@ -120,7 +121,7 @@ fields:
   - Country of Birth: users[i].country_of_birth
     datatype: combobox
     code: |
-      [next(iter(item.values())) for item in countries_list()]
+      uscis_countries_list()
     default: |
       ${ users[0].country_of_birth }
   - Birthdate: users[i].birthdate
@@ -186,10 +187,12 @@ objects:
   - users[i].ead_interim_parole_addendum: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Interim Parole Addendum"), has_addendum=False)
   - users[i].ead_legal_screener: ALDocument.using(title=f"{users[i]} - EAD Legal Screener", filename=space_to_underscore(f"{users[i]} - EAD Legal Screener"), has_addendum=False)
   - users[i].tps_legal_screener: ALDocument.using(title=f"{users[i]} - TPS Legal Screener", filename=space_to_underscore(f"{users[i]} - TPS Legal Screener"), has_addendum=False)
+  - users[i].applicant_intake_worksheet: ALDocument.using(title=f"{users[i]} - Applicant Intake Worksheet", filename=space_to_underscore(f"{users[i]} - Applicant Intake Worksheet"), has_addendum=False, enabled=True)
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
   - users[i].document_bundle: ALDocumentBundle.using(title=f"{users[i]} - All documents to print and file", filename=space_to_underscore(f"{users[i]} - all_documents"), enabled=True, elements=[
+        users[i].applicant_intake_worksheet,
         users[i].military_service_addendum,
         users[i].transit_through_ca_addendum,
         users[i].child_venezuelan_nationals_addendum,
@@ -276,3 +279,44 @@ attachment:
   filename: ${ space_to_underscore(f"{users[i]} - TPS Legal Screener") }
   docx template file: TPS_legal_screener.docx
   skip undefined: True
+---
+code: |
+  def uscis_countries_list():
+    """
+    Returns a list of countries as strings, without the extra verbiage like "Republic of".
+    We tweak the following entries:
+    - "Bolivia, Plurinational State of" becomes "Bolivia"
+    - Venezuela, Bolivarian Republic of becomes "Venezuela"
+    - Congo, the Democratic Republic of the becomes "Congo (D.R.C.)"
+    - Iran, Islamic Republic of becomes "Iran"
+    - Korea, Democratic People's Republic of becomes "North Korea"
+    - Korea, Republic of becomes "South Korea"
+    - Lao People's Democratic Republic becomes "Laos"
+    - Micronesia, Federated States of becomes "Micronesia"
+    - Moldova, Republic of becomes "Moldova"
+    - Palestine, State of becomes "Palestine"
+    - Saint Martin (French part) becomes "Saint Martin"
+    - Sint Maarten (Dutch part) becomes "Sint Maarten"
+    - Taiwan, Province of China becomes "Taiwan"
+    - Tanzania, United Republic of becomes "Tanzania"
+    - Åland Islands becomes "Aland Islands"
+    """
+    country_names = [next(iter(item.values())) for item in countries_list()]
+    country_names[country_names.index("Bolivia, Plurinational State of")] = "Bolivia"
+    country_names[country_names.index("Venezuela, Bolivarian Republic of")] = "Venezuela"
+    country_names[country_names.index("Congo, The Democratic Republic of the")] = "Congo (D.R.C.)"
+    country_names[country_names.index("Iran, Islamic Republic of")] = "Iran"
+    country_names[country_names.index("Korea, Democratic People's Republic of")] = "North Korea"
+    country_names[country_names.index("Korea, Republic of")] = "South Korea"
+    country_names[country_names.index("Lao People's Democratic Republic")] = "Laos"
+    country_names[country_names.index("Micronesia, Federated States of")] = "Micronesia"
+    country_names[country_names.index("Moldova, Republic of")] = "Moldova"
+    country_names[country_names.index("Palestine, State of")] = "Palestine"
+    country_names[country_names.index("Saint Martin (French part)")] = "Saint Martin"
+    country_names[country_names.index("Sint Maarten (Dutch part)")] = "Sint Maarten"
+    country_names[country_names.index("Taiwan, Province of China")] = "Taiwan"
+    country_names[country_names.index("Tanzania, United Republic of")] = "Tanzania"
+    country_names[country_names.index("Åland Islands")] = "Aland Islands"
+
+    return country_names
+

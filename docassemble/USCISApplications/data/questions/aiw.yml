@@ -1,0 +1,121 @@
+---
+id: intake worksheet
+continue button field: users[i].applicant_intake_worksheet_questions
+question: |
+  Applicant intake worksheet questions
+subquestion: |
+  USCIS needs demographic information about each applicant.
+fields:
+  - Receipt number: users[i].receipt_number
+    required: False
+  - code: |
+      users[i].gender_fields()
+  - Race: users[i].race
+    datatype: checkboxes
+    choices:
+      - Asian: asian
+      - Black: black
+      - Caucasian/Latino: caucasian_latino
+      - Native American: native_american
+    none of the above: Unknown
+  - Eye color: users[i].eye_color
+    input type: radio
+    choices:
+      - Black: black
+      - Blue: blue
+      - Brown: brown
+      - Gray: gray
+      - Green: green
+      - Hazel: hazel
+      - Maroon: maroon
+      - Pink: pink
+      - Multicolor: multicolor
+      - Uknown: unknown
+  - Hair color: users[i].hair_color
+    input type: radio
+    choices:
+      - Bald: bald
+      - Red: red
+      - Black: black
+      - Sandy: sandy
+      - Blond: blond
+      - White: white
+      - Blue: blue
+      - Unknown: unknown
+      - Brown: brown
+      - Gray: gray
+      - Green: green
+      - Orange: orange
+      - Pink: pink
+      - Purple: purple
+  - Height (answer in feet and inches, or use centimeters below): users[i].height_feet_inches
+    required: False
+  - Height (in centimeters): users[i].height_centimeters
+    required: False
+  - Weight (answer in pounds, or use kilos below): users[i].weight_pounds
+    required: False
+  - Weight (in kilos): users[i].weight_kilos
+    required: False
+validation code: |
+  if not users[i].height_feet_inches and not users[i].height_centimeters:
+    validation_error("Please enter the height in feet and inches or in centimeters")
+  if not users[i].weight_pounds and not users[i].weight_kilos:
+    validation_error("Please enter the weight in pounds or in kilos")
+---
+attachment:
+  - variable name: users[i].applicant_intake_worksheet[j]
+    name: ${ users[i] } - Applicant_intake_worksheet
+    filename: ${ users[i] } - Applicant_intake_worksheet
+    pdf template file: Applicant_intake_worksheet.pdf
+    fields:
+      - "receipt_number": ${ users[i].receipt_number }
+      - "users1_a_number": ${ users[i].a_number }
+      - "users1_name_full": ${ users[i] }
+      - "users1_aliases1": ${ users[i].aliases.item(0) }
+      - "users1_aliases2": ${ users[i].aliases.item(1) }
+      - "users1_birthdate": ${ users[i].birthdate }
+      - "country_of_citizenship": ${ users[i].country_of_citizenship }
+      - "country_of_birth": ${ users[i].country_of_birth }
+      - "gender_male": ${ users[i].gender_male }
+      - "gender_female": ${ users[i].gender_female }
+      - "gender_other": ${ users[i].gender_other }
+      - "race_asian": ${ users[i].race.get("asian") }
+      - "race_black": ${ users[i].race.get("black") }
+      - "race_caucasian_latino": ${ users[i].race.get("caucasian_latino") }
+      - "race_native_american": ${ users[i].race.get("native_american") }
+      - "race_unknown": ${ users[i].race.all_false() }
+      - "eye_color_black": ${ users[i].eye_color == "black" }
+      - "eye_color_blue": ${ users[i].eye_color == "blue" }
+      - "eye_color_brown": ${ users[i].eye_color == "brown" }
+      - "eye_color_gray": ${ users[i].eye_color == "gray" }
+      - "eye_color_green": ${ users[i].eye_color == "green" }
+      - "eye_color_hazel": ${ users[i].eye_color == "hazel" }
+      - "eye_color_maroon": ${ users[i].eye_color == "maroon" }
+      - "eye_color_pink": ${ users[i].eye_color == "pink" }
+      - "eye_color_multicolor": ${ users[i].eye_color == "multicolor" }
+      - "eye_color_unknown": ${ users[i].eye_color == "unknown" }
+      - "hair_bald": ${ users[i].hair_color == "bald" }
+      - "hair_red":  ${ users[i].hair_color == "red" }
+      - "hair_black": ${ users[i].hair_color == "black" }
+      - "hair_sandy": ${ users[i].hair_color == "sandy" }
+      - "hair_blond": ${ users[i].hair_color == "blond" }
+      - "hair_white": ${ users[i].hair_color == "white" }
+      - "hair_blue": ${ users[i].hair_color == "blue" }
+      - "hair_unknown": ${ users[i].hair_color == "unknown" }
+      - "hair_brown": ${ users[i].hair_color == "brown" }
+      - "hair_gray": ${ users[i].hair_color == "gray" }
+      - "hair_green": ${ users[i].hair_color == "green" }
+      - "hair_orange": ${ users[i].hair_color == "orange" }
+      - "hair_pink": ${ users[i].hair_color == "pink" }
+      - "hair_purple": ${ users[i].hair_color == "purple" }
+      - "height_centimeters": ${ users[i].height_centimeters }
+      - "height_feet_inches": ${ users[i].height_feet_inches }
+      - "weight_pounds": ${ users[i].weight_pounds }
+      - "weight_kilos": ${ users[i].weight_kilos }
+---
+question: |
+  Country of citizenship (temporary, shouldn't appear)      
+fields:
+  - Country of citizenship: users[i].country_of_citizenship
+    code: |
+      uscis_countries_list()

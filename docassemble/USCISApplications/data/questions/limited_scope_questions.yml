@@ -1,0 +1,122 @@
+---
+code: |
+  intro
+  use_of_information
+  instructions
+  limited_scope_para_1
+  limited_scope_para_2
+  limited_scope_para_3
+  limited_scope_para_4
+  limited_scope_para_5
+  limited_scope_para_6
+  interview_order_limited_scope = True
+---
+id: intro
+continue button field: intro
+question: |
+  Limited Scope of Services and Authorization
+subquestion: |
+  The services provided by the Immigration Application Workshop are limited to the information and assistance given today at the workshop. No current or ongoing attorney-client relationship is created by the provision of today’s services.
+  
+  ##### en español
+  
+  Los servicios proporcionados por el taller de Documentos de Aplicación de Inmigración (Taller), se limitarán a darle la información y asistirle en el taller de hoy. Los servicios que le demos y brindemos no crea una relación entre usted y nosotros de abogado a cliente, y la asistencia que le brindamos hoy es sólo por hoy.
+  
+---
+id: how information is used 
+continue button field: use_of_information
+question: |
+  How we use your information
+subquestion: |
+  We need to record basic details in order to assist participants with their immigration application. During the brief legal screening meeting, participants are responsible for giving accurate and truthful information. All the information provided to the workshop organizers during this time will remain confidential with exceptions noted below.
+  
+  ##### en español
+  
+  Necesitamos registrar detalles básicos para ayudar a los participantes con su solicitud de inmigración. Durante la breve reunión de selección legal, los participantes son responsables de dar información precisa y veraz. Toda la información proporcionada a los organizadores del taller durante este tiempo será confidencial, con las excepciones que se indican a continuación.
+  
+
+---
+id: instructions
+continue button field: instructions
+question: |
+  Confirm you understand the agreement
+subquestion: |
+  Please review the following to acknowledge understanding and agreement, then sign and date at the bottom of the page:
+  
+  ##### en español
+  
+  Revise la información a continuación para reconocer la comprensión y el acuerdo, y luego firme y coloque la fecha en la parte inferior de la página:
+
+---
+id: limted scope paragraph 1
+continue button field: limited_scope_para_1
+question: |
+  Paragraph 1
+subquestion: |
+  I understand that the organizations here today will help inform me of my legal rights, help me understand the legal process, and assist me with my immigration application. The organizations or attorneys present today will not serve as my legal representative and will not represent me after today unless explicitly discussed. 
+  
+  ##### en español
+  
+  Entiendo que las organizaciones están aquí hoy para ayudarme e informarme sobre mis derechos legales, ayudarme a comprender el proceso legal y para ayudarme con mi solicitud de inmigración. Las organizaciones y abogados aquí hoy no sirven como mi representante legal y no me representará después de hoy a menos que se discuta explícitamente.
+
+continue button label: I accept / Acepto
+---
+id: limted scope paragraph 2
+continue button field: limited_scope_para_2
+question: |
+  Paragraph 2
+subquestion: |
+  I understand that if I want legal representation for my immigration case, I should look for a legal representative on my own and keep track of all my efforts to find a legal representative so that I can share this information with the immigration judge if I have a court hearing in the future. 
+  
+  ##### en español
+  
+  Entiendo que si quiero representación legal para mi caso de inmigración, debo buscar un abogado por mi cuenta y hacer un seguimiento de todos mis esfuerzos para encontrar un abogado para poder compartir esta información con el juez de inmigración en mi próxima audiencia judicial.
+continue button label: I accept / Acepto
+---
+id: limted scope paragraph 3
+continue button field: limited_scope_para_3
+question: |
+  Paragraph 3
+subquestion: |
+  I have voluntarily given my information to the organizations present today and I understand that the information I give about my case may be given to other people for the purposes of assisting me with my work permit application or other immigration benefits for which I may be eligible, and to evaluate and continue with the Immigration Application Workshop. This includes representatives from the city, state, and federal government.
+  
+  ##### en español
+  
+  He dado voluntariamente mi información a las organizaciones presentes hoy y entiendo que la información que doy sobre mi caso puede ser dada a otras personas con el propósito de ayudarme con mi solicitud de permiso de trabajo u otros beneficios de inmigración para los que puedo ser elegible, y para evaluar y continuar con el taller. Esto incluye representantes de la ciudad, el estado y el gobierno federal.
+continue button label: I accept / Acepto
+---
+id: limted scope paragraph 4
+continue button field: limited_scope_para_4
+question: |
+  Paragraph 4
+subquestion: |
+  If additional services become available after this workshop (such as assistance with change of venue for immigration court or asylum), I agree to allow TRP to share my contact information with another nonprofit organization to evaluate whether I can receive additional services. 
+  
+  ##### en español
+  
+  Si hay servicios adicionales disponibles después de este taller (como asistencia con el cambio de sede para la corte de inmigración o asilo), acepto permitir que TRP comparta mi información de contacto con otra organización sin fines de lucro para evaluar si puedo recibir servicios adicionales.
+continue button label: I accept / Acepto
+---
+id: limted scope paragraph 5
+continue button field: limited_scope_para_5
+question: |
+  Paragraph 5
+subquestion: |
+  I DO NOT consent to the sharing of my information aside from the contexts described above. 
+  
+  ##### en español
+  
+  NO doy mi consentimiento para que se comparta mi información fuera de los contextos descritos anteriormente.
+continue button label: I accept / Acepto
+---
+id: limted scope paragraph 6
+continue button field: limited_scope_para_6
+question: |
+  Paragraph 6
+subquestion: |
+  This Scope of Services and Authorization has been explained and/or translated to me in a language I understand. 
+  
+  ##### en español
+  
+  Este Alcance de los Servicios y la Autorización me ha sido explicado y traducido en un idioma que entiendo.
+continue button label: I accept / Acepto

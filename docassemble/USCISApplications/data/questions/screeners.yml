@@ -1,0 +1,231 @@
+---
+question: |
+  EAD eligibility screener for ${ users[i] }
+subquestion: |
+  <div class="alert alert-info" role="alert">
+    <h2 class="h4">Note to screener</h2>
+    <p>
+      Some of the questions below are written so you can read them aloud. Enter the answer
+      given by <strong>${ users[i] }</strong>.
+    </p>
+  </div>
+continue button field: users[i].ead_screening_questions
+fields:
+  - Has ${ users[i] } ever been known by a different name?: users[i].aliases.there_are_any
+    datatype: yesnoradio
+  - note: |
+      OK, we will ask about those names on the next screen
+    show if: users[i].aliases.there_are_any
+  - Country of Birth: users[i].country_of_birth
+    datatype: combobox
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+    default: |
+      ${ users[0].country_of_birth if i > 0 else '' }
+  # - Country(ies) of Citizenship: users[i].countries_of_citizenship
+  - Number of ${ users[i] }'s children applying with them today: users[i].number_children_applying
+    datatype: integer
+  - Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: users[i].applied_for_other_immigration_benefit
+    datatype: yesnowide
+    default: |
+      ${ users[0].applied_for_other if i > 0 else '' }
+  - Type of immigration benefit: users[i].applied_benefit_type
+    show if: users[i].applied_for_other_immigration_benefit
+    default: |
+      ${ users[0].applied_benefit_type if i > 0 else '' }
+  - Receipt date: users[i].applied_receipt_date
+    show if: users[i].applied_for_other_immigration_benefit
+    datatype: ThreePartsDate
+    default: |
+      ${ users[0].applied_receipt_date if i > 0 else '' }
+  - Any other important information to note: users[i].applied_other_information
+    default: |
+      ${ users[0].applied_other_information if i > 0 else '' }
+    show if: users[i].applied_for_other_immigration_benefit
+    datatype: area
+  - "What is the proof of parole? Ex: i-94, parole letter, Interim Notice of Parole": users[i].proof_of_parole
+    datatype: area
+    rows: 2
+    default: |
+      ${ users[0].proof_of_parole if i > 0 else '' }
+  - Is ${ users[i] } proof of parole valid for at least the next 90 days?: users[i].proof_of_parole_valid_for_90_days
+    datatype: yesnoradio
+  - Are you in removal proceedings right now?: users[i].in_removal_proceedings
+    datatype: yesnowide
+    default: |
+      ${ users[0].in_removal_proceedings if i > 0 else '' }
+  - Have you been issued a Final Order of Removal?: users[i].ever_ordered_removed
+    datatype: yesnowide
+    default: |
+      ${ users[0].ever_ordered_removed if i > 0 else '' }
+  - Have you ever been arrested, cited, stopped, detained, placed in handcuffs by the police?: users[i].ever_arrested
+    datatype: yesnowide
+  - What happened? Include the location, reason for arrest, and outcome: users[i].arrest_details
+    datatype: area
+    show if: users[i].ever_arrested
+  - Did you bring your criminal history documents with you?: users[i].has_criminal_history_documents
+    datatype: yesnowide
+    show if: users[i].ever_arrested
+---
+question: |
+  % if users[i].ever_ordered_removed or users[i].in_removal_proceedings or (not users[i].proof_of_parole_valid_for_90_days):
+  ${ fa_icon('exclamation-triangle', size="lg", color="warning") }
+  % endif
+  EAD eligibility screener for ${ users[i] }
+subquestion: |
+  % if users[i].ever_ordered_removed:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been issued a Final Order of Removal.
+
+  % endif
+  % if users[i].in_removal_proceedings:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } is in removal proceedings.
+
+  % endif
+  % if not users[i].proof_of_parole_valid_for_90_days:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] }'s proof of parole is not valid for at least the next 90 days.
+
+  % endif
+#review:
+#  - Edit: ead_screening_questions
+#    button: |
+#      - ${ }
+continue button field: users[i].review_ead_screening_questions
+---
+id: tps_screening_questions
+continue button field: users[i].tps_screening_questions
+question: |
+  TPS eligibility screener for ${ users[i] }
+subquestion: |
+  <div class="alert alert-info" role="alert">
+    <h2 class="h4">Note to screener</h2>
+    <p>
+      Some of the questions below are written so you can read them aloud. Enter the answer
+      given by <strong>${ users[i] }</strong>.
+    </p>
+  </div>
+fields:
+  - What is your proof of birth country?: users[i].proof_of_birthplace
+    datatype: checkboxes
+    choices:
+      - Birth certificate
+      - Passport
+      - National ID
+      - Other
+    default: |
+      ${ users[0].proof_of_birthplace if i > 0 else '' }
+  - Are both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
+    datatype: yesnowide
+    show if:
+      code: |
+        not "venezuela" in users[i].country_of_birth.lower()
+  - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
+    datatype: yesnowide
+    show if: users[i].parents_from_venezuela
+  - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: users[i].in_other_country_longer_than_6_months
+    datatype: yesnowide
+  - When did you leave your home country?: users[i].date_left_home_country_month_and_year
+    datatype: ThreePartsDate
+  - When did you last enter the US?: users[i].date_of_last_entry
+    datatype: ThreePartsDate
+  - Do you have proof that you were physically present in the US as of July 31, 2023?: users[i].proof_last_entry_date_before_july_31_2023
+    datatype: checkboxes
+    choices:
+      - Shelter letter
+      - Notice to Appear or other immigration document
+      - I-94
+      - Passport stamp
+      - Other
+  - Do you have proof that you were physically present in the US as of October 3, 2023?: users[i].proof_last_entry_date_before_october_4_2023
+    datatype: checkboxes
+    choices:
+      - Shelter letter
+      - Notice to Appear or other immigration document
+      - I-94
+      - Passport stamp
+      - Other
+    show if:
+      variable: users[i].proof_last_entry_date_before_july_31_2023
+      is: False
+  - Do you have any children applying with you today?: users[i].has_children_applying_today
+    datatype: yesnowide
+  - Was any child born outside of Venezuela?: users[i].has_children_applying_not_born_in_venezuela
+    show if: users[i].has_children_applying_today
+    datatype: yesnowide
+  - How did you last enter the US?: users[i].method_of_entry
+    datatype: combobox
+    choices:
+      - Presented at a port of entry
+      - Entered without documents
+  - Who entered the US with you?: users[i].who_entered_with_user
+    datatype: radio
+    choices:
+      - Spouse
+      - Children
+      - Entered alone
+      - Other or N/A
+  - Did your children enter the US separately from you?: users[i].children_entered_separately
+    datatype: yesnowide
+  - Where, when, and with whom did they enter?: users[i].children_entered_separately_explanation
+    datatype: area
+    show if: users[i].children_entered_separately
+  - Have you had legal status in any other country besides Venezuela?: users[i].had_legal_status_outside_venezuela
+    datatype: yesnowide
+  - List country(ies) and legal status in each: users[i].countries_and_legal_status
+    datatype: area
+    show if: users[i].had_legal_status_outside_venezuela
+  - Have you applied for any other immigration benefit? (i.e. work permit, TPS, or asylum)?: users[i].applied_for_other_immigration_benefit
+    datatype: yesnowide
+  - Are you in removal proceedings?: users[i].in_removal_proceedings
+    datatype: yesnowide
+  - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: users[i].ever_arrested
+    datatype: yesnowide
+  - List when/where/outcome of EVERY arrest, including those in US and outside of US: users[i].arrest_details
+    datatype: area
+    show if: users[i].ever_arrested
+  - Have you ever claimed to be a US Citizen?: users[i].claimed_us_citizenship
+    datatype: yesnowide
+  - Have you ever been affiliated with any gangs?: users[i].gang_affiliation
+    datatype: yesnowide
+  - Have you ever served in the military or participated in a paramilitary group?: users[i].served_military
+    datatype: yesnowide
+  - Have you ever been a member of a terrorist organization?: users[i].acted_as_terrorist
+    datatype: yesnowide
+---
+id: review_tps_screening_questions
+continue button field: users[i].review_tps_screening_questions
+question: | 
+  % if users[i].claimed_us_citizenship or users[i].gang_affiliation or users[i].served_military or users[i].acted_as_terrorist:
+  ${ fa_icon('exclamation-triangle', size="lg", color="warning") }
+  % endif
+  Review TPS screening questions for ${ users[i] }
+subquestion: |
+  % if users[i].claimed_us_citizenship:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } has claimed to be a US Citizen.
+
+  % endif
+  % if users[i].gang_affiliation:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been affiliated with a gang.
+
+  % endif
+  % if users[i].served_military:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } has served in the military or participated in a paramilitary group.
+
+  % endif
+  % if users[i].acted_as_terrorist:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been a member of a terrorist organization.
+
+  % endif
+  % if users[i].ever_arrested:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been arrested, cited, stopped, detained, or placed in handcuffs by the police.
+
+  % endif
+fields:
+  - What addenda should be included?: users[i].addenda
+    datatype: checkboxes
+    choices:
+      - Military service: military_service
+      - Transit through Central America: transit_through_ca
+      - Child of Venezuelan nationals: child_venezuelan_nationals
+      - Smuggling: smuggling
+      - Affidavit of continuous residence: continuous_residence
+      - EAD interim parole: ead_interim_parole

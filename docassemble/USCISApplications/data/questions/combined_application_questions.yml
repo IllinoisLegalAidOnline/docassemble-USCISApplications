@@ -39,6 +39,7 @@ code: |
   users[i].i94_arrival_number
   if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
     users[i].father_first_name
+  users[i].have_you_ever
   users[i].complete = True
 ---
 id: your address
@@ -834,6 +835,7 @@ fields:
       - No 9: No_9
 ---
 id: have you evers
+continue button field: users[i].have_you_ever
 question: |
   Has ${ users[i] } **ever**...
 fields:

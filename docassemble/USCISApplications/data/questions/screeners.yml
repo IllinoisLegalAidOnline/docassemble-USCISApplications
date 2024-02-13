@@ -234,6 +234,7 @@ subquestion: |
   % if users[i].who_entered_with_user == "children":
   ${ fa_icon('exclamation-triangle') } entered with children.
   
+  % endif
   % if users[i].children_entered_separately:
   ${ fa_icon('exclamation-triangle') } ${ users[i] }'s children entered the US separately.
 

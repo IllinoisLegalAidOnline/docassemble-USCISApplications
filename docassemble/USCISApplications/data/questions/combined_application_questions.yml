@@ -1066,7 +1066,7 @@ fields:
       - Russian
       - Tagalog
       - Vietnamese
-    default: ${ interpreter.language }
+    default: ${ interpreter.language if interpreter_present else None}
     show if: users[i].user_used_interpreter
   - "Interpreted into language": users[i].interpreted_into_language
     maxlength: 23

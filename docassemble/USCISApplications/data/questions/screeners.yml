@@ -58,6 +58,13 @@ fields:
     datatype: yesnowide
     default: |
       ${ users[0].ever_ordered_removed if i > 0 else '' }
+  - note: |
+      <div class="alert alert-danger" role="alert">
+        <h2 class="h4">${fa_icon("triangle-exclamation") } Important</h2>
+        <p>
+          If the answer is yes, the user is not eligible for an EAD.
+        </p>
+      </div>
   - Have you ever been arrested, cited, stopped, detained, placed in handcuffs by the police?: users[i].ever_arrested
     datatype: yesnowide
   - What happened? Include the location, reason for arrest, and outcome: users[i].arrest_details
@@ -151,6 +158,9 @@ fields:
   - Was any child born outside of Venezuela?: users[i].has_children_applying_not_born_in_venezuela
     show if: users[i].has_children_applying_today
     datatype: yesnowide
+  - List each child's name and nationality: users[i].children_outside_of_venezuela
+    datatype: area
+    show if: users[i].has_children_applying_not_born_in_venezuela
   - How did you last enter the US?: users[i].method_of_entry
     datatype: combobox
     choices:
@@ -159,10 +169,10 @@ fields:
   - Who entered the US with you?: users[i].who_entered_with_user
     datatype: radio
     choices:
-      - Spouse
-      - Children
-      - Entered alone
-      - Other or N/A
+      - Spouse: spouse
+      - Children: children
+      - Entered alone: entered alone
+      - Other or N/A: other or N/A
   - Did your children enter the US separately from you?: users[i].children_entered_separately
     datatype: yesnowide
   - Where, when, and with whom did they enter?: users[i].children_entered_separately_explanation
@@ -175,8 +185,14 @@ fields:
     show if: users[i].had_legal_status_outside_venezuela
   - Have you applied for any other immigration benefit? (i.e. work permit, TPS, or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnowide
+  - Explain: users[i].applied_for_other_immigration_benefit_explanation
+    datatype: area
+    show if: users[i].applied_for_other_immigration_benefit
   - Are you in removal proceedings?: users[i].in_removal_proceedings
     datatype: yesnowide
+  - Explain (include the date, location, and information about whether this is a final order of removal): users[i].removal_proceedings_explanation
+    datatype: area
+    show if: users[i].in_removal_proceedings
   - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: users[i].ever_arrested
     datatype: yesnowide
   - List when/where/outcome of EVERY arrest, including those in US and outside of US: users[i].arrest_details
@@ -199,8 +215,31 @@ question: |
   % endif
   Review TPS screening questions for ${ users[i] }
 subquestion: |
+  % if users[i].proof_of_birthplace.all_false():
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } has no proof of birthplace.
+
+  % endif
   % if users[i].claimed_us_citizenship:
   ${ fa_icon('exclamation-triangle') } ${ users[i] } has claimed to be a US Citizen.
+
+  % endif
+  % if "venezuela" not in users[i].country_of_birth.lower() and users[i].parents_from_venezuela and not users[i].proof_of_parent_birthplace:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } was not born in Venezuela but their parents were. Yet they do not have proof.
+  
+  % endif
+  % if users[i].in_other_country_longer_than_6_months:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } spent more than 6 months in another country.
+  
+  % endif
+  % if users[i].who_entered_with_user == "children":
+  ${ fa_icon('exclamation-triangle') } entered with children.
+  
+  % if users[i].children_entered_separately:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] }'s children entered the US separately.
+
+  % endif
+  % if users[i].had_legal_status_outside_venezuela:
+  ${ fa_icon('exclamation-triangle') } ${ users[i] } had legal status in another country.
 
   % endif
   % if users[i].gang_affiliation:

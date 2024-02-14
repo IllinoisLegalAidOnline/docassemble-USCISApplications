@@ -62,7 +62,8 @@ code: |
   interview_order_limited_scope
   set_progress(10)
   for user in users:
-    user.signature
+    if user.age_in_years() > 13:
+      user.signature
   nav.set_section("section_screener")
   application_kind
   signpost_screener
@@ -90,8 +91,12 @@ code: |
           "zip": showifdef("users[0].address.zip"),
           "reached_interview_end": True,
       },
-  )  
+  )
+  children_for_retainer
   download_completed_ea_application
+---
+code: |
+  children_for_retainer = [child for child in users if child.age_in_years() < 14]
 ---
 variable name: default_sections
 data:
@@ -223,6 +228,7 @@ subquestion: |
 fields:
   - How many?: users.target_number
     datatype: integer
+    min: 1
   - note: |
       <h2 class="h4">Name of the head of household</h2>
   - First name: users[0].name.first
@@ -326,11 +332,11 @@ subquestion: |
   % for user in users:
   <h2 class="h4">${ user.name.first }'s application</h2>
 
-  ${ user.document_bundle.download_list_html() }
   ${ action_button_html(user.document_bundle.as_pdf().url_for(), label=f"Download { user}'s application as PDF", icon="file-pdf") }
   % endfor
 ---
 objects:
+  - users[i].limited_scope_retainer: ALDocument.using(title=f"{users[i]} - Limited Scope Retainer", filename=space_to_underscore(f"{users[i]} - Limited Scope Retainer"), has_addendum=False)
   - users[i].military_service_addendum: ALDocument.using(title=f"{users[i]} - Military Service Addendum", filename=space_to_underscore(f"{users[i]} - Military Service Addendum"), has_addendum=False)
   - users[i].transit_through_ca_addendum: ALDocument.using(title=f"{users[i]} - Transit Through Central America Addendum", filename=space_to_underscore(f"{users[i]} - Transit Through Central America Addendum"), has_addendum=False)
   - users[i].child_venezuelan_nationals_addendum: ALDocument.using(title=f"{users[i]} - Child of Venezuelan Nationals Addendum", filename=space_to_underscore(f"{users[i]} - Child of Venezuelan Nationals Addendum"), has_addendum=False)
@@ -344,6 +350,7 @@ objects:
 objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
   - users[i].document_bundle: ALDocumentBundle.using(title=f"{users[i]} - All documents to print and file", filename=space_to_underscore(f"{users[i]} - all_documents"), enabled=True, elements=[
+        users[i].limited_scope_retainer,
         users[i].applicant_intake_worksheet,
         users[i].i_821_attachment,
         users[i].ead_legal_screener,
@@ -432,6 +439,14 @@ attachment:
   filename: ${ space_to_underscore(f"{users[i]} - TPS Legal Screener") }
   docx template file: TPS_legal_screener.docx
   skip undefined: True
+---
+reconsider:
+  - children_for_retainer
+attachment:
+  variable name: users[i].limited_scope_retainer[j]
+  name: ${ users[i] } - Limited Scope Retainer
+  filename: ${ space_to_underscore(f"{users[i]} - Limited Scope Retainer") }
+  docx template file: Limited_Scope_Retainer.docx
 ---
 code: |
   def uscis_countries_list():

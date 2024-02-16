@@ -358,7 +358,7 @@ subquestion: |
   % for user in users:
   <h2 class="h4">${ user.name.first }'s application</h2>
 
-  ${ action_button_html(user.document_bundle.as_pdf().url_for(), label=f"Download { user}'s application as PDF", icon="file-pdf") }
+  ${ action_button_html(user.document_bundle.as_pdf().url_for(), label=f"{ user}'s application", icon="file-pdf", size="lg", color="primary") }
   % endfor
 ---
 objects:
@@ -422,19 +422,19 @@ code: |
     users[i].limited_scope_retainer.enabled = False
 ---
 code: |
-  users[i].military_service_addendum.enabled = selected_addenda.get("military_service")
+  users[i].military_service_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("military_service")
 ---
 code: |
-  users[i].transit_through_ca_addendum.enabled = selected_addenda.get("transit_through_ca")
+  users[i].transit_through_ca_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("transit_through_ca")
 ---
 code: |
-  users[i].child_venezuelan_nationals_addendum.enabled = selected_addenda.get("child_venezuelan_nationals")
+  users[i].child_venezuelan_nationals_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("child_venezuelan_nationals")
 ---
 code: |
-  users[i].smuggling_addendum.enabled = selected_addenda.get("smuggling")
+  users[i].smuggling_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("smuggling")
 ---
 code: |
-  users[i].continuous_residence_addendum.enabled = selected_addenda.get("continuous_residence")
+  users[i].continuous_residence_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("continuous_residence")
 ---
 code: |
   users[i].ead_interim_parole_addendum.enabled = application_kind == "ead_only"

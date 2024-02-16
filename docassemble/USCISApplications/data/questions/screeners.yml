@@ -28,19 +28,19 @@ fields:
   - Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnoradio
     default: |
-      ${ users[0].applied_for_other if i > 0 else '' }
+      ${ users[0].applied_for_other_immigration_benefit if i > 0 else '' }
   - Type of immigration benefit: users[i].applied_benefit_type
     show if: users[i].applied_for_other_immigration_benefit
     default: |
-      ${ users[0].applied_benefit_type if i > 0 else '' }
+      ${ showifdef("users[0].applied_benefit_type") if i > 0 else '' }
   - Receipt date: users[i].applied_receipt_date
     show if: users[i].applied_for_other_immigration_benefit
     datatype: ThreePartsDate
     default: |
-      ${ users[0].applied_receipt_date if i > 0 else '' }
+      ${ showifdef("users[0].applied_receipt_date") if i > 0 else '' }
   - Any other important information to note: users[i].applied_other_information
     default: |
-      ${ users[0].applied_other_information if i > 0 else '' }
+      ${ showifdef("users[0].applied_other_information") if i > 0 else '' }
     show if: users[i].applied_for_other_immigration_benefit
     datatype: area
   - "What is the proof of parole? Ex: i-94, parole letter, Interim Notice of Parole": users[i].proof_of_parole
@@ -75,35 +75,91 @@ fields:
     datatype: yesnoradio
     show if: users[i].ever_arrested
 ---
+id: review_ead_screening_questions
+continue button field: review_ead_screening_questions
 question: |
-  % if users[i].ever_ordered_removed or users[i].in_removal_proceedings or (not users[i].proof_of_parole_valid_for_90_days):
-  ${ fa_icon('exclamation-triangle', size="lg", color="warning") }
-  % endif
-  EAD eligibility screener for ${ users[i] }
+  EAD eligibility screener
 subquestion: |
-  % if users[i].ever_ordered_removed:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been issued a Final Order of Removal.
-
-  % endif
-  % if users[i].in_removal_proceedings:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } is in removal proceedings.
-
-  % endif
-  % if not users[i].proof_of_parole_valid_for_90_days:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] }'s proof of parole is not valid for at least the next 90 days.
-
-  % endif
+  <div class="accordion" id="userAccordion">
+    % for user in users:
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="userHeading${ loop.index }">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#userCollapse${ loop.index }" aria-expanded="true" aria-controls="userCollapse${ loop.index }">
+        ${ user }
+      </button>
+      </h2>
+      <div id="userCollapse${ loop.index }" class="accordion-collapse collapse show" aria-labelledby="userHeading${ loop.index }" data-bs-parent="#userAccordion">
+        <div class="accordion-body">
+  <ul>
+    <li>Has ${ user } ever been known by a different name?: ${ 'Yes' if user.aliases.there_are_any else 'No' }</li>
+    <li>Country of Birth: ${ user.country_of_birth }</li>
+    <li>Number of ${ user }'s children applying with them today: ${ user.number_children_applying }</li>
+    <li>Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: ${ 'Yes' if user.applied_for_other_immigration_benefit else 'No' }</li>
+    % if user.applied_for_other_immigration_benefit:
+    <li>Type of immigration benefit: ${ user.applied_benefit_type }</li>
+    <li>Receipt date: ${ user.applied_receipt_date }</li>
+    <li>Any other important information to note: ${ user.applied_other_information }</li>
+    % endif
+    <li>What is the proof of parole? Ex: i-94, parole letter, Interim Notice of Parole: ${ user.proof_of_parole }</li>
+    % if not user.proof_of_parole_valid_for_90_days:
+    <li><i class="fas fa-exclamation-triangle"></i>${ user }'s proof of parole is not valid for at least 90 days</li>
+    % else:
+    <li>Is ${ user } proof of parole valid for at least the next 90 days?: ${ 'Yes' if user.proof_of_parole_valid_for_90_days else 'No' }</li>
+    % endif
+    <li>Are you in removal proceedings right now?: ${ 'Yes' if user.in_removal_proceedings else 'No' }</li>
+    % if user.in_removal_proceedings and user.ever_ordered_removed:
+    <li><i class="fas fa-exclamation-triangle"></i>${ user } has been ordered removed</li>
+    % else:
+    <li>Have you been issued a Final Order of Removal?: ${ 'Yes' if user.ever_ordered_removed else 'No' }</li>
+    % endif
+    % if user.ever_arrested:
+    <li><i class="fas fa-exclamation-triangle"></i>${ user } has been arrested, cited, stopped, detained, or placed in handcuffs by the police</li>
+    <li>What happened? Include the location, reason for arrest, and outcome: ${ user.arrest_details }</li>
+    <li>Did you bring your criminal history documents with you?: ${ 'Yes' if user.has_criminal_history_documents else 'No' }</li>
+    % else:
+    <li>Have you ever been arrested, cited, stopped, detained, placed in handcuffs by the police?: ${ 'Yes' if user.ever_arrested else 'No' }</li>
+    % endif
+  </ul>
+          <a href="${ url_action(user.attr_name("ead_screening_questions")) }"><i class="fas fa-pencil"></i>Edit</a>
+        </div>
+      </div>
+    </div>
+    % endfor
+  </div>
 fields:
-  - What addenda should be included?: users[i].addenda
+  - What should happen with this application?: supervisor_overall_approval_status
+    datatype: radio
+    choices:
+      - All applicants can **continue**: approved
+      - All applicants are **screened out**: screened_out
+      - "**Some** applications can continue": mixed
+    show if:
+      code: |
+        len(users) > 1
+  - What should happen with this application?: supervisor_overall_approval_status
+    datatype: radio
+    choices:
+      - Continue application: approved
+      - Screened out: screened_out
+    show if:
+      code: |
+        len(users) == 1
+    minlength: 1
+  - Which applications should be **approved**?: approved_applications
+    datatype: object_checkboxes
+    choices:
+      - users
+    show if:
+      variable: supervisor_overall_approval_status
+      is: mixed
+  - Supervisor name: supervisor_name
+  - Supervisor notes: supervisor_notes
+    datatype: area
+  - What addenda should be included?: selected_addenda
     datatype: checkboxes
     choices:
       - EAD interim parole: ead_interim_parole
         default: True
-#review:
-#  - Edit: ead_screening_questions
-#    button: |
-#      - ${ }
-continue button field: users[i].review_ead_screening_questions
 ---
 id: tps_screening_questions
 continue button field: users[i].tps_screening_questions

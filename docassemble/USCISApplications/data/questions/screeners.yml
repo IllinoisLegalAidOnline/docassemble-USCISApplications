@@ -102,18 +102,18 @@ subquestion: |
     % endif
     <li>What is the proof of parole? Ex: i-94, parole letter, Interim Notice of Parole: ${ user.proof_of_parole }</li>
     % if not user.proof_of_parole_valid_for_90_days:
-    <li><i class="fas fa-exclamation-triangle"></i>${ user }'s proof of parole is not valid for at least 90 days</li>
+    <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user }'s proof of parole is not valid for at least 90 days</li>
     % else:
     <li>Is ${ user } proof of parole valid for at least the next 90 days?: ${ 'Yes' if user.proof_of_parole_valid_for_90_days else 'No' }</li>
     % endif
     <li>Are you in removal proceedings right now?: ${ 'Yes' if user.in_removal_proceedings else 'No' }</li>
     % if user.in_removal_proceedings and user.ever_ordered_removed:
-    <li><i class="fas fa-exclamation-triangle"></i>${ user } has been ordered removed</li>
+    <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user } has been ordered removed</li>
     % else:
     <li>Have you been issued a Final Order of Removal?: ${ 'Yes' if user.ever_ordered_removed else 'No' }</li>
     % endif
     % if user.ever_arrested:
-    <li><i class="fas fa-exclamation-triangle"></i>${ user } has been arrested, cited, stopped, detained, or placed in handcuffs by the police</li>
+    <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user } has been arrested, cited, stopped, detained, or placed in handcuffs by the police</li>
     <li>What happened? Include the location, reason for arrest, and outcome: ${ user.arrest_details }</li>
     <li>Did you bring your criminal history documents with you?: ${ 'Yes' if user.has_criminal_history_documents else 'No' }</li>
     % else:
@@ -184,7 +184,7 @@ subquestion: |
     </p>
   </div>
 fields:
-  - What is your proof of birth country?: users[i].proof_of_birthplace
+  - What documents do you have proving your country of birth?: users[i].proof_of_birthplace
     datatype: checkboxes
     choices:
       - Birth certificate
@@ -311,6 +311,8 @@ fields:
     label above field: True
     datatype: yesnoradio
   - Date of first hearing: users[i].date_removal_proceedings_began
+    datatype: ThreePartsDate
+    max: ${ today() }
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
@@ -352,18 +354,18 @@ subquestion: |
         <div class="accordion-body">
           <ol>
             % if user.proof_of_birthplace.all_false():
-            <li><i class="fas fa-exclamation-triangle"></i>${ user } has no proof of birthplace</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user } has no proof of birthplace</li>
             % else:
             <li>Proof of birth country: ${ showifdef("user.proof_of_birthplace") }</li>
             % endif
             <li>Both parents are Venezuelan nationals: ${ 'Yes' if showifdef("user.parents_from_venezuela") else 'No' }</li>
             % if showifdef("user.parents_from_venezuela") and not user.proof_of_parent_birthplace:
-            <li><i class="fas fa-exclamation-triangle"></i> ${ user } was not born in Venezuela but their parents were. Yet they do not have proof.</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } was not born in Venezuela but their parents were. Yet they do not have proof.</li>
             % else:
             <li>Has proof of parents' birthplace: ${ showifdef("user.proof_of_parent_birthplace") }</li>
             % endif
             % if user.in_other_country_longer_than_6_months:
-            <li><i class="fas fa-exclamation-triangle"></i> ${ user } spent more than 6 months in another country.</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } spent more than 6 months in another country.</li>
             % else:
             <li>Stayed in another country for more than 6 months before arriving to the US: ${ 'Yes' if user.in_other_country_longer_than_6_months else 'No' }</li>
             % endif
@@ -387,28 +389,28 @@ subquestion: |
             <li>Location of proceedings: ${ showifdef("user.location_removal_proceedings") }</li>
             <li>Issued a Final Order of Removal: ${ 'Yes' if showifdef("user.ever_ordered_removed") else 'No' }</li>
             % if user.ever_arrested:
-            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has been arrested, cited, stopped, detained, or placed in handcuffs by the police.</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } has been arrested, cited, stopped, detained, or placed in handcuffs by the police.</li>
             % else:
             <li>Ever arrested or detained by the police: ${ 'Yes' if showifdef("user.ever_arrested") else 'No' }</li>
             % endif
             <li>Details of every arrest: ${ showifdef("user.arrest_details") }</li>
             % if user.claimed_us_citizenship:
-            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has claimed to be a US Citizen.</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } has claimed to be a US Citizen.</li>
             % else:
             <li>Ever claimed to be a US Citizen: ${ 'Yes' if showifdef("user.claimed_us_citizenship") else 'No' }</li>
             % endif
             % if user.gang_affiliation:
-            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has been affiliated with a gang.</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } has been affiliated with a gang.</li>
             % else:
             <li>Affiliated with any gangs: ${ 'Yes' if showifdef("user.gang_affiliation") else 'No' }</li>
             % endif
             % if user.served_military:
-            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has served in the military or participated in a paramilitary group.</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } has served in the military or participated in a paramilitary group.</li>
             % else:
             <li>Served in the military or participated in a paramilitary group: ${ 'Yes' if showifdef("user.served_military") else 'No' }</li>
             % endif
             % if user.acted_as_terrorist:
-            <li><i class="fas fa-exclamation-triangle"></i>${ user } acted as a terrorist</li>
+            <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user } acted as a terrorist</li>
             % else:
             <li>Member of a terrorist organization: ${ 'Yes' if showifdef("user.acted_as_terrorist") else 'No' }</li>
             % endif

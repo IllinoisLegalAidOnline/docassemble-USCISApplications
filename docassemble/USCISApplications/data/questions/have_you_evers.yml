@@ -1,0 +1,150 @@
+  - "Have you EVER been convicted of any felony committed in the United States?": users[i].q8a
+    input type: yesnoradio
+  - "Have you EVER been convicted of any misdemeanor committed in the United States": users[i].q8b
+    input type: yesnoradio
+  - "Have you EVER been convicted of any particularly serious crime, whether committed inside or outside of the United States": users[i].q8c
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, assisted, or otherwise participated in the persecution of any person on account of race, religion, nationality, membership in a particular social group, or political opinion?": users[i].q9a
+    input type: yesnoradio
+  - "Have you EVER committed serious nonpolitical crimes outside of the United States prior to your arrival in the United States?": users[i].q9b
+    input type: yesnoradio
+  - "Have you EVER or are you NOW engaged in activities that could be reasonable grounds for concluding that you are a danger to the security of the United States?": users[i].q9c
+    input type: yesnoradio
+  - "Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a crime (other than a purely political offense)?": users[i].q10a
+    input type: yesnoradio
+  - "Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a violation of any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?": users[i].q10b
+    input type: yesnoradio
+  - "Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a conspiracy to violate any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?": users[i].q10c
+    input type: yesnoradio
+  - "Have you EVER been convicted of two or more criminal offenses (other than purely political offenses) for which you received sentences to confinement that, when combined, total five years or more?": users[i].q11
+    input type: yesnoradio
+  - "Have you EVER trafficked in or are you NOW trafficking in any controlled substance?": users[i].q12a
+    input type: yesnoradio
+  - "Are you NOW or have you EVER knowingly assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?": users[i].q12b
+    input type: yesnoradio
+  - "Are you the spouse or child of an alien who unlawfully trafficked in any controlled substance?": users[i].q12c
+    input type: yesnoradio
+  - "Are you the spouse or child of an alien who assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?": users[i].q12d
+    input type: yesnoradio
+  - "Within the previous five years, have you EVER obtained any financial or other benefit from the unlawful activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit was the product of such illicit activity?": users[i].q12e
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate any law of the United States relating to espionage or sabotage?": users[i].q13a
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate or evade any law prohibiting the export from the United States of goods, technology, or sensitive information?": users[i].q13b
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any other unlawful activity in the United States?": users[i].q13c
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity in which a purpose is to oppose, control, or overthrow the Government of the United States by force, violence, or other unlawful means, including but not limited to participating in such activities, giving support to others involved in such activities, or being a member or representative of a terrorist organization?": users[i].q13d
+    input type: yesnoradio
+  - "Have you EVER or are you NOW engaged in terrorist activities?": users[i].q14a
+    input type: yesnoradio
+  - "Have you EVER or are you NOW engaged in or plan to engage in activities in the United States that would have potentially serious adverse foreign policy consequences for the United States?": users[i].q14b
+    input type: yesnoradio
+  - "Have you EVER been or are you NOW a member of the Communist or other totalitarian party, except when membership was involuntary?": users[i].q14c
+    input type: yesnoradio
+  - "Have you EVER participated in Nazi persecution or genocide?": users[i].q14d
+    input type: yesnoradio
+  - "Have you EVER, whether in the United States or any other country, been arrested for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15a
+    input type: yesnoradio
+  - "Have you EVER, whether in the United States or any other country, been cited, charged, or indicted, for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15b
+    input type: yesnoradio
+  - "Have you EVER, whether in the United States or any other country, been convicted, fined, imprisoned, placed on probation, received a suspended sentence or deferral of adjudication for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15c
+    input type: yesnoradio
+  - "Have you EVER been the beneficiary of a pardon, amnesty, rehabilitation decree, other act of clemency, or similar action?": users[i].q16
+    input type: yesnoradio
+  - "Have you EVER committed a serious criminal offense in the United States and asserted immunity from prosecution?": users[i].q17
+    input type: yesnoradio
+  - "Have you EVER, within the past 10 years, or are you NOW engaged in prostitution or procurement of prostitution?": users[i].q18a
+    input type: yesnoradio
+  - "Have you EVER, within the past 10 years (either directly or indirectly) procured or attempted to procure or import prostitutes or persons for the purpose of prostitution?": users[i].q18b
+    input type: yesnoradio
+  - "Have you EVER, within the past 10 years, received, in whole or in part, the proceeds of prostitution?": users[i].q18c
+    input type: yesnoradio
+  - "Have you EVER been or do you intend to be involved in any other commercial vice?": users[i].q19
+    input type: yesnoradio
+  - "Have you EVER been ordered removed, and been deported from the United States?": users[i].q20a
+    input type: yesnoradio
+  - "Have you EVER voluntarily departed the United States under an order of removal?": users[i].q20b
+    input type: yesnoradio
+ - "Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
+    input type: yesnoradio
+    show if: 
+      code: |
+        users[i].q20a or users[i].q20b ### is this right?
+  - "Has DHS reinstated your prior order of removal?": users[i].q20d
+     input type: radio
+     choices:
+       - Yes
+       - No
+       - I do not know
+    show if: users[i].q20c
+  - "Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?": users[i].q20e
+    input type: yesnoradio
+  - "Have you EVER, by fraud or willfully misrepresenting a material fact, sought to obtain a visa or other documentation, admission to the United States, or any other immigration benefit?": users[i].q21
+    input type: yesnoradio
+  - "Have you EVER assisted any other person to enter the United States in violation of the law?": users[i].q22
+    input type: yesnoradio
+  - "Do you NOW have a communicable disease of public health significance?": users[i].q23a
+    input type: yesnoradio
+  - "Do you NOW have or have you EVER had a physical or mental disorder and behavior (or a history of behavior that is likely to recur) associated with the disorder which has posed or may pose a threat to the property, safety, or welfare of yourself or others?": users[i].q23b
+    input type: yesnoradio
+  - "Are you NOW or have you EVER been a drug abuser or drug addict?": users[i].q23c
+    input type: yesnoradio
+  - "Have you EVER entered the United States as a stowaway?": q24
+    input type: yesnoradio
+  - "Did the former Immigration and Naturalization Service (INS) EVER impose, or has DHS EVER imposed, civil monetary penalties on you for producing or using false documentation to obtain an immigration benefit?": users[i].q25
+    input type: yesnoradio
+  - "Are you NOW subject to a final order for violation of section 274C (producing and/or using false documentation to unlawfully satisfy a requirement of the Immigration and Nationality Act)?": users[i].q26
+    input type: yesnoradio
+  - "Do you NOW practice polygamy?": users[i].q27
+    input type: yesnoradio
+  - "Are you NOW the guardian of, and are you accompanying, another individual who has been found to be inadmissible and who has been certified by a medical examiner to be helpless due to sickness, physical or mental disability, or infancy?": users[i].q28
+    input type: yesnoradio
+  - "Have you EVER detained, retained, or withheld the custody of a child having a lawful claim to U.S. citizenship, outside the United States, from a U.S. citizen granted custody?": users[i].q29
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in acts involving torture or genocide?": users[i].q30a
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in killing any person?": users[i].q30b
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in intentionally and severely injuring any person?": users[i].q30c
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in engaging in any kind of sexual contact or relations with any person who was being forced or threatened?": users[i].q30d
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in limiting or denying any person's ability to exercise religious beliefs?": users[i].q30e
+    input type: yesnoradio
+  - "Have you EVER served in, been a member of, assisted in, or participated in any military unit, paramilitary unit, police unit, self-defense unit, vigilante unit, rebel group, guerrilla group, militia, or insurgent organization?": users[i].q31a
+    input type: yesnoradio
+  - "Have you EVER served or worked in any prison, jail, prison camp, detention facility, labor camp, or any other situation that involved detaining persons?": users[i].q31b
+    input type: yesnoradio
+  - "Have you EVER been a member of, assisted in, or participated in any group, unit, or organization of any kind in which you or other persons used any type of weapon against any person or threatened to do so?": users[i].q32
+    input type: yesnoradio
+  - "Have you EVER assisted with or participated in selling or providing weapons to any person who to your knowledge used them against another person, or in transporting weapons to any person who to your knowledge used them against another person?": users[i].q33
+    input type: yesnoradio
+  - "Have you EVER received any type of military, paramilitary, or weapons training?": users[i].q34
+    input type: yesnoradio
+  - "Have you EVER unlawfully voted in a United States Federal, state, or local election?": users[i].q35
+    input type: yesnoradio
+  - "Have you EVER claimed to be a U.S. citizen (in writing or in any other way)?": users[i].q36
+    input type: yesnoradio
+  - "Have you EVER recruited, enlisted, conscripted, or used any person under 15 years of age to serve in or help an armed force or group?": users[i].q37a
+    input type: yesnoradio
+  - "Have you EVER used any person under 15 years of age to take part in hostilities or to help or provide services to people in combat?": users[i].q37b
+    input type: yesnoradio
+  - "Have you EVER committed or conspired to commit human trafficking offenses, as defined in the section 103 of the Victims of Trafficking and Violence Protection Act of 2000, in the United States or outside the United States?": users[i].q38a
+    input type: yesnoradio
+  - "Have you EVER knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?": users[i].q38b
+    input type: yesnoradio
+  - "Are you NOW the spouse or child of an alien who committed or conspired to commit human trafficking offenses?": users[i].q38c
+    input type: yesnoradio
+  - "Are you NOW the spouse or child of, or are you yourself, an alien who knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?": users[i].q38d
+    input type: yesnoradio
+  - "Within the previous five years, have you EVER obtained any financial or other benefit from the human trafficking activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit that you received resulted from such human trafficking?": users[i].q38e
+    input type: yesnoradio
+  - "Are you NOW or have you EVER engaged in money laundering as described in section 1956 or 1957 of Title 18, United States Code?": users[i].q39a
+    input type: yesnoradio
+  - "Are you NOW or have you EVER been a knowing aider, abettor, assister, conspirator, or colluder with others in money laundering?": users[i].q39b
+    input type: yesnoradio
+  - "Have you EVER been responsible for or directly carried out particularly severe violations of religious freedom, as defined in section 3 of the International Religious Freedom Act of 1998 (22 U.S.C. section 6402) while serving as a foreign government official?": users[i].q40
+    input type: yesnoradio
+  - "Has an immigration judge or the Board of Immigration Appeals EVER determined that you filed a frivolous asylum application in the past?": users[i].q41
+    input type: yesnoradio

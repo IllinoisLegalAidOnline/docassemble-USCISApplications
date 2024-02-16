@@ -20,7 +20,7 @@ comment: |
   This block sets the required attributes and interview order to gather a 'users' object.
 code: |
   users[i].user_reads_english # suggest to put in screener
-  users[i].is_form_g28_attached
+  # users[i].is_form_g28_attached
   users[i].sex
   users[i].alternate_birthdates.gather()
   users[i].address.address
@@ -39,17 +39,65 @@ code: |
   users[i].i94_arrival_number
   if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
     users[i].father_first_name
+  users[i].have_you_ever
   users[i].complete = True
 ---
-id: applicant's name
-sets:
-    - users[0].name.first
-    - users[0].name.last
-    - users[0].name.middle
-question:  Applicant's Name
+id: your address
+question: |
+  ${ users[0] }'s address
 fields:
-  - code: |
-      users[0].name_fields(show_suffix=False)
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Suite/Unit/Floor/Room: users[0].address.unit
+    required: False
+  - City or Town: users[0].address.city
+  - State/Province: users[0].address.state
+    required: False
+  - ZIP/Postal Code: users[0].address.zip
+  - Country: users[0].address.country
+    datatype: combobox
+    code: |
+      uscis_countries_list()
+---
+id: your address
+sets:
+  - users[i].address.address
+  - users[i].address.city
+  - users[i].address.zip
+  - users[i].address.unit
+  - users[i].address.state
+  - users[i].address.country
+question: |
+  ${ users[i] }'s address
+fields:
+  - Street address: users[i].address.address
+    address autocomplete: True
+    default: ${ users[0].address.address }
+  - Suite/Unit/Floor/Room: users[i].address.unit
+    required: False
+    default: ${ users[0].address.unit }
+  - City or Town: users[i].address.city
+    default: ${ users[0].address.city }
+  - State/Province: users[i].address.state
+    required: False
+    default: ${ users[0].address.state }
+  - ZIP/Postal Code: users[i].address.zip
+    default: ${ users[i].address.zip }
+  - Country: users[i].address.country
+    datatype: combobox
+    code: |
+      uscis_countries_list()
+    default: ${ users[0].address.country }
+---
+# id: applicant's name
+# sets:
+#     - users[0].name.first
+#     - users[0].name.last
+#     - users[0].name.middle
+# question:  Applicant's Name
+# fields:
+#   - code: |
+#       users[0].name_fields(show_suffix=False)
 ---
 ################## AD Code Blurbs ###################
 code: |
@@ -427,7 +475,8 @@ yesno: users[i].alternate_birthdates.there_is_another
 ---
 ############## Physical Characteristics and Marital Status ##############
 id: ethnicity and physical characteristics
-question: Ethnicity & Physical Characteristics
+question: |
+  Ethnicity & Physical Characteristics
 fields:
   - Gender: users[i].sex
     datatype: radio
@@ -437,17 +486,17 @@ fields:
   - Ethnicity: users[i].ethnicity
     datatype: radio
     choices:
-      - Hispanic or Latino
-      - Not Hispanic or Latino
+      - Hispanic or Latino: hispanic
+      - Not Hispanic or Latino: not_hispanic
   - Race (choose all applicable)": users[i].race
     datatype: checkboxes
     choices:
-      - White
-      - Black or African American
-      - American Indian or Alaska Native
-      - Asian
-      - Native Hawaiian or Other Pacific Islander
-      - Other
+      - White: white
+      - Black or African American: black
+      - American Indian or Alaska Native: native_american
+      - Asian: asian
+      - Native Hawaiian or Other Pacific Islander: pacific_islander
+      - Other: other
   - "Height (feet)": users[i].height_feet
     datatype: integer
   - "Height (inches)": users[i].height_inches
@@ -457,27 +506,32 @@ fields:
   - "Hair Color (choose one)": users[i].hair_color
     datatype: radio
     choices:
-      - Bald (No hair)
-      - Black
-      - Blond
-      - Brown
-      - Gray
-      - Red
-      - Sandy
-      - White
-      - Unknown/Other
+      - Bald (No hair): bald
+      - Black: black
+      - Blond: blond
+      - Brown: brown
+      - Gray: gray
+      - Red: red
+      - Sandy: sandy
+      - White: white
+      - Blue: blue
+      - Orange: orange
+      - Pink: pink
+      - Unknown/Other: other
   - "Eye Color (choose one)": users[i].eye_color
     datatype: radio
     choices:
-      - Black
-      - Blue
-      - Brown
-      - Gray
-      - Green
-      - Hazel
-      - Maroon
-      - Pink
-      - Unknown/Other
+      - Black: black
+      - Blue: blue
+      - Brown: brown
+      - Gray: gray
+      - Green: green
+      - Hazel: hazel
+      - Maroon: maroon
+      - Pink: pink
+      - Purple: purple
+      - Multicolor: multicolor
+      - Unknown/Other: other
   - Marital Status: users[i].marital_status
     datatype: radio
     choices: 
@@ -781,7 +835,9 @@ fields:
       - No 9: No_9
 ---
 id: have you evers
-question: Has Applicant EVER...
+continue button field: users[i].have_you_ever
+question: |
+  Has ${ users[i] } **ever**...
 fields:
   - "Been convicted of committing a felony in the US?": users[i].been_convicted_of_felony_in_us
     datatype: yesno
@@ -997,14 +1053,32 @@ fields:
     datatype: yesno
   - "Interpreter spoke language": users[i].interpreter_spoke_language
     maxlength: 16
-  - "User used preparer": users[i].user_used_preparer
-    datatype: yesno
+    datatype: combobox
+    choices:
+      - Spanish
+      - Arabic
+      - Chinese
+      - French
+      - Haitian Creole
+      - Korean
+      - Polish
+      - Portuguese
+      - Russian
+      - Tagalog
+      - Vietnamese
+    default: ${ interpreter.language if interpreter_present else None}
+    show if: users[i].user_used_interpreter
   - "Interpreted into language": users[i].interpreted_into_language
     maxlength: 23
-  - "Preparer full rep": users[i].preparer_full_rep
-    datatype: yesno
-  - "Preparer limited rep": users[i].preparer_limited_rep
-    datatype: yesno
+  # Always Yes
+  # - "User used preparer": users[i].user_used_preparer
+  #   datatype: yesno
+  # Always No
+  # - "Preparer full rep": users[i].preparer_full_rep
+  #   datatype: yesno
+  # Always Yes
+  # - "Preparer limited rep": users[i].preparer_limited_rep
+  #   datatype: yesno
 ---
 id: Addendum skip these
 question: Addendum (skip these)

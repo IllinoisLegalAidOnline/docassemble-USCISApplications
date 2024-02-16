@@ -43,40 +43,45 @@ features:
   progress bar: True
   progress bar multiplier: 0.01
 ---
-sections:
-  - Family members
-  - Retainer
-  - Applicant screener
-  - EAD or TPS
-  - review_USCIS_Applications: Review your answers    
-  - Download and Print
+code: |
+  nav.set_sections(default_sections)
+  set_initial_sections = True
 ---
 #################### Interview order #####################
 id: interview_order_main
 mandatory: True
 code: |
+  set_initial_sections
   intro_main
   preparer.name.first
   if interpreter_present:
     interpreter.name.first
   users.gather()
   review_initial_user_list
+  nav.set_section("section_retainer")
   interview_order_limited_scope
   set_progress(10)
   for user in users:
     user.signature
+  nav.set_section("section_screener")
   application_kind
+  signpost_screener
+  if len(users) > 1:
+    update_sections
   for idx, user in enumerate(users):
+    nav.set_section(f"users_{idx}_signpost_screen")
     if application_kind == "ead_only":
       user.ead_screening_questions
       user.review_ead_screening_questions
     else:
       user.tps_screening_questions
       user.review_tps_screening_questions
-    user.applicant_intake_worksheet_questions
+    # user.applicant_intake_worksheet_questions
     set_progress((80/len(users.complete_elements())) * (idx + 1) + 10 )
     # Trigger the more detailed questions on a per-user basis
-  for user in users:
+  for idx,user in enumerate(users):
+    nav.set_section(f"users_{idx}_signpost_app")
+    user.signpost
     user.complete
   store_variables_snapshot(
       persistent=True,
@@ -88,14 +93,62 @@ code: |
   )  
   download_completed_ea_application
 ---
+variable name: default_sections
+data:
+  - section_family: Applicant names
+  - section_retainer: Limited Retainer
+  - section_screener: Verify eligibility
+  - section_application: Application
+  - review_USCIS_Applications: Review your answers    
+  - section_download: Download and print
+---
+code: |
+  if len(users) > 1:
+    sections = default_sections[:-4]
+    for idx, user in enumerate(users):
+      sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
+    for idx, user in enumerate(users):
+      sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
+    sections.extend(default_sections[-2:]
+    )
+    nav.set_sections(sections)
+  update_sections = True
+---
+id: signpost_screener
+question: |
+  Legal screener
+subquestion: |
+  Before you start the application, we will check that ${ users }
+  % if len(users) > 1:
+  are all eligible to apply.
+  % else:
+  is eligible to apply.
+  % endif  
+continue button field: signpost_screener
+---
 id: interpreter_present
 question: |
   Is an interpreter present?
 fields:
   - Is an interpreter present?: interpreter_present
     datatype: yesnoradio
+  - What language will the interpreter speak?: interpreter.language
+    show if: interpreter_present
+    datatype: combobox
+    choices:
+      - Spanish
+      - Arabic
+      - Chinese
+      - French
+      - Haitian Creole
+      - Korean
+      - Polish
+      - Portuguese
+      - Russian
+      - Tagalog
+      - Vietnamese
   - note: |
-      Name of interepreter
+      <h2 class="h4">Interpreter's Name</h2>
     show if: interpreter_present
   - code: |
       interpreter.name_fields(person_or_business="person", show_if="interpreter_present")
@@ -104,16 +157,43 @@ id: intro_main
 question: |
   Let's get started
 subquestion: |
-  Here's what you'll do today:
 
-  1. Get names of the people who are applying for work authorization
-  2. Review the limited scope retainer
-  3. Go through the screener questions for each applicant
-  4. Complete the application, for the I-765 or the I-821
-  5. Review the application
-  6. Print the final application and get the applicants signatures.
-     We will make a separate set of documents for each applicant.
+  This interview will help you complete employment authorization
+  paperwork for a family group.
+
+  <h2 class="h4">Overview</h2>
+
+  You will work through the following sections:
+
+  1. Gather names
+  2. Complete the limited scope retainer
+  3. Verify eligibility
+  4. Complete the application, for the I-765 or the I-821 or both
+  5. Review your work
+  6. Download and print your work. You will get a separate
+      set of documents for each person in the family group.
 continue button field: intro_main
+---
+continue button field: users[i].signpost
+question: |
+  The next questions are about ${ bold(users[i]) }
+subquestion: |
+  We will cover 
+  % if application_kind == "ead_only":
+  EAD application questions.
+  % else:
+  TPS and EAD application questions.
+  % endif
+
+  % if i + 1 == len(users):
+  This is set of questions is for the **last** member of this family group.
+
+  When you're done with the questions for ${ bold(users[i]) }, you'll be able to review your answers and download the completed application.
+  % else:
+  This is set of questions is for the ${ ordinal(i) } family member of ${ len(users) }.
+
+  When you're done with the questions for ${ bold(users[i]) }, you'll be able to move on to the next person in the family group.
+  % endif
 ---
 sets:
   - preparer.name.first
@@ -149,11 +229,11 @@ fields:
   - Middle name: users[0].name.middle
     required: False
   - Last name: users[0].name.last
-  - Suffix: users[0].name.suffix
-    required: False
-    datatype: combobox
-    code: |
-      name_suffix()
+  # - Suffix: users[0].name.suffix
+  #   required: False
+  #   datatype: combobox
+  #   code: |
+  #     name_suffix()
   - Country of Birth: users[0].country_of_birth
     datatype: combobox
     code: |
@@ -247,6 +327,7 @@ subquestion: |
   <h2 class="h4">${ user.name.first }'s application</h2>
 
   ${ user.document_bundle.download_list_html() }
+  ${ action_button_html(user.document_bundle.as_pdf().url_for(), label=f"Download { user}'s application as PDF", icon="file-pdf") }
   % endfor
 ---
 objects:

@@ -83,14 +83,14 @@ attachment:
       - "users1_birthdate": ${ users[i].birthdate }
       - "country_of_citizenship": ${ users[i].country_of_citizenship }
       - "country_of_birth": ${ users[i].country_of_birth }
-      - "gender_male": ${ users[i].gender_male }
-      - "gender_female": ${ users[i].gender_female }
-      - "gender_other": ${ users[i].gender_other }
+      - "gender_male": ${ users[i].sex == "Male" }
+      - "gender_female": ${ users[i].sex == "Female" }
+      - "gender_other": ${ users[i].sex not in ("Male", "Female") }
       - "race_asian": ${ users[i].race.get("asian") }
       - "race_black": ${ users[i].race.get("black") }
-      - "race_caucasian_latino": ${ users[i].race.get("caucasian_latino") }
-      - "race_native_american": ${ users[i].race.get("native_american") }
-      - "race_unknown": ${ users[i].race.all_false() }
+      - "race_caucasian_latino": ${ users[i].race.get("white") or users[i].ethnicity == "hispanic" }
+      - "race_native_american": ${ users[i].race.get("native_american") or users[i].race.get("pacific_islander") }
+      - "race_unknown": ${ users[i].race.all_false() or users[i].race.get("other") }
       - "eye_color_black": ${ users[i].eye_color == "black" }
       - "eye_color_blue": ${ users[i].eye_color == "blue" }
       - "eye_color_brown": ${ users[i].eye_color == "brown" }
@@ -100,7 +100,7 @@ attachment:
       - "eye_color_maroon": ${ users[i].eye_color == "maroon" }
       - "eye_color_pink": ${ users[i].eye_color == "pink" }
       - "eye_color_multicolor": ${ users[i].eye_color == "multicolor" }
-      - "eye_color_unknown": ${ users[i].eye_color == "unknown" }
+      - "eye_color_unknown": ${ users[i].eye_color == "unknown" or users[i].eye_color == "other" }
       - "hair_bald": ${ users[i].hair_color == "bald" }
       - "hair_red":  ${ users[i].hair_color == "red" }
       - "hair_black": ${ users[i].hair_color == "black" }
@@ -116,7 +116,7 @@ attachment:
       - "hair_pink": ${ users[i].hair_color == "pink" }
       - "hair_purple": ${ users[i].hair_color == "purple" }
       - "height_centimeters": ${ users[i].height_centimeters }
-      - "height_feet_inches": ${ users[i].height_feet_inches }
+      - "height_feet_inches": ${ users[i].height_feet } ft ${ users[i].height_inches } in
       - "weight_pounds": ${ users[i].weight_pounds }
       - "weight_kilos": ${ users[i].weight_kilos }
 ---

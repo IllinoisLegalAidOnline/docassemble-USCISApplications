@@ -990,7 +990,7 @@ question: Language & Translation
 fields:
   - "Does ${ users[i] } read English?": users[i].user_reads_english
     datatype: yesno
-  - "Did ${ users[i] } use the ${ interpreter_language } interpreter?": users[i].user_used_interpreter
+  - "Did ${ users[i] } use the ${ interpreter.language } interpreter?": users[i].user_used_interpreter
     datatype: yesno
     default: ${ interpreter_present }
     show if:

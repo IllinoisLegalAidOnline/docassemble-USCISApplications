@@ -163,6 +163,7 @@ fields:
   - "Interpreter's organization": interpreter.interpreter_organization
     maxlength: 38
     required: False
+    show if: interpreter_present
 ---
 id: intro_main
 question: |

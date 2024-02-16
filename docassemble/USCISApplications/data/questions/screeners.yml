@@ -65,6 +65,7 @@ fields:
           If the answer is yes, the user is not eligible for an EAD.
         </p>
       </div>
+    show if: users[i].ever_ordered_removed
   - Have you ever been arrested, cited, stopped, detained, placed in handcuffs by the police?: users[i].ever_arrested
     datatype: yesnoradio
   - What happened? Include the location, reason for arrest, and outcome: users[i].arrest_details
@@ -92,6 +93,12 @@ subquestion: |
   ${ fa_icon('exclamation-triangle') } ${ users[i] }'s proof of parole is not valid for at least the next 90 days.
 
   % endif
+fields:
+  - What addenda should be included?: users[i].addenda
+    datatype: checkboxes
+    choices:
+      - EAD interim parole: ead_interim_parole
+        default: True
 #review:
 #  - Edit: ead_screening_questions
 #    button: |
@@ -103,8 +110,18 @@ continue button field: users[i].tps_screening_questions
 question: |
   TPS eligibility screener for ${ users[i] }
 subquestion: |
-  <div class="alert alert-info" role="alert">
+  <div class="p-3 mb-2 bg-info text-dark border border-info rounded-3" role="alert">
     <h2 class="h4">Note to screener</h2>
+    <p>
+      To complete this form, you may need to review the applicant's:
+        <ul>
+          <li>Completed workbook</li>
+          <li>National identity documents (passport, birth certificate, national ID)</li>
+          <li>City-issued shelter letter</li>
+          <li>Immigration paperwork, including Notice to Appear or proof of entry</li>
+          <li>Arrest records and court dispositions, if applicable</li>
+        </ul>
+    </p>
     <p>
       Some of the questions below are written so you can read them aloud. Enter the answer
       given by <strong>${ users[i] }</strong>.
@@ -130,10 +147,56 @@ fields:
     show if: users[i].parents_from_venezuela
   - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: users[i].in_other_country_longer_than_6_months
     datatype: yesnoradio
-  - When did you leave your home country?: users[i].date_left_home_country_month_and_year
-    datatype: ThreePartsDate
-  - When did you last enter the US?: users[i].date_of_last_entry
-    datatype: ThreePartsDate
+  - note: |
+      When did you leave your home country?
+    grid: 3
+  - label: Month
+    field: users[i].date_left_home_country_month
+    label above field: True
+    grid: 6
+    choices:
+      - January
+      - February
+      - March
+      - April
+      - May
+      - June
+      - July
+      - August
+      - September
+      - October
+      - November
+      - December
+  - Year: users[i].date_left_home_country_year
+    label above field: True
+    datatype: integer    
+    grid: 3
+  - note: |
+      When did you last enter the US?
+    help: |
+      Should be listed on their immigration documentation
+    grid: 3
+  - label: Month
+    field: users[i].last_entry_date_month
+    label above field: True
+    grid: 6
+    choices:
+      - January
+      - February
+      - March
+      - April
+      - May
+      - June
+      - July
+      - August
+      - September
+      - October
+      - November
+      - December
+  - Year: users[i].last_entry_date_year
+    label above field: True
+    datatype: integer
+    grid: 3
   - Do you have proof that you were physically present in the US as of July 31, 2023?: users[i].proof_last_entry_date_before_july_31_2023
     datatype: checkboxes
     choices:
@@ -150,9 +213,9 @@ fields:
       - I-94
       - Passport stamp
       - Other
-    show if:
-      variable: users[i].proof_last_entry_date_before_july_31_2023
-      is: False
+    # show if:
+    #   variable: users[i].proof_last_entry_date_before_july_31_2023
+    #   is: False
   - Do you have any children applying with you today?: users[i].has_children_applying_today
     datatype: yesnoradio
   - Was any child born outside of Venezuela?: users[i].has_children_applying_not_born_in_venezuela
@@ -188,14 +251,19 @@ fields:
   - Explain: users[i].applied_for_other_immigration_benefit_explanation
     datatype: area
     show if: users[i].applied_for_other_immigration_benefit
-  - Are you in removal proceedings?: users[i].in_removal_proceedings
+  - "Are you in removal proceedings? (Review EOIR list on your table for applicant’s court hearing info, if applicable. If applicant is NOT listed, look up their EOIR case status using their A#: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/))": users[i].in_removal_proceedings
+    label above field: True
     datatype: yesnoradio
-  - Explain (include the date, location, and information about whether this is a final order of removal): users[i].removal_proceedings_explanation
-    datatype: area
+  - Date of first hearing: users[i].date_removal_proceedings_began
+    show if: users[i].in_removal_proceedings
+  - Location of proceedings: users[i].location_removal_proceedings
+    show if: users[i].in_removal_proceedings
+  - Have you been issued a Final Order of Removal?: users[i].ever_ordered_removed
+    datatype: yesnoradio
     show if: users[i].in_removal_proceedings
   - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: users[i].ever_arrested
     datatype: yesnoradio
-  - List when/where/outcome of EVERY arrest, including those in US and outside of US: users[i].arrest_details
+  - List when/where/outcome of EVERY arrest, including those in US and outside of US (review certified dispositions & applicant workbook with legal supervisor): users[i].arrest_details
     datatype: area
     show if: users[i].ever_arrested
   - Have you ever claimed to be a US Citizen?: users[i].claimed_us_citizenship
@@ -208,57 +276,94 @@ fields:
     datatype: yesnoradio
 ---
 id: review_tps_screening_questions
-continue button field: users[i].review_tps_screening_questions
+continue button field: review_tps_screening_questions
 question: | 
-  % if users[i].claimed_us_citizenship or users[i].gang_affiliation or users[i].served_military or users[i].acted_as_terrorist:
-  ${ fa_icon('exclamation-triangle', size="lg", color="warning") }
-  % endif
-  Review TPS screening questions for ${ users[i] }
+  Review TPS screening questions
 subquestion: |
-  % if users[i].proof_of_birthplace.all_false():
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } has no proof of birthplace.
+  <div class="accordion" id="userAccordion">
+    % for user in users:
+    <div class="accordion-item">
+      % if user.proof_of_birthplace.all_false() or not user.parents_from_venezuela or (user.parents_from_venezuela and not user.proof_of_parent_birthplace) or user.in_other_country_longer_than_6_months or not user.last_entry_date_month or not user.last_entry_date_year or not user.proof_last_entry_date_before_july_31_2023 or not user.proof_last_entry_date_before_october_4_2023 or user.has_children_applying_today or user.has_children_applying_not_born_in_venezuela or not user.children_outside_of_venezuela or not user.method_of_entry or not user.who_entered_with_user or user.children_entered_separately or not user.countries_and_legal_status or user.applied_for_other_immigration_benefit or user.in_removal_proceedings or not user.date_removal_proceedings_began or not user.location_removal_proceedings or user.ever_ordered_removed or user.ever_arrested or user.claimed_us_citizenship or user.gang_affiliation or user.served_military or user.acted_as_terrorist:
+      <h2 class="accordion-header danger" id="userHeading${ loop.index }">
+      % else:
+      <h2 class="accordion-header" id="userHeading${ loop.index }">
+      % endif
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#userCollapse${ loop.index }" aria-expanded="true" aria-controls="userCollapse${ loop.index }">
+        ${ user }
+      </button>
+      </h2>
+      <div id="userCollapse${ loop.index }" class="accordion-collapse collapse show" aria-labelledby="userHeading${ loop.index }" data-bs-parent="#userAccordion">
+        <div class="accordion-body">
+          <ol>
+            % if user.proof_of_birthplace.all_false():
+            <li><i class="fas fa-exclamation-triangle"></i>${ user } has no proof of birthplace</li>
+            % else:
+            <li>Proof of birth country: ${ showifdef("user.proof_of_birthplace") }</li>
+            % endif
+            <li>Both parents are Venezuelan nationals: ${ 'Yes' if showifdef("user.parents_from_venezuela") else 'No' }</li>
+            % if showifdef("user.parents_from_venezuela") and not user.proof_of_parent_birthplace:
+            <li><i class="fas fa-exclamation-triangle"></i> ${ user } was not born in Venezuela but their parents were. Yet they do not have proof.</li>
+            % else:
+            <li>Has proof of parents' birthplace: ${ showifdef("user.proof_of_parent_birthplace") }</li>
+            % endif
+            % if user.in_other_country_longer_than_6_months:
+            <li><i class="fas fa-exclamation-triangle"></i> ${ user } spent more than 6 months in another country.</li>
+            % else:
+            <li>Stayed in another country for more than 6 months before arriving to the US: ${ 'Yes' if user.in_other_country_longer_than_6_months else 'No' }</li>
+            % endif
+            <li>Date of leaving home country: ${ showifdef("user.date_left_home_country_month") }, ${ showifdef("user.date_left_home_country_year") }</li>
+            <li>Date of last entry to the US: ${ showifdef("user.last_entry_date_month") }, ${ showifdef("user.last_entry_date_year") }</li>
+            <li>Has proof of physical presence in the US as of July 31, 2023: ${ showifdef("user.proof_last_entry_date_before_july_31_2023") }</li>
+            <li>Has proof of physical presence in the US as of October 3, 2023: ${ showifdef("user.proof_last_entry_date_before_october_4_2023") }</li>
+            <li>Has children applying today: ${ 'Yes' if showifdef("user.has_children_applying_today") else 'No' }</li>
+            <li>Any child born outside of Venezuela: ${ 'Yes' if showifdef("user.has_children_applying_not_born_in_venezuela") else 'No' }</li>
+            <li>Children's names and nationalities: ${ showifdef("user.children_outside_of_venezuela") }</li>
+            <li>Method of last entry to the US: ${ showifdef("user.method_of_entry") }</li>
+            <li>Accompanied by during US entry: ${ showifdef("user.who_entered_with_user") }</li>
+            <li>Children entered the US separately: ${ 'Yes' if showifdef("user.children_entered_separately") else 'No' }</li>
+            <li>Details of children's entry to the US: ${ showifdef("user.children_entered_separately_explanation") }</li>
+            <li>Had legal status in another country besides Venezuela: ${ 'Yes' if showifdef("user.had_legal_status_outside_venezuela") else 'No' }</li>
+            <li>Countries and legal status: ${ showifdef("user.countries_and_legal_status") }</li>
+            <li>Applied for other immigration benefits: ${ 'Yes' if showifdef("user.applied_for_other_immigration_benefit") else 'No' }</li>
+            <li>Explanation for other immigration benefits: ${ showifdef("user.applied_for_other_immigration_benefit_explanation") }</li>
+            <li>In removal proceedings: ${ 'Yes' if showifdef("user.in_removal_proceedings") else 'No' }</li>
+            <li>Date of first hearing: ${ showifdef("user.date_removal_proceedings_began") }</li>
+            <li>Location of proceedings: ${ showifdef("user.location_removal_proceedings") }</li>
+            <li>Issued a Final Order of Removal: ${ 'Yes' if showifdef("user.ever_ordered_removed") else 'No' }</li>
+            % if user.ever_arrested:
+            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has been arrested, cited, stopped, detained, or placed in handcuffs by the police.</li>
+            % else:
+            <li>Ever arrested or detained by the police: ${ 'Yes' if showifdef("user.ever_arrested") else 'No' }</li>
+            % endif
+            <li>Details of every arrest: ${ showifdef("user.arrest_details") }</li>
+            % if user.claimed_us_citizenship:
+            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has claimed to be a US Citizen.</li>
+            % else:
+            <li>Ever claimed to be a US Citizen: ${ 'Yes' if showifdef("user.claimed_us_citizenship") else 'No' }</li>
+            % endif
+            % if user.gang_affiliation:
+            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has been affiliated with a gang.</li>
+            % else:
+            <li>Affiliated with any gangs: ${ 'Yes' if showifdef("user.gang_affiliation") else 'No' }</li>
+            % endif
+            % if user.served_military:
+            <li><i class="fas fa-exclamation-triangle"></i> ${ user } has served in the military or participated in a paramilitary group.</li>
+            % else:
+            <li>Served in the military or participated in a paramilitary group: ${ 'Yes' if showifdef("user.served_military") else 'No' }</li>
+            % endif
+            % if user.acted_as_terrorist:
+            <li><i class="fas fa-exclamation-triangle"></i>${ user } acted as a terrorist</li>
+            % else:
+            <li>Member of a terrorist organization: ${ 'Yes' if showifdef("user.acted_as_terrorist") else 'No' }</li>
+            % endif
+          </ol>
 
-  % endif
-  % if users[i].claimed_us_citizenship:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } has claimed to be a US Citizen.
-
-  % endif
-  % if "venezuela" not in users[i].country_of_birth.lower() and users[i].parents_from_venezuela and not users[i].proof_of_parent_birthplace:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } was not born in Venezuela but their parents were. Yet they do not have proof.
-  
-  % endif
-  % if users[i].in_other_country_longer_than_6_months:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } spent more than 6 months in another country.
-  
-  % endif
-  % if users[i].who_entered_with_user == "children":
-  ${ fa_icon('exclamation-triangle') } entered with children.
-  
-  % endif
-  % if users[i].children_entered_separately:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] }'s children entered the US separately.
-
-  % endif
-  % if users[i].had_legal_status_outside_venezuela:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } had legal status in another country.
-
-  % endif
-  % if users[i].gang_affiliation:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been affiliated with a gang.
-
-  % endif
-  % if users[i].served_military:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } has served in the military or participated in a paramilitary group.
-
-  % endif
-  % if users[i].acted_as_terrorist:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been a member of a terrorist organization.
-
-  % endif
-  % if users[i].ever_arrested:
-  ${ fa_icon('exclamation-triangle') } ${ users[i] } has been arrested, cited, stopped, detained, or placed in handcuffs by the police.
-
-  % endif
+          <a href="${ url_action(user.attr_name("tps_screening_questions")) }"><i class="fas fa-pencil"></i>Edit</a>
+        </div>
+      </div>
+    </div>
+    % endfor
+  </div>
 fields:
   - What should happen with this application?: supervisor_overall_approval_status
     datatype: radio
@@ -288,7 +393,7 @@ fields:
   - Supervisor name: supervisor_name
   - Supervisor notes: supervisor_notes
     datatype: area
-  - What addenda should be included?: users[i].addenda
+  - What addenda should be included?: selected_addenda
     datatype: checkboxes
     choices:
       - Military service: military_service
@@ -296,4 +401,6 @@ fields:
       - Child of Venezuelan nationals: child_venezuelan_nationals
       - Smuggling: smuggling
       - Affidavit of continuous residence: continuous_residence
-      - EAD interim parole: ead_interim_parole
+---
+code: |
+  users[i].addenda = selected_addenda

@@ -73,13 +73,15 @@ code: |
     nav.set_section(f"users_{idx}_signpost_screen")
     if application_kind == "ead_only":
       user.ead_screening_questions
-      user.review_ead_screening_questions
     else:
       user.tps_screening_questions
-      user.review_tps_screening_questions
     # user.applicant_intake_worksheet_questions
     set_progress((80/len(users.complete_elements())) * (idx + 1) + 10 )
     # Trigger the more detailed questions on a per-user basis
+  if application_kind == "ead_only":
+    review_ead_screening_questions
+  else:
+    review_tps_screening_questions
   for idx,user in enumerate(users):
     nav.set_section(f"users_{idx}_signpost_app")
     user.signpost
@@ -93,6 +95,7 @@ code: |
       },
   )
   children_for_retainer
+  convert_units
   download_completed_ea_application
 ---
 code: |
@@ -156,7 +159,7 @@ fields:
       <h2 class="h4">Interpreter's Name</h2>
     show if: interpreter_present
   - code: |
-      interpreter.name_fields(person_or_business="person", show_if="interpreter_present")
+      interpreter.name_fields(person_or_business="person", show_if="interpreter_present", show_suffix=False)
 ---
 id: intro_main
 question: |
@@ -286,6 +289,29 @@ fields:
   - A Number: users[i].a_number
     required: False
 ---
+id: Has user i been known by a different name before?
+question: |
+  Has ${ users[i] } ever been known by a different name or alias?  
+fields:
+  - no label: users[0].aliases.there_are_any
+    datatype: yesnoradio
+---
+id: name i
+question: |
+  What was ${ users[0] } ${ ordinal(i) } alias or other name?
+fields:
+  - First name: users[0].aliases[i].first
+  - Middle name: users[0].aliases[i].middle
+    required: False
+  - Last name: users[0].aliases[i].last
+---
+id: have you been known by a different name again
+question: |
+  Has ${ users[0] } been known by any other names?
+fields:
+  - no label: users[0].aliases.there_is_another
+    datatype: yesnoradio
+---
 table: users.initial_review_table
 rows: users
 columns:
@@ -319,9 +345,9 @@ question: |
   What kind of application will this family complete?
 field: application_kind
 buttons:
-  - TPS and EAD: ead_and_tps
+  - TPS: ead_and_tps
     image: shield-halved
-  - EAD only: ead_only
+  - EAD via parole only: ead_only
     image: briefcase
 ---
 id: download_completed_ea_application
@@ -337,21 +363,47 @@ subquestion: |
 ---
 objects:
   - users[i].limited_scope_retainer: ALDocument.using(title=f"{users[i]} - Limited Scope Retainer", filename=space_to_underscore(f"{users[i]} - Limited Scope Retainer"), has_addendum=False)
+---
+objects:
   - users[i].military_service_addendum: ALDocument.using(title=f"{users[i]} - Military Service Addendum", filename=space_to_underscore(f"{users[i]} - Military Service Addendum"), has_addendum=False)
+---
+objects:
   - users[i].transit_through_ca_addendum: ALDocument.using(title=f"{users[i]} - Transit Through Central America Addendum", filename=space_to_underscore(f"{users[i]} - Transit Through Central America Addendum"), has_addendum=False)
+---
+objects:
   - users[i].child_venezuelan_nationals_addendum: ALDocument.using(title=f"{users[i]} - Child of Venezuelan Nationals Addendum", filename=space_to_underscore(f"{users[i]} - Child of Venezuelan Nationals Addendum"), has_addendum=False)
+---
+objects:
   - users[i].smuggling_addendum: ALDocument.using(title=f"{users[i]} - Smuggling Addendum", filename=space_to_underscore(f"{users[i]} - Smuggling Addendum"), has_addendum=False)
+---
+objects:
   - users[i].continuous_residence_addendum: ALDocument.using(title=f"{users[i]} - Affidavit of Continuous Residence Addendum", filename=space_to_underscore(f"{users[i]} - Affidavit of Continuous Residence Addendum"), has_addendum=False)
+---
+objects:
   - users[i].ead_interim_parole_addendum: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Interim Parole Addendum"), has_addendum=False)
+---
+objects:
   - users[i].ead_legal_screener: ALDocument.using(title=f"{users[i]} - EAD Legal Screener", filename=space_to_underscore(f"{users[i]} - EAD Legal Screener"), has_addendum=False)
+---
+objects:
   - users[i].tps_legal_screener: ALDocument.using(title=f"{users[i]} - TPS Legal Screener", filename=space_to_underscore(f"{users[i]} - TPS Legal Screener"), has_addendum=False)
+---
+objects:
   - users[i].applicant_intake_worksheet: ALDocument.using(title=f"{users[i]} - Applicant Intake Worksheet", filename=space_to_underscore(f"{users[i]} - Applicant Intake Worksheet"), has_addendum=False, enabled=True)
+---
+objects:
+  - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False, enabled=True)
+---
+objects:
+  - users[i].fee_waiver_tps: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False, enabled=True)
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
   - users[i].document_bundle: ALDocumentBundle.using(title=f"{users[i]} - All documents to print and file", filename=space_to_underscore(f"{users[i]} - all_documents"), enabled=True, elements=[
         users[i].limited_scope_retainer,
         users[i].applicant_intake_worksheet,
+        users[i].fee_waiver_ead,
+        users[i].fee_waiver_tps,
         users[i].i_821_attachment,
         users[i].ead_legal_screener,
         users[i].tps_legal_screener,
@@ -364,28 +416,41 @@ objects:
       ])
 ---
 code: |
-  users[i].military_service_addendum.enabled = users[i].addenda.get("military_service")
+  if users[i].age_in_years() > 13:
+    users[i].limited_scope_retainer.enabled = True
+  else:
+    users[i].limited_scope_retainer.enabled = False
 ---
 code: |
-  users[i].transit_through_ca_addendum.enabled = users[i].addenda.get("transit_through_ca")
+  users[i].military_service_addendum.enabled = selected_addenda.get("military_service")
 ---
 code: |
-  users[i].child_venezuelan_nationals_addendum.enabled = users[i].addenda.get("child_venezuelan_nationals")
+  users[i].transit_through_ca_addendum.enabled = selected_addenda.get("transit_through_ca")
 ---
 code: |
-  users[i].smuggling_addendum.enabled = users[i].addenda.get("smuggling")
+  users[i].child_venezuelan_nationals_addendum.enabled = selected_addenda.get("child_venezuelan_nationals")
 ---
 code: |
-  users[i].continuous_residence_addendum.enabled = users[i].addenda.get("continuous_residence")
+  users[i].smuggling_addendum.enabled = selected_addenda.get("smuggling")
 ---
 code: |
-  users[i].ead_interim_parole_addendum.enabled = users[i].addenda.get("ead_interim_parole")
+  users[i].continuous_residence_addendum.enabled = selected_addenda.get("continuous_residence")
+---
+code: |
+  users[i].ead_interim_parole_addendum.enabled = application_kind == "ead_only"
+---
+code: |
+  users[i].ead_legal_screener.enabled = application_kind == "ead_only"
+---
+code: |
+  users[i].tps_legal_screener.enabled = not application_kind == "ead_only"
 ---
 attachment:
   variable name: users[i].military_service_addendum[j]
   name: ${ users[i] } - Military Service Addendum
   filename: ${ space_to_underscore(f"{users[i]} - Military Service Addendum") }
   docx template file: TPS_addendum_military_service.docx
+  skip undefined: True
 ---
 attachment:
   variable name: users[i].transit_through_ca_addendum[j]
@@ -424,6 +489,8 @@ attachment:
 ---
 code: |
   users[i].ead_legal_screener.enabled = application_kind == "ead_only"
+---
+code: |
   users[i].tps_legal_screener.enabled = not application_kind == "ead_only"
 ---
 attachment:
@@ -447,6 +514,21 @@ attachment:
   name: ${ users[i] } - Limited Scope Retainer
   filename: ${ space_to_underscore(f"{users[i]} - Limited Scope Retainer") }
   docx template file: Limited_Scope_Retainer.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].fee_waiver_tps[j]
+  name: ${ users[i] } - Fee Waiver Request
+  filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
+  docx template file: Fee_Waiver_Cover_Letter_TPS.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].fee_waiver_ead[j]
+  name: ${ users[i] } - Fee Waiver Request
+  filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
+  docx template file: Fee_Waiver_Cover_Letter_EAD.docx
+  skip undefined: True
 ---
 code: |
   def uscis_countries_list():

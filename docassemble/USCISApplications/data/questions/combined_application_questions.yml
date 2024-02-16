@@ -51,13 +51,9 @@ fields:
   - Suite/Unit/Floor/Room: users[0].address.unit
     required: False
   - City or Town: users[0].address.city
-  - State/Province: users[0].address.state
+  - State: users[0].address.state
     required: False
-  - ZIP/Postal Code: users[0].address.zip
-  - Country: users[0].address.country
-    datatype: combobox
-    code: |
-      uscis_countries_list()
+  - ZIP: users[0].address.zip
 ---
 id: your address
 sets:
@@ -78,16 +74,11 @@ fields:
     default: ${ users[0].address.unit }
   - City or Town: users[i].address.city
     default: ${ users[0].address.city }
-  - State/Province: users[i].address.state
+  - State: users[i].address.state
     required: False
     default: ${ users[0].address.state }
-  - ZIP/Postal Code: users[i].address.zip
+  - ZIP: users[i].address.zip
     default: ${ users[i].address.zip }
-  - Country: users[i].address.country
-    datatype: combobox
-    code: |
-      uscis_countries_list()
-    default: ${ users[0].address.country }
 ---
 # id: applicant's name
 # sets:
@@ -497,12 +488,10 @@ fields:
       - Asian: asian
       - Native Hawaiian or Other Pacific Islander: pacific_islander
       - Other: other
-  - "Height (feet)": users[i].height_feet
+  - "Height (centimeters)": users[i].height_cm
     datatype: integer
-  - "Height (inches)": users[i].height_inches
-    datatype: integer
-  - "Weight pounds": users[i].weight_pounds
-    datatype: integer
+  - Weight (kilograms): users[i].weight_kg
+    datatype: number
   - "Hair Color (choose one)": users[i].hair_color
     datatype: radio
     choices:
@@ -547,6 +536,18 @@ fields:
     show if: 
       variable: users[i].marital_status
       is: "other"
+---
+code: |
+  users[i].height_feet = int(users[i].height_cm * 0.0328084)
+  users[i].height_inches = int((users[i].height_cm * 0.0328084 - users[i].height_feet) * 12)
+  users[i].weight_pounds = int(users[i].weight_kg * 2.20462)
+  convert_units = True
+  #   - "Height (feet)": users[i].height_feet
+  #   datatype: integer
+  # - "Height (inches)": users[i].height_inches
+  #   datatype: integer
+  # - "Weight pounds": users[i].weight_pounds
+  #   datatype: integer
 ---
 id: applicant info
 question: Applicant Info

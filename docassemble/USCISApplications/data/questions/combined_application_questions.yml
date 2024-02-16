@@ -39,7 +39,8 @@ code: |
   users[i].i94_arrival_number
   if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
     users[i].father_first_name
-  users[i].have_you_ever
+  if application_kind == "tps_and_ead":
+    users[i].have_you_ever
   users[i].complete = True
 ---
 id: your address
@@ -111,12 +112,6 @@ fields:
   - "Preparer's USCIS Online Account Number (if any)": preparer.attorney_online_account_number
     maxlength: 28
   - "Preparer organization": preparer.preparer_organization
-    maxlength: 38
----
-id: interpreter info
-question: Interpreter
-fields:
-  - "Interpreter organization": interpreter.interpreter_organization
     maxlength: 38
 ---
 ########################## Addresses, Phone, Email ##########################
@@ -840,246 +835,167 @@ continue button field: users[i].have_you_ever
 question: |
   Has ${ users[i] } **ever**...
 fields:
-  - "Been convicted of committing a felony in the US?": users[i].been_convicted_of_felony_in_us
-    datatype: yesno
-    grid: 6
-  - "Been convicted of misdemeanor in US?": users[i].been_convicted_of_misdemeanor_us
-    datatype: yesno
-    grid: 6
-  - "Been convicted of any particularly serious crime in US or anywhere?": users[i].committed_particularly_serious_crime
-    datatype: yesno
-    grid: 6
-  - "Within the previous five years, have you EVER obtained any financial or other benefit from the unlawful activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit was the product of such illicit activity?": users[i].got_financial_benefit_from_crime
-    datatype: yesno
-    grid: 6
-  - "Persecution by protected status": users[i].persecution_by_protected_status
-    datatype: yesno
-    grid: 6
-  - "Engaged in espionage": users[i].engaged_espionage
-    datatype: yesno
-    grid: 6
-  - "Committed serious nonpolitical crime": users[i].serious_nonpolitical_crime
-    datatype: yesno
-    grid: 6
-  - "Any activity to violate or evade any law prohibiting the export from the United States of goods, technology, or sensitive information?": users[i].violated_law_prohibiting_export
-    datatype: yesno
-    grid: 6
-  - "Evade export controls": users[i].evade_export_controls
-    datatype: yesno
-    grid: 6
-  - "Danger to us": users[i].danger_to_us
-    datatype: yesno
-    grid: 6
-  - "Any other unlawful activity in the United States?": users[i].any_other_unlawful_activity_in_US
-    datatype: yesno
-    grid: 6
-  - "Convicted or committed any crime": users[i].convicted_or_committed_any_crime
-    datatype: yesno
-    grid: 6
-  - "Acted in overthrow of us": users[i].acted_in_overthrow_of_us
-    datatype: yesno
-    grid: 6
-  - "Convicted committed drugs": users[i].convicted_committed_drugs
-    datatype: yesno
-    grid: 6
-  - "Convicted committed conspiracy drugs": users[i].convicted_committed_conspiracy_drugs
-    datatype: yesno
-    grid: 6
-  - "Negative foreign policy": users[i].negative_foreign_policy
-    datatype: yesno
-    grid: 6
-  - "Convicted 2 or more crimes totalling 5 or more years": users[i].convicted_2_or_more_crimes_totalling_5_or_more_years
-    datatype: yesno
-    grid: 6
-  - "Is communist": users[i].is_communist
-    datatype: yesno
-    grid: 6
-  - "Ever trafficked": users[i].ever_trafficked
-    datatype: yesno
-    grid: 6
-  - "Is nazi": users[i].is_nazi
-    datatype: yesno
-    grid: 6
-  - "Trafficking drugs": users[i].trafficking_drugs
-    datatype: radio
-    choices: 
-      - Yes: Yes_24
-      - No: No_24
-    default: No_24
-  - "Spouse or child of drug trafficker": users[i].spouse_or_child_of_drug_trafficker
-    datatype: yesno
-    grid: 6
-  - "Ever cited": users[i].ever_cited
-    datatype: yesno
-    grid: 6
-  - "Spouse or child drug abetter": users[i].spouse_or_child_drug_abetter
-    datatype: yesno
-    grid: 6
-  - "Ever fined jailed suspended": users[i].ever_fined_jailed_suspended
-    datatype: yesno
-    grid: 6
-  - "Has communicable disease": users[i].has_communicable_disease
-    datatype: yesno
-    grid: 6
-  - "Ever got clemency": users[i].ever_got_clemency
-    datatype: yesno
-    grid: 6
-  - "Has dangerous disorder": users[i].has_dangerous_disorder
-    datatype: yesno
-    grid: 6
-  - "Ever asserted immunity prosecution": users[i].ever_asserted_immunity_prosecution
-    datatype: yesno
-    grid: 6
-  - "Drug addict": users[i].drug_addict
-    datatype: yesno
-    grid: 6
-  - "Prostitution last 10 years": users[i].prostitution_last_10_years
-    datatype: yesno
-    grid: 6
-  - "Stowaway": users[i].stowaway
-    datatype: yesno
-    grid: 6
-  - "Procured prostitute 10 years": users[i].procured_prostitute_10_years
-    datatype: yesno
-    grid: 6
-  - "Fined for false documentation": users[i].fined_for_false_documentation
-    datatype: yesno
-    grid: 6
-  - "Pimped 10 years": users[i].pimped_10_years
-    datatype: yesno
-    grid: 6
-  - "Immigration and nationality act": users[i].Immigration_and_Nationality_Act
-    datatype: yesno
-    grid: 6
-  - "Do you now practice polygamy": users[i].Do_you_NOW_practice_polygamy
-    datatype: yesno
-    grid: 6
-  - "Involved in commercial vice": users[i].involved_in_commercial_vice
-    datatype: yesno
-    grid: 6
-  - "Examiner to be helpless due to sickness physical or": users[i].examiner_to_be_helpless_due_to_sickness_physical_or
-    datatype: yesno
-    grid: 6
-  - "Ever departed removal order": users[i].ever_departed_removal_order
-    datatype: yesno
-    grid: 6
-  - "Citizenship outside the united states from a us citizen": users[i].citizenship_outside_the_United_States_from_a_US_citizen
-    datatype: yesno
-    grid: 6
-  - "Dhs reinstated before removal": users[i].dhs_reinstated_before_removal
-    datatype: yesnomaybe
-    grid: 6
-  - "Genocide": users[i].genocide
-    datatype: yesno
-    grid: 6
-  - "Ever failed to attend deportation hearing": users[i].ever_failed_to_attend_deportation_hearing
-    datatype: yesno
-    grid: 6
-  - "Killing": users[i].killing
-    datatype: yesno
-    grid: 6
-  - "Severe injury": users[i].severe_injury
-    datatype: yesno
-    grid: 6
-  - "Ever lied visa or admission": users[i].ever_lied_visa_or_admission
-    datatype: yesno
-    grid: 6
-  - "Ever helped someone enter illegally": users[i].ever_helped_someone_enter_illegally
-    datatype: yesno
-    grid: 6
-  - "Forced sex": users[i].forced_sex
-    datatype: yesno
-    grid: 6
-  - "Denied religious exercise": users[i].denied_religious_exercise
-    datatype: yesno
-    grid: 6
-  - "Spouse child helped human trafficker": users[i].spouse_child_helped_human_trafficker
-    datatype: yesno
-    grid: 6
-  - "Worked detention facility": users[i].worked_detention_facility
-    datatype: yesno
-    grid: 6
-  - "Benefited human trafficking": users[i].benefited_human_trafficking
-    datatype: yesno
-    grid: 6
-  - "Laundering as described in section 1956 or 1957 of title": users[i].laundering_as_described_in_section_1956_or_1957_of_Title
-    datatype: yesno
-    grid: 6
-  - "Group using weapons": users[i].group_using_weapons
-    datatype: yesno
-    grid: 6
-  - "Helped money laundering": users[i].helped_money_laundering
-    datatype: yesno
-    grid: 6
-  - "Helped weapons": users[i].helped_weapons
-    datatype: yesno
-    grid: 6
-  - "Weapon training": users[i].weapon_training
-    datatype: yesno
-    grid: 6
-  - "Violated religious freedom": users[i].violated_religious_freedom
-    datatype: yesno
-    grid: 6
-  - "Illegal voted us": users[i].illegal_voted_us
-    datatype: yesno
-    grid: 6
-  - "Past determination of frivolous asylum": users[i].past_determination_of_frivolous_asylum
-    datatype: yesno
-    grid: 6
-  - "Claimed us citizen": users[i].claimed_us_citizen
-    datatype: yesno
-    grid: 6
-  - "Conscripted child soldier": users[i].conscripted_child_soldier
-    datatype: yesno
-    grid: 6
-  - "Used child soldier": users[i].used_child_soldier
-    datatype: yesno
-    grid: 6
-  - "Committed human trafficking": users[i].committed_human_trafficking
-    datatype: yesno
-    grid: 6
-  - "Helped human trafficking": users[i].helped_human_trafficking
-    datatype: yesno
-    grid: 6
-  - "Spouse child human trafficker": users[i].spouse_child_human_trafficker
-    datatype: yesno
-    grid: 6
+  - "Have you EVER been convicted of any felony committed in the United States?": users[i].q8a
+    input type: yesnoradio
+  - "Have you EVER been convicted of any misdemeanor committed in the United States": users[i].q8b
+    input type: yesnoradio
+  - "Have you EVER been convicted of any particularly serious crime, whether committed inside or outside of the United States": users[i].q8c
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, assisted, or otherwise participated in the persecution of any person on account of race, religion, nationality, membership in a particular social group, or political opinion?": users[i].q9a
+    input type: yesnoradio
+  - "Have you EVER committed serious nonpolitical crimes outside of the United States prior to your arrival in the United States?": users[i].q9b
+    input type: yesnoradio
+  - "Have you EVER or are you NOW engaged in activities that could be reasonable grounds for concluding that you are a danger to the security of the United States?": users[i].q9c
+    input type: yesnoradio
+  - "Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a crime (other than a purely political offense)?": users[i].q10a
+    input type: yesnoradio
+  - "Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a violation of any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?": users[i].q10b
+    input type: yesnoradio
+  - "Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a conspiracy to violate any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?": users[i].q10c
+    input type: yesnoradio
+  - "Have you EVER been convicted of two or more criminal offenses (other than purely political offenses) for which you received sentences to confinement that, when combined, total five years or more?": users[i].q11
+    input type: yesnoradio
+  - "Have you EVER trafficked in or are you NOW trafficking in any controlled substance?": users[i].q12a
+    input type: yesnoradio
+  - "Are you NOW or have you EVER knowingly assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?": users[i].q12b
+    input type: yesnoradio
+  - "Are you the spouse or child of an alien who unlawfully trafficked in any controlled substance?": users[i].q12c
+    input type: yesnoradio
+  - "Are you the spouse or child of an alien who assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?": users[i].q12d
+    input type: yesnoradio
+  - "Within the previous five years, have you EVER obtained any financial or other benefit from the unlawful activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit was the product of such illicit activity?": users[i].q12e
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate any law of the United States relating to espionage or sabotage?": users[i].q13a
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate or evade any law prohibiting the export from the United States of goods, technology, or sensitive information?": users[i].q13b
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any other unlawful activity in the United States?": users[i].q13c
+    input type: yesnoradio
+  - "Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity in which a purpose is to oppose, control, or overthrow the Government of the United States by force, violence, or other unlawful means, including but not limited to participating in such activities, giving support to others involved in such activities, or being a member or representative of a terrorist organization?": users[i].q13d
+    input type: yesnoradio
+  - "Have you EVER or are you NOW engaged in terrorist activities?": users[i].q14a
+    input type: yesnoradio
+  - "Have you EVER or are you NOW engaged in or plan to engage in activities in the United States that would have potentially serious adverse foreign policy consequences for the United States?": users[i].q14b
+    input type: yesnoradio
+  - "Have you EVER been or are you NOW a member of the Communist or other totalitarian party, except when membership was involuntary?": users[i].q14c
+    input type: yesnoradio
+  - "Have you EVER participated in Nazi persecution or genocide?": users[i].q14d
+    input type: yesnoradio
+  - "Have you EVER, whether in the United States or any other country, been arrested for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15a
+    input type: yesnoradio
+  - "Have you EVER, whether in the United States or any other country, been cited, charged, or indicted, for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15b
+    input type: yesnoradio
+  - "Have you EVER, whether in the United States or any other country, been convicted, fined, imprisoned, placed on probation, received a suspended sentence or deferral of adjudication for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15c
+    input type: yesnoradio
+  - "Have you EVER been the beneficiary of a pardon, amnesty, rehabilitation decree, other act of clemency, or similar action?": users[i].q16
+    input type: yesnoradio
+  - "Have you EVER committed a serious criminal offense in the United States and asserted immunity from prosecution?": users[i].q17
+    input type: yesnoradio
+  - "Have you EVER, within the past 10 years, or are you NOW engaged in prostitution or procurement of prostitution?": users[i].q18a
+    input type: yesnoradio
+  - "Have you EVER, within the past 10 years (either directly or indirectly) procured or attempted to procure or import prostitutes or persons for the purpose of prostitution?": users[i].q18b
+    input type: yesnoradio
+  - "Have you EVER, within the past 10 years, received, in whole or in part, the proceeds of prostitution?": users[i].q18c
+    input type: yesnoradio
+  - "Have you EVER been or do you intend to be involved in any other commercial vice?": users[i].q19
+    input type: yesnoradio
+  - "Have you EVER been ordered removed, and been deported from the United States?": users[i].q20a
+    input type: yesnoradio
+  - "Have you EVER voluntarily departed the United States under an order of removal?": users[i].q20b
+    input type: yesnoradio
+  - "Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
+    input type: yesnoradio
+    js show if: |
+        val("users[i].q20a") || val("users[i].q20b")
+  - "Has DHS reinstated your prior order of removal?": users[i].q20d
+    input type: radio
+    choices:
+      - Yes
+      - No
+      - I do not know
+    show if: users[i].q20c
+  - "Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?": users[i].q20e
+    input type: yesnoradio
+  - "Have you EVER, by fraud or willfully misrepresenting a material fact, sought to obtain a visa or other documentation, admission to the United States, or any other immigration benefit?": users[i].q21
+    input type: yesnoradio
+  - "Have you EVER assisted any other person to enter the United States in violation of the law?": users[i].q22
+    input type: yesnoradio
+  - "Do you NOW have a communicable disease of public health significance?": users[i].q23a
+    input type: yesnoradio
+  - "Do you NOW have or have you EVER had a physical or mental disorder and behavior (or a history of behavior that is likely to recur) associated with the disorder which has posed or may pose a threat to the property, safety, or welfare of yourself or others?": users[i].q23b
+    input type: yesnoradio
+  - "Are you NOW or have you EVER been a drug abuser or drug addict?": users[i].q23c
+    input type: yesnoradio
+  - "Have you EVER entered the United States as a stowaway?": q24
+    input type: yesnoradio
+  - "Did the former Immigration and Naturalization Service (INS) EVER impose, or has DHS EVER imposed, civil monetary penalties on you for producing or using false documentation to obtain an immigration benefit?": users[i].q25
+    input type: yesnoradio
+  - "Are you NOW subject to a final order for violation of section 274C (producing and/or using false documentation to unlawfully satisfy a requirement of the Immigration and Nationality Act)?": users[i].q26
+    input type: yesnoradio
+  - "Do you NOW practice polygamy?": users[i].q27
+    input type: yesnoradio
+  - "Are you NOW the guardian of, and are you accompanying, another individual who has been found to be inadmissible and who has been certified by a medical examiner to be helpless due to sickness, physical or mental disability, or infancy?": users[i].q28
+    input type: yesnoradio
+  - "Have you EVER detained, retained, or withheld the custody of a child having a lawful claim to U.S. citizenship, outside the United States, from a U.S. citizen granted custody?": users[i].q29
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in acts involving torture or genocide?": users[i].q30a
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in killing any person?": users[i].q30b
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in intentionally and severely injuring any person?": users[i].q30c
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in engaging in any kind of sexual contact or relations with any person who was being forced or threatened?": users[i].q30d
+    input type: yesnoradio
+  - "Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in limiting or denying any person's ability to exercise religious beliefs?": users[i].q30e
+    input type: yesnoradio
+  - "Have you EVER served in, been a member of, assisted in, or participated in any military unit, paramilitary unit, police unit, self-defense unit, vigilante unit, rebel group, guerrilla group, militia, or insurgent organization?": users[i].q31a
+    input type: yesnoradio
+  - "Have you EVER served or worked in any prison, jail, prison camp, detention facility, labor camp, or any other situation that involved detaining persons?": users[i].q31b
+    input type: yesnoradio
+  - "Have you EVER been a member of, assisted in, or participated in any group, unit, or organization of any kind in which you or other persons used any type of weapon against any person or threatened to do so?": users[i].q32
+    input type: yesnoradio
+  - "Have you EVER assisted with or participated in selling or providing weapons to any person who to your knowledge used them against another person, or in transporting weapons to any person who to your knowledge used them against another person?": users[i].q33
+    input type: yesnoradio
+  - "Have you EVER received any type of military, paramilitary, or weapons training?": users[i].q34
+    input type: yesnoradio
+  - "Have you EVER unlawfully voted in a United States Federal, state, or local election?": users[i].q35
+    input type: yesnoradio
+  - "Have you EVER claimed to be a U.S. citizen (in writing or in any other way)?": users[i].q36
+    input type: yesnoradio
+  - "Have you EVER recruited, enlisted, conscripted, or used any person under 15 years of age to serve in or help an armed force or group?": users[i].q37a
+    input type: yesnoradio
+  - "Have you EVER used any person under 15 years of age to take part in hostilities or to help or provide services to people in combat?": users[i].q37b
+    input type: yesnoradio
+  - "Have you EVER committed or conspired to commit human trafficking offenses, as defined in the section 103 of the Victims of Trafficking and Violence Protection Act of 2000, in the United States or outside the United States?": users[i].q38a
+    input type: yesnoradio
+  - "Have you EVER knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?": users[i].q38b
+    input type: yesnoradio
+  - "Are you NOW the spouse or child of an alien who committed or conspired to commit human trafficking offenses?": users[i].q38c
+    input type: yesnoradio
+  - "Are you NOW the spouse or child of, or are you yourself, an alien who knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?": users[i].q38d
+    input type: yesnoradio
+  - "Within the previous five years, have you EVER obtained any financial or other benefit from the human trafficking activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit that you received resulted from such human trafficking?": users[i].q38e
+    input type: yesnoradio
+  - "Are you NOW or have you EVER engaged in money laundering as described in section 1956 or 1957 of Title 18, United States Code?": users[i].q39a
+    input type: yesnoradio
+  - "Are you NOW or have you EVER been a knowing aider, abettor, assister, conspirator, or colluder with others in money laundering?": users[i].q39b
+    input type: yesnoradio
+  - "Have you EVER been responsible for or directly carried out particularly severe violations of religious freedom, as defined in section 3 of the International Religious Freedom Act of 1998 (22 U.S.C. section 6402) while serving as a foreign government official?": users[i].q40
+    input type: yesnoradio
+  - "Has an immigration judge or the Board of Immigration Appeals EVER determined that you filed a frivolous asylum application in the past?": users[i].q41
+    input type: yesnoradio
 ---
 id: application language and translation
 question: Language & Translation
 fields:
-  - "User reads english": users[i].user_reads_english
-    datatype: yesno
-  - "User used interpreter": users[i].user_used_interpreter
-    datatype: yesno
-  - "Interpreter spoke language": users[i].interpreter_spoke_language
-    maxlength: 16
-    datatype: combobox
-    choices:
-      - Spanish
-      - Arabic
-      - Chinese
-      - French
-      - Haitian Creole
-      - Korean
-      - Polish
-      - Portuguese
-      - Russian
-      - Tagalog
-      - Vietnamese
-    default: ${ interpreter.language if interpreter_present else None}
-    show if: users[i].user_used_interpreter
-  - "Interpreted into language": users[i].interpreted_into_language
-    maxlength: 23
-  # Always Yes
-  # - "User used preparer": users[i].user_used_preparer
-  #   datatype: yesno
-  # Always No
-  # - "Preparer full rep": users[i].preparer_full_rep
-  #   datatype: yesno
-  # Always Yes
-  # - "Preparer limited rep": users[i].preparer_limited_rep
-  #   datatype: yesno
+  - "Does ${ users[i] } read English?": users[i].user_reads_english
+    datatype: yesnoradio
+  - "Did ${ users[i] } use the ${ interpreter.language } interpreter?": users[i].user_used_interpreter
+    datatype: yesnoradio
+    default: ${ interpreter_present }
+    show if:
+      code: |
+        interpreter_present
 ---
 id: Addendum skip these
 question: Addendum (skip these)
@@ -2149,63 +2065,65 @@ confirm: True
 objects:
   - users[i].i_821_attachment: ALDocument.using(title="I-821", filename=f"{users[i]} - I-821", has_addendum=False, )
 ---
-code: |
-  users[i].i_821_attachment.enabled = application_kind == "ead_and_tps"
+objects:
+  - users[i].i_765_attachment: ALDocument.using(title="I-765", filename=f"{users[i]} - I-765", has_addendum=False, )
 ---
-# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
-# used for "preview" and "final" keys, and logic in the template checks the value of 
-# `i` to show or hide the user's signature
+code: |
+  users[i].i_821_attachment.enabled = users[i].application_is_approved and application_kind == "ead_and_tps"
+---
+code: |
+  users[i].i_765_attachment.enabled = users[i].application_is_approved and application_kind == True
 ---
 attachment:
   name: I-821
   filename: I-821
   variable name: users[i].i_821_attachment[j]
   skip undefined: True
-  pdf template file: I-821_flattened_AD_edits.pdf
+  pdf template file: I-821_flattened.pdf
   fields:
     - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
     - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
-    - "is_first_application": ${ users[i].is_first_TPS_application == "First TPS Application" }
-    - "is_re_application": ${ users[i].is_first_TPS_application != "First TPS Application" }
-    - "tps_application_country": ${ users[i].tps_application_country.true_values() }
+    - "is_first_application": ${ users[i].is_first_application }
+    - "is_re_application": ${ users[i].is_re_application }
+    - "tps_application_country": ${ users[i].tps_application_country }
+    - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
-    - "users1_name_last": ${ users[i].name.last }
-    - "is_USCIS_re_application": ${ who_granted_prior_TPS == "USCIS" }
-    - "is_judge_re_application": ${ who_granted_prior_TPS == "Immigration Judge/Board of Immigration Appeals" }
+    - "is_USCIS_re_application": ${ users[i].is_first_TPS_application == 'First TPS Application' }
+    - "is_judge_re_applicatioin": ${ not users[i].is_first_TPS_application == 'First TPS Application' }
     - "users1_a_number": ${ users[i].a_number }
     - "users1_uscis_account_number": ${ users[i].uscis_account_number }
+    - "users1_previous_names1_last": ${ users[i].previous_names[0].last }
     - "users1_ssn": ${ users[i].ssn }
-    - "users1_previous_names1_first": ${ users[i].aliases[0].first }
-    - "users1_previous_names1_middle": ${ users[i].aliases[0].middle }
-    - "users1_previous_names1_last": ${ users[i].aliases[0].last }
-    - "users1_previous_names2_first": ${ users[i].aliases[1].first }
-    - "users1_previous_names2_middle": ${ users[i].aliases[1].middle }
-    - "users1_previous_names2_last": ${ users[i].aliases[1].last }
+    - "users1_previous_names1_first": ${ users[i].previous_names[0].first }
     - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
-    - "users1_alternate_birthdate": ${ users[i].alternate_birthdates[0].format('MM/dd/yyyy') }
-    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdates[1].format('MM/dd/yyyy') }
-    - "city_of_birth": ${ users[i].city_of_birth }
-    - "country_of_birth": ${ users[i].country_of_birth }
+    - "users1_previous_names1_middle": ${ users[i].previous_names[0].middle }
+    - "users1_previous_names2_last": ${ users[i].previous_names[1].last }
+    - "users1_previous_names2_first": ${ users[i].previous_names[1].first }
+    - "users1_alternate_birthdate": ${ users[i].alternate[0].birthdate.format('MM/dd/yyyy') }
+    - "users1_previous_names2_middle": ${ users[i].previous_names[1].middle }
+    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdate_2 }
     - "users1_gender": ${ users[i].sex }
     - "users1_mailing_address_in_care_of": 'LAS New Arrivals'
     - "users1_mailing_address_address": '101 N. Wacker Dr.'
-    # - "users1_mailing_address_is_apt": ''
-    # - "users1_mailing_address_is_suite": ''
-    # - "users1_mailing_address_is_floor": ''
     - "users1_mailing_address_unit": 'Suite 1700'
     - "users1_mailing_address_city": 'Chicago'
     - "users1_mailing_address_state": 'IL'
     - "users1_mailing_address_zip": '60606'
     - "mailing_address_is_physical_address": No
+    # - "users1_mailing_address_is_apt": ''
+    # - "users1_mailing_address_is_suite": ''
+    # - "users1_mailing_address_is_floor": ''
+    - "city_of_birth": ${ users[i].city_of_birth }
+    - "country_of_birth": ${ users[i].country_of_birth }
     - "users1_countries_of_residence": ${ users[i].countries_of_residence }
-    - "users1_countries_of_citizenship": ${ comma_and_list(users[i].countries_of_citizenship) }
     - "users1_address_address": ${ users[i].address.address }
-    # - "users1_address_is_apt": ''
-    # - "users1_address_is_suite": ''
-    # - "users1_address_is_floor": ''
+    # - "users1_address_is_apt": ${ users[i].address_is_apt }
+    # - "users1_address_is_suite": ${ users[i].address_is_suite }
+    # - "users1_address_is_floor": ${ users[i].address_is_floor }
     - "users1_address_unit": ${ users[i].address.unit }
+    - "users1_coutnries_of_citizenship": ${ comma_and_list(users[i].countries_of_citizenship) } ### is comma and list necessary?
     - "users1_address_city": ${ users[i].address.city }
     - "users1_address_state": ${ users[i].address.state }
     - "users1_address_zip": ${ users[i].address.zip }
@@ -2219,249 +2137,314 @@ attachment:
     - "marital_status_other_explanation": ${ users[i].marital_status_other }
     - "marriage_date": ${ users[i].marriage_date.format('MM/dd/yyyy') }
     # - "marriage_date__2": ${ users[i].marriage_date.format('MM/dd/yyyy') }
-    - "current_immigration_status": ${ users[i].current_immigration_status.true_values() }
-    - "date_of_last_arrival": ${ users[i].date_of_last_arrival.format('MM/dd/yyyy') }
-    - "immigration_status_last_entry": ${ users[i].immigration_status_last_entry.true_values() }
-    - "port_of_entry": ${ users[i].port_of_entry }
-    - "city_of_entry": ${ users[i].city_of_entry }
+    - "current_immigration_status": ${ users[i].current_immigration_status }
+    - "has_been_in_immigration_proceedings": ${ users[i].has_been_in_immigration_proceedings }
+    - "date_of_last_arrival": ${ users[i].date_of_last_arrival }
+    - "proceedings_was_immigration_court": ${ users[i].proceedings_was_immigration_court }
+    - "proceedings_was_bia": ${ proceedings_was_bia }
+    - "date_of_last_entry": ${ date_of_last_entry }
+    - "proceedings_was_federal_court": ${ proceedings_was_federal_court }
+    - "port_of_entry": ${ port_of_entry }
+    - "city_of_entry": ${ city_of_entry }
+    - "proceedings_dhs_or_doj_hearing_location": ${ users[i].proceedings_dhs_or_doj_hearing_location }
     - "state_of_entry": ${ users[i].state_of_entry }
     - "i94_arrival_number": ${ users[i].i94_arrival_number }
-    - "authorized_stay_ending_date": ${ users[i].authorized_stay_ending_date.format('MM/dd/yyyy') }
-    - "has_been_in_immigration_proceedings": ${ users[i].has_been_in_immigration_proceedings }
-    - "proceedings_was_immigration_court": ${ users[i].prior_immigration_proceedings } #### need help ####
-    - "proceedings_was_bia": ${ users[i].prior_immigration_proceedings } #### need help ####
-    - "proceedings_was_federal_court": ${ users[i].prior_immigration_proceedings } #### need help ####
-    - "proceedings_federal_court_location": ${ users[i].prior_immigration_proceedings.location } #### need help ####
-    - "proceedings_dhs_or_doj_hearing_location": ${ users[i].proceedings_dhs_or_doj_hearing_location } #### need help ####
-    - "proceedings_start_date": ${ users[i].prior_immigration_proceedings[0].start_date.format('MM/dd/yyyy') } ### need help ####
-    - "proceedings_end_date": ${ users[i].prior_immigration_proceedings[0].end_date.format('MM/dd/yyyy') } ### need help ####
-    - "proceedings_continuing_to_present": ${ users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present } ### need help ####
-    - "passport_number": ${ users[i].travel_documents.xxxxxx } ### need help ####
-    - "travel_document_number": ${ users[i].travel_documents.xxxxxx } ### need help ####
+    - "proceedings_federal_court_location": ${ proceedings_federal_court_location }
+    - "authorized_stay_ending_date": ${ authorized_stay_ending_date.format('MM/dd/yyyy') }
+    - "proceedings_start_date": ${ proceedings_start_date.format('MM/dd/yyyy') }
+    - "proceedings_end_date": ${ proceedings_end_date.format('MM/dd/yyyy') }
+    - "proceedings_continuing_to_present": ${ proceedings_continuing_to_present }
+    - "passport_number": ${ passport_number }
+    - "travel_document_number": ${ travel_document_number }
     - "ethnicity_hispanic_yes": ${ users[i].ethnicity == "Hispanic or Latino" }
-    - "ethnicity_hispanic_no": ${ users[i].ethnicity != "Hispanic or Latino" }
+    - "ethnicity_hispanic_no": ${ not users[i].ethnicity == "Hispanic or Latino" }
     - "additional_passport_number_1": ${ additional_passport_number_1 }
     - "additional_passport_number_2": ${ additional_passport_number_2 }
-    - "race_white": ${ race_white }
-    - "race_asian": ${ race_asian }
+    - "race_white": ${ users[i].race == 'white' }
+    - "race_asian": ${ users[i].race == 'asian' }
     - "most_recent_passport_country_issuing": ${ most_recent_passport_country_issuing }
-    - "race_black": ${ race_black }
-    - "race_american_indian": ${ race_american_indian }
-    - "passport_or_travel_document_expiration_date": ${ passport_or_travel_document_expiration_date.format() }
-    - "race_native_hawaiian": ${ race_native_hawaiian }
-    - "height_feet": ${ height_feet }
-    - "height_inches": ${ height_inches }
+    - "race_black": ${ users[i].race == 'black' }
+    - "race_american_indian": ${ users[i].race == 'native_american' }
+    - "passport_or_travel_document_expiration_date": ${ passport_or_travel_document_expiration_date.format('MM/dd/yyyy') }
+    - "race_native_hawaiian": ${ users[i].race == 'pacific_islander' }
+    - "height_feet": ${ users[i].height_feet }
+    - "height_inches": ${ users[i].height_inches }
     - "users2_address_address": ${ users[1].address.address }
-    - "users2_address_is_apt": ${ users[i].spouse.address_is_apt }
-    - "users2_address_is_suite": ${ users[i].spouse.address_is_suite }
-    - "users2_address_is_floor": ${ users[i].spouse.address_is_floor }
+    # - "users2_address_is_apt": ${ users2_address_is_apt }
+    # - "users2_address_is_suite": ${ users2_address_is_suite }
+    # - "users2_address_is_floor": ${ users2_address_is_floor }
     - "weight_pounds": ${ weight_pounds }
-    - "users2_address_unit": ${ users[1].address.unit }
-    - "users2_address_city": ${ users[1].address.city }
-    - "eye_color_black": ${ eye_color_black }
-    - "eye_color_blue": ${ eye_color_blue }
-    - "eye_color_brown": ${ eye_color_brown }
-    - "users2_address_state": ${ users[1].address.state }
-    - "users2_address_zip": ${ users[1].address.zip }
-    - "eye_color_gray": ${ eye_color_gray }
-    - "eye_color_green": ${ eye_color_green }
-    - "eye_color_hazel": ${ eye_color_hazel }
-    - "eye_color_marooon": ${ eye_color_marooon }
-    - "eye_color_pink": ${ eye_color_pink }
-    - "users2_address_province": ${ users[i].spouse.address_province }
-    - "eye_color_unknown": ${ eye_color_unknown }
-    - "users2_address_postal_code": ${ users[i].spouse.address_postal_code }
-    - "hair_bald": ${ hair_bald }
-    - "hair_black": ${ hair_black }
-    - "hair_blond": ${ hair_blond }
-    - "users2_address_country": ${ users[1].address.country }
-    - "hair_brown": ${ hair_brown }
-    - "hair_gray": ${ hair_gray }
-    - "hair_red": ${ hair_red }
-    - "hair_sandy": ${ hair_sandy }
-    - "White_2": ${ White_2 }
-    - "users2_birthdate": ${ users[1].birthdate.format() }
-    - "hair_unknown": ${ hair_unknown }
-    - "marriage_location": ${ marriage_location }
+    # - "users2_address_unit": ${ users[1].address.unit }
+    # - "users2_address_city": ${ users[1].address.city }
+    - "eye_color_black": ${ users[i].eye_color == 'black' }
+    - "eye_color_blue": ${ users[i].eye_color == 'blue' }
+    - "eye_color_brown": ${ users[i].eye_color == 'brown' }
+    # - "users2_address_state": ${ users[1].address.state }
+    # - "users2_address_zip": ${ users[1].address.zip }
+    - "eye_color_gray": ${ users[i].eye_color == 'gray' }
+    - "eye_color_green": ${ users[i].eye_color == 'green' }
+    - "eye_color_hazel": ${ users[i].eye_color == 'hazel' }
+    - "eye_color_marooon": ${ users[i].eye_color == 'marooon' }
+    - "eye_color_pink": ${ users[i].eye_color == 'pink' }
+    # - "users2_address_province": ${ users2_address_province }
+    - "eye_color_unknown": ${ users[i].eye_color == 'other' }
+    # - "users2_address_postal_code": ${ users2_address_postal_code }
+    - "hair_bald": ${ users[i].hair_color == 'bald' }
+    - "hair_black": ${ users[i].hair_color == 'black' }
+    - "hair_blond": ${ users[i].hair_color == 'blond' }
+    # - "users2_address_country": ${ users[1].address.country }
+    - "hair_brown": ${ users[i].hair_color == 'brown' }
+    - "hair_gray": ${ users[i].hair_color == 'gray' }
+    - "hair_red": ${ users[i].hair_color == 'red' }
+    - "hair_sandy": ${ users[i].hair_color == 'sandy' }
+    - "White_2": ${ users[i].hair_color == 'white' }
+    # - "users2_birthdate": ${ users[1].birthdate.format('MM/dd/yyyy') }
+    - "hair_unknown": ${ users[i].hair_color == 'other' }
+    - "marriage_location": ${ users[i].marriage_location }
     - "marriage_city": ${ users[i].marriage_city }
-    - "marriage_state": ${ marriage_state }
-    - "marriage_province": ${ marriage_province }
-    - "marriage_country": ${ marriage_country }
-    - "users2_online_account_number": ${ users[i].spouse.online_account_number }
-    - "spouse_had_tps": ${ spouse_had_tps }
-    - "users2_a_number": ${ users[i].spouse.a_number }
-    - "users2_name_last": ${ users[1].name.last }
-    - "spouse_tps_date": ${ spouse_tps_date.format() }
-    - "users2_name_first": ${ users[1].name.first }
-    - "spouse_tps_ending_date": ${ spouse_tps_ending_date.format() }
-    - "users2_name_middle": ${ users[1].name.middle }
-    - "spouse_tps_continuing": ${ spouse_tps_continuing }
-    - "spouse_tps_dates_unknown": ${ spouse_tps_dates_unknown }
-    - "spouse_is_tps_valid": ${ spouse_is_tps_valid }
-    - "users4_name_last": ${ users[3].name.last }
-    - "users4_name_first": ${ users[3].name.first }
-    - "users4_name_middle": ${ users[3].name.middle }
-    - "users4_nationality": ${ users4_nationality }
-    - "users4_a_number": ${ users4_a_number }
-    - "users3_name_last": ${ users[2].name.last }
-    - "users4_birthdate": ${ users[3].birthdate.format() }
-    - "users3_name_first": ${ users[2].name.first }
-    - "users3_name_middle": ${ users[2].name.middle }
-    - "users4_death_date": ${ users4_death_date.format() }
-    - "users3_nationality": ${ users3_nationality }
-    - "users4_marriage_start_date": ${ users4_marriage_start_date.format() }
-    - "users4_marriage_end_date": ${ users4_marriage_end_date.format() }
-    - "users3_a_number": ${ users3_a_number }
-    - "users3_birthdate": ${ users[2].birthdate.format() }
-    - "users4_marriage_ending_reason": ${ users4_marriage_ending_reason }
-    - "users3_death_date": ${ users3_death_date.format() }
-    - "second_spouse_has_tps": ${ second_spouse_has_tps }
-    - "users3_marriage_date": ${ users3_marriage_date.format() }
-    - "second_spouse_tps_start_date": ${ second_spouse_tps_start_date.format() }
-    - "users3_marriage_ending_date": ${ users3_marriage_ending_date.format() }
-    - "second_spouse_tps_end_date": ${ second_spouse_tps_end_date.format() }
-    - "second_spouse_tps_continues": ${ second_spouse_tps_continues }
-    - "second_spouse_tps_dates_unknown": ${ second_spouse_tps_dates_unknown }
-    - "users3_marriage_ending_reason": ${ users3_marriage_ending_reason }
-    - "first_spouse_had_tps": ${ first_spouse_had_tps }
-    - "first_spouse_tps_start_date": ${ first_spouse_tps_start_date.format() }
-    - "first_spouse_tps_end_date": ${ first_spouse_tps_end_date.format() }
-    - "first_spouse_tps_continuing": ${ first_spouse_tps_continuing }
-    - "first_spouse_tps_dates_unknown": ${ first_spouse_tps_dates_unknown }
-    - "first_spouse_applying_for_tps": ${ first_spouse_applying_for_tps }
-    - "children2_name_last": ${ children[1].name.last }
-    - "children2_name_first": ${ children[1].name.first }
-    - "children2_name_middle": ${ children[1].name.middle }
-    - "children2_online_account_number": ${ children2_online_account_number }
-    - "children2_a_number": ${ children2_a_number }
-    - "children2_birthdate": ${ children[1].birthdate.format() }
-    - "children1_name_last": ${ children[0].name.last }
-    - "children1_name_first": ${ children[0].name.first }
-    - "children1_name_middle": ${ children[0].name.middle }
-    - "children2_address_address": ${ children[1].address.address }
-    - "children2_address_is_apt": ${ children2_address_is_apt }
-    - "children2_address_is_suite": ${ children2_address_is_suite }
-    - "children2_address_is_floor": ${ children2_address_is_floor }
-    - "children2_address_unit": ${ children[1].address.unit }
-    - "children1_online_account_number": ${ children1_online_account_number }
-    - "children2_address_city": ${ children[1].address.city }
-    - "children1_a_number": ${ children1_a_number }
-    - "children2_address_state": ${ children[1].address.state }
-    - "children2_address_zip": ${ children[1].address.zip }
-    - "children1_birthdate": ${ children[0].birthdate.format() }
-    - "children2_address_province": ${ children2_address_province }
-    - "children2_address_postal_code": ${ children2_address_postal_code }
-    - "children1_address_street": ${ children[0].address.address }
-    - "children2_address_country": ${ children[1].address.country }
-    - "children1_address_is_apt": ${ children1_address_is_apt }
-    - "children1_address_is_suite": ${ children1_address_is_suite }
-    - "children1_address_is_floor": ${ children1_address_is_floor }
-    - "children1_address_unit": ${ children[0].address.unit }
-    - "children1_address_city": ${ children[0].address.city }
-    - "children2_tps_start_date": ${ children2_tps_start_date.format() }
-    - "children1_address_state": ${ children[0].address.state }
-    - "children1_address_zip": ${ children[0].address.zip }
-    - "children2_tps_end_date": ${ children2_tps_end_date.format() }
-    - "children1_address_province": ${ children1_address_province }
-    - "children2_applying_for_tps": ${ children2_applying_for_tps }
-    - "children1_address_postal_code": ${ children1_address_postal_code }
-    - "children1_address_country": ${ children[0].address.country }
-    - "children1_tps_start_date": ${ children1_tps_start_date.format() }
-    - "children1_tps_end_date": ${ children1_tps_end_date.format() }
-    - "last_country_of_residence": ${ last_country_of_residence }
+    - "marriage_state": ${ users[i].marriage_state }
+    - "marriage_province": ${ users[i].marriage_province }
+    - "marriage_country": ${ users[i].marriage_country }
+    # - "users2_online_account_number": ${ users2_online_account_number }
+    # - "spouse_had_tps": ${ spouse_had_tps }
+    # - "users2_a_number": ${ users2_a_number }
+    # - "users2_name_last": ${ users[1].name.last }
+    # - "spouse_tps_date": ${ spouse_tps_date.format('MM/dd/yyyy') }
+    # - "users2_name_first": ${ users[1].name.first }
+    # - "spouse_tps_ending_date": ${ spouse_tps_ending_date.format('MM/dd/yyyy') }
+    # - "users2_name_middle": ${ users[1].name.middle }
+    # - "spouse_tps_continuing": ${ spouse_tps_continuing }
+    # - "spouse_tps_dates_unknown": ${ spouse_tps_dates_unknown }
+    # - "spouse_is_tps_valid": ${ spouse_is_tps_valid }
+    # - "users4_name_last": ${ users[3].name.last }
+    # - "users4_name_first": ${ users[3].name.first }
+    # - "users4_name_middle": ${ users[3].name.middle }
+    # - "users4_nationality": ${ users4_nationality }
+    # - "users4_a_number": ${ users4_a_number }
+    # - "users3_name_last": ${ users[2].name.last }
+    # - "users4_birthdate": ${ users[3].birthdate.format('MM/dd/yyyy') }
+    # - "users3_name_first": ${ users[2].name.first }
+    # - "users3_name_middle": ${ users[2].name.middle }
+    # - "users4_death_date": ${ users4_death_date.format('MM/dd/yyyy') }
+    # - "users3_nationality": ${ users3_nationality }
+    # - "users4_marriage_start_date": ${ users4_marriage_start_date.format('MM/dd/yyyy') }
+    # - "users4_marriage_end_date": ${ users4_marriage_end_date.format('MM/dd/yyyy') }
+    # - "users3_a_number": ${ users3_a_number }
+    # - "users3_birthdate": ${ users[2].birthdate.format('MM/dd/yyyy') }
+    # - "users4_marriage_ending_reason": ${ users4_marriage_ending_reason }
+    # - "users3_death_date": ${ users3_death_date.format('MM/dd/yyyy') }
+    # - "second_spouse_has_tps": ${ second_spouse_has_tps }
+    # - "users3_marriage_date": ${ users3_marriage_date.format('MM/dd/yyyy') }
+    # - "second_spouse_tps_start_date": ${ second_spouse_tps_start_date.format('MM/dd/yyyy') }
+    # - "users3_marriage_ending_date": ${ users3_marriage_ending_date.format('MM/dd/yyyy') }
+    # - "second_spouse_tps_end_date": ${ second_spouse_tps_end_date.format('MM/dd/yyyy') }
+    # - "second_spouse_tps_continues": ${ second_spouse_tps_continues }
+    # - "second_spouse_tps_dates_unknown": ${ second_spouse_tps_dates_unknown }
+    # - "users3_marriage_ending_reason": ${ users3_marriage_ending_reason }
+    # - "first_spouse_had_tps": ${ first_spouse_had_tps }
+    # - "first_spouse_tps_start_date": ${ first_spouse_tps_start_date.format('MM/dd/yyyy') }
+    # - "first_spouse_tps_end_date": ${ first_spouse_tps_end_date.format('MM/dd/yyyy') }
+    # - "first_spouse_tps_continuing": ${ first_spouse_tps_continuing }
+    # - "first_spouse_tps_dates_unknown": ${ first_spouse_tps_dates_unknown }
+    # - "first_spouse_applying_for_tps": ${ first_spouse_applying_for_tps }
+    # - "children2_name_last": ${ children[1].name.last }
+    # - "children2_name_first": ${ children[1].name.first }
+    # - "children2_name_middle": ${ children[1].name.middle }
+    # - "children2_online_account_number": ${ children2_online_account_number }
+    # - "children2_a_number": ${ children2_a_number }
+    # - "children2_birthdate": ${ children[1].birthdate.format('MM/dd/yyyy') }
+    # - "children1_name_last": ${ children[0].name.last }
+    # - "children1_name_first": ${ children[0].name.first }
+    # - "children1_name_middle": ${ children[0].name.middle }
+    # - "children2_address_address": ${ children[1].address.address }
+    # - "children2_address_is_apt": ${ children2_address_is_apt }
+    # - "children2_address_is_suite": ${ children2_address_is_suite }
+    # - "children2_address_is_floor": ${ children2_address_is_floor }
+    # - "children2_address_unit": ${ children[1].address.unit }
+    # - "children1_online_account_number": ${ children1_online_account_number }
+    # - "children2_address_city": ${ children[1].address.city }
+    # - "children1_a_number": ${ children1_a_number }
+    # - "children2_address_state": ${ children[1].address.state }
+    # - "children2_address_zip": ${ children[1].address.zip }
+    # - "children1_birthdate": ${ children[0].birthdate.format('MM/dd/yyyy') }
+    # - "children2_address_province": ${ children2_address_province }
+    # - "children2_address_postal_code": ${ children2_address_postal_code }
+    # - "children1_address_street": ${ children[0].address.address }
+    # - "children2_address_country": ${ children[1].address.country }
+    # - "children1_address_is_apt": ${ children1_address_is_apt }
+    # - "children1_address_is_suite": ${ children1_address_is_suite }
+    # - "children1_address_is_floor": ${ children1_address_is_floor }
+    # - "children1_address_unit": ${ children[0].address.unit }
+    # - "children1_address_city": ${ children[0].address.city }
+    # - "children2_tps_start_date": ${ children2_tps_start_date.format('MM/dd/yyyy') }
+    # - "children1_address_state": ${ children[0].address.state }
+    # - "children1_address_zip": ${ children[0].address.zip }
+    # - "children2_tps_end_date": ${ children2_tps_end_date.format('MM/dd/yyyy') }
+    # - "children1_address_province": ${ children1_address_province }
+    # - "children2_applying_for_tps": ${ children2_applying_for_tps }
+    # - "children1_address_postal_code": ${ children1_address_postal_code }
+    # - "children1_address_country": ${ children[0].address.country }
+    # - "children1_tps_start_date": ${ children1_tps_start_date.format('MM/dd/yyyy') }
+    # - "children1_tps_end_date": ${ children1_tps_end_date.format('MM/dd/yyyy') }
+    - "last_country_of_residence": ${ users[i].last_country_of_residence }
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
-    - "date_started_us_residence": ${ date_started_us_residence }
+    - "date_started_us_residence": ${ users[i].date_started_us_residence }
     - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
     - "other_countries_entered_list": ${ other_countries_entered_list }
-    - "other_country_entered_start_date": ${ other_country_entered_start_date.format() }
-    - "other_country_entered_end_date": ${ other_country_entered_end_date.format() }
+    - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
+    - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
     - "other_country_immigration_status": ${ other_country_immigration_status }
     - "other_country_immigration_status_offered": ${ other_country_immigration_status_offered }
     - "other_country_immigration_status_names_and_status": ${ other_country_immigration_status_names_and_status }
-    - "other_country_immigration_status_why_refused": ${ other_country_immigration_status_why_refused }
-    - "convicted_of_felony_in_us": ${ users[i].convicted_of_felony_in_us }
-    - "convicted_of_misdemeanor_us": ${ users[i].convicted_of_misdemeanor_us }
-    - "particularly_serious_crime": ${ users[i].particularly_serious_crime }
-    - "got_financial_benefit_crime": ${ users[i].got_financial_benefit_crime }
-    - "persecution_by_protected_status": ${ users[i].persecution_by_protected_status }
-    - "engaged_espionage": ${ 'Yes_28' if users[i].engaged_espionage else 'No_28' }
-    - "serious_nonpolitical_crime": ${ users[i].serious_nonpolitical_crime }
-    - "evade_export_controls": ${ users[i].evade_export_controls }
-    - "danger_to_us": ${ users[i].danger_to_us }
-    - "convicted_or_committed_any_crime": ${ users[i].convicted_or_committed_any_crime }
-    - "acted_in_overthrow_of_us": ${ users[i].acted_in_overthrow_of_us }
-    - "convicted_committed_drugs": ${ users[i].convicted_committed_drugs }
-    - "acted_as_terrorist": ${ users[i].acted_as_terrorist }
-    - "convicted_committed_conspiracy_drugs": ${ users[i].convicted_committed_conspiracy_drugs }
-    - "negative_foreign_policy": ${ users[i].negative_foreign_policy }
-    - "convicted_2_or_more_crimes_totalling_5_or_more_years_yes": ${ users[i].convicted_2_or_more_crimes_totalling_5_or_more_years }
-    - "convicted_2_or_more_crimes_totalling_5_or_more_years_no": ${ not users[i].convicted_2_or_more_crimes_totalling_5_or_more_years }
-    - "is_communist": ${ is_communist }
-    - "ever_trafficked_yes": ${ ever_trafficked }
-    - "ever_trafficked_no": ${ not ever_trafficked }
-    - "is_nazi": ${ is_nazi }
-    - "trafficking_drugs": ${ trafficking_drugs }
-    - "ever_arrested": ${ ever_arrested }
-    - "spouse_or_child_of_drug_trafficker": ${ spouse_or_child_of_drug_trafficker }
-    - "ever_cited": ${ ever_cited }
-    - "spouse_or_child_drug_abetter": ${ spouse_or_child_drug_abetter }
-    - "ever_fined_jailed_suspended": ${ ever_fined_jailed_suspended }
-    - "has_communicable_disease": ${ has_communicable_disease }
-    - "ever_got_clemency": ${ ever_got_clemency }
-    - "has_dangerous_disorder": ${ has_dangerous_disorder }
-    - "ever_asserted_immunity_prosecution": ${ ever_asserted_immunity_prosecution }
-    - "drug_addict_yes": ${ drug_addict }
-    - "drug_addict_no": ${ not drug_addict }
-    - "prostitution_last_10_years": ${ prostitution_last_10_years }
-    - "stowaway_yes": ${ stowaway }
-    - "stowaway_no": ${ not stowaway }
-    - "procured_prostitute_10_years": ${ procured_prostitute_10_years }
-    - "fined_for_false_documentation": ${ fined_for_false_documentation }
-    - "pimped_10_years": ${ pimped_10_years }
-    - "Immigration and Nationality Act": ${ Immigration_and_Nationality_Act }
-    - "Do you NOW practice polygamy": ${ Do_you_NOW_practice_polygamy }
-    - "involved_in_commercial_vice": ${ involved_in_commercial_vice }
-    - "ever_ordered_removed": ${ ever_ordered_removed }
-    - "examiner to be helpless due to sickness physical or": ${ examiner_to_be_helpless_due_to_sickness_physical_or }
-    - "ever_departed_removal_order": ${ ever_departed_removal_order }
-    - "citizenship outside the United States from a US citizen": ${ citizenship_outside_the_United_States_from_a_US_citizen }
-    - "dhs_reinstated_before_removal": ${ dhs_reinstated_before_removal }
-    - "genocide_yes": ${ genocide }
-    - "genocide_no": ${ not genocide }
-    - "ever_failed_to_attend_deportation_hearing": ${ ever_failed_to_attend_deportation_hearing }
-    - "killing_yes": ${ killing }
-    - "killing_no": ${ not killing }
-    - "severe_injury_yes": ${ severe_injury }
-    - "severe_injury_no": ${ not severe_injury }
-    - "ever_lied_visa_or_admission": ${ ever_lied_visa_or_admission }
-    - "ever_helped_someone_enter_illegally": ${ ever_helped_someone_enter_illegally }
-    - "forced_sex": ${ forced_sex }
-    - "denied_religious_exercise": ${ denied_religious_exercise }
-    - "spouse_child_helped_human_trafficker": ${ spouse_child_helped_human_trafficker }
-    - "served_military": ${ served_military }
-    - "worked_detention_facility": ${ worked_detention_facility }
-    - "benefited_human_trafficking": ${ benefited_human_trafficking }
-    - "laundering as described in section 1956 or 1957 of Title": ${ laundering_as_described_in_section_1956_or_1957_of_Title }
-    - "group_using_weapons": ${ group_using_weapons }
-    - "helped_money_laundering": ${ helped_money_laundering }
-    - "helped_weapons_yes": ${ helped_weapons }
-    - "helped_weapons_no": ${ not helped_weapons }
-    - "weapon_training_yes": ${ weapon_training }
-    - "weapon_training_no": ${ not weapon_training }
-    - "violated_religious_freedom": ${ violated_religious_freedom }
-    - "illegal_voted_us": ${ illegal_voted_us }
-    - "past_determination_of_frivolous_asylum": ${ past_determination_of_frivolous_asylum }
-    - "claimed_us_citizen": ${ claimed_us_citizen }
-    - "conscripted_child_soldier": ${ conscripted_child_soldier }
-    - "used_child_soldier": ${ used_child_soldier }
-    - "user_reads_english": ${ user_reads_english }
-    - "committed_human_trafficking": ${ committed_human_trafficking }
-    - "user_used_interpreter": ${ user_used_interpreter }
-    - "helped_human_trafficking": ${ helped_human_trafficking }
-    - "interpreter_spoke_language": ${ interpreter_spoke_language }
-    - "user_used_preparer": ${ user_used_preparer }
-    - "spouse_child_human_trafficker": ${ spouse_child_human_trafficker }
-    - "preparer_name": ${ preparer }
+    - "other_coutnry_immigration_status_why_refused": ${ other_coutnry_immigration_status_why_refused }
+    - "q8a_yes": ${ users[i].q8a }
+    - "q8a_no": ${ not users[i].q8a }
+    - "q8b_yes": ${ users[i].q8b }
+    - "q8b_no": ${ not users[i].q8b }
+    - "q8c_yes": ${ users[i].q8c }
+    - "q8c_no": ${ not users[i].q8c }
+    - "q12e_yes": ${ users[i].q12e }
+    - "q12e_no": ${ not users[i].q12e }
+    - "q9a_yes": ${ users[i].q9a }
+    - "q9a_no": ${ not users[i].q9a }
+    - "q13a_yes": ${ users[i].q13a }
+    - "q13a_no": ${ not users[i].q13a }
+    - "q9b_yes": ${ users[i].q9b }
+    - "q9b_no": ${ not users[i].q9b }
+    - "q13b_yes": ${ users[i].q13b }
+    - "q13b_no": ${ not users[i].q13b }
+    - "q9c_yes": ${ users[i].q9c }
+    - "q9c_no": ${ not users[i].q9c }
+    - "q13c_yes": ${ users[i].q13c }
+    - "q13c_no": ${ not users[i].q13c }
+    - "q10a_yes": ${ users[i].q10a }
+    - "q10a_no": ${ not users[i].q10a }
+    - "q13d_yes": ${ users[i].q13d }
+    - "q13d_no": ${ not users[i].q13d }
+    - "q10b_yes": ${ users[i].q10b }
+    - "q10b_no": ${ not users[i].q10b }
+    - "q14a_yes": ${ users[i].q14a }
+    - "q14a_no": ${ not users[i].q14a }
+    - "q10c_yes": ${ users[i].q10c }
+    - "q10c_no": ${ not users[i].q10c }
+    - "q14b_yes": ${ users[i].q14b }
+    - "q14b_no": ${ not users[i].q14b }
+    - "q11_yes": ${ users[i].q11 }
+    - "q11_no": ${ not users[i].q11 }
+    - "q14c_yes": ${ users[i].q14c }
+    - "q14c_no": ${ not users[i].q14c }
+    - "q12a_yes": ${ users[i].q12a }
+    - "q12a_no": ${ not users[i].q12a }
+    - "q14d_yes": ${ users[i].q14d }
+    - "q14d_no": ${ not users[i].q14d }
+    - "q12b_yes": ${ users[i].q12b }
+    - "q12b_no": ${ not users[i].q12b }
+    - "q15a_yes": ${ users[i].q15a }
+    - "q15a_no": ${ not users[i].q15a }
+    - "q12c_yes": ${ users[i].q12c }
+    - "q12c_no": ${ not users[i].q12c }
+    - "q15b_yes": ${ users[i].q15b }
+    - "q15b_no": ${ not users[i].q15b }
+    - "q12d_yes": ${ users[i].q12d }
+    - "q12d_no": ${ not users[i].q12d }
+    - "q15c_yes": ${ users[i].q15c }
+    - "q15c_no": ${ not users[i].q15c }
+    - "q23a_yes": ${ users[i].q23a }
+    - "q23a_no": ${ not users[i].q23a }
+    - "q16_yes": ${ users[i].q16 }
+    - "q16_no": ${ not users[i].q16 }
+    - "q23b_yes": ${ users[i].q23b }
+    - "q23b_no": ${ not users[i].q23b }
+    - "q17_yes": ${ users[i].q17 }
+    - "q17_no": ${ not users[i].q17 }
+    - "q23c_yes": ${ users[i].q23c }
+    - "q23c_no": ${ not users[i].q23c }
+    - "q18a_yes": ${ users[i].q18a }
+    - "q18a_no": ${ not users[i].q18a }
+    - "q24_yes": ${ users[i].q24 }
+    - "q24_no": ${ not users[i].q24 }
+    - "q18b_yes": ${ users[i].q18b }
+    - "q18b_no": ${ not users[i].q18b }
+    - "q25_yes": ${ users[i].q25 }
+    - "q25_no": ${ not users[i].q25 }
+    - "q18c_yes": ${ users[i].q18c }
+    - "q18c_no": ${ not users[i].q18c }
+    - "q26_yes": ${ users[i].q26 }
+    - "q26_no": ${ not users[i].q26 }
+    - "q19_yes": ${ users[i].q19 }
+    - "q19_no": ${ not users[i].q19 }
+    - "q27_yes": ${ users[i].q27 }
+    - "q27_no": ${ not users[i].q27 }
+    - "q20a_yes": ${ users[i].q20a }
+    - "q20a_no": ${ not users[i].q20a }
+    - "q20b_yes": ${ users[i].q20b }
+    - "q20b_no": ${ not users[i].q20b }
+    - "q28_yes": ${ users[i].q28 }
+    - "q28_no": ${ not users[i].q28 }
+    - "q20c_yes": ${ users[i].q20c }
+    - "q20c_no": ${ not users[i].q20c }
+    - "q29_yes": ${ users[i].q29 }
+    - "q29_no": ${ not users[i].q29 }
+    - "q20d_yes": ${ users[i].q20d == 'Yes' }
+    - "q20d_no": ${ not users[i].q20d == 'No' }
+    - "q20d_idk": ${ users[i].q20d == 'I do not know' }
+    - "q30a_yes": ${ users[i].q30a }
+    - "q30a_no": ${ not users[i].q30a }
+    - "q20e_yes": ${ users[i].q20e }
+    - "q20e_no": ${ not users[i].q20e }
+    - "q30b_yes": ${ users[i].q30b }
+    - "q30b_no": ${ not users[i].q30b }
+    - "q30c_yes": ${ users[i].q30c }
+    - "q30c_no": ${ not users[i].q30c }
+    - "q21_yes": ${ users[i].q21 }
+    - "q21_no": ${ not users[i].q21 }
+    - "q22_yes": ${ users[i].q22 }
+    - "q22_no": ${ not users[i].q22 }
+    - "q30d_yes": ${ users[i].q30d }
+    - "q30d_no": ${ not users[i].q30d }
+    - "q30e_yes": ${ users[i].q30e }
+    - "q30e_no": ${ not users[i].q30e }
+    - "q38d_yes": ${ users[i].q38d }
+    - "q38d_no": ${ not users[i].q38d }
+    - "q31a_yes": ${ users[i].q31a }
+    - "q31a_no": ${ not users[i].q31a }
+    - "q31b_yes": ${ users[i].q31b }
+    - "q31b_no": ${ not users[i].q31b }
+    - "q38e_yes": ${ users[i].q38e }
+    - "q38e_no": ${ not users[i].q38e }
+    - "q39a_yes": ${ users[i].q39a }
+    - "q39a_no": ${ not users[i].q39a }
+    - "q32_yes": ${ users[i].q32 }
+    - "q32_no": ${ not users[i].q32 }
+    - "q39b_yes": ${ users[i].q39b }
+    - "q39b_no": ${ not users[i].q39b }
+    - "q33_yes": ${ users[i].q33 }
+    - "q33_no": ${ not users[i].q33 }
+    - "q34_yes": ${ users[i].q34 }
+    - "q34_no": ${ not users[i].q34 }
+    - "q40_yes": ${ users[i].q40 }
+    - "q40_no": ${ not users[i].q40 }
+    - "q35_yes": ${ users[i].q35 }
+    - "q35_no": ${ not users[i].q35 }
+    - "q41_yes": ${ users[i].q41 }
+    - "q41_no": ${ not users[i].q41 }
+    - "q36_yes": ${ users[i].q36 }
+    - "q36_no": ${ not users[i].q36 }
+    - "q37a_yes": ${ users[i].q37a }
+    - "q37a_no": ${ not users[i].q37a }
+    - "q37b_yes": ${ users[i].q37b }
+    - "q37b_no": ${ not users[i].q37b }
+    - "q38a_yes": ${ users[i].q38a }
+    - "q38a_no": ${ not users[i].q38a }
+    - "q38b_yes": ${ users[i].q38b }
+    - "q38b_no": ${ not users[i].q38b }
+    - "q38c_yes": ${ users[i].q38c }
+    - "q38c_no": ${ not users[i].q38c }
+    - "user_reads_english": ${ users[i].user_reads_english }
+    - "user_used_interpreter": ${ users[i].user_used_interpreter if interpreter_present else False }
+    - "interpreter_spoke_language": ${ interpreter.language }
+    - "user_used_preparer": ${ users[i].user_used_preparer }
+    - "preparer_name": ${ preparer[0] }
     - "users1_phone_number": ${ users[i].phone_number }
     - "interpreter_name_last": ${ interpreter.name.last }
     - "users1_mobile_number": ${ users[i].mobile_number }
@@ -2471,10 +2454,10 @@ attachment:
     - "interpreter_phone_number": ${ interpreter.phone_number }
     - "interpreter_mobile_number": ${ interpreter.mobile_number }
     - "interpreter_email": ${ interpreter.email }
-    - "interpreted_into_language": ${ interpreted_into_language }
-    - "signature_date": ${ today() }
-    - "signature_date__1": ${ today() }
-    - "signature_date__2": ${ today() }
+    - "interpreted_into_language": ${ interpreter.language }
+    - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
+    - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
+    - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
     - "preparer_is_attorney_yes": ${ preparer_is_attorney }
     - "preparer_is_attorney_no": ${ not preparer_is_attorney }
     - "preparer_full_rep": ${ preparer_full_rep }
@@ -2485,62 +2468,208 @@ attachment:
     - "preparer_phone_number": ${ preparer.phone_number }
     - "preparer_mobile_number": ${ preparer.mobile_number }
     - "preparer_email": ${ preparer.email }
-    # - "Page Number_3": ${ Page_Number_3 }
-    # - "Part Number_3": ${ Part_Number_3 }
-    # - "Item Number_3": ${ Item_Number_3 }
-    # - "1_3": ${ _3 }
-    # - "2_3": ${ _3 }
-    # - "3_3": ${ _3 }
-    # - "4_3": ${ _3 }
-    # - "5_3": ${ _3 }
-    # - "6_3": ${ _3 }
-    # - "7_3": ${ _3 }
-    # - "8_3": ${ _3 }
-    # - "9_3": ${ _3 }
-    # - "10_3": ${ _3 }
-    # - "sign and date each sheet": ${ sign_and_date_each_sheet }
-    # - "First Name_9": ${ First_Name_9 }
-    # - "Middle Name_8": ${ Middle_Name_8 }
-    # - "A_3": ${ A_3 }
-    # - "Page Number": ${ Page_Number }
-    # - "Part Number": ${ Part_Number }
-    # - "Item Number": ${ Item_Number }
-    # - "Page Number_4": ${ Page_Number_4 }
-    # - "Part Number_4": ${ Part_Number_4 }
-    # - "Item Number_4": ${ Item_Number_4 }
-    # - "1_4": ${ _4 }
-    # - "2_4": ${ _4 }
-    # - "3_4": ${ _4 }
-    # - "4_4": ${ _4 }
-    # - "5_4": ${ _4 }
-    # - "6_4": ${ _4 }
-    # - "7_4": ${ _4 }
-    # - "8_4": ${ _4 }
-    # - "9_4": ${ _4 }
-    # - "10_4": ${ _4 }
-    # - "Page Number_2": ${ Page_Number_2 }
-    # - "Part Number_2": ${ Part_Number_2 }
-    # - "Item Number_2": ${ Item_Number_2 }
-    # - "Page Number_5": ${ Page_Number_5 }
-    # - "Part Number_5": ${ Part_Number_5 }
-    # - "Item Number_5": ${ Item_Number_5 }
-    # - "1_2": ${ _2 }
-    # - "2_2": ${ _2 }
-    # - "3_2": ${ _2 }
-    # - "4_2": ${ _2 }
-    # - "5_2": ${ _2 }
-    # - "6_2": ${ _2 }
-    # - "7_2": ${ _2 }
-    # - "8_2": ${ _2 }
-    # - "9_2": ${ _2 }
-    # - "10_2": ${ _2 }
-    # - "1_5": ${ _5 }
-    # - "2_5": ${ _5 }
-    # - "3_5": ${ _5 }
-    # - "4_5": ${ _5 }
-    # - "5_5": ${ _5 }
-    # - "6_5": ${ _5 }
-    # - "7_5": ${ _5 }
-    # - "8_5": ${ _5 }
-    # - "9_5": ${ _5 }
-    # - "10_5": ${ _5 }
+    - "Page Number_3": ${ Page_Number_3 }
+    - "Part Number_3": ${ Part_Number_3 }
+    - "Item Number_3": ${ Item_Number_3 }
+    - "1_3": ${ _3 }
+    - "2_3": ${ _3 }
+    - "3_3": ${ _3 }
+    - "4_3": ${ _3 }
+    - "5_3": ${ _3 }
+    - "6_3": ${ _3 }
+    - "7_3": ${ _3 }
+    - "8_3": ${ _3 }
+    - "9_3": ${ _3 }
+    - "10_3": ${ _3 }
+    - "sign and date each sheet": ${ sign_and_date_each_sheet }
+    - "First Name_9": ${ First_Name_9 }
+    - "Middle Name_8": ${ Middle_Name_8 }
+    - "A_3": ${ A_3 }
+    - "Page Number": ${ Page_Number }
+    - "Part Number": ${ Part_Number }
+    - "Item Number": ${ Item_Number }
+    - "Page Number_4": ${ Page_Number_4 }
+    - "Part Number_4": ${ Part_Number_4 }
+    - "Item Number_4": ${ Item_Number_4 }
+    - "1": ${  }
+    - "2": ${  }
+    - "3": ${  }
+    - "4": ${  }
+    - "5": ${  }
+    - "6": ${  }
+    - "7": ${  }
+    - "8": ${  }
+    - "9": ${  }
+    - "10": ${  }
+    - "1_4": ${ _4 }
+    - "2_4": ${ _4 }
+    - "3_4": ${ _4 }
+    - "4_4": ${ _4 }
+    - "5_4": ${ _4 }
+    - "6_4": ${ _4 }
+    - "7_4": ${ _4 }
+    - "8_4": ${ _4 }
+    - "9_4": ${ _4 }
+    - "10_4": ${ _4 }
+    - "Page Number_2": ${ Page_Number_2 }
+    - "Part Number_2": ${ Part_Number_2 }
+    - "Item Number_2": ${ Item_Number_2 }
+    - "Page Number_5": ${ Page_Number_5 }
+    - "Part Number_5": ${ Part_Number_5 }
+    - "Item Number_5": ${ Item_Number_5 }
+    - "1_2": ${ _2 }
+    - "2_2": ${ _2 }
+    - "3_2": ${ _2 }
+    - "4_2": ${ _2 }
+    - "5_2": ${ _2 }
+    - "6_2": ${ _2 }
+    - "7_2": ${ _2 }
+    - "8_2": ${ _2 }
+    - "9_2": ${ _2 }
+    - "10_2": ${ _2 }
+    - "1_5": ${ _5 }
+    - "2_5": ${ _5 }
+    - "3_5": ${ _5 }
+    - "4_5": ${ _5 }
+    - "5_5": ${ _5 }
+    - "6_5": ${ _5 }
+    - "7_5": ${ _5 }
+    - "8_5": ${ _5 }
+    - "9_5": ${ _5 }
+    - "10_5": ${ _5 }
+
+########################################################
+###################I-765 PDF fields ####################
+---
+attachment:
+  name: I-765
+  filename: I-765
+  variable name: users[i].i_765_attachment[j]
+  skip undefined: True
+  pdf template file: I-765_flattened.pdf
+  fields:
+    # - "US Citizenship and Immigration Services": ${ US_Citizenship_and_Immigration_Services }
+    - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
+    - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
+    - "application_reason_employment": ${ users[i].application_reason_employment }
+    - "application_reason_replacement": ${ users[i].application_reason_replacement }
+    - "users1_previous_names1_last": ${ users[i].previous_names[0].last }
+    - "users1_previous_names1_first": ${ users[i].previous_names[0].first }
+    - "users1_previous_names1_middle": ${ users[i].previous_names[0].middle }
+    - "users1_previous_names2_last": ${ users[i].previous_names[1].last }
+    - "users1_previous_names2_first": ${ users[i].previous_names[1].first }
+    - "application_reason_renewal": ${ users[i].application_reason_renewal }
+    - "users1_previous_names2_middle": ${ users[i].previous_names[1].middle }
+    - "users1_previous_names3_last": ${ users[i].previous_names[2].last }
+    - "users1_previous_names3_first": ${ users[i].previous_names[2].first }
+    - "users1_previous_names3_middle": ${ users[i].previous_names[2].middle }
+    - "users1_name_last": ${ users[i].name.last }
+    - "users1_name_first": ${ users[i].name.first }
+    - "users1_name_middle": ${ users[i].name.middle }
+    - "users1_ssn": ${ users[i].ssn }
+    - "users1_wants_ssn": ${ users[i].wants_SS_card }
+    # - "users1_mailing_address_is_apt": ${ users1_mailing_address_is_apt }
+    # - "users1_mailing_address_is_suite": ${ users1_mailing_address_is_suite }
+    # - "users1_mailing_address_is_floor": ${ users1_mailing_address_is_floor }
+    - "father_name_last": ${ users[i].father_last_name}
+    - "father_name_first": ${ users[i].father_first_name }
+    - "mother_name_last": ${ users[i].mother_last_name }
+    - "mother_name_first": ${ users[i].mother_first_name }
+    - "users1_address_is_apt": ${ users1_address_is_apt }
+    - "users1_address_is_suite": ${ users1_address_is_suite }
+    - "users1_address_is_floor": ${ users1_address_is_floor }
+    - "users1_address_address": ${ users[i].address.address }
+    - "users1_address_unit": ${ users[i].address.unit }
+    - "users1_address_city": ${ users[i].address.city }
+    - "users1_address_state": ${ users[i].address.state }
+    - "users1_address_zip": ${ users[i].address.zip }
+    - "users1_a_number": ${ users[i].a_number }
+    - "users1_uscis_account_number": ${ users[i]._uscis_account_number }
+    - "users1_gender": ${ users[i].sex }
+    - "users1_mailing_address_in_care_of": 'LAS New Arrivals'
+    - "users1_mailing_address_address": '101 N. Wacker Dr.'
+    - "users1_mailing_address_unit": 'Suite 1700'
+    - "users1_mailing_address_city": 'Chicago'
+    - "users1_mailing_address_state": 'IL'
+    - "users1_mailing_address_zip": '60606'
+    - "mailing_address_is_physical_address": No
+    - "marital_status_single": ${ marital_status_single }
+    - "marital_status_married": ${ marital_status_married }
+    - "marital_status_divorced": ${ marital_status_divorced }
+    - "marital_status_widowed": ${ marital_status_widowed }
+    - "citizen_country_1": ${ citizen_country_1 }
+    - "previously_filed_i765": ${ previously_filed_i765 }
+    - "citizen_country_2": ${ citizen_country_2 }
+    - "has_ssn": ${ has_ssn }
+    - "city_of_birth": ${ users[i].city_of_birth }
+    - "state_of_birth": ${ users[i].state_of_birth }
+    - "country_of_birth": ${ users[i].country_of_birth }
+    - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
+    - "i94_arrival_number": ${ users[i].i94_arrival_number }
+    - "passport_number": ${ users[i].passport_number }
+    - "travel_document_number": ${ users[i].travel_document_number }
+    - "passport_country_of_issue": ${ users[i].passport_country_of_issue }
+    - "passport_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
+    - "date_of_last_arrival": ${ users[i].date_of_last_arrival.format('MM/dd/yyyy') }
+    - "place_of_last_arrival": ${ users[i].place_of_last_arrival }
+    - "immigration_status_at_last_arrival": ${ users[i].immigration_status_at_last_arrival }
+    - "current_immigration_status": ${ users[i].current_immigration_status }
+    - "sevis_number": ${ users[i].sevis_number }
+    - "user_reads_english": ${ users[i].user_reads_english }
+    - "user_used_interpreter": ${ users[i].user_used_interpreter }
+    - "interpreter_spoke_language": ${ users[i].interpreter_spoke_language }
+    - "interpreter_spoke_language__1": ${ users[i].interpreter_spoke_language }
+    - "user_used_preparer": ${ users[i].user_used_preparer }
+    - "preparer_name": ${ preparer[0] }
+    - "users1_phone_number": ${ users[i].phone_number }
+    - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
+    - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
+    - "users1_mobile_number": ${ users[i].mobile_number }
+    - "users1_email": ${ users[i].email }
+    - "is_abc_salvadoran_guatemalan_national": ${ users[i].is_abc_salvadoran_guatemalan_national }
+    - "interpreter_name_last": ${ interpreter.name.last }
+    - "interpreter_name_first": ${ interpreter.name.first }
+    - "interpreter_organization": ${ interpreter.organization }
+    - "interpreter_mailing_address_address": ${ interpreter.mailing_address.address }
+    - "interpreter_mailing_address_is_apt": ${ interpreter.mailing_address_is_apt }
+    - "interpreter_mailing_address_is_suite": ${ interpreter.mailing_address_is_suite }
+    - "interpreter_mailing_address_is_floor": ${ interpreter.mailing_address_is_floor }
+    - "interpreter_mailing_address_unit": ${ interpreter.mailing_address.unit }
+    - "preparer_name_last": ${ preparer.name.last }
+    - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
+    - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
+    - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
+    - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
+    - "preparer_name_first": ${ preparer.name.first }
+    - "interpreter_mailing_address_state": ${ interpreter.mailing_address.state }
+    - "preparer_organization": ${ preparer.organization }
+    - "interpreter_mailing_address_country": ${ interpreter.mailing_address.country }
+    - "interpreter_phone_number": ${ interpreter.phone_number }
+    - "interpreter_mobile_number": ${ interpreter.mobile_number }
+    - "interpreter_email": ${ interpreter.email }
+    - "preparer_phone_number": ${ preparer.phone_number }
+    - "preparer_mobile_number": ${ preparer.mobile_number }
+    - "preparer_email": ${ preparer.email }
+    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
+    - "preparer_full_rep": ${ preparer_full_rep }
+    - "preparer_limited_rep": ${ preparer_limited_rep }
+    - "Page Number_3": ${ Page_Number_3 }
+    - "Part Number_3": ${ Part_Number_3 }
+    - "Item Number_3": ${ Item_Number_3 }
+    - "sign and date each sheet": ${ sign_and_date_each_sheet }
+    - "First Name_7": ${ First_Name_7 }
+    - "Middle Name_5": ${ Middle_Name_5 }
+    - "Page Number_4": ${ Page_Number_4 }
+    - "Part Number_4": ${ Part_Number_4 }
+    - "Item Number_4": ${ Item_Number_4 }
+    - "A_2": ${ A_2 }
+    - "Page Number": ${ Page_Number }
+    - "Part Number": ${ Part_Number }
+    - "Item Number": ${ Item_Number }
+    - "Page Number_5": ${ Page_Number_5 }
+    - "Part Number_5": ${ Part_Number_5 }
+    - "Item Number_5": ${ Item_Number_5 }
+    - "Page Number_2": ${ Page_Number_2 }
+    - "Part Number_2": ${ Part_Number_2 }
+    - "Item Number_2": ${ Item_Number_2 }

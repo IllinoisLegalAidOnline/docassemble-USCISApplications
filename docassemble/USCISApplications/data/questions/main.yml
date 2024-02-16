@@ -157,9 +157,12 @@ fields:
       - Vietnamese
   - note: |
       <h2 class="h4">Interpreter's Name</h2>
-    show if: interpreter_present
+    show if: interpreter_present    
   - code: |
       interpreter.name_fields(person_or_business="person", show_if="interpreter_present", show_suffix=False)
+  - "Interpreter's organization": interpreter.interpreter_organization
+    maxlength: 38
+    required: False
 ---
 id: intro_main
 question: |
@@ -422,22 +425,22 @@ code: |
     users[i].limited_scope_retainer.enabled = False
 ---
 code: |
-  users[i].military_service_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("military_service")
+  users[i].military_service_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("military_service"))
 ---
 code: |
-  users[i].transit_through_ca_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("transit_through_ca")
+  users[i].transit_through_ca_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("transit_through_ca"))
 ---
 code: |
-  users[i].child_venezuelan_nationals_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("child_venezuelan_nationals")
+  users[i].child_venezuelan_nationals_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("child_venezuelan_nationals"))
 ---
 code: |
-  users[i].smuggling_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("smuggling")
+  users[i].smuggling_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("smuggling"))
 ---
 code: |
-  users[i].continuous_residence_addendum.enabled = application_kind != "ead_only" and selected_addenda.get("continuous_residence")
+  users[i].continuous_residence_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("continuous_residence"))
 ---
 code: |
-  users[i].ead_interim_parole_addendum.enabled = application_kind == "ead_only"
+  users[i].ead_interim_parole_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only")
 ---
 code: |
   users[i].ead_legal_screener.enabled = application_kind == "ead_only"

@@ -39,7 +39,8 @@ code: |
   users[i].i94_arrival_number
   if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
     users[i].father_first_name
-  users[i].have_you_ever
+  if application_kind == "tps_and_ead":
+    users[i].have_you_ever
   users[i].complete = True
 ---
 id: your address
@@ -111,12 +112,6 @@ fields:
   - "Preparer's USCIS Online Account Number (if any)": preparer.attorney_online_account_number
     maxlength: 28
   - "Preparer organization": preparer.preparer_organization
-    maxlength: 38
----
-id: interpreter info
-question: Interpreter
-fields:
-  - "Interpreter organization": interpreter.interpreter_organization
     maxlength: 38
 ---
 ########################## Addresses, Phone, Email ##########################
@@ -908,17 +903,16 @@ fields:
     input type: yesnoradio
   - "Have you EVER voluntarily departed the United States under an order of removal?": users[i].q20b
     input type: yesnoradio
- - "Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
+  - "Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
     input type: yesnoradio
-    show if: 
-      code: |
-        users[i].q20a or users[i].q20b ### is this right?
+    js show if: |
+        val("users[i].q20a") || val("users[i].q20b")
   - "Has DHS reinstated your prior order of removal?": users[i].q20d
-     input type: radio
-     choices:
-       - Yes
-       - No
-       - I do not know
+    input type: radio
+    choices:
+      - Yes
+      - No
+      - I do not know
     show if: users[i].q20c
   - "Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?": users[i].q20e
     input type: yesnoradio
@@ -994,38 +988,14 @@ fields:
 id: application language and translation
 question: Language & Translation
 fields:
-  - "User reads english": users[i].user_reads_english
+  - "Does ${ users[i] } read English?": users[i].user_reads_english
     datatype: yesno
-  - "User used interpreter": users[i].user_used_interpreter
+  - "Did ${ users[i] } use the ${ interpreter_language } interpreter?": users[i].user_used_interpreter
     datatype: yesno
-  - "Interpreter spoke language": users[i].interpreter_spoke_language
-    maxlength: 16
-    datatype: combobox
-    choices:
-      - Spanish
-      - Arabic
-      - Chinese
-      - French
-      - Haitian Creole
-      - Korean
-      - Polish
-      - Portuguese
-      - Russian
-      - Tagalog
-      - Vietnamese
-    default: ${ interpreter.language if interpreter_present else None}
-    show if: users[i].user_used_interpreter
-  - "Interpreted into language": users[i].interpreted_into_language
-    maxlength: 23
-  # Always Yes
-  # - "User used preparer": users[i].user_used_preparer
-  #   datatype: yesno
-  # Always No
-  # - "Preparer full rep": users[i].preparer_full_rep
-  #   datatype: yesno
-  # Always Yes
-  # - "Preparer limited rep": users[i].preparer_limited_rep
-  #   datatype: yesno
+    default: ${ interpreter_present }
+    show if:
+      code: |
+        interpreter_present
 ---
 id: Addendum skip these
 question: Addendum (skip these)
@@ -2099,10 +2069,10 @@ objects:
   - users[i].i_765_attachment: ALDocument.using(title="I-765", filename=f"{users[i]} - I-765", has_addendum=False, )
 ---
 code: |
-  users[i].i_821_attachment.enabled = application_kind == "ead_and_tps"
+  users[i].i_821_attachment.enabled = users[i].application_is_approved and application_kind == "ead_and_tps"
 ---
 code: |
-  users[i].i_765_attachment.enabled = application_kind == True
+  users[i].i_765_attachment.enabled = users[i].application_is_approved and application_kind == True
 ---
 attachment:
   name: I-821
@@ -2471,8 +2441,8 @@ attachment:
     - "q38c_yes": ${ users[i].q38c }
     - "q38c_no": ${ not users[i].q38c }
     - "user_reads_english": ${ users[i].user_reads_english }
-    - "user_used_interpreter": ${ users[i].user_used_interpreter }
-    - "interpreter_spoke_language": ${ users[i].interpreter_spoke_language }
+    - "user_used_interpreter": ${ users[i].user_used_interpreter if interpreter_present else False }
+    - "interpreter_spoke_language": ${ interpreter.language }
     - "user_used_preparer": ${ users[i].user_used_preparer }
     - "preparer_name": ${ preparer[0] }
     - "users1_phone_number": ${ users[i].phone_number }
@@ -2484,7 +2454,7 @@ attachment:
     - "interpreter_phone_number": ${ interpreter.phone_number }
     - "interpreter_mobile_number": ${ interpreter.mobile_number }
     - "interpreter_email": ${ interpreter.email }
-    - "interpreted_into_language": ${ interpreted_into[0].language }
+    - "interpreted_into_language": ${ interpreter.language }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }

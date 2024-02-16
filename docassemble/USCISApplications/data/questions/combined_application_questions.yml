@@ -989,9 +989,9 @@ id: application language and translation
 question: Language & Translation
 fields:
   - "Does ${ users[i] } read English?": users[i].user_reads_english
-    datatype: yesno
+    datatype: yesnoradio
   - "Did ${ users[i] } use the ${ interpreter.language } interpreter?": users[i].user_used_interpreter
-    datatype: yesno
+    datatype: yesnoradio
     default: ${ interpreter_present }
     show if:
       code: |

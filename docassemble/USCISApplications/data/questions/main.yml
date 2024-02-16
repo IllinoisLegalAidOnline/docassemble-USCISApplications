@@ -409,6 +409,7 @@ objects:
         users[i].fee_waiver_ead,
         users[i].fee_waiver_tps,
         users[i].i_821_attachment,
+        users[i].i_765_attachment,
         users[i].ead_legal_screener,
         users[i].tps_legal_screener,
         users[i].military_service_addendum,

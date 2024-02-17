@@ -99,6 +99,11 @@ code: |
   download_completed_ea_application
 ---
 code: |
+  users[i].name.first
+  users[i].aliases.gather()
+  users[i].names_only = True
+---
+code: |
   children_for_retainer = [child for child in users if child.age_in_years() < 14]
 ---
 variable name: default_sections
@@ -247,8 +252,12 @@ fields:
   #   datatype: combobox
   #   code: |
   #     name_suffix()
+  - Have you ever been known by a different name?: users[0].aliases.there_are_any
+    datatype: yesnoradio
+  - note: |
+      OK, we'll get the other names you used on the next screen.  
   - Country of Birth: users[0].country_of_birth
-    datatype: combobox
+    input type: dropdown
     code: |
       uscis_countries_list()
   - Birthdate: users[0].birthdate
@@ -282,6 +291,10 @@ subquestion: |
 fields:
   - code: |
       users[i].name_fields(person_or_business="person")
+  - Have you ever been known by a different name?: users[i].aliases.there_are_any
+    datatype: yesnoradio
+  - note: |
+      OK, we'll get the other names you used on the next screen.
   - Country of Birth: users[i].country_of_birth
     datatype: combobox
     code: |
@@ -299,6 +312,24 @@ question: |
 fields:
   - no label: users[0].aliases.there_are_any
     datatype: yesnoradio
+---
+generic object: ALIndividual
+id: x i name
+question: |
+  What is the ${ ordinal(i) } name that ${ x } has been known by?
+fields:
+  - First name: x.aliases[i].first
+  - Middle name: x.aliases[i].middle
+    required: False
+  - Last name: x.aliases[i].last
+---
+generic object: ALIndividual
+id: has x been known by a different name again
+question: |
+  Has ${ x } been known by any other names?
+fields:
+  - no label: x.aliases.there_is_another
+    datatype: yesnoradio  
 ---
 id: name i
 question: |
@@ -442,13 +473,13 @@ code: |
   users[i].continuous_residence_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("continuous_residence"))
 ---
 code: |
-  users[i].ead_interim_parole_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only")
----
-code: |
   users[i].ead_legal_screener.enabled = application_kind == "ead_only"
 ---
 code: |
   users[i].tps_legal_screener.enabled = not application_kind == "ead_only"
+---
+code: |
+  users[i].ead_interim_parole_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only")
 ---
 attachment:
   variable name: users[i].military_service_addendum[j]
@@ -573,5 +604,10 @@ code: |
     country_names[country_names.index("Tanzania, United Republic of")] = "Tanzania"
     country_names[country_names.index("Åland Islands")] = "Aland Islands"
 
+    # Move Venezuela and Haiti to the top
+    country_names.remove("Venezuela")
+    country_names.remove("Haiti")
+    country_names.insert(0, "Haiti")
+    country_names.insert(0, "Venezuela")
     return country_names
 

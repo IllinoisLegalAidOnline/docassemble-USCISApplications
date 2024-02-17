@@ -8,7 +8,8 @@ objects:
   - users[i].other_countries_of_citizenship: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
   - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
   - users[i].prior_immigration_proceedings: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='jurisdiction')
-  - users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
+  #- users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
+  - users[i].travel_documents: DAList.using(there_are_any=True)
   - users[i].alternate_birthdates: DAList
   - users[i].spouse: ALIndividual # need?
   - users[i].spouse.prior_TPS: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='start_date') # need?
@@ -30,13 +31,16 @@ code: |
   users[i].other_countries_of_citizenship.gather()
   users[i].countries_traveled_through.gather()
   users[i].countries_traveled_through_review
-  users[i].prior_immigration_proceedings.gather()
-  if users[i].prior_immigration_proceedings.there_are_any:
-    users[i].prior_immigration_proceedings_review
+  # Let's check with Jane to see if we should collect
+  # each proceeding separately--I suspect we don't need to
+  # Will simplify for 
+  # users[i].prior_immigration_proceedings.gather()
+  # if users[i].prior_immigration_proceedings.there_are_any:
+  #   users[i].prior_immigration_proceedings_review
+  users[i].passport_number
   users[i].travel_documents.gather()
-  if users[i].travel_documents.there_are_any:
-    users[i].travel_documents_review
-    users[i].i94_arrival_number
+  users[i].i94_arrival_number
+  users[i].has_been_in_immigration_proceedings
   if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
     users[i].father_first_name
   if application_kind == "ead_and_tps":
@@ -96,13 +100,15 @@ code: |
   users[i].prior_immigration_proceedings.there_are_any = users[i].has_been_in_immigration_proceedings == 'Yes_2'
 ---
 id: xxxxx
-question: xxxxx
+question: |
+  xxxxx
 fields:
   - "Form *G-28* or *G-28I* is attached": users[i].is_form_g28_attached
     datatype: yesno
 ---
 id: preparer info
-question: Preparer
+question: |
+  Preparer
 fields:
   - "Preparer is attorney": preparer.preparer_is_attorney
     datatype: yesno 
@@ -116,7 +122,8 @@ fields:
 ---
 ########################## Addresses, Phone, Email ##########################
 id: U.S. physical address phone and email
-question: U.S. Physical Address, Phone, and Email
+question: |
+  U.S. Physical Address, Phone, and Email
 fields:
   - Street address: users[i].address.address
     address autocomplete: True
@@ -141,17 +148,20 @@ fields:
 ########################## Countries & Places ##########################
 ---
 id: applicant's birthplace
-question: Applicant's Birthplace
+question: |
+  Applicant's Birthplace
 fields:
   - What City/Town/Village in ${ users[i].country_of_birth } was Applicant born in?: users[i].birthplace_city
     maxlength: 38
 ---
 id: countries resided in are there any
-question: Did Applicant **live** in another country before entering the U.S.?
+question: |
+  Did Applicant **live** in another country before entering the U.S.?
 yesno: users[i].countries_of_residence.there_are_any # the wording of this question is taken from the sample I-821, page 2, question 15. It seems to me this question will almost always be yes, since a person has to "live" somewhere, but perhaps there's a definitional problem here...
 ---
 id: countries resided in
-question: Which country or countries did you enter/travel through before entering the U.S.?
+question: |
+  Which country or countries did you enter/travel through before entering the U.S.?
 subquestion: |
   % if len(users[i].countries_of_residence.complete_elements()):
   Countries you **lived in** before entering the U.S.:[BR]
@@ -173,7 +183,8 @@ fields:
     show if: users[i].countries_of_residence[j].was_ever_citizen
 ---
 id: countries resided in review screen
-question: Review the countries you **lived in** before entering the U.S.
+question: |
+  Review the countries you **lived in** before entering the U.S.
 subquestion: |
   ${ users[i].countries_of_residence.table }
   ${ users[i].countries_of_residence.add_action(label=bold('Add Another Country'), color='warning') }
@@ -190,20 +201,23 @@ edit:
   - row_item.name
 ---
 id: any more countries of citizenship
-question: Are there any other countries where you are a citizen aside from those listed below?
+question: |
+  Are there any other countries where you are a citizen aside from those listed below?
 subquestion: |
   **${ users[i].countries_of_residence.filter(is_still_citizen=True) }**
 yesno: users[i].other_countries_of_citizenship.there_are_any
 ---
 id: other countries of citizenship
-question: Other Countries of Citizenship
+question: |
+  Other Countries of Citizenship
 fields:
   - "Country of Citizenship": users[i].other_countries_of_citizenship[j].name
     code: |
       [next(iter(item.values())) for item in countries_list()]
 ---
 id: other countries of citizenship is there another
-question: Are there any other countries where you are a citizen aside from those listed below?
+question: |
+  Are there any other countries where you are a citizen aside from those listed below?
 subquestion: |
   **${ users[i].other_countries_of_citizenship }**
 yesno: users[i].other_countries_of_citizenship.there_is_another
@@ -213,7 +227,8 @@ code: |
   users[i].countries_of_citizenship = users[i].countries_of_residence.filter(is_still_citizen=True) + showifdef('users[i].other_countries_of_citizenship')
 ---
 id: countries entered or traveled to before US
-question: Which country or countries did you enter/travel through before entering the U.S.?
+question: |
+  Which country or countries did you enter/travel through before entering the U.S.?
 subquestion: |
   % if len(users[i].countries_traveled_through.complete_elements()):
   **Countries you entered/traveled through before entering the U.S.:**[BR]
@@ -275,7 +290,8 @@ fields:
     show if: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted
 ---
 id: countries entered or traveled to before US review screen
-question: Review the countries you entered/traveled through before entering the U.S.
+question: |
+  Review the countries you entered/traveled through before entering the U.S.
 subquestion: |
   ${ users[i].countries_traveled_through.table }
   ${ users[i].countries_traveled_through.add_action(label=bold('Add Another Country'), color='warning') }
@@ -292,12 +308,14 @@ edit:
 allow reordering: True
 ---
 id: prior immigration proceedings are there any
-question: Has Applicant been involved in immigration legal proceedings before?
+question: |
+  Has Applicant been involved in immigration legal proceedings before?
 yesno: users[i].prior_immigration_proceedings.there_are_any
 ---
 #################### Prior Immigration Proceedings ####################
 id: prior immigration proceedings
-question: Prior Immigration Proceedings
+question: |
+  Prior Immigration Proceedings
 subquestion: |
   % if len(users[i].prior_immigration_proceedings.complete_elements()):
   % if len(users[i].prior_immigration_proceedings.complete_elements()) == 1:
@@ -342,7 +360,8 @@ validation code: |
     users[i].prior_immigration_proceedings[j].end_date = today()
 ---
 id: prior immigration proceedings review screen
-question: Applicant's Prior Immigration Proceedings
+question: |
+  Applicant's Prior Immigration Proceedings
 subquestion: |
   ${ users[i].prior_immigration_proceedings.table }
   ${ users[i].prior_immigration_proceedings.add_action(label=bold('Add Another Proceeding'), color='warning') }
@@ -361,71 +380,125 @@ edit:
 allow reordering: True # might be moot/unnecessary here
 ---
 ########################## Travel Documents ##########################
-id: travel documents are there any
-question: Does Applicant have a Passport or travel documents?
+---
+id: passport or other travel documents
+question: |
+  Does Applicant have a Passport or travel documents?
 subquestion: |
   ***Note: a "cedula" does not count as a travel document***
-yesno: users[i].travel_documents.there_are_any
+
+  You must list all passport numbers, even if expired. Start with the most
+  recent.
+fields:
+  - Passport number (if any): users[i].passport_number
+    required: false
+  - What country issued your most recent passport: users[i].passport_issuing_country
+    code: |
+      uscis_countries_list()
+    default: |
+      ${ users[i].country_of_birth }
+  - Other travel document number (if any): users[i].other_travel_document_number
+    required: false
+  - What is the expiration date of your most recent passport or travel document?: users[i].passport_expiration_date
+    datatype: date
+    required: false      
+  - Additional passport or travel document number: users[i].travel_documents[0]
+    required: false
+  - Additional passport or travel document number: users[i].travel_documents[1]
+    required: false
+  - Does ${ users[i] } have any other travel documents?: users[i].travel_documents.there_is_another
+    datatype: yesno
 ---
-id: travel documents
-question: Applicant's Travel Documents
+id: collect more docs
+list collect: True
+question: |
+  List each additional travel document, one at a time
 subquestion: |
-  % if len(users[i].travel_documents.complete_elements()):
-  % if len(users[i].travel_documents.complete_elements()) == 1:
-  The travel document you entered is:
-  % else:
-  The travel documents you entered are: 
+  Tap "add another" to list another travel document.
+
+  % if users[i].passport_number or users[i].other_travel_document_number:
+  You have already told us about the following travel documents:
+
+  % if users[i].passport_number:
+  * ${ users[i].passport_number }
   % endif
-  
-  Type  |Issuing Country  |Document Number
-  -------------|------------|------------
-  % for document in users[i].travel_documents.complete_elements():
-  ${ document.type }  |${ document.issuing_country }  |${ document.number }
-  % endfor
-  
-  [NEWLINE]
+  % if users[i].other_travel_document_number:
+  * ${ users[i].other_travel_document_number }
+  % endif
   % endif
 fields:
-  - Name: users[i].travel_documents[j].name
-    input type: hidden
-    default: ${ int(users[i].travel_documents[j].instanceName.split('[')[-1].split(']')[0]) + 1 }
-  - Document Type: users[i].travel_documents[j].type
-    datatype: radio
-    choices:
-      - Passport: passport
-      - Other Kind of Travel Document: other
-  - '"Other" type of travel document': users[i].travel_documents[j].other_type
-    maxlength: 38 # perhaps unnecessary here as this info will only optionally be included in the appendix and otherwise will be shown in mako tage to the user for organization purposes.
-    show if: 
-      variable: users[i].travel_documents[j].type
-      is: 'other'
-  - Issuing Country: users[i].travel_documents[j].issuing_country
-    code: |
-      [next(iter(item.values())) for item in countries_list()]
-  - Document Number: users[i].travel_documents[j].number
-    maxlength: 38
----
-id: travel documents review screen
-question: Applicant's Travel Documents Review
-subquestion: |
-  ${ users[i].travel_documents.table }
-  ${ users[i].travel_documents.add_action(label=bold('Add Another Document'), color='warning') }
-continue button field: users[i].travel_documents_review
----
-table: users[i].travel_documents.table
-rows: users[i].travel_documents
-columns:
-  #- Proceeding: row_item.name
-  - Type: |
-      row_item.other_type if row_item.type == 'other' else row_item.type
-  - Issuing Country: row_item.issuing_country
-  - Document Number: row_item.number
-edit:
-  - row_item
+  - Additional passport or travel document number: users[i].travel_documents[j]
+# id: travel documents are there any
+# question: |
+#   Does Applicant have a Passport or travel documents?
+# subquestion: |
+#   ***Note: a "cedula" does not count as a travel document***
+# fields: 
+#   - no label: users[i].travel_documents.there_are_any
+#     datatype: yesnoradio
+# ---
+# id: travel documents
+# question: |
+#   Applicant's Travel Documents
+# subquestion: |
+#   % if len(users[i].travel_documents.complete_elements()):
+#   % if len(users[i].travel_documents.complete_elements()) == 1:
+#   The travel document you entered is:
+#   % else:
+#   The travel documents you entered are: 
+#   % endif
+  
+#   Type  |Issuing Country  |Document Number
+#   -------------|------------|------------
+#   % for document in users[i].travel_documents.complete_elements():
+#   ${ document.type }  | ${ document.issuing_country }  | ${ document.number }
+#   % endfor
+  
+#   [NEWLINE]
+#   % endif
+# fields:
+#   - Name: users[i].travel_documents[j].name
+#     input type: hidden
+#     default: ${ int(users[i].travel_documents[j].instanceName.split('[')[-1].split(']')[0]) + 1 }
+#   - Document Type: users[i].travel_documents[j].type
+#     datatype: radio
+#     choices:
+#       - Passport: passport
+#       - Other Kind of Travel Document: other
+#   - '"Other" type of travel document': users[i].travel_documents[j].other_type
+#     maxlength: 38 # perhaps unnecessary here as this info will only optionally be included in the appendix and otherwise will be shown in mako tage to the user for organization purposes.
+#     show if: 
+#       variable: users[i].travel_documents[j].type
+#       is: 'other'
+#   - Issuing Country: users[i].travel_documents[j].issuing_country
+#     code: |
+#       [next(iter(item.values())) for item in countries_list()]
+#   - Document Number: users[i].travel_documents[j].number
+#     maxlength: 38
+# ---
+# id: travel documents review screen
+# question: |
+#   Applicant's Travel Documents Review
+# subquestion: |
+#   ${ users[i].travel_documents.table }
+#   ${ users[i].travel_documents.add_action(label=bold('Add Another Document'), color='warning') }
+# continue button field: users[i].travel_documents_review
+# ---
+# table: users[i].travel_documents.table
+# rows: users[i].travel_documents
+# columns:
+#   #- Proceeding: row_item.name
+#   - Type: |
+#       row_item.other_type if row_item.type == 'other' else row_item.type
+#   - Issuing Country: row_item.issuing_country
+#   - Document Number: row_item.number
+# edit:
+#   - row_item
 allow reordering: True # might be moot/unnecessary here
 ---
 id: type of application
-question: Type of Application
+question: |
+  Type of Application
 fields:
   - "Is this Applicant's first TPS application, or is Applicant re-registering/reapplying for TPS?": users[i].is_first_TPS_application
     datatype: radio
@@ -447,17 +520,20 @@ fields:
       is: Re-registering for TPS
 ---
 id: alternate birthdates there are any
-question: Have you ever claimed or used (including on any documents) a date of birth other than ${ users[i].birthdate }?
+question: |
+  Have you ever claimed or used (including on any documents) a date of birth other than ${ users[i].birthdate }?
 yesno: users[i].alternate_birthdates.there_are_any
 ---
 id: alternate birthdates
-question: Other birth dates used
+question: |
+  Other birth dates used
 fields:
   - Other Date of Birth Used: users[i].alternate_birthdates[j]
     datatype: date
 ---
 id: alternate birthdates there is another
-question: Are there any other birthdates you've claimed or used (including on any documents) other than those below?
+question: |
+  Are there any other birthdates you've claimed or used (including on any documents) other than those below?
 subquestion: |
   **${ users[i].alternate_birthdates }**
 yesno: users[i].alternate_birthdates.there_is_another
@@ -535,20 +611,9 @@ fields:
       variable: users[i].marital_status
       is: "other"
 ---
-code: |
-  users[i].height_feet = int(users[i].height_cm * 0.0328084)
-  users[i].height_inches = int((users[i].height_cm * 0.0328084 - users[i].height_feet) * 12)
-  users[i].weight_pounds = int(users[i].weight_kg * 2.20462)
-  convert_units = True
-  #   - "Height (feet)": users[i].height_feet
-  #   datatype: integer
-  # - "Height (inches)": users[i].height_inches
-  #   datatype: integer
-  # - "Weight pounds": users[i].weight_pounds
-  #   datatype: integer
----
 id: applicant info
-question: Applicant Info
+question: |
+  Applicant Info
 fields:
   - "USCIS Online Account Number (if any)": users[i].uscis_account_number
     maxlength: 28
@@ -562,7 +627,8 @@ fields:
     show if: users[i].fills_out_765
 ---
 id: current spouse and marriage info
-question: Current Spouse & Marriage Info
+question: |
+  Current Spouse & Marriage Info
 fields:
   - "Marriage Date (to current spouse)": users[i].marriage_date
     datatype: date
@@ -583,11 +649,13 @@ fields:
     maxlength: 20
 ---
 #id: applicant spouse prior TPS are there any
-#question: Has Applicant's spouse had TPS before?
+#question: |
+  # Has Applicant's spouse had TPS before?
 #yesno: users[i].spouse.prior_TPS.there_are_any
 #---
 #id: applicant spouse prior TPS
-#question: Applicant's Spouse's Prior TPS
+#question: |
+  # Applicant's Spouse's Prior TPS
 #subquestion: |
 #  % if len(users[i].spouse.prior_TPS.complete_elements()):
 #  % if len(users[i].spouse.prior_TPS.complete_elements()) == 1:
@@ -624,7 +692,8 @@ fields:
 #    max: ${ today() }
 #---
 #id: applicant spouse prior TPS review screen
-#question: Applicant's xxxxx
+#question: |
+  # Applicant's xxxxx
 #subquestion: |
 #  ${ users[i].xxxxx.table }
 #  ${ users[i].xxxxx.add_action(label=bold('Add Another Proceeding'), color='warning') }
@@ -643,7 +712,8 @@ fields:
 #allow reordering: True # might be moot/unnecessary here
 #---
 #id: spouse TPS
-#question: xxxx
+#question: |
+  # xxxx
 #yesno: xxxx
 #  - "Applicant's Spouse has, or once had, TPS (ever)": users[i].spouse.had_tps
 #    datatype: yesno
@@ -667,58 +737,117 @@ fields:
 #    show if: users[i].spouse.tps_continuing
 ---
 id: U.S. entry info and travel documents
-question: U.S. Entry Info & Travel Documents
+question: |
+  U.S. entry information
 fields:
   - "${ users[i] } entered the U.S. (and has resided in the U.S. since) on what date?": users[i].date_started_us_residence
     datatype: date
     max: ${ today() }
-  - "Date of Last Entry into U.S.": users[i].date_of_last_arrival # what's the difference with above question?
+    default: |
+      ${ users[0].date_started_us_residence if i > 0 else "" }
+  - "Date of Last Entry into U.S.": users[i].date_of_last_entry # what's the difference with above question?
     datatype: date
     max: ${ today() }
+    default: |
+      ${ users[0].date_of_last_entry if i > 0 else "" }
   - "Port of Entry (if any)": users[i].port_of_entry
     maxlength: 38
     required: False
+    default: |
+      ${ users[0].port_of_entry if i > 0 else "" }
   - "City/Town of Entry": users[i].city_of_entry # is this required? may not be properly applicable if applicant dod not arrive directly to a city/town...
     maxlength: 38
-  - "State of Entry (abbreviation)": users[i].state_of_entry
+    required: False
+    default: |
+      ${ users[0].city_of_entry if i > 0 else "" }
+  - "State of Entry": users[i].state_of_entry
     code: states_list()
-  - "Immigration Status (or Lack of Status) When You Last Entered the U.S. (e.g., parolee, visitor, student, no status)": users[i].immigration_status_last_entry # this variable name doesn't match question
-    datatype: checkboxes
-    choices:
-      - Parolee
-      - Visitor
-      - Student
-      - DT
-      - No Status
-  - "Current Immigration Status or Lack of Status": users[i].current_immigration_status # very badly worded question
-    datatype: checkboxes
-    choices:
-      - Parolee
-      - Visitor
-      - Student
-      - DT
-      - No Status
-  - "Applicant is now, or has **EVER** been, in immigration proceedings": users[i].has_been_in_immigration_proceedings # bad wording of question, undefined "immigration proceedings"
-    datatype: radio
-    choices:
-      - Yes: Yes_2
-      - No: No_2
----
-id: other travel documents
-question: Other Travel Documents
-fields:
+    default: |
+      ${ users[0].state_of_entry if i > 0 else "" }
   - "Form I-94 Arrival-Departure Record Number (if any)": users[i].i94_arrival_number
     maxlength: 26
     required: False
   - "Date Applicant's Authorized Period of Stay in the U.S. Expired or Will Expire (as shown on Form I-94 or Crewman's Landing Permit (Form I-95)) (mm/dd/yyyy or duration of status (D/S)": users[i].authorized_stay_ending_date # just terrible question wording
-    datatype: date
+    # datatype: date
     required: False
-  - "Expiration date of most recent Passport or travel document": users[i].passport_or_travel_document_expiration_date # badly worded - "most recent" presumably meaning most recently issued, i.e., "newest", and this will only apply to one of the total passports/documents in the list of course...
-    datatype: date
+    default: |
+      ${ users[0].authorized_stay_ending_date if i > 0 else ''}
+  - "Immigration Status (or Lack of Status) When You Last Entered the U.S.": users[i].immigration_status_last_entry # this variable name doesn't match question
+    datatype: radio
+    choices:
+      - Parolee
+      - Visitor
+      - Student
+      - DT
+      - No Status
+    default: |
+      ${ users[0].immigration_status_last_entry if i > 0 else "" }
+  - "Current Immigration Status or Lack of Status": users[i].current_immigration_status # very badly worded question
+    datatype: radio
+    choices:
+      - Parolee
+      - Visitor
+      - Student
+      - DT
+      - No Status
+    default: |
+      ${ users[0].current_immigration_status if i > 0 else "" }
+---
+id: immigration proceedings
+question: |
+  Information about immigration proceedings
+fields:
+  - "Applicant is now, or has **EVER** been, in immigration proceedings": users[i].has_been_in_immigration_proceedings
+    datatype: yesnoradio
+    choices:
+      - Yes: Yes_2
+      - No: No_2
+    default: |
+      ${ users[0].has_been_in_immigration_proceedings if i > 0 else "" }
+  - What kind of immigration proceedings?: users[i].kind_of_immigration_proceedings
+    datatype: checkboxes
+    choices:
+      - Immigration court (before a judge): immigration_court
+      - Board of Immigration Appeals (BIA): bia
+      - I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues.: federal_court
+    show if: users[i].has_been_in_immigration_proceedings
+    default: |
+       ${ users[0].kind_of_immigration_proceedings if i > 0 and users[0].has_been_in_immigration_proceedings else "" }
+  - Location of DOJ or DHS proceedings:  users[i].proceedings_dhs_or_doj_hearing_location
+    maxlength: 38
+    show if: users[i].has_been_in_immigration_proceedings
     required: False
+    default: |
+      ${ users[0].proceedings_dhs_or_doj_hearing_location if i > 0 and users[0].has_been_in_immigration_proceedings else "" }
+  - Location of federal court proceedings: users[i].federal_court_proceedings_location
+    maxlength: 38
+    show if: users[i].kind_of_immigration_proceedings["federal_court"]
+    required: False
+    default: |
+      ${ users[0].federal_court_proceedings_location if i > 0 and users[0].has_been_in_immigration_proceedings and users[0].kind_of_immigration_proceedings["federal_court"] else "" }
+  - Start date of proceedings: users[i].proceedings_start_date
+    datatype: date
+    max: ${ today() }
+    show if: users[i].has_been_in_immigration_proceedings
+    default: |
+      ${ users[0].proceedings_start_date if i > 0 and users[0].has_been_in_immigration_proceedings else "" }
+  - "Proceedings are ongoing/pending today": users[i].proceedings_continuing_to_present
+    datatype: yesno
+    show if: users[i].has_been_in_immigration_proceedings
+    default: |
+      ${ users[0].proceedings_continuing_to_present if i > 0 and users[0].has_been_in_immigration_proceedings else "" }
+  - End date of proceedings: users[i].proceedings_end_date
+    datatype: date
+    max: ${ today() }
+    js show if: |
+      val("users[i].has_been_in_immigration_proceedings") && !val("users[i].proceedings_continuing_to_present")
+    required: False
+    default: |
+      ${ showifdef("users[0].proceedings_end_date") if i > 0 else "" }  
 ---
 id: I-765 specific questions
-question: Previous Filing & Social Security
+question: |
+  Previous Filing & Social Security
 fields:
   - Have you previously filed Form I-765?: users[i].previously_filed_I765
     datatype: yesnoradio
@@ -731,7 +860,8 @@ fields:
     show if: users[i].wants_SS_card
 ---
 id: father and mother birth name
-question: Enter your father's and mother's **birth** names
+question: |
+  Enter your father's and mother's **birth** names
 fields:
   - Father's First (Given) Name at Birth: users[i].father_first_name
     maxlength: 28
@@ -744,7 +874,8 @@ fields:
 ---
 ###################################################################################
 id: former spouse nationality and travel documents
-question: Former Spouse(s) Nationality & Travel Documents
+question: |
+  Former Spouse(s) Nationality & Travel Documents
 fields:
   - "Users4 nationality": users4_nationality
     maxlength: 38
@@ -839,6 +970,8 @@ continue button field: users[i].have_you_ever_questions
 question: |
   Has ${ users[i] } **ever**
 subquestion: |
+  ${ action_button_html('#', label="Set all to 'No'", id_tag="  ", icon="circle-xmark") }
+
   % if i > 0:
   The following questions will be defaulted to True, based on ${ users[0] }'s responses:
 
@@ -1421,10 +1554,10 @@ fields:
     default: ${ users[0].q41 if i > 0 else ''}
     grid: 6
     label above field: True
-
 ---
 id: application language and translation
-question: Language & Translation
+question: |
+  Language & Translation
 fields:
   - "Does ${ users[i] } understand English?": users[i].user_reads_english
     datatype: yesnoradio
@@ -1437,7 +1570,8 @@ fields:
 ---
 
 id: Addendum skip these
-question: Addendum (skip these)
+question: |
+  Addendum (skip these)
 fields:
   - "Page number 3": Page_Number_3
     maxlength: 8
@@ -2542,7 +2676,7 @@ attachment:
     - "users1_previous_names2_first": ${ users[i].previous_names[1].first }
     - "users1_alternate_birthdate": ${ users[i].alternate[0].birthdate.format('MM/dd/yyyy') }
     - "users1_previous_names2_middle": ${ users[i].previous_names[1].middle }
-    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdate_2 }
+    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdate_2.format('MM/dd/yyyy') }
     - "users1_gender": ${ users[i].sex }
     - "users1_mailing_address_in_care_of": 'LAS New Arrivals'
     - "users1_mailing_address_address": '101 N. Wacker Dr.'
@@ -2577,42 +2711,42 @@ attachment:
     - "marriage_date": ${ users[i].marriage_date.format('MM/dd/yyyy') }
     # - "marriage_date__2": ${ users[i].marriage_date.format('MM/dd/yyyy') }
     - "current_immigration_status": ${ users[i].current_immigration_status }
-    - "has_been_in_immigration_proceedings": ${ users[i].has_been_in_immigration_proceedings }
+    - "has_been_in_immigration_proceedings": ${ "Yes_2" if users[i].has_been_in_immigration_proceedings else "No_2"}
     - "date_of_last_arrival": ${ users[i].date_of_last_arrival }
-    - "proceedings_was_immigration_court": ${ users[i].proceedings_was_immigration_court }
-    - "proceedings_was_bia": ${ proceedings_was_bia }
-    - "date_of_last_entry": ${ date_of_last_entry }
-    - "proceedings_was_federal_court": ${ proceedings_was_federal_court }
-    - "port_of_entry": ${ port_of_entry }
-    - "city_of_entry": ${ city_of_entry }
+    - "proceedings_was_immigration_court": ${ users[i].kind_of_immigration_proceedings.get("immigration_court") }
+    - "proceedings_was_bia": ${ users[i].kind_of_immigration_proceedings.get("bia") }
+    - "proceedings_was_federal_court": ${ users[i].kind_of_immigration_proceedings.get("federal_court") }
+    - "proceedings_federal_court_location": ${ users[i].federal_court_proceedings_location }
     - "proceedings_dhs_or_doj_hearing_location": ${ users[i].proceedings_dhs_or_doj_hearing_location }
+    - "proceedings_start_date": ${ users[i].proceedings_start_date.format('MM/dd/yyyy') }
+    - "proceedings_end_date": ${ users[i].proceedings_end_date.format('MM/dd/yyyy') }
+    - "proceedings_continuing_to_present": ${ users[i].proceedings_continuing_to_present }
+    - "date_of_last_entry": ${ users[i].date_of_last_entry }
+    - "port_of_entry": ${ users[i].port_of_entry }
+    - "city_of_entry": ${ users[i].city_of_entry }
     - "state_of_entry": ${ users[i].state_of_entry }
     - "i94_arrival_number": ${ users[i].i94_arrival_number }
-    - "proceedings_federal_court_location": ${ proceedings_federal_court_location }
     - "authorized_stay_ending_date": ${ authorized_stay_ending_date.format('MM/dd/yyyy') }
-    - "proceedings_start_date": ${ proceedings_start_date.format('MM/dd/yyyy') }
-    - "proceedings_end_date": ${ proceedings_end_date.format('MM/dd/yyyy') }
-    - "proceedings_continuing_to_present": ${ proceedings_continuing_to_present }
-    - "passport_number": ${ passport_number }
-    - "travel_document_number": ${ travel_document_number }
+    - "passport_number": ${ users[i].passport_number }
+    - "most_recent_passport_country_issuing": ${ users[i].passport_issuing_country }
+    - "passport_or_travel_document_expiration_date": ${ passport_or_travel_document_expiration_date.format('MM/dd/yyyy') }
+    - "travel_document_number": ${ users[i].other_travel_document_number }
+    - "additional_passport_number_1": ${ users[i].travel_documents.item(0) }
+    - "additional_passport_number_2": ${ users[i].travel_documents.item(1) }
     - "ethnicity_hispanic_yes": ${ users[i].ethnicity == "Hispanic or Latino" }
     - "ethnicity_hispanic_no": ${ not users[i].ethnicity == "Hispanic or Latino" }
-    - "additional_passport_number_1": ${ additional_passport_number_1 }
-    - "additional_passport_number_2": ${ additional_passport_number_2 }
     - "race_white": ${ users[i].race == 'white' }
     - "race_asian": ${ users[i].race == 'asian' }
-    - "most_recent_passport_country_issuing": ${ most_recent_passport_country_issuing }
     - "race_black": ${ users[i].race == 'black' }
     - "race_american_indian": ${ users[i].race == 'native_american' }
-    - "passport_or_travel_document_expiration_date": ${ passport_or_travel_document_expiration_date.format('MM/dd/yyyy') }
     - "race_native_hawaiian": ${ users[i].race == 'pacific_islander' }
-    - "height_feet": ${ users[i].height_feet }
-    - "height_inches": ${ users[i].height_inches }
+    - "height_feet": ${ int(users[i].height_cm * 0.0328084) }
+    - "height_inches": ${ int((users[i].height_cm * 0.0328084 - users[i].height_feet) * 12) }
     - "users2_address_address": ${ users[1].address.address }
     # - "users2_address_is_apt": ${ users2_address_is_apt }
     # - "users2_address_is_suite": ${ users2_address_is_suite }
     # - "users2_address_is_floor": ${ users2_address_is_floor }
-    - "weight_pounds": ${ weight_pounds }
+    - "weight_pounds": ${ int(users[i].weight_kg * 2.20462) }
     # - "users2_address_unit": ${ users[1].address.unit }
     # - "users2_address_city": ${ users[1].address.city }
     - "eye_color_black": ${ users[i].eye_color == 'black' }
@@ -2729,7 +2863,7 @@ attachment:
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
     - "date_started_us_residence": ${ users[i].date_started_us_residence }
     - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
-    - "other_countries_entered_list": ${ other_countries_entered_list }
+    - "other_countries_entered_list": "See addendum"
     - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
     - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
     - "other_country_immigration_status": ${ other_country_immigration_status }
@@ -2899,14 +3033,14 @@ attachment:
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
     - "preparer_is_attorney_yes": ${ preparer_is_attorney }
     - "preparer_is_attorney_no": ${ not preparer_is_attorney }
-    - "preparer_full_rep": ${ preparer_full_rep }
-    - "preparer_limited_rep": ${ preparer_limited_rep }
+    - "preparer_full_rep": No
+    - "preparer_limited_rep": Yes
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_organization": ${ preparer.organization }
-    - "preparer_phone_number": ${ preparer.phone_number }
-    - "preparer_mobile_number": ${ preparer.mobile_number }
-    - "preparer_email": ${ preparer.email }
+    - "preparer_phone_number": ""
+    - "preparer_mobile_number": ""
+    - "preparer_email": ""
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }
@@ -2920,10 +3054,10 @@ attachment:
     - "8_3": ${ _3 }
     - "9_3": ${ _3 }
     - "10_3": ${ _3 }
-    - "sign and date each sheet": ${ sign_and_date_each_sheet }
-    - "First Name_9": ${ First_Name_9 }
-    - "Middle Name_8": ${ Middle_Name_8 }
-    - "A_3": ${ A_3 }
+    - "sign and date each sheet": ${ users[i].name.last } # TODO: fix the field name?
+    - "First Name_9": ${ users[i].name.first }
+    - "Middle Name_8": ${ users[i].name.middle }
+    - "A_3": ${ users[i].a_number }
     - "Page Number": ${ Page_Number }
     - "Part Number": ${ Part_Number }
     - "Item Number": ${ Item_Number }
@@ -2988,7 +3122,7 @@ attachment:
   pdf template file: I-765_flattened_MN_updated.pdf
   fields:
     # - "US Citizenship and Immigration Services": ${ US_Citizenship_and_Immigration_Services }
-    - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
+    #- "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
     - "application_reason_employment": ${ users[i].application_reason_employment }
     - "application_reason_replacement": ${ users[i].application_reason_replacement }

@@ -379,8 +379,29 @@ fields:
     datatype: yesnoradio
   - Have you ever served in the military or participated in a paramilitary group?: users[i].served_military
     datatype: yesnoradio
+    hide if:
+      code: |
+        users[i].age_in_years() < 14
+  - Have you ever served on a police force?: users[i].served_police
+    datatype: yesnoradio
+    hide if:
+      code: |
+        users[i].age_in_years() < 14
+  - Have you ever received weapons training?: users[i].received_weapons_training
+    datatype: yesnoradio
+    hide if:
+      code: |
+        users[i].age_in_years() < 14
+  - Did you ever use a weapon against another person?: users[i].used_weapon_against_another_person
+    datatype: yesnoradio
+    hide if:
+      code: |
+        users[i].age_in_years() < 14
   - Have you ever been a member of a terrorist organization?: users[i].acted_as_terrorist
     datatype: yesnoradio
+    hide if:
+      code: |
+        users[i].age_in_years() < 14
 ---
 id: review_tps_screening_questions
 continue button field: review_tps_screening_questions
@@ -453,6 +474,7 @@ subquestion: |
             % else:
             <li>Affiliated with any gangs: ${ 'Yes' if showifdef("user.gang_affiliation") else 'No' }</li>
             % endif
+            % if user.age_in_years() > 14:
             % if user.served_military:
             <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } has served in the military or participated in a paramilitary group.</li>
             % else:
@@ -462,6 +484,7 @@ subquestion: |
             <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user } acted as a terrorist</li>
             % else:
             <li>Member of a terrorist organization: ${ 'Yes' if showifdef("user.acted_as_terrorist") else 'No' }</li>
+            % endif
             % endif
           </ol>
 
@@ -499,6 +522,7 @@ fields:
       is: mixed
   - Supervisor name: supervisor_name
   - Supervisor notes: supervisor_notes
+    required: False
     datatype: area
   - code: |
       [
@@ -507,11 +531,11 @@ fields:
           "field": user.attr_name("addenda"),
           "datatype": "checkboxes",
           "choices": [
-            {"military_service": "Military service"},
-            {"transit_through_ca": "Transit through Central America"},
-            {"child_venezuelan_nationals": "Child of Venezuelan nationals"},
-            {"smuggling": "Smuggling"},
-            {"continuous_residence": "Affidavit of continuous residence"}
+            {"Military service": "military_service"},
+            {"Transit through Central America": "transit_through_ca"},
+            {"Child of Venezuelan nationals": "child_venezuelan_nationals"},
+            {"Smuggling": "smuggling"},
+            {"Affidavit of continuous residence": "continuous_residence"}
           ]
         }
         for user in users

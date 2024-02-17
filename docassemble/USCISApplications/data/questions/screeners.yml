@@ -228,9 +228,7 @@ fields:
     datatype: integer    
     grid: 3
   - note: |
-      When did you last enter the US?
-    help: |
-      Should be listed on their immigration documentation
+      When did you last enter the US? (check immigration documents)
     grid: 3
   - label: Month
     field: users[i].last_entry_date_month
@@ -441,7 +439,7 @@ fields:
       code: |
         len(users) == 1
     minlength: 1
-  - Which applications should be **approved**?: approved_applications
+  - Which applications can **continue**?: approved_applications
     datatype: object_checkboxes
     choices:
       - users

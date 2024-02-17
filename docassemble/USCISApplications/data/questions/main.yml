@@ -86,6 +86,10 @@ code: |
     nav.set_section(f"users_{idx}_signpost_app")
     user.signpost
     user.complete
+
+  if application_kind == "ead_and_tps" and any([users[0].q8a, users[0].q8b, users[0].q8c, users[0].q9a, users[0].q9b, users[0].q9c, users[0].q10a, users[0].q10b, users[0].q10c, users[0].q11, users[0].q12a, users[0].q12b, users[0].q12c, users[0].q12d, users[0].q12e, users[0].q13a, users[0].q13b, users[0].q13c, users[0].q13d, users[0].q14a, users[0].q14b, users[0].q14c, users[0].q14d, users[0].q15a, users[0].q15b, users[0].q15c, users[0].q16, users[0].q17, users[0].q18a, users[0].q18b, users[0].q18c, users[0].q19, users[0].q20a, users[0].q20b, users[0].q20c, users[0].q20d, users[0].q20e, users[0].q21, users[0].q22, users[0].q23a, users[0].q23b, users[0].q23c, users[0].q24, users[0].q25, users[0].q26, users[0].q27, users[0].q28, users[0].q29, users[0].q30a, users[0].q30b, users[0].q30c, users[0].q30d, users[0].q30e, users[0].q31a, users[0].q31b, users[0].q32, users[0].q33, users[0].q34, users[0].q35, users[0].q36, users[0].q37a, users[0].q37b, users[0].q38a, users[0].q38b, users[0].q38c, users[0].q38d, users[0].q38e, users[0].q39a, users[0].q39b, users[0].q40, users[0].q41]):
+    explain_add_explanations
+
   store_variables_snapshot(
       persistent=True,
       data={
@@ -232,7 +236,7 @@ question: |
 subquestion: |
   Get the names of all people who have a **family relationship** and are here
   to get work authorization together today. For example: siblings, aunts, 
-  uncles, parents, children, and spouses.
+  uncles, parents, cousins, children, and spouses or intimate partners.
 
   Please complete a separate interview for each person who is not in 
   a family relationship with the others.
@@ -242,16 +246,14 @@ fields:
     datatype: integer
     min: 1
   - note: |
-      <h2 class="h4">Name of the head of household</h2>
+      <h2 class="h4">Name of the first family member</h2>
+
+      Start with the head of household, one of the parents, or the oldest person in the group.
+      The answers you give for this person will be used as the default for many answers.
   - First name: users[0].name.first
   - Middle name: users[0].name.middle
     required: False
   - Last name: users[0].name.last
-  # - Suffix: users[0].name.suffix
-  #   required: False
-  #   datatype: combobox
-  #   code: |
-  #     name_suffix()
   - Have you ever been known by a different name?: users[0].aliases.there_are_any
     datatype: yesnoradio
   - note: |
@@ -385,6 +387,15 @@ buttons:
   - EAD via parole only: ead_only
     image: briefcase
 ---
+id: explain_add_explanations
+question: |
+  You answered "yes" to one of the TPS screening questions
+subquestion: |
+  Call a supervisor to help draft a response to each "yes" answer
+  that explains it to USCIS.
+# TODO: add space to actually add the explanations here
+continue button field: explain_add_explanations
+---
 id: download_completed_ea_application
 event: download_completed_ea_application
 question: |
@@ -458,19 +469,19 @@ code: |
     users[i].limited_scope_retainer.enabled = False
 ---
 code: |
-  users[i].military_service_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("military_service"))
+  users[i].military_service_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("military_service"))
 ---
 code: |
-  users[i].transit_through_ca_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("transit_through_ca"))
+  users[i].transit_through_ca_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("transit_through_ca"))
 ---
 code: |
-  users[i].child_venezuelan_nationals_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("child_venezuelan_nationals"))
+  users[i].child_venezuelan_nationals_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("child_venezuelan_nationals"))
 ---
 code: |
-  users[i].smuggling_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("smuggling"))
+  users[i].smuggling_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("smuggling"))
 ---
 code: |
-  users[i].continuous_residence_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and selected_addenda.get("continuous_residence"))
+  users[i].continuous_residence_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("continuous_residence"))
 ---
 code: |
   users[i].ead_legal_screener.enabled = application_kind == "ead_only"

@@ -432,11 +432,11 @@ fields:
     choices:
       - First TPS Application
       - Re-registering for TPS
-  - "TPS Application Country(ies)": users[i].tps_application_country
-    datatype: checkboxes
-    choices:
-      - Venezuela
-      - Haiti
+  # - "TPS Application Country(ies)": users[i].tps_application_country
+  #   datatype: checkboxes
+  #   choices:
+  #     - Venezuela
+  #     - Haiti
   - "Who Previously Granted the Applicant TPS?": users[i].who_granted_prior_TPS
     datatype: radio
     choices:
@@ -1426,7 +1426,7 @@ fields:
 id: application language and translation
 question: Language & Translation
 fields:
-  - "Does ${ users[i] } read English?": users[i].user_reads_english
+  - "Does ${ users[i] } understand English?": users[i].user_reads_english
     datatype: yesnoradio
   - "Did ${ users[i] } use the ${ interpreter.language } interpreter?": users[i].user_used_interpreter
     datatype: yesnoradio

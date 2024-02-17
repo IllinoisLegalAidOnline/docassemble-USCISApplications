@@ -11,11 +11,6 @@ subquestion: |
   </div>
 continue button field: users[i].ead_screening_questions
 fields:
-  - Has ${ users[i] } ever been known by a different name?: users[i].aliases.there_are_any
-    datatype: yesnoradio
-  - note: |
-      OK, we will ask about those names on the next screen
-    show if: users[i].aliases.there_are_any
   - Country of Birth: users[i].country_of_birth
     datatype: combobox
     code: |
@@ -91,7 +86,6 @@ subquestion: |
       <div id="userCollapse${ loop.index }" class="accordion-collapse collapse show" aria-labelledby="userHeading${ loop.index }" data-bs-parent="#userAccordion">
         <div class="accordion-body">
   <ul>
-    <li>Has ${ user } ever been known by a different name?: ${ 'Yes' if user.aliases.there_are_any else 'No' }</li>
     <li>Country of Birth: ${ user.country_of_birth }</li>
     <li>Number of ${ user }'s children applying with them today: ${ user.number_children_applying }</li>
     <li>Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: ${ 'Yes' if user.applied_for_other_immigration_benefit else 'No' }</li>
@@ -184,6 +178,27 @@ subquestion: |
     </p>
   </div>
 fields:
+  - What country will you be applying for TPS from?: users[i].tps_application_country
+    datatype: combobox
+    choices:
+      - Haiti
+      - Venezuela
+      - Afghanistan
+      - Burma (Myanmar)
+      - Cameroon
+      - El Salvador
+      - Ethiopia
+      - Honduras
+      - Nepal
+      - Nicaragua
+      - Somalia
+      - South Sudan
+      - Sudan
+      - Syria
+      - Ukraine
+      - Yemen
+    default: |
+      ${ users[i].country_of_birth }
   - What documents do you have proving your country of birth?: users[i].proof_of_birthplace
     datatype: checkboxes
     choices:
@@ -203,6 +218,8 @@ fields:
     show if: users[i].parents_from_venezuela
   - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: users[i].in_other_country_longer_than_6_months
     datatype: yesnoradio
+    default: |
+      ${ users[0].in_other_country_longer_than_6_months if i > 0 else '' }
   - note: |
       When did you leave your home country?
     grid: 3
@@ -223,7 +240,11 @@ fields:
       - October
       - November
       - December
+    default: |
+      ${ users[0].date_left_home_country_month if i > 0 else ''}
   - Year: users[i].date_left_home_country_year
+    default: |
+      ${ users[0].date_left_home_country_year if i > 0 else ''}
     label above field: True
     datatype: integer    
     grid: 3
@@ -247,10 +268,14 @@ fields:
       - October
       - November
       - December
+    default: |
+      ${ users[0].last_entry_date_month if i > 0 else ''}
   - Year: users[i].last_entry_date_year
     label above field: True
     datatype: integer
     grid: 3
+    default: |
+      ${ users[0].last_entry_date_year if i > 0 else ''}
   - Do you have proof that you were physically present in the US as of July 31, 2023?: users[i].proof_last_entry_date_before_july_31_2023
     datatype: checkboxes
     choices:
@@ -259,6 +284,8 @@ fields:
       - I-94
       - Passport stamp
       - Other
+    default: |
+      ${ users[0].proof_last_entry_date_before_july_31_2023 if i > 0 else '' }
   - Do you have proof that you were physically present in the US as of October 3, 2023?: users[i].proof_last_entry_date_before_october_4_2023
     datatype: checkboxes
     choices:
@@ -267,22 +294,32 @@ fields:
       - I-94
       - Passport stamp
       - Other
+    default: |
+      ${ users[0].proof_last_entry_date_before_october_4_2023 if i > 0 else '' }
     # show if:
     #   variable: users[i].proof_last_entry_date_before_july_31_2023
     #   is: False
   - Do you have any children applying with you today?: users[i].has_children_applying_today
     datatype: yesnoradio
+    default: |
+      ${ users[0].has_children_applying_today if i > 0 and users[i].age_in_years() > 18 else '' }
   - Was any child born outside of Venezuela?: users[i].has_children_applying_not_born_in_venezuela
     show if: users[i].has_children_applying_today
     datatype: yesnoradio
+    default: |
+      ${ users[0].has_children_applying_not_born_in_venezuela if i > 0 else '' }
   - List each child's name and nationality: users[i].children_outside_of_venezuela
     datatype: area
     show if: users[i].has_children_applying_not_born_in_venezuela
+    default: |
+      ${ users[0].children_outside_of_venezuela if i > 0 and users[0].has_children_applying_not_born_in_venezuela else '' }
   - How did you last enter the US?: users[i].method_of_entry
     datatype: radio
     choices:
       - Presented at a port of entry
       - Entered without documents
+    default: |
+      ${ users[0].method_of_entry if i > 0 else '' }
   - Who entered the US with you?: users[i].who_entered_with_user
     datatype: radio
     choices:
@@ -290,24 +327,38 @@ fields:
       - Children: children
       - Entered alone: entered alone
       - Other or N/A: other or N/A
+    default: |
+      ${ users[0].who_entered_with_user if i > 0 else '' }
   - Did your children enter the US separately from you?: users[i].children_entered_separately
     datatype: yesnoradio
+    default: |
+      ${ users[0].children_entered_separately if i > 0 else '' }
   - Where, when, and with whom did they enter?: users[i].children_entered_separately_explanation
     datatype: area
     show if: users[i].children_entered_separately
+    default: |
+      ${ users[0].children_entered_separately_explanation if i > 0 and users[0].children_entered_separately else '' }
   - Have you had legal status in any other country besides Venezuela?: users[i].had_legal_status_outside_venezuela
     datatype: yesnoradio
+    default: |
+      ${ users[0].had_legal_status_outside_venezuela if i > 0 else '' }
   - List country(ies) and legal status in each: users[i].countries_and_legal_status
     datatype: area
     show if: users[i].had_legal_status_outside_venezuela
+    default: |
+      ${ users[0].countries_and_legal_status if i > 0 and users[0].had_legal_status_outside_venezuela else '' }
   - Have you applied for any other immigration benefit? (i.e. work permit, TPS, or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnoradio
+    default: |
+      ${ users[0].applied_for_other_immigration_benefit if i > 0 else '' }
   - Explain: users[i].applied_for_other_immigration_benefit_explanation
     datatype: area
     show if: users[i].applied_for_other_immigration_benefit
   - "Are you in removal proceedings? (Review EOIR list on your table for applicant’s court hearing info, if applicable. If applicant is NOT listed, look up their EOIR case status using their A#: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/))": users[i].in_removal_proceedings
     label above field: True
     datatype: yesnoradio
+    default: |
+      ${ users[0].in_removal_proceedings if i > 0 else '' }
   - Date of first hearing: users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
     max: ${ today() }
@@ -323,7 +374,7 @@ fields:
     datatype: area
     show if: users[i].ever_arrested
   - Have you ever claimed to be a US Citizen?: users[i].claimed_us_citizenship
-    datatype: yesnoradio
+    datatype: yesnoradio    
   - Have you ever been affiliated with any gangs?: users[i].gang_affiliation
     datatype: yesnoradio
   - Have you ever served in the military or participated in a paramilitary group?: users[i].served_military
@@ -449,17 +500,22 @@ fields:
   - Supervisor name: supervisor_name
   - Supervisor notes: supervisor_notes
     datatype: area
-  - What addenda should be included?: selected_addenda
-    datatype: checkboxes
-    choices:
-      - Military service: military_service
-      - Transit through Central America: transit_through_ca
-      - Child of Venezuelan nationals: child_venezuelan_nationals
-      - Smuggling: smuggling
-      - Affidavit of continuous residence: continuous_residence
----
-code: |
-  users[i].addenda = selected_addenda
+  - code: |
+      [
+        {
+          "label": f"What addenda should be included for {user}?", 
+          "field": user.attr_name("addenda"),
+          "datatype": "checkboxes",
+          "choices": [
+            {"military_service": "Military service"},
+            {"transit_through_ca": "Transit through Central America"},
+            {"child_venezuelan_nationals": "Child of Venezuelan nationals"},
+            {"smuggling": "Smuggling"},
+            {"continuous_residence": "Affidavit of continuous residence"}
+          ]
+        }
+        for user in users
+      ]
 ---
 code: |
   users[i].application_is_approved = supervisor_overall_approval_status == "approved" or (supervisor_overall_approval_status == "mixed" and users[i] in approved_applications)

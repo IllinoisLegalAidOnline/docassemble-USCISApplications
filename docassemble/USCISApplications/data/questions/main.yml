@@ -808,10 +808,16 @@ objects:
   - users[i].applicant_intake_worksheet: ALDocument.using(title=f"{users[i]} - Applicant Intake Worksheet", filename=space_to_underscore(f"{users[i]} - Applicant Intake Worksheet"), has_addendum=False, enabled=True)
 ---
 objects:
-  - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False, enabled=True)
+  - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
+---
+code: |
+  users[i].fee_waiver_ead.enabled = users[i].application_is_approved and application_kind == "ead_only"
 ---
 objects:
-  - users[i].fee_waiver_tps: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False, enabled=True)
+  - users[i].fee_waiver_tps: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
+---
+code: |
+  users[i].fee_waiver_tps.enabled = users[i].application_is_approved and not application_kind == "ead_only"
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])

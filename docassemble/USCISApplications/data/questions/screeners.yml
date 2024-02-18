@@ -214,7 +214,7 @@ fields:
       - Ukraine
       - Yemen
     default: |
-      ${ users[i].country_of_birth }
+      ${ showifdef("users[i].country_of_birth") }
   - What documents do you have proving your country of birth?: users[i].proof_of_birthplace
     datatype: checkboxes
     choices:
@@ -223,24 +223,26 @@ fields:
       - National ID
       - Other
     default: |
-      ${ users[0].proof_of_birthplace if i > 0 else '' }
+      ${ showifdef("users[0].proof_of_birthplace") if i > 0 else '' }
   - Are both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnoradio
-    show if:
-      code: |
-        not "venezuela" in users[i].country_of_birth.lower()
-  - note: |
-      We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
-    show if:
-      code: |
-        "venezuela" in users[i].country_of_birth.lower()
+  # This show if logic was getting the screen stuck
+  # TODO: see if we can get it working later with this enabled again
+  #   # show if:
+  #   #   code: |
+  #   #     not "venezuela" in users[i].country_of_birth.lower()
+  # - note: |
+  #     We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
+  #   show if:
+  #     code: |
+  #       "venezuela" in users[i].country_of_birth.lower()
   - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
     datatype: yesnoradio
     show if: users[i].parents_from_venezuela
   - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: users[i].in_other_country_longer_than_6_months
     datatype: yesnoradio
     default: |
-      ${ users[0].in_other_country_longer_than_6_months if i > 0 else '' }
+      ${ showifdef("users[0].in_other_country_longer_than_6_months") if i > 0 else '' }
   - note: |
       When did you leave your home country?
     grid: 3
@@ -262,10 +264,10 @@ fields:
       - November
       - December
     default: |
-      ${ users[0].date_left_home_country_month if i > 0 else ''}
+      ${ showifdef("users[0].date_left_home_country_month") if i > 0 else ''}
   - Year: users[i].date_left_home_country_year
     default: |
-      ${ users[0].date_left_home_country_year if i > 0 else ''}
+      ${ showifdef("users[0].date_left_home_country_year") if i > 0 else ''}
     label above field: True
     datatype: integer    
     grid: 3
@@ -290,13 +292,13 @@ fields:
       - November
       - December
     default: |
-      ${ users[0].last_entry_date_month if i > 0 else ''}
+      ${ showifdef("users[0].last_entry_date_month") if i > 0 else ''}
   - Year: users[i].last_entry_date_year
     label above field: True
     datatype: integer
     grid: 3
     default: |
-      ${ users[0].last_entry_date_year if i > 0 else ''}
+      ${ showifdef("users[0].last_entry_date_year") if i > 0 else ''}
   - Do you have proof that you were physically present in the US as of July 31, 2023?: users[i].proof_last_entry_date_before_july_31_2023
     datatype: checkboxes
     choices:
@@ -306,7 +308,7 @@ fields:
       - Passport stamp
       - Other
     default: |
-      ${ users[0].proof_last_entry_date_before_july_31_2023 if i > 0 else '' }
+      ${ showifdef("users[0].proof_last_entry_date_before_july_31_2023") if i > 0 else '' }
   - Do you have proof that you were physically present in the US as of October 3, 2023?: users[i].proof_last_entry_date_before_october_4_2023
     datatype: checkboxes
     choices:
@@ -328,7 +330,7 @@ fields:
     show if: users[i].has_children_applying_today
     datatype: yesnoradio
     default: |
-      ${ showifdef("users[0].has_children_applying_not_born_in_venezuela") if i > 0 and users[0].has_children_applying_today else '' }
+      ${ showifdef("users[0].has_children_applying_not_born_in_venezuela") if i > 0 and showifdef("users[0].has_children_applying_today") else '' }
   - List each child's name and nationality: users[i].children_outside_of_venezuela
     datatype: area
     show if: users[i].has_children_applying_not_born_in_venezuela
@@ -340,7 +342,7 @@ fields:
       - Presented at a port of entry
       - Entered without documents
     default: |
-      ${ users[0].method_of_entry if i > 0 else '' }
+      ${ showifdef("users[0].method_of_entry") if i > 0 else '' }
   - Who entered the US with you?: users[i].who_entered_with_user
     datatype: radio
     choices:
@@ -349,7 +351,7 @@ fields:
       - Entered alone: entered alone
       - Other or N/A: other or N/A
     default: |
-      ${ users[0].who_entered_with_user if i > 0 else '' }
+      ${ showifdef("users[0].who_entered_with_user") if i > 0 else '' }
   - Did your children enter the US separately from you?: users[i].children_entered_separately
     datatype: yesnoradio
     default: |
@@ -362,7 +364,7 @@ fields:
   - Have you had legal status in any other country besides Venezuela?: users[i].had_legal_status_outside_venezuela
     datatype: yesnoradio
     default: |
-      ${ users[0].had_legal_status_outside_venezuela if i > 0 else '' }
+      ${ showifdef("users[0].had_legal_status_outside_venezuela") if i > 0 else '' }
   - List country(ies) and legal status in each: users[i].countries_and_legal_status
     datatype: area
     show if: users[i].had_legal_status_outside_venezuela
@@ -371,7 +373,7 @@ fields:
   - Have you applied for any other immigration benefit? (i.e. work permit, TPS, or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnoradio
     default: |
-      ${ users[0].applied_for_other_immigration_benefit if i > 0 else '' }
+      ${ showifdef("users[0].applied_for_other_immigration_benefit") if i > 0 else '' }
   - Explain: users[i].applied_for_other_immigration_benefit_explanation
     datatype: area
     show if: users[i].applied_for_other_immigration_benefit
@@ -431,11 +433,7 @@ subquestion: |
   <div class="accordion" id="userAccordion">
     % for user in users:
     <div class="accordion-item">
-      % if user.proof_of_birthplace.all_false() or not user.parents_from_venezuela or (user.parents_from_venezuela and not user.proof_of_parent_birthplace) or user.in_other_country_longer_than_6_months or not user.last_entry_date_month or not user.last_entry_date_year or not user.proof_last_entry_date_before_july_31_2023 or not user.proof_last_entry_date_before_october_4_2023 or user.has_children_applying_today or user.has_children_applying_not_born_in_venezuela or not user.children_outside_of_venezuela or not user.method_of_entry or not user.who_entered_with_user or user.children_entered_separately or not user.countries_and_legal_status or user.applied_for_other_immigration_benefit or user.in_removal_proceedings or not user.date_removal_proceedings_began or not user.location_removal_proceedings or user.ever_ordered_removed or user.ever_arrested or user.claimed_us_citizenship or user.gang_affiliation or user.served_military or user.acted_as_terrorist:
-      <h2 class="accordion-header danger" id="userHeading${ loop.index }">
-      % else:
       <h2 class="accordion-header" id="userHeading${ loop.index }">
-      % endif
       <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#userCollapse${ loop.index }" aria-expanded="true" aria-controls="userCollapse${ loop.index }">
         ${ user }
       </button>

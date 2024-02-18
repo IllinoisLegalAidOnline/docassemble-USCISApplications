@@ -213,6 +213,11 @@ fields:
     show if:
       code: |
         not "venezuela" in users[i].country_of_birth.lower()
+  - note: |
+      We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
+    show if:
+      code: |
+        "venezuela" in users[i].country_of_birth.lower()
   - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
     datatype: yesnoradio
     show if: users[i].parents_from_venezuela
@@ -365,9 +370,8 @@ fields:
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
-  - Have you been issued a Final Order of Removal?: users[i].ever_ordered_removed
+  - Have you ever been issued a Final Order of Removal?: users[i].ever_ordered_removed
     datatype: yesnoradio
-    show if: users[i].in_removal_proceedings
   - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: users[i].ever_arrested
     datatype: yesnoradio
   - List when/where/outcome of EVERY arrest, including those in US and outside of US (review certified dispositions & applicant workbook with legal supervisor): users[i].arrest_details

@@ -1324,12 +1324,22 @@ fields:
     label above field: True
   - "13d. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity in which a purpose is to oppose, control, or overthrow the Government of the United States by force, violence, or other unlawful means, including but not limited to participating in such activities, giving support to others involved in such activities, or being a member or representative of a terrorist organization?": users[i].q13d
     datatype: yesnoradio
-    default: ${ users[0].q13d if i > 0 else ''}
+    default: |
+      % if users[i].age_in_years() > 13:
+      ${ users[i].acted_as_terrorist }
+      % else:
+      False
+      % endif
     grid: 6
     label above field: True
   - "14a. Have you EVER or are you NOW engaged in terrorist activities?": users[i].q14a
     datatype: yesnoradio
-    default: ${ users[0].q14a if i > 0 else ''}
+    default: |
+      % if users[i].age_in_years() > 13:
+      ${ users[i].acted_as_terrorist }
+      % else:
+      False
+      % endif
     grid: 6
     label above field: True
   - "14b. Have you EVER or are you NOW engaged in or plan to engage in activities in the United States that would have potentially serious adverse foreign policy consequences for the United States?": users[i].q14b
@@ -1355,7 +1365,7 @@ fields:
       end: True
   - "15a. Have you EVER, whether in the United States or any other country, been arrested for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15a
     datatype: yesnoradio
-    default: ${ users[0].q15a if i > 0 else ''}
+    default: ${ users[i].ever_arrested }
     grid: 6
     label above field: True
   - "15b. Have you EVER, whether in the United States or any other country, been cited, charged, or indicted, for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15b
@@ -1537,12 +1547,22 @@ fields:
       end: True
   - "31a. Have you EVER served in, been a member of, assisted in, or participated in any military unit, paramilitary unit, police unit, self-defense unit, vigilante unit, rebel group, guerrilla group, militia, or insurgent organization?": users[i].q31a
     datatype: yesnoradio
-    default: ${ users[0].q31a if i > 0 else ''}
+    default: |
+      % if users[i].age_in_years() > 13:
+      ${ users[i].served_military }
+      % else:
+      False
+      % endif
     grid: 6
     label above field: True
   - "31b. Have you EVER served or worked in any prison, jail, prison camp, detention facility, labor camp, or any other situation that involved detaining persons?": users[i].q31b
     datatype: yesnoradio
-    default: ${ users[0].q31b if i > 0 else ''}
+    default: |
+      % if users[i].age_in_years() > 13:
+      ${ users[i].served_police }
+      % else:
+      False
+      % endif
     grid: 6
     label above field: True
   - "32. Have you EVER been a member of, assisted in, or participated in any group, unit, or organization of any kind in which you or other persons used any type of weapon against any person or threatened to do so?": users[i].q32
@@ -1557,7 +1577,12 @@ fields:
     label above field: True
   - "34. Have you EVER received any type of military, paramilitary, or weapons training?": users[i].q34
     datatype: yesnoradio
-    default: ${ users[0].q34 if i > 0 else ''}
+    default: |
+      % if users[i].age_in_years() > 13:
+      ${ users[i].received_weapons_training }
+      % else:
+      False
+      % endif
     grid: 6
     label above field: True
   - note: |
@@ -1573,7 +1598,7 @@ fields:
     label above field: True
   - "36. Have you EVER claimed to be a U.S. citizen (in writing or in any other way)?": users[i].q36
     datatype: yesnoradio
-    default: ${ users[0].q36 if i > 0 else ''}
+    default: ${ users[i].claimed_us_citizenship }
     grid: 6
     label above field: True
   - note: |

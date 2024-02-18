@@ -296,13 +296,12 @@ subquestion: |
   So far you have named ${ bold(users.complete_elements()) }.
 fields:
   - code: |
-      users[i].name_fields(person_or_business="person")
+      users[i].name_fields(person_or_business="person", show_suffix=False)
   - Have you ever been known by a different name?: users[i].aliases.there_are_any
     datatype: yesnoradio
   - note: |
       OK, we'll get the other names you used on the next screen.
   - Country of Birth: users[i].country_of_birth
-    datatype: combobox
     code: |
       uscis_countries_list()
     default: |
@@ -822,6 +821,7 @@ objects:
         users[i].child_venezuelan_nationals_addendum,
         users[i].smuggling_addendum,
         users[i].continuous_residence_addendum,
+        users[i].tps_yes_answer_addendum,
         users[i].ead_interim_parole_addendum,
       ])
 ---

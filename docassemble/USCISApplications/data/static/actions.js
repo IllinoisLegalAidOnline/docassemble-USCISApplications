@@ -1,12 +1,16 @@
-// Example JavaScript file content
-document.addEventListener('daPageLoad', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    // Find the button by its ID
     var button = document.getElementById('make_all_false');
-    if (button) { // Check if button exists to avoid null errors
-      button.addEventListener('click', function() {
-        document.querySelectorAll('input[type="radio"][value="False"]').forEach(function(noOption) {
-          noOption.click();
-        });
+  
+    // Add click event listener to the button
+    button.addEventListener('click', function(event) {
+      // Prevent the default button action (e.g., form submission)
+      event.preventDefault();
+  
+      // Select all radio inputs with value "False" and click them to set to "No"
+      document.querySelectorAll('input[type="radio"][value="False"]').forEach(function(noOption) {
+        noOption.click();
       });
-    }
+    });
   });
   

@@ -541,7 +541,7 @@ yesno: users[i].alternate_birthdates.there_is_another
 ############## Physical Characteristics and Marital Status ##############
 id: ethnicity and physical characteristics
 question: |
-  Ethnicity & Physical Characteristics
+  ${ users[i] }'s Ethnicity & Physical Characteristics
 fields:
   - Gender: users[i].sex
     datatype: radio
@@ -797,11 +797,11 @@ id: immigration proceedings
 question: |
   Information about immigration proceedings
 fields:
-  - "Applicant is now, or has **EVER** been, in immigration proceedings": users[i].has_been_in_immigration_proceedings
+  - "Has ${ users[i] } ever been in immigration proceedings?": users[i].has_been_in_immigration_proceedings
     datatype: yesnoradio
-    choices:
-      - Yes: Yes_2
-      - No: No_2
+    # choices:
+    #   - Yes: Yes_2
+    #   - No: No_2
     default: |
       ${ users[0].has_been_in_immigration_proceedings if i > 0 else "" }
   - What kind of immigration proceedings?: users[i].kind_of_immigration_proceedings
@@ -810,6 +810,8 @@ fields:
       - Immigration court (before a judge): immigration_court
       - Board of Immigration Appeals (BIA): bia
       - I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues.: federal_court
+    none of the above: False
+    minlength: 1
     show if: users[i].has_been_in_immigration_proceedings
     default: |
        ${ users[0].kind_of_immigration_proceedings if i > 0 and users[0].has_been_in_immigration_proceedings else "" }
@@ -856,21 +858,40 @@ fields:
   - Do you want the Social Security Administration to issue you a Social Security card?: users[i].wants_SS_card
     datatype: yesnoradio
   - "**Consent for Disclosure:**  I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card": users[i].consents_to_SS_disclosure
-    datatype: yesnoradio
+    datatype: yesno
     show if: users[i].wants_SS_card
+    default: True
+validation code: |
+  if users[i].wants_SS_card and not users[i].consents_to_SS_disclosure:
+    validation_error("You must consent to the disclosure of information to the Social Security Administration in order to get a Social Security card.")
 ---
 id: father and mother birth name
 question: |
-  Enter your father's and mother's **birth** names
+  **Birth** names of ${users[i]}'s parents
+subquestion: |
+  (You can select the name of a family member who has already been named or 
+  type a new name)
 fields:
   - Father's First (Given) Name at Birth: users[i].father_first_name
     maxlength: 28
+    datatype: combobox
+    code: |
+      [user.name.first for user in users if user != users[i]]
   - Father's Last (Family) Name at Birth: users[i].father_last_name
     maxlength: 28
+    datatype: combobox
+    code: |
+      [user.name.last for user in users if user != users[i]]    
   - Mother's First (Given) Name at Birth: users[i].mother_first_name
     maxlength: 28
+    datatype: combobox
+    code: |
+      [user.name.first for user in users if user != users[i]]
   - Mother's Last (Family) Name at Birth: users[i].mother_last_name
     maxlength: 28 
+    datatype: combobox
+    code: |
+      [user.name.last for user in users if user != users[i]]
 ---
 ###################################################################################
 id: former spouse nationality and travel documents
@@ -968,9 +989,11 @@ fields:
 id: have you evers
 continue button field: users[i].have_you_ever_questions
 question: |
-  Has ${ users[i] } **ever**
+  Eligibility standards (${ users[i] })
 subquestion: |
-  ${ action_button_html('#', label="Set all to 'No'", id_tag="  ", icon="circle-xmark") }
+  <button id="make_all_false" class="btn btn-info">
+    <i class="fas fa-circle-xmark"></i> Set All to No
+  </button>
 
   % if i > 0:
   The following questions will be defaulted to True, based on ${ users[0] }'s responses:
@@ -1191,6 +1214,12 @@ subquestion: |
 
   % endif
 fields:
+  - note: |
+      <h2 class="h4">Criminal offenses and human rights violations</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "8a. Have you EVER been convicted of any felony committed in the United States?": users[i].q8a
     datatype: yesnoradio
     default: ${ users[0].q8a if i > 0 else ''}
@@ -1272,6 +1301,12 @@ fields:
     default: ${ users[0].q12e if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Spying, sedition, terrorism, and espionage</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "13a. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate any law of the United States relating to espionage or sabotage?": users[i].q13a
     datatype: yesnoradio
     default: ${ users[0].q13a if i > 0 else ''}
@@ -1312,6 +1347,12 @@ fields:
     default: ${ users[0].q14d if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Other laws and ordinances</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "15a. Have you EVER, whether in the United States or any other country, been arrested for breaking or violating any law or ordinance, excluding minor traffic violations?": users[i].q15a
     datatype: yesnoradio
     default: ${ users[0].q15a if i > 0 else ''}
@@ -1337,6 +1378,12 @@ fields:
     default: ${ users[0].q17 if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Prostitution and other vices</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "18a. Have you EVER, within the past 10 years, or are you NOW engaged in prostitution or procurement of prostitution?": users[i].q18a
     datatype: yesnoradio
     default: ${ users[0].q18a if i > 0 else ''}
@@ -1357,6 +1404,12 @@ fields:
     default: ${ users[0].q19 if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Deportation, removal, and other immigration violations</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "20a. Have you EVER been ordered removed, and been deported from the United States?": users[i].q20a
     datatype: yesnoradio
     default: ${ users[0].q20a if i > 0 else ''}
@@ -1373,11 +1426,11 @@ fields:
     grid: 6
     label above field: True
   - "20d. Has DHS reinstated your prior order of removal?": users[i].q20d
-    input type: radio
+    datatype: radio
     choices:
-      - Yes
-      - No
-      - I do not know
+      - Yes: yes
+      - No: no
+      - I do not know: idk
     label above field: True
     grid: 6
   - "20e. Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?": users[i].q20e
@@ -1395,6 +1448,12 @@ fields:
     default: ${ users[0].q22 if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Mental and physical fitness</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "23a. Do you NOW have a communicable disease of public health significance?": users[i].q23a
     datatype: yesnoradio
     default: ${ users[0].q23a if i > 0 else ''}
@@ -1439,6 +1498,12 @@ fields:
     default: ${ users[0].q29 if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Torture, murder, genocide</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "30a. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in acts involving torture or genocide?": users[i].q30a
     datatype: yesnoradio
     default: ${ users[0].q30a if i > 0 else ''}
@@ -1464,6 +1529,12 @@ fields:
     default: ${ users[0].q30e if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Participation in miltary, police, and paramilitary</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "31a. Have you EVER served in, been a member of, assisted in, or participated in any military unit, paramilitary unit, police unit, self-defense unit, vigilante unit, rebel group, guerrilla group, militia, or insurgent organization?": users[i].q31a
     datatype: yesnoradio
     default: ${ users[0].q31a if i > 0 else ''}
@@ -1489,6 +1560,12 @@ fields:
     default: ${ users[0].q34 if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Holding forth as a US citizen</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "35. Have you EVER unlawfully voted in a United States Federal, state, or local election?": users[i].q35
     datatype: yesnoradio
     default: ${ users[0].q35 if i > 0 else ''}
@@ -1499,6 +1576,12 @@ fields:
     default: ${ users[0].q36 if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Child soldiers, human trafficking and combat</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "37a. Have you EVER recruited, enlisted, conscripted, or used any person under 15 years of age to serve in or help an armed force or group?": users[i].q37a
     datatype: yesnoradio
     default: ${ users[0].q37a if i > 0 else ''}
@@ -1534,6 +1617,12 @@ fields:
     default: ${ users[0].q38e if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Money laundering</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "39a. Are you NOW or have you EVER engaged in money laundering as described in section 1956 or 1957 of Title 18, United States Code?": users[i].q39a
     datatype: yesnoradio
     default: ${ users[0].q39a if i > 0 else ''}
@@ -1544,11 +1633,23 @@ fields:
     default: ${ users[0].q39b if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Religious freedom</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "40. Have you EVER been responsible for or directly carried out particularly severe violations of religious freedom, as defined in section 3 of the International Religious Freedom Act of 1998 (22 U.S.C. section 6402) while serving as a foreign government official?": users[i].q40
     datatype: yesnoradio
     default: ${ users[0].q40 if i > 0 else ''}
     grid: 6
     label above field: True
+  - note: |
+      <h2 class="h4">Frivolous claims for asylum</h2>
+    grid: 
+      width: 12
+      start: True
+      end: True
   - "41. Has an immigration judge or the Board of Immigration Appeals EVER determined that you filed a frivolous asylum application in the past?": users[i].q41
     datatype: yesnoradio
     default: ${ users[0].q41 if i > 0 else ''}
@@ -2647,6 +2748,19 @@ code: |
 code: |
   users[i].i_765_attachment.enabled = users[i].application_is_approved
 ---
+objects:
+  - users[i].tps_yes_answer_addendum: ALDocument.using(title="TPS Yes Answer Addendum", filename=f"{users[i]} - TPS Yes Answer Addendum", has_addendum=False, )
+---
+code: |
+  users[i].tps_yes_answer_addendum.enabled = users[i].application_is_approved and application_kind == "ead_and_tps" and any([users[i].q8a, users[i].q8b, users[i].q8c, users[i].q9a, users[i].q9b, users[i].q9c, users[i].q10a, users[i].q10b, users[i].q10c, users[i].q11, users[i].q12a, users[i].q12b, users[i].q12c, users[i].q12d, users[i].q12e, users[i].q13a, users[i].q13b, users[i].q13c, users[i].q13d, users[i].q14a, users[i].q14b, users[i].q14c, users[i].q14d, users[i].q15a, users[i].q15b, users[i].q15c, users[i].q16, users[i].q17, users[i].q18a, users[i].q18b, users[i].q18c, users[i].q19, users[i].q20a, users[i].q20b, users[i].q20c, users[i].q20d, users[i].q20e, users[i].q21, users[i].q22, users[i].q23a, users[i].q23b, users[i].q23c, users[i].q24, users[i].q25, users[i].q26, users[i].q27, users[i].q28, users[i].q29, users[i].q30a, users[i].q30b, users[i].q30c, users[i].q30d, users[i].q30e, users[i].q31a, users[i].q31b, users[i].q32, users[i].q33, users[i].q34, users[i].q35, users[i].q36, users[i].q37a, users[i].q37b, users[i].q38a, users[i].q38b, users[i].q38c, users[i].q38d, users[i].q38e, users[i].q39a, users[i].q39b, users[i].q40, users[i].q41])
+---
+attachment:
+  name: TPS_yes_answer_addendum
+  filename: TPS_yes_answer_addendum
+  variable name: users[i].tps_yes_answer_addendum[j]
+  skip undefined: True
+  docx template file: TPS_yes_answers.docx  
+---
 attachment:
   name: I-821
   filename: I-821
@@ -2772,7 +2886,7 @@ attachment:
     - "hair_sandy": ${ users[i].hair_color == 'sandy' }
     - "White_2": ${ users[i].hair_color == 'white' }
     # - "users2_birthdate": ${ users[1].birthdate.format('MM/dd/yyyy') }
-    - "hair_unknown": ${ users[i].hair_color == 'other' }
+    - "hair_unknown": ${ users[i].hair_color not in ['bald','black','blond','brown','gray','red','sandy','white'] }
     - "marriage_location": ${ users[i].marriage_location }
     - "marriage_city": ${ users[i].marriage_city }
     - "marriage_state": ${ users[i].marriage_state }
@@ -2958,9 +3072,9 @@ attachment:
     - "q20c_no": ${ not users[i].q20c }
     - "q29_yes": ${ users[i].q29 }
     - "q29_no": ${ not users[i].q29 }
-    - "q20d_yes": ${ users[i].q20d == 'Yes' }
-    - "q20d_no": ${ not users[i].q20d == 'No' }
-    - "q20d_idk": ${ users[i].q20d == 'I do not know' }
+    - "q20d_yes": ${ users[i].q20d == 'yes' }
+    - "q20d_no": ${ not users[i].q20d == 'no' }
+    - "q20d_idk": ${ users[i].q20d == 'idk' }
     - "q30a_yes": ${ users[i].q30a }
     - "q30a_no": ${ not users[i].q30a }
     - "q20e_yes": ${ users[i].q20e }
@@ -3166,14 +3280,14 @@ attachment:
     - "users1_mailing_address_state": 'IL'
     - "users1_mailing_address_zip": '60606'
     - "mailing_address_is_physical_address": No
-    - "marital_status_single": ${ marital_status_single }
-    - "marital_status_married": ${ marital_status_married }
-    - "marital_status_divorced": ${ marital_status_divorced }
-    - "marital_status_widowed": ${ marital_status_widowed }
-    - "citizen_country_1": ${ citizen_country_1 }
-    - "previously_filed_i765": ${ previously_filed_i765 }
-    - "citizen_country_2": ${ citizen_country_2 }
-    - "has_ssn": ${ has_ssn }
+    - "marital_status_single": ${ users[i].marital_status in ['single, never married', 'marriage annulled'] }
+    - "marital_status_married": ${ users[i].marital_status in ['married','separated'] }
+    - "marital_status_divorced": ${ users[i].marital_status == 'divorced' }
+    - "marital_status_widowed": ${ users[i].marital_status == 'widowed' }
+    - "citizen_country_1": ${ comma_and_list(users[i].countries_of_citizenship) }
+    - "previously_filed_i765": ${ previously_filed_i765 } #TODO: check
+    - "citizen_country_2": ${ citizen_country_2 } #TODO: check
+    - "has_ssn": ${ users[i].has_ssn }
     - "city_of_birth": ${ users[i].city_of_birth }
     - "state_of_birth": ${ users[i].state_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
@@ -3225,8 +3339,8 @@ attachment:
     - "preparer_email": ${ preparer.email }
     - "preparer_is_attorney_yes": ${ preparer_is_attorney }
     - "preparer_is_attorney_no": ${ not preparer_is_attorney }
-    - "preparer_full_rep": ${ preparer_full_rep }
-    - "preparer_limited_rep": ${ preparer_limited_rep }
+    - "preparer_full_rep": No
+    - "preparer_limited_rep": Yes
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }

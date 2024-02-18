@@ -35,6 +35,7 @@ code: |
 ---
 code: |
   github_repo_name =  'docassemble-USCISApplications'
+  github_user = 'github_user'
 ---
 code: |
   interview_short_title = "Apply for EAD or TPS"

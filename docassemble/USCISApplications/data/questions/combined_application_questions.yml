@@ -1422,7 +1422,7 @@ fields:
       end: True
   - "20a. Have you EVER been ordered removed, and been deported from the United States?": users[i].q20a
     datatype: yesnoradio
-    default: ${ users[0].q20a if i > 0 else ''}
+    default: ${ users[i].ever_ordered_removed }
     grid: 6
     label above field: True
   - "20b. Have you EVER voluntarily departed the United States under an order of removal?": users[i].q20b

@@ -1,4 +1,6 @@
 ---
+id: ead_screening_questions
+continue button field: users[i].ead_screening_questions
 question: |
   EAD eligibility screener for ${ users[i] }
 subquestion: |
@@ -9,8 +11,21 @@ subquestion: |
       given by <strong>${ users[i] }</strong>.
     </p>
   </div>
-continue button field: users[i].ead_screening_questions
 fields:
+  - Does the applicant have copies of all of these?: users[i].ead_required_documents
+    datatype: checkboxes
+    choices:
+      - National ID
+      - I-94 or other proof of unexpired parole
+      - Shelter letter / letter from city
+    minlength: 3
+    validation messages:
+      minlength: |
+        Applicant must have **copies** of all of these documents to continue.
+        Flag a runner to make copies and printing if needed.
+    show if:
+      code: |
+        users[i].age_in_years() > 13
   - Country of Birth: users[i].country_of_birth
     datatype: combobox
     code: |
@@ -20,10 +35,12 @@ fields:
   # - Country(ies) of Citizenship: users[i].countries_of_citizenship
   - Number of ${ users[i] }'s children applying with them today: users[i].number_children_applying
     datatype: integer
+    default: |
+      ${ 0 if users[i].age_in_years() < 9 else users[0].number_children_applying if i > 0 else '' }
   - Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnoradio
     default: |
-      ${ users[0].applied_for_other_immigration_benefit if i > 0 else '' }
+      ${ showifdef("users[0].applied_for_other_immigration_benefit") if i > 0 else '' }
   - Type of immigration benefit: users[i].applied_benefit_type
     show if: users[i].applied_for_other_immigration_benefit
     default: |
@@ -43,27 +60,26 @@ fields:
     rows: 2
     default: |
       ${ users[0].proof_of_parole if i > 0 else '' }
-  - Is ${ users[i] } proof of parole valid for at least the next 90 days?: users[i].proof_of_parole_valid_for_90_days
-    datatype: yesnoradio
-  - Are you in removal proceedings right now?: users[i].in_removal_proceedings
+  - Is ${ users[i] }'s proof of parole valid for at least the next 90 days?: users[i].proof_of_parole_valid_for_90_days
     datatype: yesnoradio
     default: |
-      ${ users[0].in_removal_proceedings if i > 0 else '' }
-  - Have you been issued a Final Order of Removal?: users[i].ever_ordered_removed
+      ${ showifdef("users[0].proof_of_parole_valid_for_90_days") if i > 0 else '' }
+  - "Are you in removal proceedings? (Review EOIR list on your table for applicant’s court hearing info, if applicable. If applicant is NOT listed, look up their EOIR case status using their A#: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/))": users[i].in_removal_proceedings
+    label above field: True
     datatype: yesnoradio
     default: |
-      ${ users[0].ever_ordered_removed if i > 0 else '' }
-  - note: |
-      <div class="alert alert-danger" role="alert">
-        <h2 class="h4">${fa_icon("triangle-exclamation") } Important</h2>
-        <p>
-          If the answer is yes, the user is not eligible for an EAD.
-        </p>
-      </div>
-    show if: users[i].ever_ordered_removed
-  - Have you ever been arrested, cited, stopped, detained, placed in handcuffs by the police?: users[i].ever_arrested
+      ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
+  - Date of first hearing: users[i].date_removal_proceedings_began
+    datatype: ThreePartsDate
+    max: ${ today() }
+    show if: users[i].in_removal_proceedings
+  - Location of proceedings: users[i].location_removal_proceedings
+    show if: users[i].in_removal_proceedings
+  - Have you ever been issued a Final Order of Removal?: users[i].ever_ordered_removed
     datatype: yesnoradio
-  - What happened? Include the location, reason for arrest, and outcome: users[i].arrest_details
+  - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: users[i].ever_arrested
+    datatype: yesnoradio
+  - List when/where/outcome of EVERY arrest, including those in US and outside of US (review certified dispositions & applicant workbook with legal supervisor): users[i].arrest_details
     datatype: area
     show if: users[i].ever_arrested
   - Did you bring your criminal history documents with you?: users[i].has_criminal_history_documents

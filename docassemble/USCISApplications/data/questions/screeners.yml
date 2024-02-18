@@ -300,24 +300,24 @@ fields:
       - Passport stamp
       - Other
     default: |
-      ${ users[0].proof_last_entry_date_before_october_4_2023 if i > 0 else '' }
+      ${ showifdef("users[0].proof_last_entry_date_before_october_4_2023") if i > 0 else '' }
     # show if:
     #   variable: users[i].proof_last_entry_date_before_july_31_2023
     #   is: False
   - Do you have any children applying with you today?: users[i].has_children_applying_today
     datatype: yesnoradio
     default: |
-      ${ users[0].has_children_applying_today if i > 0 and users[i].age_in_years() > 18 else '' }
+      ${ showifdef("users[0].has_children_applying_today") if i > 0 and users[i].age_in_years() > 8 else '' }
   - Was any child born outside of Venezuela?: users[i].has_children_applying_not_born_in_venezuela
     show if: users[i].has_children_applying_today
     datatype: yesnoradio
     default: |
-      ${ users[0].has_children_applying_not_born_in_venezuela if i > 0 else '' }
+      ${ showifdef("users[0].has_children_applying_not_born_in_venezuela") if i > 0 and users[0].has_children_applying_today else '' }
   - List each child's name and nationality: users[i].children_outside_of_venezuela
     datatype: area
     show if: users[i].has_children_applying_not_born_in_venezuela
     default: |
-      ${ users[0].children_outside_of_venezuela if i > 0 and users[0].has_children_applying_not_born_in_venezuela else '' }
+      ${ showifdef("users[0].children_outside_of_venezuela") if i > 0 and showifdef("users[0].has_children_applying_not_born_in_venezuela") else '' }
   - How did you last enter the US?: users[i].method_of_entry
     datatype: radio
     choices:
@@ -337,12 +337,12 @@ fields:
   - Did your children enter the US separately from you?: users[i].children_entered_separately
     datatype: yesnoradio
     default: |
-      ${ users[0].children_entered_separately if i > 0 else '' }
+      ${ showifdef("users[0].children_entered_separately") if i > 0 else False if users[i].age_in_years() < 9 else '' }
   - Where, when, and with whom did they enter?: users[i].children_entered_separately_explanation
     datatype: area
     show if: users[i].children_entered_separately
     default: |
-      ${ users[0].children_entered_separately_explanation if i > 0 and users[0].children_entered_separately else '' }
+      ${ showifdef("users[0].children_entered_separately_explanation") if i > 0 else '' }
   - Have you had legal status in any other country besides Venezuela?: users[i].had_legal_status_outside_venezuela
     datatype: yesnoradio
     default: |
@@ -351,7 +351,7 @@ fields:
     datatype: area
     show if: users[i].had_legal_status_outside_venezuela
     default: |
-      ${ users[0].countries_and_legal_status if i > 0 and users[0].had_legal_status_outside_venezuela else '' }
+      ${ showifdef("users[0].countries_and_legal_status") if i > 0 else '' }
   - Have you applied for any other immigration benefit? (i.e. work permit, TPS, or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnoradio
     default: |
@@ -363,7 +363,7 @@ fields:
     label above field: True
     datatype: yesnoradio
     default: |
-      ${ users[0].in_removal_proceedings if i > 0 else '' }
+      ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
   - Date of first hearing: users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
     max: ${ today() }

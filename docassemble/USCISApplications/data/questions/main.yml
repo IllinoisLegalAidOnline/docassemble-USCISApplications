@@ -86,6 +86,11 @@ code: |
     review_ead_screening_questions
   else:
     review_tps_screening_questions
+
+  # End early if all users are screened out
+  if supervisor_overall_approval_status == "screened_out":
+    download_completed_ea_application
+
   for idx,user in enumerate(users):
     nav.set_section(f"users_{idx}_signpost_app")
     user.signpost

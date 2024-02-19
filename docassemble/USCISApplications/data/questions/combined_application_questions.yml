@@ -1,8 +1,8 @@
 ---
 objects:
-  - supervisor: ALIndividual # need?
-  - preparer: ALIndividual # need?
-  - interpreter: ALIndividual # need?
+  - supervisor: ALIndividual
+  - preparer: ALIndividual
+  - interpreter: ALIndividual
   - users: ALPeopleList.using(ask_number=True, complete_attribute='names_only')
   - users[i].countries_of_residence: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
   - users[i].other_countries_of_citizenship: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
@@ -11,10 +11,10 @@ objects:
   #- users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
   - users[i].travel_documents: DAList.using(there_are_any=True)
   - users[i].alternate_birthdates: DAList
-  - users[i].spouse: ALIndividual # need?
-  - users[i].spouse.prior_TPS: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='start_date') # need?
-  - users[i].former_spouses: ALPeopleList.using(ask_number=True) # need?
-  - users[i].children: ALPeopleList.using(ask_number=True) # need?
+  #- users[i].spouse: ALIndividual # need?
+  #- users[i].spouse.prior_TPS: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='start_date') # need?
+  #- users[i].former_spouses: ALPeopleList.using(ask_number=True) # need?
+  #- users[i].children: ALPeopleList.using(ask_number=True) # need?
 ---
 ###################### users '.complete' block ######################
 comment: |
@@ -42,8 +42,7 @@ code: |
   users[i].travel_documents.gather()
   users[i].i94_arrival_number
   users[i].has_been_in_immigration_proceedings
-  if users[i].wants_SS_card and users[i].consents_to_SS_disclosure:
-    users[i].father_first_name
+  users[i].father_first_name
   if application_kind == "ead_and_tps":
     users[i].have_you_ever_questions
   users[i].complete = True
@@ -856,15 +855,6 @@ fields:
     datatype: yesnoradio
   - Has the Social Security Administration ever officially issued a Social Security card to you?: users[i].SS_has_issued_card
     datatype: yesnoradio
-#   - Do you want the Social Security Administration to issue you a Social Security card?: users[i].wants_SS_card
-#     datatype: yesnoradio
-#   - "**Consent for Disclosure:**  I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card": users[i].consents_to_SS_disclosure
-#     datatype: yesno
-#     show if: users[i].wants_SS_card
-#     default: True
-# validation code: |
-#   if users[i].wants_SS_card and not users[i].consents_to_SS_disclosure:
-#     validation_error("You must consent to the disclosure of information to the Social Security Administration in order to get a Social Security card.")
 ---
 id: father and mother birth name
 question: |

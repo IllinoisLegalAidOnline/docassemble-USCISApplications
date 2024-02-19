@@ -59,7 +59,22 @@ fields:
   - State: users[0].address.state
     required: False
   - ZIP: users[0].address.zip
+  - Daytime Phone Number (optional): users[0].daytime_phone
+    required: false
+  - Mobile Telephone Number (optional): users[0].mobile_phone_number
+    required: false
+  - Email address (optional): users[0].email_address
+    required: false
 ---
+code: |
+  address_choices = []
+  address_choices.clear()
+  for user in users.complete_elements():
+    if hasattr(user.address, 'address'):
+      address_choices.append(user.address)
+---
+reconsider:
+  - address_choices
 id: your address
 sets:
   - users[i].address.address
@@ -71,6 +86,15 @@ sets:
 question: |
   ${ users[i] }'s address
 fields:
+  - ${ users[i] }'s address is: users[i].address
+    datatype: object_radio
+    choices:
+      - address_choices
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others: True
   - Street address: users[i].address.address
     address autocomplete: True
     default: ${ users[0].address.address }
@@ -83,37 +107,86 @@ fields:
     required: False
     default: ${ users[0].address.state }
   - ZIP: users[i].address.zip
-    default: ${ users[i].address.zip }
+    default: ${ users[0].address.zip }
+  - Daytime Phone Number (optional): users[i].daytime_phone
+    required: false
+    default: |
+      ${ users[0].daytime_phone if i > 0 else ""}
+  - Mobile Telephone Number (optional): users[i].mobile_phone_number
+    required: false
+    default: |
+      ${ users[0].mobile_phone_number if i > 0 else ""}
+  - Email address (optional): users[i].email_address
+    required: false
+---
+id: your mailing address
+question: |
+  What is ${ users[0] }'s mailing address?
+fields:
+  - ${ users[0] }'s mailing address is: users[0].mailing_address
+    datatype: object_radio
+    choices:
+      - users[i].address if defined("users[i].address.address") else None
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others: True      
+    show if:
+      code: |
+        defined("users[0].address.address")
+  - ${ users[0].address.address_label}: users[0].mailing_address.address
+    address autocomplete: True
+  - ${ users[0].address.unit_label}: users[0].mailing_address.unit
+    required: False
+  - ${ users[0].address.city_label}: users[0].mailing_address.city
+  - ${ users[0].address.state_label}: users[0].mailing_address.state
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
+  - ${ users[0].address.zip_label}: users[0].mailing_address.zip
+    required: False      
+  - ${ users[0].address.country_label}: users[0].mailing_address.country
+    code: countries_list()
+    default: ${ AL_DEFAULT_COUNTRY }    
+---
+id: your mailing address
+question: |
+  What is ${ users[i] }'s mailing address?
+fields:
+  - ${ users[i] }'s mailing address is: users[i].mailing_address
+    datatype: object_radio
+    choices:
+      - users[0].address if defined("users[0].address.address") else None
+      - users[i].address if defined("users[i].address.address") else None
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others: True      
+    show if:
+      code: |
+        defined("users[i].address.address")
+  - ${ users[i].address.address_label}: users[i].mailing_address.address
+    address autocomplete: True
+  - ${ users[i].address.unit_label}: users[i].mailing_address.unit
+    required: False
+  - ${ users[i].address.city_label}: users[i].mailing_address.city
+  - ${ users[i].address.state_label}: users[i].mailing_address.state
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
+  - ${ users[i].address.zip_label}: users[i].mailing_address.zip
+    required: False      
+  - ${ users[i].address.country_label}: users[i].mailing_address.country
+    code: countries_list()
+    default: ${ AL_DEFAULT_COUNTRY }
+
 ---
 ################## AD Code Blurbs ###################
 code: |
   users[i].prior_immigration_proceedings.there_are_any = users[i].has_been_in_immigration_proceedings == 'Yes_2'
 ---
-########################## Addresses, Phone, Email ##########################
-id: U.S. physical address phone and email
-question: |
-  U.S. Physical Address, Phone, and Email
-fields:
-  - Street address: users[i].address.address
-    address autocomplete: True
-    maxlength: 38
-  - Suite/Unit/Floor/Room: users[i].address.unit
-    required: False
-    maxlength: 28
-  - City: users[i].address.city
-    maxlength: 28
-  - State: users[i].address.state
-    code: |
-      states_list()
-  - ZIP code: users[i].address.zip
-    datatype: integer
-    maxlength: 5
-  - Daytime Phone Number (if any): users[i].daytime_phone
-    required: false
-  - Mobile Telephone Number (if any): users[i].mobile_phone_number
-    required: false
-  - Email address (if any): users[i].email_address
-    required: false
 ########################## Countries & Places ##########################
 ---
 id: applicant's birthplace
@@ -134,6 +207,8 @@ id: countries resided in
 question: |
   Which country or countries did you enter/travel through before entering the U.S.?
 subquestion: |
+  We will ask about each country one at a time.
+
   % if len(users[i].countries_of_residence.complete_elements()):
   Countries you **lived in** before entering the U.S.:[BR]
   
@@ -173,9 +248,18 @@ edit:
 ---
 id: any more countries of citizenship
 question: |
-  Are there any other countries where you are a citizen aside from those listed below?
+  Are there any other countries where you are a citizen?
 subquestion: |
-  **${ users[i].countries_of_residence.filter(is_still_citizen=True) }**
+  You have already told us about:
+  
+  % for country in users[i].countries_of_residence.complete_elements():
+  % if country.was_ever_citizen and country.is_still_citizen:
+  * ${ country.name }
+  % endif
+  % endfor
+  % for country in users[i].countries_of_citizenship.complete_elements():
+  * ${ country.name }
+  % endfor
 fields:
   - no label: users[i].other_countries_of_citizenship.there_are_any
     datatype: yesnoradio
@@ -199,7 +283,11 @@ fields:
 ---
 ########## does this need reworking??
 code: |
-  users[i].countries_of_citizenship = users[i].countries_of_residence.filter(is_still_citizen=True) + showifdef('users[i].other_countries_of_citizenship')
+  users[i].countries_of_citizenship = DAList(users[i].attr_name("countries_of_citizenship"))
+  for country in users[i].countries_of_residence.complete_elements():
+    if country.was_ever_citizen and country.is_still_citizen:
+      users[i].countries_of_citizenship.append(name=country.name)
+  users[i].countries_of_citizenship.extend(users[i].other_countries_of_citizenship)
 ---
 id: countries entered or traveled to before US
 question: |
@@ -360,7 +448,7 @@ allow reordering: True # might be moot/unnecessary here
 ---
 id: passport or other travel documents
 question: |
-  Does Applicant have a Passport or travel documents?
+  Passport and Other Travel Documents for ${ users[i] }
 subquestion: |
   ***Note: a "cedula" does not count as a travel document***
 
@@ -431,24 +519,41 @@ fields:
 ---
 id: alternate birthdates there are any
 question: |
-  Have you ever claimed or used (including on any documents) a date of birth other than ${ users[i].birthdate }?
+  Have you ever used (including on any documents) a date of birth other than ${ users[i].birthdate }?
 fields: 
   - no label: users[i].alternate_birthdates.there_are_any
     datatype: yesnoradio
+  - "Other Date of Birth Used": users[i].alternate_birthdates[0]
+    datatype: BirthDate
+    max: ${ today() }
+    show if: users[i].alternate_birthdates.there_are_any
+  - I have other birthdates: users[i].alternate_birthdates.there_is_another
+    datatype: yesnowide
+    show if: users[i].alternate_birthdates.there_are_any
 ---
 id: alternate birthdates
 question: |
   Other birth dates used
+subquestion: |
+  You have already mentioned:
+
+  * ${ users[i].birthdate }
+  % for date in users[i].alternate_birthdates.complete_elements():
+  * ${ date }
+  % endfor  
 fields:
   - Other Date of Birth Used: users[i].alternate_birthdates[j]
-    datatype: date
+    datatype: BirthDate
     max: ${ today() }
 ---
 id: alternate birthdates there is another
 question: |
   Are there any other birthdates you've claimed or used (including on any documents) other than those below?
 subquestion: |
-  **${ users[i].alternate_birthdates }**
+  * ${ users[i].birthdate }
+  % for date in users[i].alternate_birthdates.complete_elements():
+  * ${ date }
+  % endfor  
 fields: 
   - no label: users[i].alternate_birthdates.there_is_another
     datatype: yesnoradio
@@ -463,20 +568,37 @@ fields:
     choices:
       - Male
       - Female
+      - Nonbinary (will not be checked on form)
   - Ethnicity: users[i].ethnicity
     datatype: radio
     choices:
       - Hispanic or Latino: hispanic
       - Not Hispanic or Latino: not_hispanic
+    default: |
+      ${ users[0].ethnicity if i > 0 else ""}
   - Race (choose all applicable)": users[i].race
     datatype: checkboxes
     choices:
       - White: white
+        default: |
+          ${ users[0].race["white"] if i > 0 else "" }
       - Black or African American: black
+        default: |
+          ${ users[0].race["black"] if i > 0 else "" }
       - American Indian or Alaska Native: native_american
+        default: |
+          ${ users[0].race["native_american"] if i > 0 else "" }
       - Asian: asian
+        default: |
+          ${ users[0].race["asian"] if i > 0 else "" }
       - Native Hawaiian or Other Pacific Islander: pacific_islander
+        default: |
+          ${ users[0].race["pacific_islander"] if i > 0 else "" }
       - Other: other
+        default: |
+          ${ users[0].race["other"] if i > 0 else "" }
+    default: |
+      ${ users[0].race if i > 0 else "" }
   - "Height (centimeters)": users[i].height_cm
     datatype: integer
   - Weight (kilograms): users[i].weight_kg
@@ -513,13 +635,13 @@ fields:
   - Marital Status: users[i].marital_status
     datatype: radio
     choices: 
-      - single, never married
-      - married
-      - divorced
-      - widowed
-      - separated
-      - marriage annulled
-      - other
+      - Single, never married: single, never married
+      - Married: married
+      - Divorced: divorced
+      - Widowed: widowed
+      - Separated: separated
+      - Marriage annulled: marriage annulled
+      - Other: other
   - 'Explain "other" marital status': users[i].marital_status_other
     maxlength: 27
     show if: 
@@ -1255,6 +1377,7 @@ fields:
     datatype: yesnomaybe
     label above field: True
     grid: 6
+    default: ${ users[0].q20d if i > 0 else ''}
   - "20e. Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?": users[i].q20e
     datatype: yesnoradio
     default: ${ users[0].q20e if i > 0 else ''}

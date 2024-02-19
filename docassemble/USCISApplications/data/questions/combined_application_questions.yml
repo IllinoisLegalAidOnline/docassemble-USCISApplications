@@ -1427,11 +1427,7 @@ fields:
     grid: 6
     label above field: True
   - "20d. Has DHS reinstated your prior order of removal?": users[i].q20d
-    datatype: radio
-    choices:
-      - Yes: yes
-      - No: no
-      - I do not know: idk
+    datatype: yesnomaybe
     label above field: True
     grid: 6
   - "20e. Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?": users[i].q20e
@@ -3088,9 +3084,9 @@ attachment:
     - "q20c_no": ${ not users[i].q20c }
     - "q29_yes": ${ users[i].q29 }
     - "q29_no": ${ not users[i].q29 }
-    - "q20d_yes": ${ users[i].q20d == 'yes' }
-    - "q20d_no": ${ not users[i].q20d == 'no' }
-    - "q20d_idk": ${ users[i].q20d == 'idk' }
+    - "q20d_yes": ${ users[i].q20d }
+    - "q20d_no": ${ not users[i].q20d }
+    - "q20d_idk": ${ users[i].q20d is None }
     - "q30a_yes": ${ users[i].q30a }
     - "q30a_no": ${ not users[i].q30a }
     - "q20e_yes": ${ users[i].q20e }

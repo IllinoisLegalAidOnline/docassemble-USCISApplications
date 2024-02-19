@@ -110,7 +110,11 @@ code: |
       },
   )
   children_for_retainer
-  download_completed_ea_application
+  generate_downloads_task
+  if generate_downloads_task.ready():
+    download_completed_ea_application
+  else:
+    waiting_screen
 ---
 code: |
   users[i].name.first
@@ -766,6 +770,36 @@ fields:
         users[i].q41
 continue button field: users[i].explain_add_explanations
 ---
+code: |
+  generate_downloads_task = background_action('create_downloads')
+
+---
+id: waiting screen
+question: |
+  Please wait while we generate your documents
+subquestion: |
+  This can take a few minutes.
+
+  <div class="spinner-border text-primary d-flex justify-content-center" role="status">
+    <span class="sr-only">Creating PDFs...</span>
+  </div>
+event: waiting_screen
+reload: True
+---
+event: create_downloads
+code: |
+  download_response = {}
+  for user in users:
+    download_response[str(user)] = user.document_bundle.as_pdf()
+  background_response_action('save_downloads', download_response=download_response)
+---
+event: save_downloads
+code: |
+  ans = action_argument('download_response')
+  for user in users:
+    user.cached_pdf = ans[str(user)]
+  background_response()
+---
 id: download_completed_ea_application
 event: download_completed_ea_application
 question: |
@@ -774,7 +808,7 @@ subquestion: |
   % for user in users:
   <h2 class="h4">${ user.name.first }'s application</h2>
 
-  ${ action_button_html(user.document_bundle.as_pdf().url_for(), label=f"{ user}'s application", icon="file-pdf", size="lg", color="primary") }
+  ${ action_button_html(user.cached_pdf.url_for(), label=f"{ user}'s application", icon="file-pdf", size="lg", color="primary") }
   % endfor
 ---
 objects:

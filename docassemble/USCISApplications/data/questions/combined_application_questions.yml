@@ -566,9 +566,9 @@ fields:
   - Gender: users[i].sex
     datatype: radio
     choices:
-      - Male
-      - Female
-      - Nonbinary (will not be checked on form)
+      - Male: male
+      - Female: female
+      - Nonbinary (will not be checked on form): nonbinary
   - Ethnicity: users[i].ethnicity
     datatype: radio
     choices:
@@ -580,25 +580,11 @@ fields:
     datatype: checkboxes
     choices:
       - White: white
-        default: |
-          ${ users[0].race["white"] if i > 0 else "" }
       - Black or African American: black
-        default: |
-          ${ users[0].race["black"] if i > 0 else "" }
       - American Indian or Alaska Native: native_american
-        default: |
-          ${ users[0].race["native_american"] if i > 0 else "" }
       - Asian: asian
-        default: |
-          ${ users[0].race["asian"] if i > 0 else "" }
       - Native Hawaiian or Other Pacific Islander: pacific_islander
-        default: |
-          ${ users[0].race["pacific_islander"] if i > 0 else "" }
       - Other: other
-        default: |
-          ${ users[0].race["other"] if i > 0 else "" }
-    default: |
-      ${ users[0].race if i > 0 else "" }
   - "Height (centimeters)": users[i].height_cm
     datatype: integer
   - Weight (kilograms): users[i].weight_kg
@@ -2750,17 +2736,19 @@ attachment:
     - "users1_previous_names1_middle": ${ users[i].previous_names[0].middle }
     - "users1_previous_names2_last": ${ users[i].previous_names[1].last }
     - "users1_previous_names2_first": ${ users[i].previous_names[1].first }
-    - "users1_alternate_birthdate": ${ users[i].alternate[0].birthdate.format('MM/dd/yyyy') }
+    - "users1_alternate_birthdate": ${ users[i].alternate_birthdates[0].format('MM/dd/yyyy') }
     - "users1_previous_names2_middle": ${ users[i].previous_names[1].middle }
-    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdate_2.format('MM/dd/yyyy') }
-    - "users1_gender": ${ users[i].sex }
+    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdates.format('MM/dd/yyyy') }
+    - "users1_gender_male": ${ users[i].sex == "male"}
+    - "users1_gender_female": ${ users[i].sex == "female"}
     - "users1_mailing_address_in_care_of": ${ users[i].mailing_address.in_care_of }
     - "users1_mailing_address_address": ${ users[i].mailing_address.address }
     - "users1_mailing_address_unit": ${ users[i].mailing_address.unit }
     - "users1_mailing_address_city": ${ users[i].mailing_address.city }
     - "users1_mailing_address_state": ${ users[i].mailing_address.state }
     - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
-    - "mailing_address_is_physical_address": No
+    - "mailing_address_is_physical_address_yes": ${ users[i].mailing_address == users[i].address }
+    - "mailing_address_is_physical_address_no": ${ not users[i].mailing_address == users[i].address }
     # - "users1_mailing_address_is_apt": ''
     # - "users1_mailing_address_is_suite": ''
     # - "users1_mailing_address_is_floor": ''
@@ -2787,7 +2775,8 @@ attachment:
     - "marriage_date": ${ users[i].marriage_date.format('MM/dd/yyyy') }
     # - "marriage_date__2": ${ users[i].marriage_date.format('MM/dd/yyyy') }
     - "current_immigration_status": ${ users[i].current_immigration_status }
-    - "has_been_in_immigration_proceedings": ${ "Yes_2" if users[i].has_been_in_immigration_proceedings else "No_2"}
+    - "users1_has_been_in_immigration_proceedings_yes": ${ users[i].has_been_in_immigration_proceedings }
+    - "users1_has_been_in_immigration_proceedings_no": ${ not users[i].has_been_in_immigration_proceedings }
     - "date_of_last_arrival": ${ users[i].date_of_last_arrival }
     - "proceedings_was_immigration_court": ${ users[i].kind_of_immigration_proceedings.get("immigration_court") }
     - "proceedings_was_bia": ${ users[i].kind_of_immigration_proceedings.get("bia") }
@@ -2805,19 +2794,19 @@ attachment:
     - "authorized_stay_ending_date": ${ authorized_stay_ending_date.format('MM/dd/yyyy') }
     - "passport_number": ${ users[i].passport_number }
     - "most_recent_passport_country_issuing": ${ users[i].passport_issuing_country }
-    - "passport_or_travel_document_expiration_date": ${ passport_or_travel_document_expiration_date.format('MM/dd/yyyy') }
+    - "passport_or_travel_document_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
     - "travel_document_number": ${ users[i].other_travel_document_number }
     - "additional_passport_number_1": ${ users[i].travel_documents.item(0) }
     - "additional_passport_number_2": ${ users[i].travel_documents.item(1) }
     - "ethnicity_hispanic_yes": ${ users[i].ethnicity == "Hispanic or Latino" }
     - "ethnicity_hispanic_no": ${ not users[i].ethnicity == "Hispanic or Latino" }
-    - "race_white": ${ users[i].race == 'white' }
-    - "race_asian": ${ users[i].race == 'asian' }
-    - "race_black": ${ users[i].race == 'black' }
-    - "race_american_indian": ${ users[i].race == 'native_american' }
-    - "race_native_hawaiian": ${ users[i].race == 'pacific_islander' }
+    - "race_white": ${ users[i].race['white'] }
+    - "race_asian": ${ users[i].race['asian'] }
+    - "race_black": ${ users[i].race['black'] }
+    - "race_american_indian": ${ users[i].race['native_american'] }
+    - "race_native_hawaiian": ${ users[i].race['pacific_islander'] }
     - "height_feet": ${ int(users[i].height_cm * 0.0328084) }
-    - "height_inches": ${ int((users[i].height_cm * 0.0328084 - users[i].height_feet) * 12) }
+    - "height_inches": ${ int((users[i].height_cm * 0.0328084 - int(users[i].height_cm * 0.0328084)) * 12) }
     - "users2_address_address": ${ users[1].address.address }
     # - "users2_address_is_apt": ${ users2_address_is_apt }
     # - "users2_address_is_suite": ${ users2_address_is_suite }
@@ -2939,7 +2928,7 @@ attachment:
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
     - "date_started_us_residence": ${ users[i].date_started_us_residence }
     - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
-    - "other_countries_entered_list": "See addendum"
+    - "other_countries_entered_list": "See addendum for 1-7"
     - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
     - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
     - "other_country_immigration_status": ${ other_country_immigration_status }
@@ -3035,7 +3024,7 @@ attachment:
     - "q29_yes": ${ users[i].q29 }
     - "q29_no": ${ not users[i].q29 }
     - "q20d_yes": ${ users[i].q20d }
-    - "q20d_no": ${ not users[i].q20d }
+    - "q20d_no": ${ users[i].q20d == False }
     - "q20d_idk": ${ users[i].q20d is None }
     - "q30a_yes": ${ users[i].q30a }
     - "q30a_no": ${ not users[i].q30a }

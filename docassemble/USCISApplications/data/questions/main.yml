@@ -107,6 +107,7 @@ code: |
       if any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]):
         user.explain_add_explanations
 
+  nav.set_section("section_download")
   store_variables_snapshot(
       persistent=True,
       data={
@@ -136,17 +137,17 @@ data:
   - section_retainer: Limited Retainer
   - section_screener: Verify eligibility
   - section_application: Application
-  - review_USCIS_Applications: Review your answers    
+  # - review_USCIS_Applications: Review 
   - section_download: Download and print
 ---
 code: |
   if len(users) > 1:
-    sections = default_sections[:-4]
+    sections = default_sections[:-3]
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-2:]
+    sections.extend(default_sections[-1:]
     )
     nav.set_sections(sections)
   update_sections = True
@@ -190,7 +191,7 @@ fields:
   - code: |
       interpreter.name_fields(person_or_business="person", show_if="interpreter_present", show_suffix=False)
 ---
-id: intro_main
+id: welcome
 question: |
   Let's get started
 subquestion: |
@@ -205,9 +206,8 @@ subquestion: |
   1. Gather names
   2. Complete the limited scope retainer
   3. Verify eligibility
-  4. Complete the application, for the I-765 or the I-821 or both
-  5. Review your work
-  6. Download and print your work. You will get a separate
+  4. Complete the application, for the I-765 or the I-821 or both, for each applicant
+  5. Download and print your work. You will get a separate
       set of documents for each person in the family group.
 continue button field: intro_main
 ---
@@ -290,12 +290,17 @@ fields:
     input type: dropdown
     code: |
       uscis_countries_list()
+  - City or town of birth: users[0].city_of_birth
   - Birthdate: users[0].birthdate
     datatype: BirthDate
   - A Number (do not include A-): users[0].a_number
     required: False
     validate: |
-      lambda y: re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+      lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+  - What was the last country you were a **resident** of before coming to the United States?: users[0].last_country_of_residence
+    input type: dropdown
+    code: |
+      uscis_countries_list()      
   - note: |
       <h2 class="h4">We'll get the name of the remaining applicants on the next screen</h2>
     js show if: |
@@ -325,13 +330,18 @@ fields:
     code: |
       uscis_countries_list()
     default: |
-      ${ users[0].country_of_birth }
+      ${ users[0].country_of_birth }      
+  - City or town of birth: users[i].city_of_birth
   - Birthdate: users[i].birthdate
     datatype: BirthDate
   - A Number (do not include A-): users[i].a_number
     required: False
     validate: |
-      lambda y: re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+      lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+  - What was the last country you were a **resident** of before coming to the United States?: users[i].last_country_of_residence
+    input type: dropdown
+    code: |
+      uscis_countries_list()      
 ---
 id: Has user i been known by a different name before?
 question: |

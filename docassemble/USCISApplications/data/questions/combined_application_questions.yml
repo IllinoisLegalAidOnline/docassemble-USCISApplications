@@ -85,40 +85,9 @@ fields:
   - ZIP: users[i].address.zip
     default: ${ users[i].address.zip }
 ---
-# id: applicant's name
-# sets:
-#     - users[0].name.first
-#     - users[0].name.last
-#     - users[0].name.middle
-# question:  Applicant's Name
-# fields:
-#   - code: |
-#       users[0].name_fields(show_suffix=False)
----
 ################## AD Code Blurbs ###################
 code: |
   users[i].prior_immigration_proceedings.there_are_any = users[i].has_been_in_immigration_proceedings == 'Yes_2'
----
-# id: xxxxx
-# question: |
-#   xxxxx
-# fields:
-#   - "Form *G-28* or *G-28I* is attached": users[i].is_form_g28_attached
-#     datatype: yesno
-# ---
-# id: preparer info
-# question: |
-#   Information about the preparer
-# fields:
-#   # - "Preparer is attorney": preparer.preparer_is_attorney
-#   #   datatype: yesno 
-#   # - "Preparer's Attorney State Bar Number (if applicable)": preparer.attorneys1_bar_number
-#   #   maxlength: 19
-#   #   show if: preparer.preparer_is_attorney
-#   # - "Preparer's USCIS Online Account Number (if any)": preparer.attorney_online_account_number
-#   #   maxlength: 28
-#   - "Organization preparer represents": preparer.preparer_organization
-#     maxlength: 38
 ---
 ########################## Addresses, Phone, Email ##########################
 id: U.S. physical address phone and email
@@ -157,7 +126,9 @@ fields:
 id: countries resided in are there any
 question: |
   Did Applicant **live** in another country before entering the U.S.?
-yesno: users[i].countries_of_residence.there_are_any # the wording of this question is taken from the sample I-821, page 2, question 15. It seems to me this question will almost always be yes, since a person has to "live" somewhere, but perhaps there's a definitional problem here...
+fields:
+  - no label: users[i].countries_of_residence.there_are_any # the wording of this question is taken from the sample I-821, page 2, question 15. It seems to me this question will almost always be yes, since a person has to "live" somewhere, but perhaps there's a definitional problem here...
+    datatype: yesnoradio
 ---
 id: countries resided in
 question: |
@@ -205,7 +176,9 @@ question: |
   Are there any other countries where you are a citizen aside from those listed below?
 subquestion: |
   **${ users[i].countries_of_residence.filter(is_still_citizen=True) }**
-yesno: users[i].other_countries_of_citizenship.there_are_any
+fields:
+  - no label: users[i].other_countries_of_citizenship.there_are_any
+    datatype: yesnoradio
 ---
 id: other countries of citizenship
 question: |
@@ -220,7 +193,9 @@ question: |
   Are there any other countries where you are a citizen aside from those listed below?
 subquestion: |
   **${ users[i].other_countries_of_citizenship }**
-yesno: users[i].other_countries_of_citizenship.there_is_another
+fields: 
+  - no label: users[i].other_countries_of_citizenship.there_is_another
+    datatype: yesnoradio
 ---
 ########## does this need reworking??
 code: |
@@ -310,7 +285,9 @@ allow reordering: True
 id: prior immigration proceedings are there any
 question: |
   Has Applicant been involved in immigration legal proceedings before?
-yesno: users[i].prior_immigration_proceedings.there_are_any
+fields: 
+  - no label: users[i].prior_immigration_proceedings.there_are_any
+    datatype: yesnoradio
 ---
 #################### Prior Immigration Proceedings ####################
 id: prior immigration proceedings
@@ -348,7 +325,7 @@ fields:
     datatype: date
     max: ${ today() }
   - Proceedings are ongoing/pending today: users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present
-    datatype: yesno
+    datatype: yesnowide
     grid: 6
   - End Date: users[i].prior_immigration_proceedings[j].end_date
     datatype: date
@@ -406,8 +383,8 @@ fields:
     required: false
   - Additional passport or travel document number: users[i].travel_documents[1]
     required: false
-  - Does ${ users[i] } have any other travel documents?: users[i].travel_documents.there_is_another
-    datatype: yesno
+  - ${ users[i] } has more than 3 travel documents: users[i].travel_documents.there_is_another
+    datatype: yesnowide
 ---
 id: collect more docs
 list collect: True
@@ -428,73 +405,6 @@ subquestion: |
   % endif
 fields:
   - Additional passport or travel document number: users[i].travel_documents[j]
-# id: travel documents are there any
-# question: |
-#   Does Applicant have a Passport or travel documents?
-# subquestion: |
-#   ***Note: a "cedula" does not count as a travel document***
-# fields: 
-#   - no label: users[i].travel_documents.there_are_any
-#     datatype: yesnoradio
-# ---
-# id: travel documents
-# question: |
-#   Applicant's Travel Documents
-# subquestion: |
-#   % if len(users[i].travel_documents.complete_elements()):
-#   % if len(users[i].travel_documents.complete_elements()) == 1:
-#   The travel document you entered is:
-#   % else:
-#   The travel documents you entered are: 
-#   % endif
-  
-#   Type  |Issuing Country  |Document Number
-#   -------------|------------|------------
-#   % for document in users[i].travel_documents.complete_elements():
-#   ${ document.type }  | ${ document.issuing_country }  | ${ document.number }
-#   % endfor
-  
-#   [NEWLINE]
-#   % endif
-# fields:
-#   - Name: users[i].travel_documents[j].name
-#     input type: hidden
-#     default: ${ int(users[i].travel_documents[j].instanceName.split('[')[-1].split(']')[0]) + 1 }
-#   - Document Type: users[i].travel_documents[j].type
-#     datatype: radio
-#     choices:
-#       - Passport: passport
-#       - Other Kind of Travel Document: other
-#   - '"Other" type of travel document': users[i].travel_documents[j].other_type
-#     maxlength: 38 # perhaps unnecessary here as this info will only optionally be included in the appendix and otherwise will be shown in mako tage to the user for organization purposes.
-#     show if: 
-#       variable: users[i].travel_documents[j].type
-#       is: 'other'
-#   - Issuing Country: users[i].travel_documents[j].issuing_country
-#     code: |
-#       [next(iter(item.values())) for item in countries_list()]
-#   - Document Number: users[i].travel_documents[j].number
-#     maxlength: 38
-# ---
-# id: travel documents review screen
-# question: |
-#   Applicant's Travel Documents Review
-# subquestion: |
-#   ${ users[i].travel_documents.table }
-#   ${ users[i].travel_documents.add_action(label=bold('Add Another Document'), color='warning') }
-# continue button field: users[i].travel_documents_review
-# ---
-# table: users[i].travel_documents.table
-# rows: users[i].travel_documents
-# columns:
-#   #- Proceeding: row_item.name
-#   - Type: |
-#       row_item.other_type if row_item.type == 'other' else row_item.type
-#   - Issuing Country: row_item.issuing_country
-#   - Document Number: row_item.number
-# edit:
-#   - row_item
-allow reordering: True # might be moot/unnecessary here
 ---
 id: type of application
 question: |
@@ -522,7 +432,9 @@ fields:
 id: alternate birthdates there are any
 question: |
   Have you ever claimed or used (including on any documents) a date of birth other than ${ users[i].birthdate }?
-yesno: users[i].alternate_birthdates.there_are_any
+fields: 
+  - no label: users[i].alternate_birthdates.there_are_any
+    datatype: yesnoradio
 ---
 id: alternate birthdates
 question: |
@@ -530,13 +442,16 @@ question: |
 fields:
   - Other Date of Birth Used: users[i].alternate_birthdates[j]
     datatype: date
+    max: ${ today() }
 ---
 id: alternate birthdates there is another
 question: |
   Are there any other birthdates you've claimed or used (including on any documents) other than those below?
 subquestion: |
   **${ users[i].alternate_birthdates }**
-yesno: users[i].alternate_birthdates.there_is_another
+fields: 
+  - no label: users[i].alternate_birthdates.there_is_another
+    datatype: yesnoradio
 ---
 ############## Physical Characteristics and Marital Status ##############
 id: ethnicity and physical characteristics
@@ -645,96 +560,8 @@ fields:
     maxlength: 38
   - "Spouse's USCIS Online Account Number (if any and if known)": users[i].spouse.online_account_number
     maxlength: 28
-  - "Spouse's A-Number (if any and if known)": users[i].spouse.a_number
+  - "Spouse's A-Number (if any and if known) (do not include A-)": users[i].spouse.a_number
     maxlength: 20
----
-#id: applicant spouse prior TPS are there any
-#question: |
-  # Has Applicant's spouse had TPS before?
-#yesno: users[i].spouse.prior_TPS.there_are_any
-#---
-#id: applicant spouse prior TPS
-#question: |
-  # Applicant's Spouse's Prior TPS
-#subquestion: |
-#  % if len(users[i].spouse.prior_TPS.complete_elements()):
-#  % if len(users[i].spouse.prior_TPS.complete_elements()) == 1:
-#  The prior immigration proceeding you told us about is:
-#  % else:
-#  The prior immmigration proceedings you told us about are: 
-#  % endif
-#  
-#  Jurisdiction  |Start Date  |End Date
-#  -------------|------------|------------
-#  % for prior_TPS in users[i].spouse.prior_TPS.complete_elements():
-#  ${ prior_TPS.jurisdiction }  |${ prior_TPS.start_date }  |${ prior_TPS.end_date }
-#  % endfor
-#  
-#  [NEWLINE]
-#  % endif
-#fields:
-#  - Proceeding: users[i].spouse.prior_TPS[j].name
-#    input type: hidden
-#    default: ${ int(users[i].spouse.prior_TPS[j].instanceName.split('[')[-1].split(']')[0]) + 1 }
-#  - Jurisdiction: users[i].spouse.prior_TPS[j].jurisdiction
-#    datatype: radio
-#    choices:
-#      - Immigration Court (before an Immigration Judge): immigration_judge
-#      - Board of Immigration Appeals (BIA): bia
-#      - I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues: fed_court
-#  - Location (City, State): users[i].spouse.prior_TPS[j].location
-#    maxlength: 38
-#  - Start Date: users[i].spouse.prior_TPS[j].start_date
-#    datatype: date
-#    max: ${ today() }
-#  - End Date: users[i].spouse.prior_TPS[j].end_date
-#    datatype: date
-#    max: ${ today() }
-#---
-#id: applicant spouse prior TPS review screen
-#question: |
-  # Applicant's xxxxx
-#subquestion: |
-#  ${ users[i].xxxxx.table }
-#  ${ users[i].xxxxx.add_action(label=bold('Add Another Proceeding'), color='warning') }
-#continue button field: users[i].xxxxx_review
-#---
-#table: users[i].xxxxx.table
-#rows: users[i].xxxxx
-#columns:
-#  #- Proceeding: row_item.name
-#  - Jurisdiction: row_item.jurisdiction
-#  - Location: row_item.location
-#  - Start Date: row_item.start_date
-#  - End Date: row_item.end_date
-#edit:
-#  - row_item
-#allow reordering: True # might be moot/unnecessary here
-#---
-#id: spouse TPS
-#question: |
-  # xxxx
-#yesno: xxxx
-#  - "Applicant's Spouse has, or once had, TPS (ever)": users[i].spouse.had_tps
-#    datatype: yesno
-#  - "Applicant's Spouse **presently** has TPS": users[i].spouse.tps_continuing
-#    datatype: yesno
-#  - "Does Applicant know the beginning OR ending dates of Spouse's TPS?": users[i].spouse.knows_tps_dates
-#    datatype: yesno
-#    show if: users[i].spouse.had_tps
-#  - "Beginning Date of Spouse's Prior TPS": users[i].spouse.tps_date # badly worded question on form - does this mean when was TPS status officially "awarded" or granted, or xxxxx?
-#    datatype: date
-#    show if: users[i].spouse.knows_tps_dates
-#  - "Ending Date of Spouse's Prior TPS": users[i].spouse.tps_ending_date # this needs to be made today() if users[i].spouse.tps_continuing is true
-#    datatype: date
-#    show if: users[i].spouse.knows_tps_dates
-#  - "Applicant's Spouse's TPS is still valid": users[i].spouse.spouse_is_tps_valid # badly worded question - no explanation re "valid" or explanation as to why someone would check that the spouse's TPS ""has" TPS at the "Present" while it may or may not be "valid"...
-#    input type: radio
-#    choices:
-#      - Yes 4: Yes_4 # modify how this question/answer is handled
-#      - No 4: No_4
-#      - I do not know: I Do Not Know
-#    show if: users[i].spouse.tps_continuing
 ---
 id: U.S. entry info and travel documents
 question: |
@@ -778,7 +605,6 @@ fields:
       - Parolee
       - Visitor
       - Student
-      - DT
       - No Status
     default: |
       ${ users[0].immigration_status_last_entry if i > 0 else "" }
@@ -788,7 +614,6 @@ fields:
       - Parolee
       - Visitor
       - Student
-      - DT
       - No Status
     default: |
       ${ users[0].current_immigration_status if i > 0 else "" }
@@ -834,7 +659,7 @@ fields:
     default: |
       ${ users[0].proceedings_start_date if i > 0 and users[0].has_been_in_immigration_proceedings else "" }
   - "Proceedings are ongoing/pending today": users[i].proceedings_continuing_to_present
-    datatype: yesno
+    datatype: yesnowide
     show if: users[i].has_been_in_immigration_proceedings
     default: |
       ${ users[0].proceedings_continuing_to_present if i > 0 and users[0].has_been_in_immigration_proceedings else "" }
@@ -922,9 +747,9 @@ fields:
   - "Date of second spouse tps end": second_spouse_tps_end_date
     datatype: date
   - "Second spouse tps continues": second_spouse_tps_continues
-    datatype: yesno
+    datatype: yesnowide
   - "Second spouse tps dates unknown": second_spouse_tps_dates_unknown
-    datatype: yesno
+    datatype: yesnowide
   - "Users3 marriage ending reason": users3_marriage_ending_reason
     maxlength: 38
   - "First spouse had tps": first_spouse_had_tps # not first, former
@@ -941,9 +766,9 @@ fields:
   - "Date of first spouse tps end": first_spouse_tps_end_date # not first, former
     datatype: date
   - "First spouse tps continuing": first_spouse_tps_continuing # not first, former
-    datatype: yesno
+    datatype: yesnowide
   - "First spouse tps dates unknown": first_spouse_tps_dates_unknown # not first, former
-    datatype: yesno
+    datatype: yesnowide
   - "First spouse applying for tps": first_spouse_applying_for_tps # not first, former
     input type: radio
     choices:
@@ -987,7 +812,7 @@ subquestion: |
   </button>
 
   % if i > 0:
-  The following questions will be defaulted to True, based on ${ users[0] }'s responses:
+  The following questions will be defaulted to **Yes**, based on ${ users[0] }'s responses:
 
   % if users[0].q8a:
   * 8a. Have you EVER been convicted of any felony committed in the United States?
@@ -1470,6 +1295,7 @@ fields:
     datatype: yesnoradio
     grid: 6
     label above field: True
+    default: ${ users[0].q24 if i > 0 else ''}
   - "25. Did the former Immigration and Naturalization Service (INS) EVER impose, or has DHS EVER imposed, civil monetary penalties on you for producing or using false documentation to obtain an immigration benefit?": users[i].q25
     datatype: yesnoradio
     default: ${ users[0].q25 if i > 0 else ''}
@@ -2626,6 +2452,7 @@ review:
       **5**:
       ${ _5 }
 ---
+id: Edit users
 continue button field: users.revisit
 question: |
   Edit users

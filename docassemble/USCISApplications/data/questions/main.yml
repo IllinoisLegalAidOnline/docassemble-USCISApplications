@@ -211,6 +211,7 @@ subquestion: |
       set of documents for each person in the family group.
 continue button field: intro_main
 ---
+id: signpost for main application questions
 continue button field: users[i].signpost
 question: |
   The next questions are about ${ bold(users[i]) }
@@ -291,8 +292,10 @@ fields:
       uscis_countries_list()
   - Birthdate: users[0].birthdate
     datatype: Birthdate
-  - A Number: users[0].a_number
+  - A Number (do not include A-): users[0].a_number
     required: False
+    validate: |
+      lambda y: re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
   - note: |
       <h2 class="h4">We'll get the name of the remaining applicants on the next screen</h2>
     js show if: |
@@ -325,8 +328,10 @@ fields:
       ${ users[0].country_of_birth }
   - Birthdate: users[i].birthdate
     datatype: Birthdate
-  - A Number: users[i].a_number
+  - A Number (do not include A-): users[i].a_number
     required: False
+    validate: |
+      lambda y: re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
 ---
 id: Has user i been known by a different name before?
 question: |
@@ -355,7 +360,7 @@ fields:
 ---
 id: name i
 question: |
-  What was ${ users[0] } ${ ordinal(i) } alias or other name?
+  What was ${ users[0] }'s ${ ordinal(i) } alias or other name?
 fields:
   - First name: users[0].aliases[i].first
   - Middle name: users[0].aliases[i].middle

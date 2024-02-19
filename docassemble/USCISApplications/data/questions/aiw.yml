@@ -47,6 +47,7 @@ attachment:
       - "height_centimeters": ${ users[i].height_cm }
       - "weight_kilos": ${ users[i].weight_kg }
 ---
+id: country of citizenship
 question: |
   Country of citizenship (temporary, shouldn't appear)      
 fields:

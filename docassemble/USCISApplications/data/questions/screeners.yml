@@ -174,8 +174,9 @@ fields:
 id: tps_screening_questions
 continue button field: users[i].tps_screening_questions
 question: |
-  TPS eligibility screener for ${ users[i] }
+  TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("mm/DD/yyyy") })
 subquestion: |
+  % if i == 0:
   <div class="p-3 mb-2 bg-info text-dark border border-info rounded-3" role="alert">
     <h2 class="h4">Note to screener</h2>
     <p>
@@ -193,6 +194,7 @@ subquestion: |
       given by <strong>${ users[i] }</strong>.
     </p>
   </div>
+  % endif
 fields:
   - What country will you be applying for TPS from?: users[i].tps_application_country
     datatype: combobox
@@ -347,7 +349,7 @@ fields:
     datatype: radio
     choices:
       - Spouse: spouse
-      - Children: children
+      - Children, with or without spouse: children
       - Entered alone: entered alone
       - Other or N/A: other or N/A
     default: |
@@ -538,10 +540,6 @@ fields:
     show if:
       variable: supervisor_overall_approval_status
       is: mixed
-  - Supervisor name: supervisor_name
-  - Supervisor notes: supervisor_notes
-    required: False
-    datatype: area
   - code: |
       [
         {
@@ -558,6 +556,12 @@ fields:
         }
         for user in users
       ]
+  - note: |
+      <h2 class="h4">Information about the supervisor</h2>
+  - Supervisor name: supervisor_name
+  - Supervisor notes: supervisor_notes
+    required: False
+    datatype: area
 ---
 code: |
   users[i].application_is_approved = supervisor_overall_approval_status == "approved" or (supervisor_overall_approval_status == "mixed" and users[i] in approved_applications)

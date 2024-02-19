@@ -41,14 +41,14 @@ continue button field: instructions
 question: |
   Confirm you understand the agreement
 subquestion: |
-  Please review the following to acknowledge understanding and agreement, then sign and date at the bottom of the page:
+  Please listen to the information on the following screens to acknowledge your understanding and agreement
   
   ##### en español
   
-  Revise la información a continuación para reconocer la comprensión y el acuerdo, y luego firme y coloque la fecha en la parte inferior de la página:
+  Por favor escuche la información en las siguientes pantallas para confirmar su comprensión y acuerdo
 
 ---
-id: limted scope paragraph 1
+id: limited scope paragraph 1
 continue button field: limited_scope_para_1
 question: |
   Paragraph 1
@@ -61,7 +61,7 @@ subquestion: |
 
 continue button label: I accept / Acepto
 ---
-id: limted scope paragraph 2
+id: limited scope paragraph 2
 continue button field: limited_scope_para_2
 question: |
   Paragraph 2
@@ -73,7 +73,7 @@ subquestion: |
   Entiendo que si quiero representación legal para mi caso de inmigración, debo buscar un abogado por mi cuenta y hacer un seguimiento de todos mis esfuerzos para encontrar un abogado para poder compartir esta información con el juez de inmigración en mi próxima audiencia judicial.
 continue button label: I accept / Acepto
 ---
-id: limted scope paragraph 3
+id: limited scope paragraph 3
 continue button field: limited_scope_para_3
 question: |
   Paragraph 3
@@ -85,7 +85,7 @@ subquestion: |
   He dado voluntariamente mi información a las organizaciones presentes hoy y entiendo que la información que doy sobre mi caso puede ser dada a otras personas con el propósito de ayudarme con mi solicitud de permiso de trabajo u otros beneficios de inmigración para los que puedo ser elegible, y para evaluar y continuar con el taller. Esto incluye representantes de la ciudad, el estado y el gobierno federal.
 continue button label: I accept / Acepto
 ---
-id: limted scope paragraph 4
+id: limited scope paragraph 4
 continue button field: limited_scope_para_4
 question: |
   Paragraph 4
@@ -97,7 +97,7 @@ subquestion: |
   Si hay servicios adicionales disponibles después de este taller (como asistencia con el cambio de sede para la corte de inmigración o asilo), acepto permitir que TRP comparta mi información de contacto con otra organización sin fines de lucro para evaluar si puedo recibir servicios adicionales.
 continue button label: I accept / Acepto
 ---
-id: limted scope paragraph 5
+id: limited scope paragraph 5
 continue button field: limited_scope_para_5
 question: |
   Paragraph 5
@@ -109,7 +109,7 @@ subquestion: |
   NO doy mi consentimiento para que se comparta mi información fuera de los contextos descritos anteriormente.
 continue button label: I understand / Entiendo
 ---
-id: limted scope paragraph 6
+id: limited scope paragraph 6
 continue button field: limited_scope_para_6
 question: |
   Paragraph 6

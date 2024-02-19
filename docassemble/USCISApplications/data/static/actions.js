@@ -1,5 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Find the button by its ID
+$(document).on('daPageLoad', function(){    // Find the button by its ID
     var button = document.getElementById('make_all_false');
   
     // Add click event listener to the button

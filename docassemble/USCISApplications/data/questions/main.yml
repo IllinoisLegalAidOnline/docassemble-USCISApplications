@@ -89,7 +89,13 @@ code: |
 
   # End early if all users are screened out
   if supervisor_overall_approval_status == "screened_out":
-    download_completed_ea_application
+    # still need to start the background process
+    generate_downloads_task
+    if generate_downloads_task.ready():
+      download_completed_ea_application
+    else:
+      waiting_screen
+
 
   for idx,user in enumerate(users):
     nav.set_section(f"users_{idx}_signpost_app")
@@ -183,10 +189,6 @@ fields:
     show if: interpreter_present    
   - code: |
       interpreter.name_fields(person_or_business="person", show_if="interpreter_present", show_suffix=False)
-  - "Interpreter's organization": interpreter.interpreter_organization
-    maxlength: 38
-    required: False
-    show if: interpreter_present
 ---
 id: intro_main
 question: |
@@ -230,19 +232,29 @@ subquestion: |
   When you're done with the questions for ${ bold(users[i]) }, you'll be able to move on to the next person in the family group.
   % endif
 ---
-sets:
-  - preparer.name.first
-id: supervisor name
-question: |
-  What is the name of the volunteer or person asking questions today?
-fields:
-  - code: preparer.name_fields(person_or_business="person")
+objects:
+  - signed_in_user: ALIndividual
 ---
 code: |
   if user_logged_in():
-    preparer.name.first = user_info().first_name
-    preparer.name.last = user_info().last_name
-    preparer.email = user_info().email
+    signed_in_user.name.first = user_info().first_name
+    signed_in_user.name.last = user_info().last_name
+    signed_in_user.email = user_info().email
+---
+sets:
+  - preparer.name.first
+id: preparer name interpreter present
+question: |
+  What is the name of the volunteer or person asking questions today?
+fields:
+  - Someone already named: preparer
+    datatype: object_radio
+    none of the above: Someone else
+    disable others: True
+    choices: |
+      [signed_in_user, interpreter] if user_logged_in() and interpreter_present else [signed_in_user] if user_logged_in() else [interpreter] if interpreter_present else []
+  - code: |
+      preparer.name_fields(person_or_business="person", show_suffix=False,)
 ---
 id: people
 question: |
@@ -285,13 +297,6 @@ fields:
       <h2 class="h4">We'll get the name of the remaining applicants on the next screen</h2>
     js show if: |
       val("users.target_number") > 1
-right: |
-  % if user_logged_in():
-  <div class="alert alert-info">
-  <h2 class="h4">Is this ${ user_info().first_name }?</h2>
-  <p>If not, please <a href="${ url_of('logout') }">log out</a> and log back in as the correct person.</p>
-  </div>
-  % endif
 ---
 sets:
   - users[i].name.first

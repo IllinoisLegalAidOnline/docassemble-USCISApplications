@@ -25,6 +25,7 @@ code: |
   users[i].sex
   users[i].alternate_birthdates.gather()
   users[i].address.address
+  users[i].mailing_address.address
   users[i].countries_of_residence.gather()
   if users[i].countries_of_residence.there_are_any:
     users[i].countries_of_residence_review
@@ -99,26 +100,26 @@ fields:
 code: |
   users[i].prior_immigration_proceedings.there_are_any = users[i].has_been_in_immigration_proceedings == 'Yes_2'
 ---
-id: xxxxx
-question: |
-  xxxxx
-fields:
-  - "Form *G-28* or *G-28I* is attached": users[i].is_form_g28_attached
-    datatype: yesno
----
-id: preparer info
-question: |
-  Preparer
-fields:
-  - "Preparer is attorney": preparer.preparer_is_attorney
-    datatype: yesno 
-  - "Preparer's Attorney State Bar Number (if applicable)": preparer.attorneys1_bar_number
-    maxlength: 19
-    show if: preparer.preparer_is_attorney
-  - "Preparer's USCIS Online Account Number (if any)": preparer.attorney_online_account_number
-    maxlength: 28
-  - "Preparer organization": preparer.preparer_organization
-    maxlength: 38
+# id: xxxxx
+# question: |
+#   xxxxx
+# fields:
+#   - "Form *G-28* or *G-28I* is attached": users[i].is_form_g28_attached
+#     datatype: yesno
+# ---
+# id: preparer info
+# question: |
+#   Information about the preparer
+# fields:
+#   # - "Preparer is attorney": preparer.preparer_is_attorney
+#   #   datatype: yesno 
+#   # - "Preparer's Attorney State Bar Number (if applicable)": preparer.attorneys1_bar_number
+#   #   maxlength: 19
+#   #   show if: preparer.preparer_is_attorney
+#   # - "Preparer's USCIS Online Account Number (if any)": preparer.attorney_online_account_number
+#   #   maxlength: 28
+#   - "Organization preparer represents": preparer.preparer_organization
+#     maxlength: 38
 ---
 ########################## Addresses, Phone, Email ##########################
 id: U.S. physical address phone and email
@@ -2793,9 +2794,9 @@ attachment:
   skip undefined: True
   pdf template file: I-821_flattened_MN.pdf
   fields:
-    - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
-    - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
-    - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
+    # - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
+    # - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
+    # - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
     - "is_first_application": ${ users[i].is_first_application }
     - "is_re_application": ${ users[i].is_re_application }
     - "tps_application_country": ${ users[i].tps_application_country }
@@ -2817,12 +2818,12 @@ attachment:
     - "users1_previous_names2_middle": ${ users[i].previous_names[1].middle }
     - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdate_2.format('MM/dd/yyyy') }
     - "users1_gender": ${ users[i].sex }
-    - "users1_mailing_address_in_care_of": 'LAS New Arrivals'
-    - "users1_mailing_address_address": '101 N. Wacker Dr.'
-    - "users1_mailing_address_unit": 'Suite 1700'
-    - "users1_mailing_address_city": 'Chicago'
-    - "users1_mailing_address_state": 'IL'
-    - "users1_mailing_address_zip": '60606'
+    - "users1_mailing_address_in_care_of": ${ users[i].mailing_address.in_care_of }
+    - "users1_mailing_address_address": ${ users[i].mailing_address.address }
+    - "users1_mailing_address_unit": ${ users[i].mailing_address.unit }
+    - "users1_mailing_address_city": ${ users[i].mailing_address.city }
+    - "users1_mailing_address_state": ${ users[i].mailing_address.state }
+    - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
     - "mailing_address_is_physical_address": No
     # - "users1_mailing_address_is_apt": ''
     # - "users1_mailing_address_is_suite": ''
@@ -3162,10 +3163,10 @@ attachment:
     - "users1_mobile_number": ${ users[i].mobile_number }
     - "interpreter_name_first": ${ interpreter.name.first }
     - "users1_email": ${ users[i].email }
-    - "interpreter_organization": ${ interpreter.organization }
-    - "interpreter_phone_number": ${ interpreter.phone_number }
-    - "interpreter_mobile_number": ${ interpreter.mobile_number }
-    - "interpreter_email": ${ interpreter.email }
+    # - "interpreter_organization": ${ interpreter.organization }
+    # - "interpreter_phone_number": ${ interpreter.phone_number }
+    # - "interpreter_mobile_number": ${ interpreter.mobile_number }
+    # - "interpreter_email": ${ interpreter.email }
     - "interpreted_into_language": ${ interpreter.language }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
@@ -3176,7 +3177,7 @@ attachment:
     - "preparer_limited_rep": Yes
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_name_first": ${ preparer.name.first }
-    - "preparer_organization": ${ preparer.organization }
+    - "preparer_organization": ""
     - "preparer_phone_number": ""
     - "preparer_mobile_number": ""
     - "preparer_email": ""

@@ -291,7 +291,7 @@ fields:
     code: |
       uscis_countries_list()
   - Birthdate: users[0].birthdate
-    datatype: Birthdate
+    datatype: BirthDate
   - A Number (do not include A-): users[0].a_number
     required: False
     validate: |
@@ -327,7 +327,7 @@ fields:
     default: |
       ${ users[0].country_of_birth }
   - Birthdate: users[i].birthdate
-    datatype: Birthdate
+    datatype: BirthDate
   - A Number (do not include A-): users[i].a_number
     required: False
     validate: |
@@ -379,6 +379,8 @@ rows: users
 columns:
   - Name: |
       row_item
+  - Date of birth: |
+      row_item.birthdate.format("MM/dd/yyyy")
 edit:
   - name.first
 confirm: True

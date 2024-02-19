@@ -855,15 +855,15 @@ fields:
     datatype: yesnoradio
   - Has the Social Security Administration ever officially issued a Social Security card to you?: users[i].SS_has_issued_card
     datatype: yesnoradio
-  - Do you want the Social Security Administration to issue you a Social Security card?: users[i].wants_SS_card
-    datatype: yesnoradio
-  - "**Consent for Disclosure:**  I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card": users[i].consents_to_SS_disclosure
-    datatype: yesno
-    show if: users[i].wants_SS_card
-    default: True
-validation code: |
-  if users[i].wants_SS_card and not users[i].consents_to_SS_disclosure:
-    validation_error("You must consent to the disclosure of information to the Social Security Administration in order to get a Social Security card.")
+#   - Do you want the Social Security Administration to issue you a Social Security card?: users[i].wants_SS_card
+#     datatype: yesnoradio
+#   - "**Consent for Disclosure:**  I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card": users[i].consents_to_SS_disclosure
+#     datatype: yesno
+#     show if: users[i].wants_SS_card
+#     default: True
+# validation code: |
+#   if users[i].wants_SS_card and not users[i].consents_to_SS_disclosure:
+#     validation_error("You must consent to the disclosure of information to the Social Security Administration in order to get a Social Security card.")
 ---
 id: father and mother birth name
 question: |
@@ -3279,7 +3279,7 @@ attachment:
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
     - "users1_ssn": ${ users[i].ssn }
-    - "users1_wants_ssn": ${ users[i].wants_SS_card }
+    # - "users1_wants_ssn": Yes # Pre-checked on form
     # - "users1_mailing_address_is_apt": ${ users1_mailing_address_is_apt }
     # - "users1_mailing_address_is_suite": ${ users1_mailing_address_is_suite }
     # - "users1_mailing_address_is_floor": ${ users1_mailing_address_is_floor }
@@ -3327,6 +3327,20 @@ attachment:
     - "immigration_status_at_last_arrival": ${ users[i].immigration_status_at_last_arrival }
     - "current_immigration_status": ${ users[i].current_immigration_status }
     - "sevis_number": ${ users[i].sevis_number }
+    # EAD Eligibility category
+    # Depends on whether TPS or EAD only
+    - "Q27_1": |
+        % if application_kind == "ead_and_tps":
+        A
+        % else:
+        C
+        % endif
+    - "Q27_2": |
+        % if application_kind == "ead_and_tps":
+        12
+        % else:
+        11
+        % endif
     - "user_reads_english": ${ users[i].user_reads_english }
     - "user_used_interpreter": ${ users[i].user_used_interpreter }
     - "interpreter_spoke_language": ${ users[i].interpreter_spoke_language }

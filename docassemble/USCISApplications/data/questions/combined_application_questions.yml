@@ -2700,7 +2700,7 @@ code: |
   users[i].i_821_attachment.enabled = users[i].application_is_approved and application_kind == "ead_and_tps"
 ---
 code: |
-  users[i].i_765_attachment.enabled = users[i].application_is_approved
+  users[i].i_765_attachment.enabled = users[i].application_is_approved and users[i].age_in_years() >= 16 # You can't get work authorization if under 16!
 ---
 objects:
   - users[i].tps_yes_answer_addendum: ALDocument.using(title="TPS Yes Answer Addendum", filename=f"{users[i]} - TPS Yes Answer Addendum", has_addendum=False, )

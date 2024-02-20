@@ -2762,12 +2762,12 @@ attachment:
     - "city_of_birth": ${ users[i].city_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
     - "users1_countries_of_residence": ${ users[i].countries_of_residence }
+    - "users1_countries_of_citizenship": ${ users[i].countries_of_citizenship }
     - "users1_address_address": ${ users[i].address.address }
     # - "users1_address_is_apt": ${ users[i].address_is_apt }
     # - "users1_address_is_suite": ${ users[i].address_is_suite }
     # - "users1_address_is_floor": ${ users[i].address_is_floor }
     - "users1_address_unit": ${ users[i].address.unit }
-    - "users1_coutnries_of_citizenship": ${ comma_and_list(users[i].countries_of_citizenship) } ### is comma and list necessary?
     - "users1_address_city": ${ users[i].address.city }
     - "users1_address_state": ${ users[i].address.state }
     - "users1_address_zip": ${ users[i].address.zip }
@@ -3103,10 +3103,10 @@ attachment:
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
-    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
-    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
+    - "preparer_is_attorney_yes": ${ preparer.is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer.is_attorney }
     - "preparer_full_rep": No
-    - "preparer_limited_rep": Yes
+    - "preparer_limited_rep": ${ preparer.is_attorney }
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_organization": ""

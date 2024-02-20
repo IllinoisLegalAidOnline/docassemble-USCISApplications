@@ -7,9 +7,9 @@ include:
 ---
 metadata:
   title: >-
-    DHS Application for EAD or TPS
+    TPS/EAD application
   short title: >-
-    Apply for EAD or TPS
+    TPS/EAD application
   description: |-
     This interview helps someone in Illinois apply to the DHS for an Employment Authorization Document (EAD) or Temporary Protected Status (TPS).
   tags:
@@ -39,7 +39,8 @@ code: |
   github_user = 'aidanielson'
 ---
 code: |
-  interview_short_title = "Apply for EAD or TPS"
+  interview_short_title = "TPS/EAD application"
+  ilao_easy_form_title = "TPS/EAD application"
 ---
 code: |
   al_form_type = "other_form"
@@ -58,9 +59,10 @@ mandatory: True
 code: |
   set_initial_sections
   intro_main
-  preparer.name.first
   if interpreter_present:
     interpreter.name.first
+  preparer.name.first
+  preparer.is_attorney
   users.gather()
   review_initial_user_list
   nav.set_section("section_retainer")
@@ -252,11 +254,22 @@ fields:
   - Someone already named: preparer
     datatype: object_radio
     none of the above: Someone else
-    disable others: True
+    disable others:
+      - preparer.name.first
+      - preparer.name.middle
+      - preparer.name.last
     choices: |
       [signed_in_user, interpreter] if user_logged_in() and interpreter_present else [signed_in_user] if user_logged_in() else [interpreter] if interpreter_present else []
   - code: |
       preparer.name_fields(person_or_business="person", show_suffix=False,)
+---
+generic object: ALIndividual
+id: preparer is attorney
+question: |
+  Is the preparer an attorney?
+fields:
+  - Is the preparer an attorney?: x.is_attorney
+    datatype: yesnoradio
 ---
 id: people
 question: |
@@ -287,11 +300,12 @@ fields:
   - note: |
       OK, we'll get the other names you used on the next screen.
     show if: users[0].aliases.there_are_any
-  - Country of Birth: users[0].country_of_birth
+  - City or town of birth: users[0].city_of_birth
+  - State/Province of birth: users[0].state_of_birth
+  - Country of birth: users[0].country_of_birth
     input type: dropdown
     code: |
       uscis_countries_list()
-  - City or town of birth: users[0].city_of_birth
   - Birthdate: users[0].birthdate
     datatype: BirthDate
   - A Number (do not include A-): users[0].a_number
@@ -354,7 +368,7 @@ fields:
 generic object: ALIndividual
 id: x i name
 question: |
-  What is the ${ ordinal(i) } name that ${ x } has been known by?
+  What is the ${ ordinal(i) } other name that ${ x } has been known by?
 fields:
   - First name: x.aliases[i].first
   - Middle name: x.aliases[i].middle
@@ -365,13 +379,15 @@ generic object: ALIndividual
 id: has x been known by a different name again
 question: |
   Has ${ x } been known by any other names?
+subquestion: |
+  So far you entered ${comma_and_list(x.aliases)}.
 fields:
   - no label: x.aliases.there_is_another
     datatype: yesnoradio  
 ---
 id: name i
 question: |
-  What was ${ users[0] }'s ${ ordinal(i) } alias or other name?
+  What was ${ users[0].name }'s ${ ordinal(i) } alias or other name?
 fields:
   - First name: users[0].aliases[i].first
   - Middle name: users[0].aliases[i].middle
@@ -380,7 +396,9 @@ fields:
 ---
 id: have you been known by a different name again
 question: |
-  Has ${ users[0] } been known by any other names?
+  Has ${ users[0].name } been known by any other names?
+subquestion: |
+  So far you entered ${comma_and_list(users[0].aliases)}.
 fields:
   - no label: users[0].aliases.there_is_another
     datatype: yesnoradio

@@ -60,9 +60,9 @@ fields:
   - State: users[0].address.state
     required: False
   - ZIP: users[0].address.zip
-  - Daytime Phone Number (optional): users[0].daytime_phone
+  - Daytime Phone Number (optional): users[0].phone_number
     required: false
-  - Mobile Telephone Number (optional): users[0].mobile_phone_number
+  - Mobile Telephone Number (optional): users[0].mobile_number
     required: false
   - Email address (optional): users[0].email
     required: false
@@ -109,14 +109,14 @@ fields:
     default: ${ users[0].address.state }
   - ZIP: users[i].address.zip
     default: ${ users[0].address.zip }
-  - Daytime Phone Number (optional): users[i].daytime_phone
+  - Daytime Phone Number (optional): users[i].phone_number
     required: false
     default: |
-      ${ users[0].daytime_phone if i > 0 else ""}
-  - Mobile Telephone Number (optional): users[i].mobile_phone_number
+      ${ users[0].phone_number if i > 0 else ""}
+  - Mobile Telephone Number (optional): users[i].mobile_number
     required: false
     default: |
-      ${ users[0].mobile_phone_number if i > 0 else ""}
+      ${ users[0].mobile_number if i > 0 else ""}
   - Email address (optional): users[i].email
     required: false
 ---

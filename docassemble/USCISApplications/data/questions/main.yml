@@ -17,6 +17,7 @@ metadata:
   authors:
     - Quinten Steenhuis
     - Anthony Danielson
+    - Matt Newsted
   allowed_courts: []
   typical_role: "na"
   al_weaver_version: "playground"

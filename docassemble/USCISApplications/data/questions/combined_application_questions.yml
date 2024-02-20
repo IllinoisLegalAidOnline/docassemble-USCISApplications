@@ -612,6 +612,7 @@ fields:
       - Blue: blue
       - Orange: orange
       - Pink: pink
+      - Purple: purple
       - Unknown/Other: other
   - "Eye Color (choose one)": users[i].eye_color
     datatype: radio
@@ -624,7 +625,6 @@ fields:
       - Hazel: hazel
       - Maroon: maroon
       - Pink: pink
-      - Purple: purple
       - Multicolor: multicolor
       - Unknown/Other: other
   - Marital Status: users[i].marital_status

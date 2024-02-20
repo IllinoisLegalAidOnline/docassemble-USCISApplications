@@ -256,6 +256,8 @@ fields:
       [signed_in_user, interpreter] if user_logged_in() and interpreter_present else [signed_in_user] if user_logged_in() else [interpreter] if interpreter_present else []
   - code: |
       preparer.name_fields(person_or_business="person", show_suffix=False,)
+  - Is the preparer an attorney?: preparer.is_attorney
+    datatype: yesnoradio
 ---
 id: people
 question: |

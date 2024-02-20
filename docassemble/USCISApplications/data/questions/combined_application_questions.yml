@@ -64,7 +64,7 @@ fields:
     required: false
   - Mobile Telephone Number (optional): users[0].mobile_phone_number
     required: false
-  - Email address (optional): users[0].email_address
+  - Email address (optional): users[0].email
     required: false
 ---
 code: |
@@ -117,7 +117,7 @@ fields:
     required: false
     default: |
       ${ users[0].mobile_phone_number if i > 0 else ""}
-  - Email address (optional): users[i].email_address
+  - Email address (optional): users[i].email
     required: false
 ---
 id: your mailing address

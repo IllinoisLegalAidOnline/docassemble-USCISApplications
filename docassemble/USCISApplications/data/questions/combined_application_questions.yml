@@ -45,6 +45,7 @@ code: |
   users[i].father_first_name
   if application_kind == "ead_and_tps":
     users[i].have_you_ever_questions
+  users[i].countries_of_citizenship # Define this variable
   users[i].complete = True
 ---
 id: your address
@@ -3241,9 +3242,9 @@ attachment:
     - "marital_status_married": ${ users[i].marital_status in ['married','separated'] }
     - "marital_status_divorced": ${ users[i].marital_status == 'divorced' }
     - "marital_status_widowed": ${ users[i].marital_status == 'widowed' }
-    - "citizen_country_1": ${ comma_and_list(users[i].countries_of_citizenship) }
+    - "citizen_country_1": ${ users[i].countries_of_citizenship[0] }
     - "previously_filed_i765": ${ previously_filed_i765 } #TODO: check
-    - "citizen_country_2": ${ citizen_country_2 } #TODO: check
+    - "citizen_country_2": ${ users[i].countries_of_citizenship[1] } #TODO: check
     - "has_ssn": ${ users[i].has_ssn }
     - "city_of_birth": ${ users[i].city_of_birth }
     - "state_of_birth": ${ users[i].state_of_birth }

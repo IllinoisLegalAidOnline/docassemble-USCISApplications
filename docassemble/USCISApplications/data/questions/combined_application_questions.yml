@@ -2814,7 +2814,7 @@ attachment:
     - "race_native_hawaiian": ${ users[i].race['pacific_islander'] }
     - "height_feet": ${ int(users[i].height_cm * 0.0328084) }
     - "height_inches": ${ int((users[i].height_cm * 0.0328084 - int(users[i].height_cm * 0.0328084)) * 12) }
-    - "users2_address_address": ${ users[1].address.address }
+    #- "users2_address_address": ${ users[1].address.address }
     # - "users2_address_is_apt": ${ users2_address_is_apt }
     # - "users2_address_is_suite": ${ users2_address_is_suite }
     # - "users2_address_is_floor": ${ users2_address_is_floor }

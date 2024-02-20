@@ -192,7 +192,7 @@ subquestion: |
       Some of the questions below are written so you can read them aloud. Enter the answer
       given by <strong>${ users[i] }</strong>.
     </p>
-  </div>
+  </div> 
 fields:
   - What country will you be applying for TPS from?: users[i].tps_application_country
     datatype: combobox

@@ -2783,7 +2783,8 @@ attachment:
     - "current_immigration_status": ${ users[i].current_immigration_status }
     - "users1_has_been_in_immigration_proceedings_yes": ${ users[i].has_been_in_immigration_proceedings }
     - "users1_has_been_in_immigration_proceedings_no": ${ not users[i].has_been_in_immigration_proceedings }
-    - "date_of_last_arrival": ${ users[i].date_of_last_arrival }
+    - "date_of_last_entry": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
+    - "status_at_last_entry": ${ users[i].immigration_status_last_entry }
     - "proceedings_was_immigration_court": ${ users[i].kind_of_immigration_proceedings.get("immigration_court") }
     - "proceedings_was_bia": ${ users[i].kind_of_immigration_proceedings.get("bia") }
     - "proceedings_was_federal_court": ${ users[i].kind_of_immigration_proceedings.get("federal_court") }
@@ -2792,7 +2793,6 @@ attachment:
     - "proceedings_start_date": ${ users[i].proceedings_start_date.format('MM/dd/yyyy') }
     - "proceedings_end_date": ${ users[i].proceedings_end_date.format('MM/dd/yyyy') }
     - "proceedings_continuing_to_present": ${ users[i].proceedings_continuing_to_present }
-    - "date_of_last_entry": ${ users[i].date_of_last_entry }
     - "port_of_entry": ${ users[i].port_of_entry }
     - "city_of_entry": ${ users[i].city_of_entry }
     - "state_of_entry": ${ users[i].state_of_entry }

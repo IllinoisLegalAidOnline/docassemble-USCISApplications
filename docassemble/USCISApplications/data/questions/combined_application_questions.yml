@@ -16,6 +16,9 @@ objects:
   #- users[i].former_spouses: ALPeopleList.using(ask_number=True) # need?
   #- users[i].children: ALPeopleList.using(ask_number=True) # need?
 ---
+code: |
+  users[i].alternate_birthdates.there_is_another = False
+---
 ###################### users '.complete' block ######################
 comment: |
   This block sets the required attributes and interview order to gather a 'users' object.
@@ -30,8 +33,8 @@ code: |
   if users[i].countries_of_residence.there_are_any:
     users[i].countries_of_residence_review
   users[i].other_countries_of_citizenship.gather()
-  users[i].countries_traveled_through.gather()
-  users[i].countries_traveled_through_review
+  # users[i].countries_traveled_through.gather()
+  # users[i].countries_traveled_through_review
   # Let's check with Jane to see if we should collect
   # each proceeding separately--I suspect we don't need to
   # Will simplify for 
@@ -552,17 +555,17 @@ fields:
     datatype: BirthDate
     max: ${ today() }
 ---
-id: alternate birthdates there is another
-question: |
-  Are there any other birthdates you've claimed or used (including on any documents) other than those below?
-subquestion: |
-  * ${ users[i].birthdate }
-  % for date in users[i].alternate_birthdates.complete_elements():
-  * ${ date }
-  % endfor  
-fields: 
-  - no label: users[i].alternate_birthdates.there_is_another
-    datatype: yesnoradio
+# id: alternate birthdates there is another
+# question: |
+#   Are there any other birthdates you've claimed or used (including on any documents) other than those below?
+# subquestion: |
+#   * ${ users[i].birthdate }
+#   % for date in users[i].alternate_birthdates.complete_elements():
+#   * ${ date }
+#   % endfor  
+# fields: 
+#   - no label: users[i].alternate_birthdates.there_is_another
+#     datatype: yesnoradio
 ---
 ############## Physical Characteristics and Marital Status ##############
 id: ethnicity and physical characteristics
@@ -2933,9 +2936,9 @@ attachment:
     # - "children1_tps_end_date": ${ children1_tps_end_date.format('MM/dd/yyyy') }
     - "last_country_of_residence": ${ users[i].last_country_of_residence }
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
-    - "date_started_us_residence": ${ users[i].date_started_us_residence }
+    - "date_started_us_residence": ${ users[i].date_started_us_residence.format("MM/dd/yyyy") }
     - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
-    - "other_countries_entered_list": "See addendum for 1-7"
+    - "other_countries_entered_list": "See addendum for 2-7"
     - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
     - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
     - "other_country_immigration_status": ${ other_country_immigration_status }

@@ -5,7 +5,7 @@ objects:
   - interpreter: ALIndividual
   - users: ALPeopleList.using(ask_number=True, complete_attribute='names_only')
   - users[i].countries_of_residence: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
-  - users[i].other_countries_of_citizenship: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='name')
+  - users[i].countries_of_citizenship: DAList.using(auto_gather=False, gathered=True)
   - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
   - users[i].prior_immigration_proceedings: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='jurisdiction')
   #- users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
@@ -32,7 +32,7 @@ code: |
   users[i].countries_of_residence.gather()
   if users[i].countries_of_residence.there_are_any:
     users[i].countries_of_residence_review
-  users[i].other_countries_of_citizenship.gather()
+  # users[i].other_countries_of_citizenship.gather()
   # users[i].countries_traveled_through.gather()
   # users[i].countries_traveled_through_review
   # Let's check with Jane to see if we should collect
@@ -48,7 +48,6 @@ code: |
   users[i].father_first_name
   if application_kind == "ead_and_tps":
     users[i].have_you_ever_questions
-  users[i].countries_of_citizenship # Define this variable
   users[i].complete = True
 ---
 id: your address
@@ -211,7 +210,7 @@ fields:
 ---
 id: countries resided in
 question: |
-  Which country or countries did you enter/travel through before entering the U.S.?
+  Which country or countries have you lived in before entering the U.S.?
 subquestion: |
   We will ask about each country one at a time.
 
@@ -228,11 +227,11 @@ fields:
   - Select a Country: users[i].countries_of_residence[j].name
     code: |
       [next(iter(item.values())) for item in countries_list()]
-  - Were you ever a **citizen** of this country?: users[i].countries_of_residence[j].was_ever_citizen
-    datatype: yesnoradio
-  - Are you **still** a citizen of this country **today**?: users[i].countries_of_residence[j].is_still_citizen
-    datatype: yesnoradio
-    show if: users[i].countries_of_residence[j].was_ever_citizen
+  # - Were you ever a **citizen** of this country?: users[i].countries_of_residence[j].was_ever_citizen
+  #   datatype: yesnoradio
+  # - Are you **still** a citizen of this country **today**?: users[i].countries_of_residence[j].is_still_citizen
+  #   datatype: yesnoradio
+  #   show if: users[i].countries_of_residence[j].was_ever_citizen
 ---
 id: countries resided in review screen
 question: |
@@ -247,136 +246,136 @@ rows: users[i].countries_of_residence
 columns:
   - Country: |
       row_item
-  - Citizenship: |
-      'never citizen' if not row_item.was_ever_citizen else 'former citizen' if row_item.was_ever_citizen and not row_item.is_still_citizen else 'citizen'
+  # - Citizenship: |
+  #     'never citizen' if not row_item.was_ever_citizen else 'former citizen' if row_item.was_ever_citizen and not row_item.is_still_citizen else 'citizen'
 edit: 
   - row_item.name
 ---
-id: any more countries of citizenship
-question: |
-  Are there any other countries where you are a citizen?
-subquestion: |
-  You have already told us about:
+# id: any more countries of citizenship
+# question: |
+#   Are there any other countries where you are a citizen?
+# subquestion: |
+#   You have already told us about:
   
-  % for country in users[i].countries_of_residence.complete_elements():
-  % if country.was_ever_citizen and country.is_still_citizen:
-  * ${ country.name }
-  % endif
-  % endfor
-  % for country in users[i].countries_of_citizenship.complete_elements():
-  * ${ country.name }
-  % endfor
-fields:
-  - no label: users[i].other_countries_of_citizenship.there_are_any
-    datatype: yesnoradio
----
-id: other countries of citizenship
-question: |
-  Other Countries of Citizenship
-fields:
-  - "Country of Citizenship": users[i].other_countries_of_citizenship[j].name
-    code: |
-      [next(iter(item.values())) for item in countries_list()]
----
-id: other countries of citizenship is there another
-question: |
-  Are there any other countries where you are a citizen aside from those listed below?
-subquestion: |
-  **${ users[i].country_of_birth }**
-  **${ users[i].other_countries_of_citizenship }**
-fields: 
-  - no label: users[i].other_countries_of_citizenship.there_is_another
-    datatype: yesnoradio
----
-########## does this need reworking??
-code: |
-  users[i].countries_of_citizenship = DAList(users[i].attr_name("countries_of_citizenship"), auto_gather=False)
-  for country in users[i].countries_of_residence.complete_elements():
-    if country.was_ever_citizen and country.is_still_citizen:
-      users[i].countries_of_citizenship.append(name=country.name)
-  users[i].countries_of_citizenship.extend(users[i].other_countries_of_citizenship)
-  users[i].countries_of_citizenship.gathered = True
----
-id: countries entered or traveled to before US
-question: |
-  Which country or countries did you enter/travel through before entering the U.S.?
-subquestion: |
-  % if len(users[i].countries_traveled_through.complete_elements()):
-  **Countries you entered/traveled through before entering the U.S.:**[BR]
+#   % for country in users[i].countries_of_residence.complete_elements():
+#   % if country.was_ever_citizen and country.is_still_citizen:
+#   * ${ country.name }
+#   % endif
+#   % endfor
+#   % for country in users[i].countries_of_citizenship.complete_elements():
+#   * ${ country.name }
+#   % endfor
+# fields:
+#   - no label: users[i].other_countries_of_citizenship.there_are_any
+#     datatype: yesnoradio
+# ---
+# id: other countries of citizenship
+# question: |
+#   Other Countries of Citizenship
+# fields:
+#   - "Country of Citizenship": users[i].other_countries_of_citizenship[j].name
+#     code: |
+#       [next(iter(item.values())) for item in countries_list()]
+# ---
+# id: other countries of citizenship is there another
+# question: |
+#   Are there any other countries where you are a citizen aside from those listed below?
+# subquestion: |
+#   **${ users[i].country_of_birth }**
+#   **${ users[i].other_countries_of_citizenship }**
+# fields: 
+#   - no label: users[i].other_countries_of_citizenship.there_is_another
+#     datatype: yesnoradio
+# ---
+# ########## does this need reworking??
+# code: |
+#   users[i].countries_of_citizenship = DAList(users[i].attr_name("countries_of_citizenship"), auto_gather=False)
+#   for country in users[i].countries_of_residence.complete_elements():
+#     if country.was_ever_citizen and country.is_still_citizen:
+#       users[i].countries_of_citizenship.append(name=country.name)
+#   users[i].countries_of_citizenship.extend(users[i].other_countries_of_citizenship)
+#   users[i].countries_of_citizenship.gathered = True
+# ---
+# id: countries entered or traveled to before US
+# question: |
+#   Which country or countries did you enter/travel through before entering the U.S.?
+# subquestion: |
+#   % if len(users[i].countries_traveled_through.complete_elements()):
+#   **Countries you entered/traveled through before entering the U.S.:**[BR]
   
-  Country  |Entry Date  |Departure Date
-  -------------|------------|------------
-  % for country in users[i].countries_traveled_through.complete_elements():
-  ${ country }  |${ country.entry_date }  |${ country.departure_date }
-  % endfor
+#   Country  |Entry Date  |Departure Date
+#   -------------|------------|------------
+#   % for country in users[i].countries_traveled_through.complete_elements():
+#   ${ country }  |${ country.entry_date }  |${ country.departure_date }
+#   % endfor
   
-  [NEWLINE]
-  % endif
-fields:
-  - Select a Country: users[i].countries_traveled_through[j].name
-    code: |
-      [next(iter(item.values())) for item in countries_list()]
-  - Date you entered the country: users[i].countries_traveled_through[j].entry_date
-    datatype: date
-    max: ${ today() }
-  - Date you departed/exited the country: users[i].countries_traveled_through[j].departure_date
-    datatype: date
-    max: ${ today() }
-  - Your immigration status, if any, in the country: users[i].countries_traveled_through[j].immigration_status
-    datatype: radio
-    choices:
-      - citizen
-      - legal permanent resident
-      - refugee
-      - asylee
-      - visitor
-      - student
-      - temporary resident
-      - I had NO LEGAL IMMIGRATION STATUS
-  - Were you ever offered any legal immigration status that you did not accept?: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted
-    datatype: yesnoradio
-    show if:
-      variable: users[i].countries_traveled_through[j].immigration_status
-      is: I had NO LEGAL IMMIGRATION STATUS
-  - What immigration status did the country offer you?: users[i].countries_traveled_through[j].immigration_status_offered
-    datatype: radio
-    choices:
-      - citizen
-      - legal permanent resident
-      - refugee
-      - asylee
-      - visitor
-      - student
-      - temporary resident
-      - other
-    show if: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted
-  - 'Describe "other" immigration status that you were offered': users[i].countries_traveled_through[j].immigration_status_offered_other
-    maxlength: 38
-    show if:
-      variable: users[i].countries_traveled_through[j].immigration_status_offered
-      is: other
-  - Describe why you chose not to accept the immigration status offered to you: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted_reason
-    input type: area
-    rows: 2
-    show if: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted
----
-id: countries entered or traveled to before US review screen
-question: |
-  Review the countries you entered/traveled through before entering the U.S.
-subquestion: |
-  ${ users[i].countries_traveled_through.table }
-  ${ users[i].countries_traveled_through.add_action(label=bold('Add Another Country'), color='warning') }
-continue button field:  users[i].countries_traveled_through_review
----
-table: users[i].countries_traveled_through.table
-rows: users[i].countries_traveled_through
-columns:
-  - Country: row_item.name
-  - Entry Date: row_item.entry_date
-  - Departure Date: row_item.departure_date
-edit:
-  - row_item
-allow reordering: True
+#   [NEWLINE]
+#   % endif
+# fields:
+#   - Select a Country: users[i].countries_traveled_through[j].name
+#     code: |
+#       [next(iter(item.values())) for item in countries_list()]
+#   - Date you entered the country: users[i].countries_traveled_through[j].entry_date
+#     datatype: date
+#     max: ${ today() }
+#   - Date you departed/exited the country: users[i].countries_traveled_through[j].departure_date
+#     datatype: date
+#     max: ${ today() }
+#   - Your immigration status, if any, in the country: users[i].countries_traveled_through[j].immigration_status
+#     datatype: radio
+#     choices:
+#       - citizen
+#       - legal permanent resident
+#       - refugee
+#       - asylee
+#       - visitor
+#       - student
+#       - temporary resident
+#       - I had NO LEGAL IMMIGRATION STATUS
+#   - Were you ever offered any legal immigration status that you did not accept?: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted
+#     datatype: yesnoradio
+#     show if:
+#       variable: users[i].countries_traveled_through[j].immigration_status
+#       is: I had NO LEGAL IMMIGRATION STATUS
+#   - What immigration status did the country offer you?: users[i].countries_traveled_through[j].immigration_status_offered
+#     datatype: radio
+#     choices:
+#       - citizen
+#       - legal permanent resident
+#       - refugee
+#       - asylee
+#       - visitor
+#       - student
+#       - temporary resident
+#       - other
+#     show if: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted
+#   - 'Describe "other" immigration status that you were offered': users[i].countries_traveled_through[j].immigration_status_offered_other
+#     maxlength: 38
+#     show if:
+#       variable: users[i].countries_traveled_through[j].immigration_status_offered
+#       is: other
+#   - Describe why you chose not to accept the immigration status offered to you: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted_reason
+#     input type: area
+#     rows: 2
+#     show if: users[i].countries_traveled_through[j].immigration_status_offered_not_accepted
+# ---
+# id: countries entered or traveled to before US review screen
+# question: |
+#   Review the countries you entered/traveled through before entering the U.S.
+# subquestion: |
+#   ${ users[i].countries_traveled_through.table }
+#   ${ users[i].countries_traveled_through.add_action(label=bold('Add Another Country'), color='warning') }
+# continue button field:  users[i].countries_traveled_through_review
+# ---
+# table: users[i].countries_traveled_through.table
+# rows: users[i].countries_traveled_through
+# columns:
+#   - Country: row_item.name
+#   - Entry Date: row_item.entry_date
+#   - Departure Date: row_item.departure_date
+# edit:
+#   - row_item
+# allow reordering: True
 ---
 id: prior immigration proceedings are there any
 question: |
@@ -2940,7 +2939,7 @@ attachment:
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
     - "date_started_us_residence": ${ users[i].date_started_us_residence.format("MM/dd/yyyy") }
     - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
-    - "other_countries_entered_list": "See addendum for 2-7"
+    - "other_countries_entered_list": "See addendum for 1.c-7"
     - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
     - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
     - "other_country_immigration_status": ${ other_country_immigration_status }
@@ -3250,8 +3249,8 @@ attachment:
     - "father_name_first": ${ users[i].father_first_name }
     - "mother_name_last": ${ users[i].mother_last_name }
     - "mother_name_first": ${ users[i].mother_first_name }
-    - "citizen_country_1": ${ users[i].country_of_birth }
-    - "citizen_country_2": ${ citizen_country_2 } #TODO: check
+    - "citizen_country_1": ${ users[i].countries_of_citizenship.item(0) }
+    - "citizen_country_2": ${ users[i].countries_of_citizenship.item(1) }
     - "previously_filed_i765": ${ users[i].previously_filed_I765 } #TODO: check
     - "city_of_birth": ${ users[i].city_of_birth }
     - "state_of_birth": ${ users[i].state_of_birth }

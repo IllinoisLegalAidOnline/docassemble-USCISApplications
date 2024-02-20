@@ -32,7 +32,21 @@ fields:
       [next(iter(item.values())) for item in countries_list()]
     default: |
       ${ users[0].country_of_birth if i > 0 else '' }
-  # - Country(ies) of Citizenship: users[i].countries_of_citizenship
+  - Is ${ users[i] } a citizen of another country aside from their country of birth?: users[i].has_additional_citizenship
+    datatype: yesnoradio
+  - First Other Country of Citizenship: users[i].additional_country_of_citizenship_1
+    datatype: combobox
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+    show if: users[i].has_additional_citizenship
+  - Second Other Country of Citizenship: users[i].additional_country_of_citizenship_2
+    datatype: combobox
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+    show if: users[i].has_additional_citizenship
+  - note: |
+      If ${ users[i] } is a citizen of more countries than those listed above, get supervisor approval and handwrite the additional countries into the addendum pages after printing the application.
+    show if: users[i].has_additional_citizenship
   - Number of ${ users[i] }'s children applying with them today: users[i].number_children_applying
     datatype: integer
     default: |

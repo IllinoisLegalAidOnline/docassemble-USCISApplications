@@ -832,7 +832,7 @@ code: |
 event: save_downloads
 code: |
   ans = action_argument('download_response')
-  for idx, user in enumerate(users)::
+  for idx, user in enumerate(users):
     user.cached_pdf = ans[idx]
   background_response()
 ---

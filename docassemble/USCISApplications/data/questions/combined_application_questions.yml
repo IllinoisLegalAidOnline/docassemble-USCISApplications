@@ -2720,6 +2720,7 @@ attachment:
   variable name: users[i].i_821_attachment[j]
   skip undefined: True
   pdf template file: I-821_flattened_MN.pdf
+  editable: False
   fields:
     # - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     # - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
@@ -3086,8 +3087,8 @@ attachment:
     - "user_reads_english": ${ users[i].user_reads_english }
     - "user_used_interpreter": ${ users[i].user_used_interpreter if interpreter_present else False }
     - "interpreter_spoke_language": ${ interpreter.language }
-    - "user_used_preparer": ${ users[i].user_used_preparer }
-    - "preparer_name": ${ preparer[0].name.full() }
+    - "user_used_preparer": True
+    - "preparer_name_applicant_statement": ${ preparer }
     - "users1_phone_number": ${ users[i].phone_number }
     - "interpreter_name_last": ${ interpreter.name.last }
     - "users1_mobile_number": ${ users[i].mobile_number }
@@ -3276,7 +3277,7 @@ attachment:
     - "user_used_interpreter": ${ users[i].user_used_interpreter }
     - "interpreter_spoke_language": ${ users[i].interpreter_spoke_language }
     - "interpreter_spoke_language__1": ${ users[i].interpreter_spoke_language }
-    - "user_used_preparer": ${ users[i].user_used_preparer }
+    - "user_used_preparer": True
     - "preparer_name": ${ preparer[0] }
     - "users1_phone_number": ${ users[i].phone_number }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }

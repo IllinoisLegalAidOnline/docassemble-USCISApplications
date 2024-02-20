@@ -299,11 +299,12 @@ fields:
   - note: |
       OK, we'll get the other names you used on the next screen.
     show if: users[0].aliases.there_are_any
-  - Country of Birth: users[0].country_of_birth
+  - City or town of birth: users[0].city_of_birth
+  - State/Province of birth: users[0].state_of_birth
+  - Country of birth: users[0].country_of_birth
     input type: dropdown
     code: |
       uscis_countries_list()
-  - City or town of birth: users[0].city_of_birth
   - Birthdate: users[0].birthdate
     datatype: BirthDate
   - A Number (do not include A-): users[0].a_number

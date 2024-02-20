@@ -193,12 +193,14 @@ code: |
 ---
 ########################## Countries & Places ##########################
 ---
-id: applicant's birthplace
-question: |
-  Applicant's Birthplace
-fields:
-  - What City/Town/Village in ${ users[i].country_of_birth } was Applicant born in?: users[i].birthplace_city
-    maxlength: 38
+#id: applicant's birthplace
+#question: |
+#  Applicant's Birthplace
+#fields:
+#  - What City/Town/Village in ${ users[i].country_of_birth } was Applicant born in?: users[i].birthplace_city
+#    maxlength: 38
+#  - What State or Province was Applicant born in?: users[i].state_of_birth
+#    maxlength: 38
 ---
 id: countries resided in are there any
 question: |
@@ -280,6 +282,7 @@ id: other countries of citizenship is there another
 question: |
   Are there any other countries where you are a citizen aside from those listed below?
 subquestion: |
+  **${ users[i].country_of_birth }**
   **${ users[i].other_countries_of_citizenship }**
 fields: 
   - no label: users[i].other_countries_of_citizenship.there_is_another
@@ -460,6 +463,7 @@ subquestion: |
   recent.
 fields:
   - Passport number (if any): users[i].passport_number
+    maxlength: 38
     required: false
   - What country issued your most recent passport: users[i].passport_issuing_country
     code: |
@@ -650,13 +654,14 @@ fields:
   - "USCIS Online Account Number (if any)": users[i].uscis_account_number
     maxlength: 28
     required: false
-  - "U.S. Social Security Number (if any)": users[i].ssn
-    maxlength: 21
-    required: false
+  - "Has the Social Security Administration ever officially issued a card to you?": users[i].has_ssn
+    datatype: yesnoradio
+  - "U.S. Social Security Number": users[i].ssn
+    maxlength: 11
+    show if: users[i].has_ssn
   - Student and Exchange Visitor Information System (SEVIS) Number (if any): users[i].sevis_number
     maxlength: 21
     required: false
-    show if: users[i].fills_out_765
 ---
 id: current spouse and marriage info
 question: |
@@ -1616,7 +1621,7 @@ id: application language and translation
 question: |
   Language & Translation
 fields:
-  - "Does ${ users[i] } understand English?": users[i].user_reads_english
+  - "Does ${ users[i] } read and understand English?": users[i].user_reads_english
     datatype: yesnoradio
   - "Did ${ users[i] } use the ${ interpreter.language } interpreter?": users[i].user_used_interpreter
     datatype: yesnoradio
@@ -1713,10 +1718,6 @@ review:
     button: |
       **Attorneys1 bar number**:
       ${ users[i].attorneys1_bar_number }
-  - Edit: users[i].attorney_online_account_number
-    button: |
-      **Attorney online account number**:
-      ${ users[i].attorney_online_account_number }
   - Edit: users[i].is_first_TPS_application
     button: |
       **This is Applicant's first TPS application, or Applicant is re-registering for TPS**:
@@ -3195,72 +3196,74 @@ attachment:
   variable name: users[i].i_765_attachment[j]
   skip undefined: True
   pdf template file: I-765_flattened_MN_updated.pdf
+  editable: False
   fields:
     # - "US Citizenship and Immigration Services": ${ US_Citizenship_and_Immigration_Services }
     #- "is_form_g28_attached": ${ users[i].is_form_g28_attached }
-    - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
-    - "application_reason_employment": ${ users[i].application_reason_employment }
-    - "application_reason_replacement": ${ users[i].application_reason_replacement }
-    - "users1_previous_names1_last": ${ users[i].previous_names[0].last }
-    - "users1_previous_names1_first": ${ users[i].previous_names[0].first }
-    - "users1_previous_names1_middle": ${ users[i].previous_names[0].middle }
-    - "users1_previous_names2_last": ${ users[i].previous_names[1].last }
-    - "users1_previous_names2_first": ${ users[i].previous_names[1].first }
-    - "application_reason_renewal": ${ users[i].application_reason_renewal }
-    - "users1_previous_names2_middle": ${ users[i].previous_names[1].middle }
-    - "users1_previous_names3_last": ${ users[i].previous_names[2].last }
-    - "users1_previous_names3_first": ${ users[i].previous_names[2].first }
-    - "users1_previous_names3_middle": ${ users[i].previous_names[2].middle }
+    #- "attorney_online_account_number": ${ preparer.attorney_online_account_number }
+    - "application_reason_employment": 'Yes'
+    - "application_reason_replacement": ''
+    - "application_reason_renewal": ''
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
+    - "users1_previous_names1_last": ${ users[i].aliases[0].last }
+    - "users1_previous_names1_first": ${ users[i].aliases[0].first }
+    - "users1_previous_names1_middle": ${ users[i].aliases[0].middle }
+    - "users1_previous_names2_last": ${ users[i].aliases[1].last }
+    - "users1_previous_names2_first": ${ users[i].aliases[1].first }
+    - "users1_previous_names2_middle": ${ users[i].aliases[1].middle }
+    - "users1_previous_names3_last": ${ users[i].aliases[2].last }
+    - "users1_previous_names3_first": ${ users[i].aliases[2].first }
+    - "users1_previous_names3_middle": ${ users[i].aliases[2].middle }
+    - "has_ssn": ${ users[i].has_ssn }
     - "users1_ssn": ${ users[i].ssn }
     # - "users1_wants_ssn": Yes # Pre-checked on form
     # - "users1_mailing_address_is_apt": ${ users1_mailing_address_is_apt }
     # - "users1_mailing_address_is_suite": ${ users1_mailing_address_is_suite }
     # - "users1_mailing_address_is_floor": ${ users1_mailing_address_is_floor }
-    - "father_name_last": ${ users[i].father_last_name}
-    - "father_name_first": ${ users[i].father_first_name }
-    - "mother_name_last": ${ users[i].mother_last_name }
-    - "mother_name_first": ${ users[i].mother_first_name }
-    - "users1_address_is_apt": ${ users1_address_is_apt }
-    - "users1_address_is_suite": ${ users1_address_is_suite }
-    - "users1_address_is_floor": ${ users1_address_is_floor }
+    # - "users1_address_is_apt": ${ users1_address_is_apt }
+    # - "users1_address_is_suite": ${ users1_address_is_suite }
+    # - "users1_address_is_floor": ${ users1_address_is_floor }
+    - "users1_mailing_address_in_care_of": ${ users[i].mailing_address.in_care_of }
+    - "users1_mailing_address_address": ${ users[i].mailing_address.address }
+    - "users1_mailing_address_unit": ${ users[i].mailing_address.unit }
+    - "users1_mailing_address_city": ${ users[i].mailing_address.city }
+    - "users1_mailing_address_state": ${ users[i].mailing_address.state }
+    - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
+    - "mailing_address_is_physical_address_yes": ${ users[i].mailing_address == users[i].address }
+    - "mailing_address_is_physical_address_no": ${ not users[i].mailing_address == users[i].address }
     - "users1_address_address": ${ users[i].address.address }
     - "users1_address_unit": ${ users[i].address.unit }
     - "users1_address_city": ${ users[i].address.city }
     - "users1_address_state": ${ users[i].address.state }
     - "users1_address_zip": ${ users[i].address.zip }
     - "users1_a_number": ${ users[i].a_number }
-    - "users1_uscis_account_number": ${ users[i]._uscis_account_number }
-    - "users1_gender": ${ users[i].sex }
-    - "users1_mailing_address_in_care_of": 'LAS New Arrivals'
-    - "users1_mailing_address_address": '101 N. Wacker Dr.'
-    - "users1_mailing_address_unit": 'Suite 1700'
-    - "users1_mailing_address_city": 'Chicago'
-    - "users1_mailing_address_state": 'IL'
-    - "users1_mailing_address_zip": '60606'
-    - "mailing_address_is_physical_address": No
+    - "users1_uscis_account_number": ${ users[i].uscis_account_number }
+    - "users1_gender": ${ users[i].sex == 'male' }
     - "marital_status_single": ${ users[i].marital_status in ['single, never married', 'marriage annulled'] }
     - "marital_status_married": ${ users[i].marital_status in ['married','separated'] }
     - "marital_status_divorced": ${ users[i].marital_status == 'divorced' }
     - "marital_status_widowed": ${ users[i].marital_status == 'widowed' }
-    - "citizen_country_1": ${ users[i].countries_of_citizenship[0] }
-    - "previously_filed_i765": ${ previously_filed_i765 } #TODO: check
-    - "citizen_country_2": ${ users[i].countries_of_citizenship[1] } #TODO: check
-    - "has_ssn": ${ users[i].has_ssn }
+    - "father_name_last": ${ users[i].father_last_name}
+    - "father_name_first": ${ users[i].father_first_name }
+    - "mother_name_last": ${ users[i].mother_last_name }
+    - "mother_name_first": ${ users[i].mother_first_name }
+    - "citizen_country_1": ${ users[i].country_of_birth }
+    - "citizen_country_2": ${ citizen_country_2 } #TODO: check
+    - "previously_filed_i765": ${ users[i].previously_filed_I765 } #TODO: check
     - "city_of_birth": ${ users[i].city_of_birth }
     - "state_of_birth": ${ users[i].state_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
     - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
     - "i94_arrival_number": ${ users[i].i94_arrival_number }
     - "passport_number": ${ users[i].passport_number }
-    - "travel_document_number": ${ users[i].travel_document_number }
-    - "passport_country_of_issue": ${ users[i].passport_country_of_issue }
+    - "travel_document_number": ${ users[i].other_travel_document_number }
+    - "passport_country_of_issue": ${ users[i].passport_issuing_country }
     - "passport_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
-    - "date_of_last_arrival": ${ users[i].date_of_last_arrival.format('MM/dd/yyyy') }
-    - "place_of_last_arrival": ${ users[i].place_of_last_arrival }
-    - "immigration_status_at_last_arrival": ${ users[i].immigration_status_at_last_arrival }
+    - "date_of_last_arrival": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
+    - "place_of_last_arrival": ${ f'{users[i].users[i].city_of_entry}, {users[i].state_of_entry}' }
+    - "immigration_status_at_last_arrival": ${ users[i].immigration_status_last_entry }
     - "current_immigration_status": ${ users[i].current_immigration_status }
     - "sevis_number": ${ users[i].sevis_number }
     # EAD Eligibility category
@@ -3283,39 +3286,36 @@ attachment:
     - "interpreter_spoke_language__1": ${ users[i].interpreter_spoke_language }
     - "user_used_preparer": True
     - "preparer_name": ${ preparer[0] }
-    - "users1_phone_number": ${ users[i].phone_number }
+    - "users1_phone_number": ${ users[i].daytime_phone }
+    - "users1_mobile_number": ${ users[i].mobile_phone_number }
+    - "users1_email": ${ users[i].email_address }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
-    - "users1_mobile_number": ${ users[i].mobile_number }
-    - "users1_email": ${ users[i].email }
-    - "is_abc_salvadoran_guatemalan_national": ${ users[i].is_abc_salvadoran_guatemalan_national }
+ #   - "is_abc_salvadoran_guatemalan_national": ${ users[i].country_of birth == "Guatemala" or users[i].country_of birth == "El Salvador" or xxxxxxxxx##### }
     - "interpreter_name_last": ${ interpreter.name.last }
     - "interpreter_name_first": ${ interpreter.name.first }
     - "interpreter_organization": ${ interpreter.organization }
-    - "interpreter_mailing_address_address": ${ interpreter.mailing_address.address }
-    - "interpreter_mailing_address_is_apt": ${ interpreter.mailing_address_is_apt }
-    - "interpreter_mailing_address_is_suite": ${ interpreter.mailing_address_is_suite }
-    - "interpreter_mailing_address_is_floor": ${ interpreter.mailing_address_is_floor }
-    - "interpreter_mailing_address_unit": ${ interpreter.mailing_address.unit }
-    - "preparer_name_last": ${ preparer.name.last }
-    - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
-    - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
-    - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
-    - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
     - "preparer_name_first": ${ preparer.name.first }
-    - "interpreter_mailing_address_state": ${ interpreter.mailing_address.state }
-    - "preparer_organization": ${ preparer.organization }
-    - "interpreter_mailing_address_country": ${ interpreter.mailing_address.country }
-    - "interpreter_phone_number": ${ interpreter.phone_number }
-    - "interpreter_mobile_number": ${ interpreter.mobile_number }
-    - "interpreter_email": ${ interpreter.email }
-    - "preparer_phone_number": ${ preparer.phone_number }
-    - "preparer_mobile_number": ${ preparer.mobile_number }
-    - "preparer_email": ${ preparer.email }
+    - "preparer_name_last": ${ preparer.name.last }
     - "preparer_is_attorney_yes": ${ preparer.is_attorney }
     - "preparer_is_attorney_no": ${ not preparer.is_attorney }
     - "preparer_full_rep": No
     - "preparer_limited_rep": Yes
+#   # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
+#   # - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
+    - "interpreter_mailing_address_address": '77 W Jackson Blvd'
+    - "interpreter_mailing_address_unit": ''
+    - "interpreter_mailing_address_city": 'Chicago'
+    - "interpreter_mailing_address_state": 'IL'
+    - "interpreter_mailing_address_zip": '60604'
+    - "interpreter_mailing_address_country": 'USA'
+#   # - "preparer_organization": ${ preparer.organization }
+#   # - "interpreter_phone_number": ${ interpreter.phone_number }
+#   # - "interpreter_mobile_number": ${ interpreter.mobile_number }
+#   # - "interpreter_email": ${ interpreter.email }
+#   # - "preparer_phone_number": ${ preparer.phone_number }
+#   # - "preparer_mobile_number": ${ preparer.mobile_number }
+#   # - "preparer_email": ${ preparer.email }
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }

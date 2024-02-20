@@ -2832,7 +2832,7 @@ attachment:
     - "eye_color_marooon": ${ users[i].eye_color == 'marooon' }
     - "eye_color_pink": ${ users[i].eye_color == 'pink' }
     # - "users2_address_province": ${ users2_address_province }
-    - "eye_color_unknown": ${ users[i].eye_color == 'other' }
+    - "eye_color_unknown": ${ users[i].eye_color not in ['black', 'blue', 'brown', 'gray', 'green', 'hazel', 'maroon', 'pink'] }
     # - "users2_address_postal_code": ${ users2_address_postal_code }
     - "hair_bald": ${ users[i].hair_color == 'bald' }
     - "hair_black": ${ users[i].hair_color == 'black' }

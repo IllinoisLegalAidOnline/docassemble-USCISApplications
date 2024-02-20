@@ -45,6 +45,7 @@ code: |
   users[i].father_first_name
   if application_kind == "ead_and_tps":
     users[i].have_you_ever_questions
+  users[i].countries_of_citizenship # Define this variable
   users[i].complete = True
 ---
 id: your address
@@ -63,7 +64,7 @@ fields:
     required: false
   - Mobile Telephone Number (optional): users[0].mobile_phone_number
     required: false
-  - Email address (optional): users[0].email_address
+  - Email address (optional): users[0].email
     required: false
 ---
 code: |
@@ -116,7 +117,7 @@ fields:
     required: false
     default: |
       ${ users[0].mobile_phone_number if i > 0 else ""}
-  - Email address (optional): users[i].email_address
+  - Email address (optional): users[i].email
     required: false
 ---
 id: your mailing address
@@ -705,7 +706,7 @@ fields:
     default: |
       ${ users[0].state_of_entry if i > 0 else "" }
   - "Form I-94 Arrival-Departure Record Number (if any)": users[i].i94_arrival_number
-    maxlength: 26
+    maxlength: 11
     required: False
   - "Date Applicant's Authorized Period of Stay in the U.S. Expired or Will Expire (as shown on Form I-94 or Crewman's Landing Permit (Form I-95)) (mm/dd/yyyy or duration of status (D/S)": users[i].authorized_stay_ending_date # just terrible question wording
     # datatype: date
@@ -2699,7 +2700,7 @@ code: |
   users[i].i_821_attachment.enabled = users[i].application_is_approved and application_kind == "ead_and_tps"
 ---
 code: |
-  users[i].i_765_attachment.enabled = users[i].application_is_approved
+  users[i].i_765_attachment.enabled = users[i].application_is_approved and users[i].age_in_years() >= 16 # You can't get work authorization if under 16!
 ---
 objects:
   - users[i].tps_yes_answer_addendum: ALDocument.using(title="TPS Yes Answer Addendum", filename=f"{users[i]} - TPS Yes Answer Addendum", has_addendum=False, )
@@ -2720,6 +2721,7 @@ attachment:
   variable name: users[i].i_821_attachment[j]
   skip undefined: True
   pdf template file: I-821_flattened_MN.pdf
+  editable: False
   fields:
     # - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     # - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
@@ -2760,12 +2762,12 @@ attachment:
     - "city_of_birth": ${ users[i].city_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
     - "users1_countries_of_residence": ${ users[i].countries_of_residence }
+    - "users1_countries_of_citizenship": ${ users[i].countries_of_citizenship }
     - "users1_address_address": ${ users[i].address.address }
     # - "users1_address_is_apt": ${ users[i].address_is_apt }
     # - "users1_address_is_suite": ${ users[i].address_is_suite }
     # - "users1_address_is_floor": ${ users[i].address_is_floor }
     - "users1_address_unit": ${ users[i].address.unit }
-    - "users1_coutnries_of_citizenship": ${ comma_and_list(users[i].countries_of_citizenship) } ### is comma and list necessary?
     - "users1_address_city": ${ users[i].address.city }
     - "users1_address_state": ${ users[i].address.state }
     - "users1_address_zip": ${ users[i].address.zip }
@@ -2782,7 +2784,8 @@ attachment:
     - "current_immigration_status": ${ users[i].current_immigration_status }
     - "users1_has_been_in_immigration_proceedings_yes": ${ users[i].has_been_in_immigration_proceedings }
     - "users1_has_been_in_immigration_proceedings_no": ${ not users[i].has_been_in_immigration_proceedings }
-    - "date_of_last_arrival": ${ users[i].date_of_last_arrival }
+    - "date_of_last_entry": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
+    - "status_at_last_entry": ${ users[i].immigration_status_last_entry }
     - "proceedings_was_immigration_court": ${ users[i].kind_of_immigration_proceedings.get("immigration_court") }
     - "proceedings_was_bia": ${ users[i].kind_of_immigration_proceedings.get("bia") }
     - "proceedings_was_federal_court": ${ users[i].kind_of_immigration_proceedings.get("federal_court") }
@@ -2791,12 +2794,11 @@ attachment:
     - "proceedings_start_date": ${ users[i].proceedings_start_date.format('MM/dd/yyyy') }
     - "proceedings_end_date": ${ users[i].proceedings_end_date.format('MM/dd/yyyy') }
     - "proceedings_continuing_to_present": ${ users[i].proceedings_continuing_to_present }
-    - "date_of_last_entry": ${ users[i].date_of_last_entry }
     - "port_of_entry": ${ users[i].port_of_entry }
     - "city_of_entry": ${ users[i].city_of_entry }
     - "state_of_entry": ${ users[i].state_of_entry }
     - "i94_arrival_number": ${ users[i].i94_arrival_number }
-    - "authorized_stay_ending_date": ${ authorized_stay_ending_date.format('MM/dd/yyyy') }
+    - "authorized_stay_ending_date": ${ users[i].authorized_stay_ending_date }
     - "passport_number": ${ users[i].passport_number }
     - "most_recent_passport_country_issuing": ${ users[i].passport_issuing_country }
     - "passport_or_travel_document_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
@@ -3086,8 +3088,8 @@ attachment:
     - "user_reads_english": ${ users[i].user_reads_english }
     - "user_used_interpreter": ${ users[i].user_used_interpreter if interpreter_present else False }
     - "interpreter_spoke_language": ${ interpreter.language }
-    - "user_used_preparer": ${ users[i].user_used_preparer }
-    - "preparer_name": ${ preparer[0] }
+    - "user_used_preparer": True
+    - "preparer_name_applicant_statement": ${ preparer }
     - "users1_phone_number": ${ users[i].phone_number }
     - "interpreter_name_last": ${ interpreter.name.last }
     - "users1_mobile_number": ${ users[i].mobile_number }
@@ -3101,10 +3103,10 @@ attachment:
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
-    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
-    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
+    - "preparer_is_attorney_yes": ${ preparer.is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer.is_attorney }
     - "preparer_full_rep": No
-    - "preparer_limited_rep": Yes
+    - "preparer_limited_rep": ${ preparer.is_attorney }
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_organization": ""
@@ -3240,9 +3242,9 @@ attachment:
     - "marital_status_married": ${ users[i].marital_status in ['married','separated'] }
     - "marital_status_divorced": ${ users[i].marital_status == 'divorced' }
     - "marital_status_widowed": ${ users[i].marital_status == 'widowed' }
-    - "citizen_country_1": ${ comma_and_list(users[i].countries_of_citizenship) }
+    - "citizen_country_1": ${ users[i].countries_of_citizenship[0] }
     - "previously_filed_i765": ${ previously_filed_i765 } #TODO: check
-    - "citizen_country_2": ${ citizen_country_2 } #TODO: check
+    - "citizen_country_2": ${ users[i].countries_of_citizenship[1] } #TODO: check
     - "has_ssn": ${ users[i].has_ssn }
     - "city_of_birth": ${ users[i].city_of_birth }
     - "state_of_birth": ${ users[i].state_of_birth }
@@ -3276,7 +3278,7 @@ attachment:
     - "user_used_interpreter": ${ users[i].user_used_interpreter }
     - "interpreter_spoke_language": ${ users[i].interpreter_spoke_language }
     - "interpreter_spoke_language__1": ${ users[i].interpreter_spoke_language }
-    - "user_used_preparer": ${ users[i].user_used_preparer }
+    - "user_used_preparer": True
     - "preparer_name": ${ preparer[0] }
     - "users1_phone_number": ${ users[i].phone_number }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
@@ -3307,8 +3309,8 @@ attachment:
     - "preparer_phone_number": ${ preparer.phone_number }
     - "preparer_mobile_number": ${ preparer.mobile_number }
     - "preparer_email": ${ preparer.email }
-    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
-    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
+    - "preparer_is_attorney_yes": ${ preparer.is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer.is_attorney }
     - "preparer_full_rep": No
     - "preparer_limited_rep": Yes
     - "Page Number_3": ${ Page_Number_3 }

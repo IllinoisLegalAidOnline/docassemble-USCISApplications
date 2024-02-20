@@ -16,6 +16,9 @@ objects:
   #- users[i].former_spouses: ALPeopleList.using(ask_number=True) # need?
   #- users[i].children: ALPeopleList.using(ask_number=True) # need?
 ---
+code: |
+  users[i].alternate_birthdates.there_is_another = False
+---
 ###################### users '.complete' block ######################
 comment: |
   This block sets the required attributes and interview order to gather a 'users' object.
@@ -30,8 +33,8 @@ code: |
   if users[i].countries_of_residence.there_are_any:
     users[i].countries_of_residence_review
   users[i].other_countries_of_citizenship.gather()
-  users[i].countries_traveled_through.gather()
-  users[i].countries_traveled_through_review
+  # users[i].countries_traveled_through.gather()
+  # users[i].countries_traveled_through_review
   # Let's check with Jane to see if we should collect
   # each proceeding separately--I suspect we don't need to
   # Will simplify for 
@@ -60,9 +63,9 @@ fields:
   - State: users[0].address.state
     required: False
   - ZIP: users[0].address.zip
-  - Daytime Phone Number (optional): users[0].daytime_phone
+  - Daytime Phone Number (optional): users[0].phone_number
     required: false
-  - Mobile Telephone Number (optional): users[0].mobile_phone_number
+  - Mobile Telephone Number (optional): users[0].mobile_number
     required: false
   - Email address (optional): users[0].email
     required: false
@@ -109,14 +112,14 @@ fields:
     default: ${ users[0].address.state }
   - ZIP: users[i].address.zip
     default: ${ users[0].address.zip }
-  - Daytime Phone Number (optional): users[i].daytime_phone
+  - Daytime Phone Number (optional): users[i].phone_number
     required: false
     default: |
-      ${ users[0].daytime_phone if i > 0 else ""}
-  - Mobile Telephone Number (optional): users[i].mobile_phone_number
+      ${ users[0].phone_number if i > 0 else ""}
+  - Mobile Telephone Number (optional): users[i].mobile_number
     required: false
     default: |
-      ${ users[0].mobile_phone_number if i > 0 else ""}
+      ${ users[0].mobile_number if i > 0 else ""}
   - Email address (optional): users[i].email
     required: false
 ---
@@ -552,17 +555,17 @@ fields:
     datatype: BirthDate
     max: ${ today() }
 ---
-id: alternate birthdates there is another
-question: |
-  Are there any other birthdates you've claimed or used (including on any documents) other than those below?
-subquestion: |
-  * ${ users[i].birthdate }
-  % for date in users[i].alternate_birthdates.complete_elements():
-  * ${ date }
-  % endfor  
-fields: 
-  - no label: users[i].alternate_birthdates.there_is_another
-    datatype: yesnoradio
+# id: alternate birthdates there is another
+# question: |
+#   Are there any other birthdates you've claimed or used (including on any documents) other than those below?
+# subquestion: |
+#   * ${ users[i].birthdate }
+#   % for date in users[i].alternate_birthdates.complete_elements():
+#   * ${ date }
+#   % endfor  
+# fields: 
+#   - no label: users[i].alternate_birthdates.there_is_another
+#     datatype: yesnoradio
 ---
 ############## Physical Characteristics and Marital Status ##############
 id: ethnicity and physical characteristics
@@ -2814,7 +2817,7 @@ attachment:
     - "race_native_hawaiian": ${ users[i].race['pacific_islander'] }
     - "height_feet": ${ int(users[i].height_cm * 0.0328084) }
     - "height_inches": ${ int((users[i].height_cm * 0.0328084 - int(users[i].height_cm * 0.0328084)) * 12) }
-    - "users2_address_address": ${ users[1].address.address }
+    #- "users2_address_address": ${ users[1].address.address }
     # - "users2_address_is_apt": ${ users2_address_is_apt }
     # - "users2_address_is_suite": ${ users2_address_is_suite }
     # - "users2_address_is_floor": ${ users2_address_is_floor }
@@ -2832,7 +2835,7 @@ attachment:
     - "eye_color_marooon": ${ users[i].eye_color == 'marooon' }
     - "eye_color_pink": ${ users[i].eye_color == 'pink' }
     # - "users2_address_province": ${ users2_address_province }
-    - "eye_color_unknown": ${ users[i].eye_color == 'other' }
+    - "eye_color_unknown": ${ users[i].eye_color not in ['black', 'blue', 'brown', 'gray', 'green', 'hazel', 'maroon', 'pink'] }
     # - "users2_address_postal_code": ${ users2_address_postal_code }
     - "hair_bald": ${ users[i].hair_color == 'bald' }
     - "hair_black": ${ users[i].hair_color == 'black' }
@@ -2933,9 +2936,9 @@ attachment:
     # - "children1_tps_end_date": ${ children1_tps_end_date.format('MM/dd/yyyy') }
     - "last_country_of_residence": ${ users[i].last_country_of_residence }
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
-    - "date_started_us_residence": ${ users[i].date_started_us_residence }
+    - "date_started_us_residence": ${ users[i].date_started_us_residence.format("MM/dd/yyyy") }
     - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
-    - "other_countries_entered_list": "See addendum for 1-7"
+    - "other_countries_entered_list": "See addendum for 2-7"
     - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
     - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
     - "other_country_immigration_status": ${ other_country_immigration_status }

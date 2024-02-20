@@ -403,7 +403,7 @@ subquestion: |
 
   ${ users.add_action() }
 
-  On the next screen, we'll review the limited scope retainer.
+  On the next screens, we'll review the limited scope retainer.
 continue button field: review_initial_user_list
 ---
 id: signatures for users i

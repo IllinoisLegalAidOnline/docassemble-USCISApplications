@@ -3309,8 +3309,8 @@ attachment:
     - "preparer_phone_number": ${ preparer.phone_number }
     - "preparer_mobile_number": ${ preparer.mobile_number }
     - "preparer_email": ${ preparer.email }
-    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
-    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
+    - "preparer_is_attorney_yes": ${ preparer.is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer.is_attorney }
     - "preparer_full_rep": No
     - "preparer_limited_rep": Yes
     - "Page Number_3": ${ Page_Number_3 }

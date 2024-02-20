@@ -527,8 +527,13 @@ fields:
     datatype: BirthDate
     max: ${ today() }
     show if: users[i].alternate_birthdates.there_are_any
-  - I have other birthdates: users[i].alternate_birthdates.there_is_another
-    datatype: yesnowide
+  - "Other Date of Birth Used": users[i].alternate_birthdates[1]
+    datatype: BirthDate
+    max: ${ today() }
+    show if: users[i].alternate_birthdates.there_are_any
+    required: False
+  - note: |
+      The form has room for up to 2 alternate birthdates.
     show if: users[i].alternate_birthdates.there_are_any
 ---
 id: alternate birthdates
@@ -2729,16 +2734,16 @@ attachment:
     - "is_judge_re_applicatioin": ${ not users[i].is_first_TPS_application == 'First TPS Application' }
     - "users1_a_number": ${ users[i].a_number }
     - "users1_uscis_account_number": ${ users[i].uscis_account_number }
-    - "users1_previous_names1_last": ${ users[i].previous_names[0].last }
+    - "users1_previous_names1_last": ${ users[i].aliases[0].last }
     - "users1_ssn": ${ users[i].ssn }
-    - "users1_previous_names1_first": ${ users[i].previous_names[0].first }
+    - "users1_previous_names1_first": ${ users[i].aliases[0].first }
     - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
-    - "users1_previous_names1_middle": ${ users[i].previous_names[0].middle }
-    - "users1_previous_names2_last": ${ users[i].previous_names[1].last }
-    - "users1_previous_names2_first": ${ users[i].previous_names[1].first }
+    - "users1_previous_names1_middle": ${ users[i].aliases[0].middle }
+    - "users1_previous_names2_last": ${ users[i].aliases[1].last }
+    - "users1_previous_names2_first": ${ users[i].aliases[1].first }
     - "users1_alternate_birthdate": ${ users[i].alternate_birthdates[0].format('MM/dd/yyyy') }
-    - "users1_previous_names2_middle": ${ users[i].previous_names[1].middle }
-    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdates.format('MM/dd/yyyy') }
+    - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdates[1].format('MM/dd/yyyy') }
+    - "users1_previous_names2_middle": ${ users[i].aliases[1].middle }
     - "users1_gender_male": ${ users[i].sex == "male"}
     - "users1_gender_female": ${ users[i].sex == "female"}
     - "users1_mailing_address_in_care_of": ${ users[i].mailing_address.in_care_of }

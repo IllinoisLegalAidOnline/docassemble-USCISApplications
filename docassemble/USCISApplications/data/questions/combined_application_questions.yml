@@ -706,7 +706,7 @@ fields:
     default: |
       ${ users[0].state_of_entry if i > 0 else "" }
   - "Form I-94 Arrival-Departure Record Number (if any)": users[i].i94_arrival_number
-    maxlength: 26
+    maxlength: 11
     required: False
   - "Date Applicant's Authorized Period of Stay in the U.S. Expired or Will Expire (as shown on Form I-94 or Crewman's Landing Permit (Form I-95)) (mm/dd/yyyy or duration of status (D/S)": users[i].authorized_stay_ending_date # just terrible question wording
     # datatype: date

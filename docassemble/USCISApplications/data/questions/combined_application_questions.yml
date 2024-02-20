@@ -3087,7 +3087,7 @@ attachment:
     - "user_used_interpreter": ${ users[i].user_used_interpreter if interpreter_present else False }
     - "interpreter_spoke_language": ${ interpreter.language }
     - "user_used_preparer": ${ users[i].user_used_preparer }
-    - "preparer_name": ${ preparer[0] }
+    - "preparer_name": ${ preparer[0].name.full() }
     - "users1_phone_number": ${ users[i].phone_number }
     - "interpreter_name_last": ${ interpreter.name.last }
     - "users1_mobile_number": ${ users[i].mobile_number }

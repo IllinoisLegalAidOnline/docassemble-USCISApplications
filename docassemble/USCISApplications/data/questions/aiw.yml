@@ -46,7 +46,11 @@ attachment:
       - "hair_pink": ${ users[i].hair_color == "pink" }
       - "hair_purple": ${ users[i].hair_color == "purple" }
       - "height_centimeters": ${ users[i].height_cm }
+      - "height_feet": ${ int(users[i].height_cm * 0.0328084) }'
+      - "height_inches": ${ int((users[i].height_cm * 0.0328084 - int(users[i].height_cm * 0.0328084)) * 12) }"
       - "weight_kilos": ${ users[i].weight_kg }
+      - "weight_pounds": ${ int(users[i].weight_kg * 2.20462) }
+    
 ---
 id: country of citizenship
 question: |

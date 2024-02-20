@@ -825,14 +825,14 @@ event: create_downloads
 code: |
   download_response = {}
   for user in users:
-    download_response[str(user)] = user.document_bundle.as_pdf()
+    download_response[user.instanceName] = user.document_bundle.as_pdf()
   background_response_action('save_downloads', download_response=download_response)
 ---
 event: save_downloads
 code: |
   ans = action_argument('download_response')
   for user in users:
-    user.cached_pdf = ans[str(user)]
+    user.cached_pdf = ans[user.instanceName]
   background_response()
 ---
 id: download_completed_ea_application

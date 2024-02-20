@@ -287,11 +287,12 @@ fields:
 ---
 ########## does this need reworking??
 code: |
-  users[i].countries_of_citizenship = DAList(users[i].attr_name("countries_of_citizenship"))
+  users[i].countries_of_citizenship = DAList(users[i].attr_name("countries_of_citizenship"), auto_gather=False)
   for country in users[i].countries_of_residence.complete_elements():
     if country.was_ever_citizen and country.is_still_citizen:
       users[i].countries_of_citizenship.append(name=country.name)
   users[i].countries_of_citizenship.extend(users[i].other_countries_of_citizenship)
+  users[i].countries_of_citizenship.gathered = True
 ---
 id: countries entered or traveled to before US
 question: |

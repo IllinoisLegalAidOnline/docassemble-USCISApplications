@@ -17,6 +17,7 @@ metadata:
   authors:
     - Quinten Steenhuis
     - Anthony Danielson
+    - Matt Newsted
   allowed_courts: []
   typical_role: "na"
   al_weaver_version: "playground"
@@ -57,9 +58,10 @@ mandatory: True
 code: |
   set_initial_sections
   intro_main
-  preparer.name.first
   if interpreter_present:
     interpreter.name.first
+  preparer.name.first
+  preparer.is_attorney
   users.gather()
   review_initial_user_list
   nav.set_section("section_retainer")
@@ -251,11 +253,22 @@ fields:
   - Someone already named: preparer
     datatype: object_radio
     none of the above: Someone else
-    disable others: True
+    disable others:
+      - preparer.name.first
+      - preparer.name.middle
+      - preparer.name.last
     choices: |
       [signed_in_user, interpreter] if user_logged_in() and interpreter_present else [signed_in_user] if user_logged_in() else [interpreter] if interpreter_present else []
   - code: |
       preparer.name_fields(person_or_business="person", show_suffix=False,)
+---
+generic object: ALIndividual
+id: preparer is attorney
+question: |
+  Is the preparer an attorney?
+fields:
+  - Is the preparer an attorney?: x.is_attorney
+    datatype: yesnoradio
 ---
 id: people
 question: |

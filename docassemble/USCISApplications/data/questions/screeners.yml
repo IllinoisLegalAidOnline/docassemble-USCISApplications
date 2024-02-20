@@ -174,7 +174,7 @@ fields:
 id: tps_screening_questions
 continue button field: users[i].tps_screening_questions
 question: |
-  TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("mm/DD/yyyy") })
+  TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
 subquestion: |
   % if i == 0:
   <div class="p-3 mb-2 bg-info text-dark border border-info rounded-3" role="alert">
@@ -363,6 +363,19 @@ fields:
     show if: users[i].children_entered_separately
     default: |
       ${ showifdef("users[0].children_entered_separately_explanation") if i > 0 else '' }
+  - Did you travel through Central America before entering the US?: users[i].traveled_through_central_america
+    datatype: yesnoradio
+    default: |
+      ${ showifdef("users[0].traveled_through_central_america") if i > 0 else '' }
+  - Did you travel through other countries?: users[i].traveled_through_other_countries
+    datatype: yesnoradio
+    default: |
+      ${ showifdef("users[0].traveled_through_other_countries") if i > 0 else '' }
+  - note: |
+      For now, this interview will only create an addendum about travel through Central America.
+      You may want to hand-edit the list of countries traveled through
+      and legal status in each country in the addendum or on form 821.
+    show if: users[i].traveled_through_other_countries
   - Have you had legal status in any other country besides Venezuela?: users[i].had_legal_status_outside_venezuela
     datatype: yesnoradio
     default: |

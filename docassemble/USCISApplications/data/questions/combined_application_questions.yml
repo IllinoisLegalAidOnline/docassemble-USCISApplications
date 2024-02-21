@@ -930,7 +930,7 @@ question: |
   Eligibility standards (${ users[i] })
 subquestion: |
   <button id="make_all_false" class="btn btn-info">
-    <i class="fas fa-circle-xmark"></i> Set All to No
+    <i class="fas fa-circle-xmark"></i> Set all unchecked to "No"
   </button>
 
   % if i > 0:

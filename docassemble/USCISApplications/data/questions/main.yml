@@ -130,6 +130,7 @@ code: |
       user.i94_arrival_number
       user.has_been_in_immigration_proceedings
       user.father_first_name
+      users[i].previously_filed_I765
       if application_kind == "ead_and_tps":
         user.have_you_ever_questions
       user.countries_of_citizenship

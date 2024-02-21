@@ -280,9 +280,9 @@ fields:
 generic object: ALIndividual
 id: preparer is attorney
 question: |
-  Is the preparer an attorney?
+  Is the preparer an attorney or accredited representative?
 fields:
-  - Is the preparer an attorney?: x.is_attorney
+  - Is the preparer an attorney or accredited representative?: x.is_attorney
     datatype: yesnoradio
 ---
 id: people

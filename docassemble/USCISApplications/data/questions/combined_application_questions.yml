@@ -935,7 +935,7 @@ question: |
   Eligibility standards (${ users[i] })
 subquestion: |
   <button id="make_all_false" class="btn btn-info">
-    <i class="fas fa-circle-xmark"></i> Set All to No
+    <i class="fas fa-circle-xmark"></i> Set all unchecked to "No"
   </button>
 
   % if i > 0:
@@ -3275,9 +3275,9 @@ attachment:
     # Depends on whether TPS or EAD only
     - "Q27_1": |
         % if application_kind == "ead_and_tps":
-        A
+        a
         % else:
-        C
+        c
         % endif
     - "Q27_2": |
         % if application_kind == "ead_and_tps":
@@ -3324,13 +3324,13 @@ attachment:
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }
-    - "sign and date each sheet": ${ sign_and_date_each_sheet }
-    - "First Name_7": ${ First_Name_7 }
-    - "Middle Name_5": ${ Middle_Name_5 }
+    - "sign and date each sheet": ${ users[i].name.last }
+    - "First Name_7": ${ users[i].name.first }
+    - "Middle Name_5": ${ users[i.name.first] }
     - "Page Number_4": ${ Page_Number_4 }
     - "Part Number_4": ${ Part_Number_4 }
     - "Item Number_4": ${ Item_Number_4 }
-    - "A_2": ${ A_2 }
+    - "A_2": ${ users[i].a_number }
     - "Page Number": ${ Page_Number }
     - "Part Number": ${ Part_Number }
     - "Item Number": ${ Item_Number }

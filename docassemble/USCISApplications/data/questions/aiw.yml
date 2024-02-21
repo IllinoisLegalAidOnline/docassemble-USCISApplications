@@ -13,9 +13,9 @@ attachment:
       - "users1_birthdate": ${ users[i].birthdate }
       - "country_of_citizenship": ${ users[i].country_of_birth }
       - "country_of_birth": ${ users[i].country_of_birth }
-      - "gender_male": ${ users[i].sex == "Male" }
-      - "gender_female": ${ users[i].sex == "Female" }
-      - "gender_other": ${ users[i].sex not in ("Male", "Female") }
+      - "gender_male": ${ users[i].sex.lower() == "male" }
+      - "gender_female": ${ users[i].sex.lower() == "female" }
+      - "gender_other": ${ users[i].sex.lower() not in ("male", "female") }
       - "race_asian": ${ users[i].race.get("asian") }
       - "race_black": ${ users[i].race.get("black") }
       - "race_caucasian_latino": ${ users[i].race.get("white") or users[i].ethnicity == "hispanic" }

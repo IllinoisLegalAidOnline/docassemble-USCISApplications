@@ -4,6 +4,20 @@ include:
   - screeners.yml
   - aiw.yml
   - combined_application_questions.yml
+  - docassemble.ILAO:ilao-interview-framework.yml
+  - docassemble.ILAO:shared-basic-questions.yml
+---
+default screen parts:
+  under: |
+  footer: |
+    [:share-alt-square: Share](${ url_ask([{'undefine': ['al_sharing_type','al_how_share_link']}, 'al_share_form_screen', {'recompute': ['al_did_share_form']}, 'al_share_results']) })
+    [:info-circle: About](${ url_action('about_this_interview') })
+    [:comment-dots: Feedback](${ feedback_link(user_info(), i=feedback_form, github_repo=github_repo_name, github_user=github_user, package_version=package_version_number) } ){:target="_blank"}
+  right: |
+---
+code: |
+  ilao_easy_form_title = "USCIS Applications"
+  ilao_easy_form_url = "None - this is an advocate only Easy Form"
 ---
 metadata:
   title: >-
@@ -816,7 +830,7 @@ question: |
 subquestion: |
   This can take a few minutes.
 
-  <div class="spinner-border text-primary d-flex justify-content-center" role="status">
+  <div class="spinner-border text-primary d-flex justify-content-center" role="status" style="border: 0.25rem solid #007bff;">
     <span class="sr-only">Creating PDFs...</span>
   </div>
 event: waiting_screen
@@ -825,15 +839,15 @@ reload: True
 event: create_downloads
 code: |
   download_response = {}
-  for user in users:
-    download_response[str(user)] = user.document_bundle.as_pdf()
+  for idx, user in enumerate(users):
+    download_response[idx] = user.document_bundle.as_pdf()
   background_response_action('save_downloads', download_response=download_response)
 ---
 event: save_downloads
 code: |
   ans = action_argument('download_response')
-  for user in users:
-    user.cached_pdf = ans[str(user)]
+  for idx, user in enumerate(users):
+    user.cached_pdf = ans[idx]
   background_response()
 ---
 id: download_completed_ea_application

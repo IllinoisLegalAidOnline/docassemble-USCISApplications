@@ -26,26 +26,20 @@ fields:
     show if:
       code: |
         users[i].age_in_years() > 13
-  - Country of Birth: users[i].country_of_birth
+  - First country you are a citizen of: users[i].countries_of_citizenship[0]
     datatype: combobox
     code: |
       [next(iter(item.values())) for item in countries_list()]
-    default: |
-      ${ users[0].country_of_birth if i > 0 else '' }
-  - Is ${ users[i] } a citizen of another country aside from their country of birth?: users[i].has_additional_citizenship
+    default: ${ users[i].country_of_birth }
+  - Do you have citizenship in another country?: users[i].has_additional_citizenship
     datatype: yesnoradio
-  - First Other Country of Citizenship: users[i].additional_country_of_citizenship_1
-    datatype: combobox
-    code: |
-      [next(iter(item.values())) for item in countries_list()]
-    show if: users[i].has_additional_citizenship
-  - Second Other Country of Citizenship: users[i].additional_country_of_citizenship_2
+  - Second Country of Citizenship: users[i].countries_of_citizenship[1]
     datatype: combobox
     code: |
       [next(iter(item.values())) for item in countries_list()]
     show if: users[i].has_additional_citizenship
   - note: |
-      If ${ users[i] } is a citizen of more countries than those listed above, get supervisor approval and handwrite the additional countries into the addendum pages after printing the application.
+      For now, if ${ users[i] } is a citizen of more countries than those listed above, get supervisor approval and handwrite the additional countries into the addendum pages after printing the application.
     show if: users[i].has_additional_citizenship
   - Number of ${ users[i] }'s children applying with them today: users[i].number_children_applying
     datatype: integer
@@ -312,6 +306,8 @@ fields:
   - Year: users[i].last_entry_date_year
     label above field: True
     datatype: integer
+    min: 1924
+    max: 2024
     grid: 3
     default: |
       ${ showifdef("users[0].last_entry_date_year") if i > 0 else ''}
@@ -390,7 +386,22 @@ fields:
       You may want to hand-edit the list of countries traveled through
       and legal status in each country in the addendum or on form 821.
     show if: users[i].traveled_through_other_countries
-  - Have you had legal status in any other country besides Venezuela?: users[i].had_legal_status_outside_venezuela
+  - First country you are a citizen of: users[i].countries_of_citizenship[0]
+    datatype: combobox
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+    default: ${ users[i].country_of_birth }
+  - Do you have citizenship in another country?: users[i].has_additional_citizenship
+    datatype: yesnoradio
+  - Second Country of Citizenship: users[i].countries_of_citizenship[1]
+    datatype: combobox
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+    show if: users[i].has_additional_citizenship
+  - note: |
+      For now, if ${ users[i] } is a citizen of more countries than those listed above, get supervisor approval and handwrite the additional countries into the addendum pages after printing the application.
+    show if: users[i].has_additional_citizenship
+  - Other than citizenship, have you had legal status in any other country besides Venezuela?: users[i].had_legal_status_outside_venezuela
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].had_legal_status_outside_venezuela") if i > 0 else '' }

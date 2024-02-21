@@ -594,7 +594,7 @@ fields:
       - Not Hispanic or Latino: not_hispanic
     default: |
       ${ users[0].ethnicity if i > 0 else ""}
-  - Race (choose all applicable)": users[i].race
+  - Race (choose 1)": users[i].race
     datatype: checkboxes
     choices:
       - White: white
@@ -602,7 +602,8 @@ fields:
       - American Indian or Alaska Native: native_american
       - Asian: asian
       - Native Hawaiian or Other Pacific Islander: pacific_islander
-      - Other: other
+      - Other or unknown: other
+    maxlength: 1
   - "Height (centimeters)": users[i].height_cm
     datatype: integer
   - Weight (kilograms): users[i].weight_kg

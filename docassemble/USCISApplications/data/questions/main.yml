@@ -21,9 +21,9 @@ code: |
 ---
 metadata:
   title: >-
-    DHS Application for EAD or TPS
+    TPS/EAD application
   short title: >-
-    Apply for EAD or TPS
+    TPS/EAD application
   description: |-
     This interview helps someone in Illinois apply to the DHS for an Employment Authorization Document (EAD) or Temporary Protected Status (TPS).
   tags:
@@ -53,7 +53,8 @@ code: |
   github_user = 'aidanielson'
 ---
 code: |
-  interview_short_title = "Apply for EAD or TPS"
+  interview_short_title = "TPS/EAD application"
+  ilao_easy_form_title = "TPS/EAD application"
 ---
 code: |
   al_form_type = "other_form"
@@ -381,7 +382,7 @@ fields:
 generic object: ALIndividual
 id: x i name
 question: |
-  What is the ${ ordinal(i) } name that ${ x } has been known by?
+  What is the ${ ordinal(i) } other name that ${ x } has been known by?
 fields:
   - First name: x.aliases[i].first
   - Middle name: x.aliases[i].middle
@@ -392,13 +393,15 @@ generic object: ALIndividual
 id: has x been known by a different name again
 question: |
   Has ${ x } been known by any other names?
+subquestion: |
+  So far you entered ${comma_and_list(x.aliases)}.
 fields:
   - no label: x.aliases.there_is_another
     datatype: yesnoradio  
 ---
 id: name i
 question: |
-  What was ${ users[0] }'s ${ ordinal(i) } alias or other name?
+  What was ${ users[0].name }'s ${ ordinal(i) } alias or other name?
 fields:
   - First name: users[0].aliases[i].first
   - Middle name: users[0].aliases[i].middle
@@ -407,7 +410,9 @@ fields:
 ---
 id: have you been known by a different name again
 question: |
-  Has ${ users[0] } been known by any other names?
+  Has ${ users[0].name } been known by any other names?
+subquestion: |
+  So far you entered ${comma_and_list(users[0].aliases)}.
 fields:
   - no label: users[0].aliases.there_is_another
     datatype: yesnoradio

@@ -48,11 +48,14 @@ code: |
   users[i].father_first_name
   if application_kind == "ead_and_tps":
     users[i].have_you_ever_questions
+  users[i].countries_of_citizenship # Define this variable
   users[i].complete = True
 ---
 id: your address
 question: |
   ${ users[0] }'s address
+subquestion: |
+  This is your current, physical address. Mailing address will be entered on another screen.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -88,6 +91,8 @@ sets:
   - users[i].address.country
 question: |
   ${ users[i] }'s address
+subquestion: |
+  This is a current, physical address. Mailing address will be entered on another screen.
 fields:
   - ${ users[i] }'s address is: users[i].address
     datatype: object_radio

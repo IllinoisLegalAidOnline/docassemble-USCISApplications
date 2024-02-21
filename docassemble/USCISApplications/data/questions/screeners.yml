@@ -63,7 +63,7 @@ fields:
       ${ showifdef("users[0].applied_other_information") if i > 0 else '' }
     show if: users[i].applied_for_other_immigration_benefit
     datatype: area
-  - "What is the proof of parole? Ex: i-94, parole letter, Interim Notice of Parole": users[i].proof_of_parole
+  - "What is the proof of parole? Ex: I-94, parole letter, Interim Notice of Parole": users[i].proof_of_parole
     datatype: area
     rows: 2
     default: |
@@ -118,7 +118,7 @@ subquestion: |
     <li>Receipt date: ${ user.applied_receipt_date }</li>
     <li>Any other important information to note: ${ user.applied_other_information }</li>
     % endif
-    <li>What is the proof of parole? Ex: i-94, parole letter, Interim Notice of Parole: ${ user.proof_of_parole }</li>
+    <li>What is the proof of parole? Ex: I-94, parole letter, Interim Notice of Parole: ${ user.proof_of_parole }</li>
     % if not user.proof_of_parole_valid_for_90_days:
     <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user }'s proof of parole is not valid for at least 90 days</li>
     % else:
@@ -182,6 +182,7 @@ fields:
 id: tps_screening_questions
 continue button field: users[i].tps_screening_questions
 question: |
+  TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
   TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
 subquestion: |
   % if i == 0:

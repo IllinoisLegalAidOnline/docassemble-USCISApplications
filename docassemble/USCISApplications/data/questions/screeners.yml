@@ -172,6 +172,7 @@ fields:
       is: mixed
   - Supervisor name: supervisor_name
   - Supervisor notes: supervisor_notes
+    required: False
     datatype: area
   - What addenda should be included?: selected_addenda
     datatype: checkboxes
@@ -182,7 +183,6 @@ fields:
 id: tps_screening_questions
 continue button field: users[i].tps_screening_questions
 question: |
-  TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
   TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
 subquestion: |
   % if i == 0:
@@ -235,7 +235,7 @@ fields:
       - Other
     default: |
       ${ showifdef("users[0].proof_of_birthplace") if i > 0 else '' }
-  - Are both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
+  - Are one or both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnoradio
   # This show if logic was getting the screen stuck
   # TODO: see if we can get it working later with this enabled again
@@ -485,7 +485,7 @@ subquestion: |
             % else:
             <li>Proof of birth country: ${ showifdef("user.proof_of_birthplace") }</li>
             % endif
-            <li>Both parents are Venezuelan nationals: ${ 'Yes' if showifdef("user.parents_from_venezuela") else 'No' }</li>
+            <li>One or both parents are Venezuelan nationals: ${ 'Yes' if showifdef("user.parents_from_venezuela") else 'No' }</li>
             % if showifdef("user.parents_from_venezuela") and not user.proof_of_parent_birthplace:
             <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i> ${ user } was not born in Venezuela but their parents were. Yet they do not have proof.</li>
             % else:

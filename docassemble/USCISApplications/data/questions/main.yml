@@ -79,7 +79,7 @@ code: |
   users.gather()
   review_initial_user_list
   nav.set_section("section_retainer")
-  interview_order_limited_scope
+  agrees_to_retainer
   set_progress(10)
   for user in users:
     if user.age_in_years() > 13:

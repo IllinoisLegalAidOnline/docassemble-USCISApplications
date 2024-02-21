@@ -5,6 +5,7 @@ include:
   - aiw.yml
   - combined_application_questions.yml
   - docassemble.ILAO:ilao-interview-framework.yml
+  #- review_screen.yml
 ---
 default screen parts:
   under: |
@@ -153,17 +154,17 @@ data:
   - section_retainer: Limited Retainer
   - section_screener: Verify eligibility
   - section_application: Application
-  # - review_USCIS_Applications: Review 
+  - review_USCIS_Applications: Review 
   - section_download: Download and print
 ---
 code: |
   if len(users) > 1:
-    sections = default_sections[:-3]
+    sections = default_sections[:-4]
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-1:]
+    sections.extend(default_sections[-2:]
     )
     nav.set_sections(sections)
   update_sections = True
@@ -360,6 +361,7 @@ fields:
     default: |
       ${ users[0].country_of_birth }      
   - City or town of birth: users[i].city_of_birth
+  - State/Province of birth: users[i].state_of_birth  
   - Birthdate: users[i].birthdate
     datatype: BirthDate
   - A Number (do not include A-): users[i].a_number
@@ -420,9 +422,21 @@ table: users.initial_review_table
 rows: users
 columns:
   - Name: |
-      row_item
+      row_item.name.full(middle="full")
+  - Country of birth: |
+      row_item.country_of_birth
+  - City of birth: |
+      row_item.city_of_birth
+  - State/Province of birth: |
+      row_item.state_of_birth
+  - Country of last residence: |
+      row_item.last_country_of_residence
   - Date of birth: |
       row_item.birthdate.format("MM/dd/yyyy")
+  - Age: |
+      row_item.age_in_years()
+  - A-Number: |
+      row_item.a_number
 edit:
   - name.first
 confirm: True

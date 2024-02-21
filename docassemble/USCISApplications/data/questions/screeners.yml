@@ -184,7 +184,6 @@ id: tps_screening_questions
 continue button field: users[i].tps_screening_questions
 question: |
   TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
-  TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
 subquestion: |
   % if i == 0:
   <div class="p-3 mb-2 bg-info text-dark border border-info rounded-3" role="alert">

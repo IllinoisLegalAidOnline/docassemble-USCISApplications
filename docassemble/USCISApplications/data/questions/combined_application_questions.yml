@@ -3270,9 +3270,9 @@ attachment:
     # Depends on whether TPS or EAD only
     - "Q27_1": |
         % if application_kind == "ead_and_tps":
-        A
+        a
         % else:
-        C
+        c
         % endif
     - "Q27_2": |
         % if application_kind == "ead_and_tps":

@@ -5,7 +5,6 @@ include:
   - aiw.yml
   - combined_application_questions.yml
   - docassemble.ILAO:ilao-interview-framework.yml
-  - docassemble.ILAO:shared-basic-questions.yml
 ---
 default screen parts:
   under: |
@@ -16,7 +15,7 @@ default screen parts:
   right: |
 ---
 code: |
-  ilao_easy_form_title = "USCIS Applications"
+  ilao_easy_form_title = "TPS/EAD application"
   ilao_easy_form_url = "None - this is an advocate only Easy Form"
 ---
 metadata:
@@ -855,7 +854,7 @@ code: |
     user.cached_pdf = ans[idx]
   background_response()
 ---
-id: download_completed_ea_application
+id: get_docs_screen
 event: download_completed_ea_application
 question: |
   Download the completed application

@@ -4,6 +4,7 @@ attachment:
     name: ${ users[i] } - Applicant_intake_worksheet
     filename: ${ users[i] } - Applicant_intake_worksheet
     pdf template file: Applicant_intake_worksheet.pdf
+    skip undefined: True
     editable: False
     fields:
       - "users1_a_number": ${ users[i].a_number }

@@ -1,0 +1,309 @@
+---
+id: review work for user i
+continue button field: users[i].check_work
+question: |
+  Check your work for ${ users[i] }
+subquestion: |
+  Below are your answers so far for ${ users[i] }. Please 
+  check your work and use the "Edit" button to make any
+  necessary changes.
+
+  Click "Continue" when you are finished.
+
+  <div class="alert alert-info">
+    <p>
+    For now, only some answers can be changed on this screen.
+
+    More functionality will be added over time.
+    </p>
+  </div>
+review:
+  - Edit: 
+      - users[i].name.first
+    button: |
+      <h2 class="h4">Basic information</h2>
+
+      &nbsp; | &nbsp;
+      -------|-------
+      Name | ${ users[i].name.full(middle="full") }
+      Birthplace | ${ showifdef("users[i].city_of_birth")}, ${ showifdef("users[i].state_of_birth") } ${ showifdef("users[i].country_of_birth") }
+      Date of birth | ${ users[i].birthdate }, age ${ users[i].age_in_years() }
+      A-number | ${ users[i].a_number }
+      Country of last residence | ${ users[i].last_country_of_residence }
+  - Edit:
+      - users[i].addenda
+    button: |
+      <h2 class="h4">Selected addenda</h2>
+
+      % for addendum in users[i].addenda.true_values():
+      * ${ addendum.replace("_", " ").capitalize() }
+      % endfor
+  - Edit:
+      - users[i].countries_of_citizenship[0]
+    button: |
+      <h2 class="h4">Countries of citizenship</h2>
+      ${ users[i].countries_of_citizenship }
+  - Edit:
+      - users[i].applied_for_other_immigration_benefit
+    button: |
+      <h2 class="h4">Other immigration benefits</h2>
+      Applied for other benefits: ${ yesno(users[i].applied_for_other_immigration_benefit) }
+  - Edit:
+      - users[i].have_you_ever_questions
+    button: |
+      <h2 class="h4">Have you ever...</h2>
+      % if showifdef("users[i].q8a"):
+      * 8a
+      % endif
+      % if showifdef("users[i].q8b"):
+      * 8b
+      % endif
+      % if showifdef("users[i].q8c"):
+      * 8c
+      % endif
+      % if showifdef("users[i].q9a"):
+      * 9a
+      % endif
+      % if showifdef("users[i].q9b"):
+      * 9b
+      % endif
+      % if showifdef("users[i].q9c"):
+      * 9c
+      % endif
+      % if showifdef("users[i].q10a"):
+      * 10a
+      % endif
+      % if showifdef("users[i].q10b"):
+      * 10b
+      % endif
+      % if showifdef("users[i].q10c"):
+      * 10c
+      % endif
+      % if showifdef("users[i].q11"):
+      * 11
+      % endif
+      % if showifdef("users[i].q12a"):
+      * 12a
+      % endif
+      % if showifdef("users[i].q12b"):
+      * 12b
+      % endif
+      % if showifdef("users[i].q12c"):
+      * 12c
+      % endif
+      % if showifdef("users[i].q12d"):
+      * 12d
+      % endif
+      % if showifdef("users[i].q12e"):
+      * 12e
+      % endif
+      % if showifdef("users[i].q13a"):
+      * 13a
+      % endif
+      % if showifdef("users[i].q13b"):
+      * 13b
+      % endif
+      % if showifdef("users[i].q13c"):
+      * 13c
+      % endif
+      % if showifdef("users[i].q13d"):
+      * 13d
+      % endif
+      % if showifdef("users[i].q14a"):
+      * 14a
+      % endif
+      % if showifdef("users[i].q14b"):
+      * 14b
+      % endif
+      % if showifdef("users[i].q14c"):
+      * 14c
+      % endif
+      % if showifdef("users[i].q14d"):
+      * 14d
+      % endif
+      % if showifdef("users[i].q15a"):
+      * 15a
+      % endif
+      % if showifdef("users[i].q15b"):
+      * 15b
+      % endif
+      % if showifdef("users[i].q15c"):
+      * 15c
+      % endif
+      % if showifdef("users[i].q16"):
+      * 16
+      % endif
+      % if showifdef("users[i].q17"):
+      * 17
+      % endif
+      % if showifdef("users[i].q18a"):
+      * 18a
+      % endif
+      % if showifdef("users[i].q18b"):
+      * 18b
+      % endif
+      % if showifdef("users[i].q18c"):
+      * 18c
+      % endif
+      % if showifdef("users[i].q19"):
+      * 19
+      % endif
+      % if showifdef("users[i].q20a"):
+      * 20a
+      % endif
+      % if showifdef("users[i].q20b"):
+      * 20b
+      % endif
+      % if showifdef("users[i].q20c"):
+      * 20c
+      % endif
+      % if showifdef("users[i].q20d"):
+      * 20d
+      % endif
+      % if showifdef("users[i].q20e"):
+      * 20e
+      % endif
+      % if showifdef("users[i].q21"):
+      * 21
+      % endif
+      % if showifdef("users[i].q22"):
+      * 22
+      % endif
+      % if showifdef("users[i].q23a"):
+      * 23a
+      % endif
+      % if showifdef("users[i].q23b"):
+      * 23b
+      % endif
+      % if showifdef("users[i].q23c"):
+      * 23c
+      % endif
+      % if showifdef("users[i].q24"):
+      * 24
+      % endif
+      % if showifdef("users[i].q25"):
+      * 25
+      % endif
+      % if showifdef("users[i].q26"):
+      * 26
+      % endif
+      % if showifdef("users[i].q27"):
+      * 27
+      % endif
+      % if showifdef("users[i].q28"):
+      * 28
+      % endif
+      % if showifdef("users[i].q29"):
+      * 29
+      % endif
+      % if showifdef("users[i].q30a"):
+      * 30a
+      % endif
+      % if showifdef("users[i].q30b"):
+      * 30b
+      % endif
+      % if showifdef("users[i].q30c"):
+      * 30c
+      % endif
+      % if showifdef("users[i].q30d"):
+      * 30d
+      % endif
+      % if showifdef("users[i].q30e"):
+      * 30e
+      % endif
+      % if showifdef("users[i].q31a"):
+      * 31a
+      % endif
+      % if showifdef("users[i].q31b"):
+      * 31b
+      % endif
+      % if showifdef("users[i].q32"):
+      * 32
+      % endif
+      % if showifdef("users[i].q33"):
+      * 33
+      % endif
+      % if showifdef("users[i].q34"):
+      * 34
+      % endif
+      % if showifdef("users[i].q35"):
+      * 35
+      % endif
+      % if showifdef("users[i].q36"):
+      * 36
+      % endif
+      % if showifdef("users[i].q37a"):
+      * 37a
+      % endif
+      % if showifdef("users[i].q37b"):
+      * 37b
+      % endif
+      % if showifdef("users[i].q38a"):
+      * 38a
+      % endif
+      % if showifdef("users[i].q38b"):
+      * 38b
+      % endif
+      % if showifdef("users[i].q38c"):
+      * 38c
+      % endif
+      % if showifdef("users[i].q38d"):
+      * 38d
+      % endif
+      % if showifdef("users[i].q38e"):
+      * 38e
+      % endif
+      % if showifdef("users[i].q39a"):
+      * 39a
+      % endif
+      % if showifdef("users[i].q39b"):
+      * 39b
+      % endif
+      % if showifdef("users[i].q40"):
+      * 40
+      % endif
+      % if showifdef("users[i].q41"):
+      * 41
+      % endif
+# % if users[i].applied_for_other_immigration_benefit:
+# Type: ${ users[i].applied_benefit_type }
+
+# Receipt date: ${ users[i].applied_receipt_date }
+# % endif
+---
+id: review countries of citizenship
+question: |
+  Review countries of citizenship for ${ users[i] }
+fields:
+  - First country you are a citizen of: users[i].countries_of_citizenship[0]
+    code: uscis_countries_list()
+  - Do you have citizenship in another country?: users[i].has_additional_citizenship
+    datatype: yesnoradio
+  - Second Country of Citizenship: users[i].countries_of_citizenship[1]
+    code: uscis_countries_list()
+    show if: users[i].has_additional_citizenship
+  - note: |
+      For now, if ${ users[i] } is a citizen of more countries than those listed above, get supervisor approval and handwrite the additional countries into the addendum pages after printing the application.
+    show if: users[i].has_additional_citizenship
+---
+id:  review_immigration_benefits
+question: |
+  Review immigration benefits for ${ users[i] }    
+  - Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: users[i].applied_for_other_immigration_benefit
+    datatype: yesnoradio
+    default: |
+      ${ showifdef("users[0].applied_for_other_immigration_benefit") if i > 0 else '' }
+  - Type of immigration benefit: users[i].applied_benefit_type
+    show if: users[i].applied_for_other_immigration_benefit
+    default: |
+      ${ showifdef("users[0].applied_benefit_type") if i > 0 else '' }
+  - Receipt date: users[i].applied_receipt_date
+    show if: users[i].applied_for_other_immigration_benefit
+    datatype: ThreePartsDate
+    default: |
+      ${ showifdef("users[0].applied_receipt_date") if i > 0 else '' }
+
+---
+code: |
+  users[i].countries_of_citizenship.gathered = True
+  users[i].countries_of_citizenship.there_is_another = False

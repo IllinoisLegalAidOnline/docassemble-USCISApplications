@@ -1,0 +1,1573 @@
+### Automatically generated review screen ######
+# We should pick and choose from this and add to review_screen.yml
+# only if helpful
+---
+id: |
+  review screen
+event: |
+  review_form
+question: |
+  Review your answers
+review:
+  - Edit: |
+      supervisor.revisit
+    button: |
+      **Supervisor**
+      % for item in supervisor:
+      - ${ item }
+      % endfor
+  - Edit: |
+      preparer.revisit
+    button: |
+      **Preparer**
+      % for item in preparer:
+      - ${ item }
+      % endfor
+  - Edit: |
+      interpreter.revisit
+    button: |
+      **Interpreter**
+      % for item in interpreter:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users.revisit
+    button: |
+      **Users**
+      % for item in users:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users[i].countries_of_residence.revisit
+    button: |
+      **Users[i].Countries Of Residence**
+      % for item in users[i].countries_of_residence:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users[i].countries_of_citizenship.revisit
+    button: |
+      **Users[i].Countries Of Citizenship**
+      % for item in users[i].countries_of_citizenship:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users[i].countries_traveled_through.revisit
+    button: |
+      **Users[i].Countries Traveled Through**
+      % for item in users[i].countries_traveled_through:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users[i].prior_immigration_proceedings.revisit
+    button: |
+      **Users[i].Prior Immigration Proceedings**
+      % for item in users[i].prior_immigration_proceedings:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users[i].travel_documents.revisit
+    button: |
+      **Users[i].Travel Documents**
+      % for item in users[i].travel_documents:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users[i].alternate_birthdates.revisit
+    button: |
+      **Users[i].Alternate Birthdates**
+      % for item in users[i].alternate_birthdates:
+      - ${ item }
+      % endfor
+  - Edit: |
+      signed_in_user.revisit
+    button: |
+      **Signed In User**
+      % for item in signed_in_user:
+      - ${ item }
+      % endfor
+  - Edit: |
+      users[0].address.address
+    button: |
+      **${ users[0] }'s address**
+      Street address: ${ showifdef('users[0].address.address') }
+      Suite/Unit/Floor/Room: ${ showifdef('users[0].address.unit') }
+      City or Town: ${ showifdef('users[0].address.city') }
+      State: ${ showifdef('users[0].address.state') }
+      ZIP: ${ showifdef('users[0].address.zip') }
+      Daytime Phone Number (optional): ${ showifdef('users[0].phone_number') }
+      Mobile Telephone Number (optional): ${ showifdef('users[0].mobile_number') }
+      Email address (optional): ${ showifdef('users[0].email') }
+  - Edit: |
+      users[0].mailing_address
+    button: |
+      **What is ${ users[0] }'s mailing address?**
+      ${ users[0] }'s mailing address is: ${ showifdef('users[0].mailing_address') }
+      % endif
+      ${ users[0].address.address_label}: ${ showifdef('users[0].mailing_address.address') }
+      ${ users[0].address.unit_label}: ${ showifdef('users[0].mailing_address.unit') }
+      ${ users[0].address.city_label}: ${ showifdef('users[0].mailing_address.city') }
+      ${ users[0].address.zip_label}: ${ showifdef('users[0].mailing_address.zip') }
+  - Edit: ""
+    button: |
+      **Have you ever used (including on any documents) a date of birth other than ${ users[i].birthdate }?**
+  - Edit: |
+      interpreter_present
+    button: |
+      **Is an interpreter present?**
+      Is an interpreter present?: ${ word(yesno(interpreter_present)) }
+      % if showifdef('interpreter_present'):
+      What language will the interpreter speak?: ${ showifdef('interpreter.language') }
+      % endif
+      First: ${ showifdef('interpreter.name.first') }
+      Middle: ${ showifdef('interpreter.name.middle') }
+      Last: ${ showifdef('interpreter.name.last') }
+  - Edit: |
+      preparer
+    button: |
+      **What is the name of the volunteer or person asking questions today?**
+      Someone already named: ${ showifdef('preparer') }
+      First: ${ showifdef('preparer.name.first') }
+      Middle: ${ showifdef('preparer.name.middle') }
+      Last: ${ showifdef('preparer.name.last') }
+  - Edit: |
+      users.target_number
+    button: |
+      **How many people are applying for work authorization at this station?**
+      How many?: ${ showifdef('users.target_number') }
+      First name: ${ showifdef('users[0].name.first') }
+      Middle name: ${ showifdef('users[0].name.middle') }
+      Last name: ${ showifdef('users[0].name.last') }
+      Have you ever been known by a different name?: ${ word(yesno(users[0].aliases.there_are_any)) }
+      City or town of birth: ${ showifdef('users[0].city_of_birth') }
+      State/Province of birth: ${ showifdef('users[0].state_of_birth') }
+      Birthdate: ${ showifdef('users[0].birthdate') }
+      A Number (do not include A-): ${ showifdef('users[0].a_number') }
+  - Edit: ""
+    button: |
+      **What is the name of the ${ ordinal(i) } applicant?**
+  - Edit: |
+      users[0].aliases.there_are_any
+    button: |
+      **Has ${ users[i] } ever been known by a different name or alias?**
+      ${ word(yesno(users[0].aliases.there_are_any)) }
+  - Edit: |
+      users[0].aliases.there_is_another
+    button: |
+      **Has ${ users[0].name } been known by any other names?**
+      ${ word(yesno(users[0].aliases.there_is_another)) }
+  - Edit: |
+      users[i].signature
+    button: |
+      **${ users[i].name.first }, please sign here to agree / firma aqui para aceptar**
+      ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
+      : ${ showifdef('users[i].signature') }
+  - Edit: |
+      application_kind
+    button: |
+      **What kind of application will this family complete?**
+      What kind of application will this family complete?
+      : ${ showifdef('application_kind') }
+  - Edit: |
+      supervisor_overall_approval_status
+    button: |
+      **EAD eligibility screener**
+      What should happen with this application?: ${ showifdef('supervisor_overall_approval_status') }
+      % endif
+      What should happen with this application?: ${ showifdef('supervisor_overall_approval_status') }
+      % endif
+      % if showifdef('supervisor_overall_approval_status') == "mixed":
+      Which applications should be **approved**?: ${ showifdef('approved_applications') }
+      % endif
+      Supervisor name: ${ showifdef('supervisor_name') }
+      Supervisor notes: ${ showifdef('supervisor_notes') }
+      What addenda should be included?: ${ showifdef('selected_addenda') }
+  - Edit: 3
+    button: |
+      **TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })**
+      grid: ${ showifdef('3') }
+      label above field: ${ showifdef('True') }
+      grid: ${ showifdef('3') }
+      label above field: ${ showifdef('True') }
+  - Edit: |
+      supervisor_overall_approval_status
+    button: |
+      **Review TPS screening questions**
+      What should happen with this application?: ${ showifdef('supervisor_overall_approval_status') }
+      % endif
+      What should happen with this application?: ${ showifdef('supervisor_overall_approval_status') }
+      % endif
+      % if showifdef('supervisor_overall_approval_status') == "mixed":
+      Which applications can **continue**?: ${ showifdef('approved_applications') }
+      % endif
+      Supervisor name: ${ showifdef('supervisor_name') }
+      Supervisor notes: ${ showifdef('supervisor_notes') }
+---
+id: |
+  revisit supervisor
+continue button field: |
+  supervisor.revisit
+question: |
+  Edit your answers about Supervisor
+subquestion: |
+  ${ supervisor.table }
+  ${ supervisor.add_action() }
+---
+id: |
+  revisit preparer
+continue button field: |
+  preparer.revisit
+question: |
+  Edit your answers about Preparer
+subquestion: |
+  ${ preparer.table }
+  ${ preparer.add_action() }
+---
+id: |
+  revisit interpreter
+continue button field: |
+  interpreter.revisit
+question: |
+  Edit your answers about Interpreter
+subquestion: |
+  ${ interpreter.table }
+  ${ interpreter.add_action() }
+---
+id: |
+  revisit users
+continue button field: |
+  users.revisit
+question: |
+  Edit your answers about Users
+subquestion: |
+  ${ users.table }
+  ${ users.add_action() }
+---
+id: |
+  revisit users[i].countries_of_residence
+continue button field: |
+  users[i].countries_of_residence.revisit
+question: |
+  Edit your answers about Users[i].Countries Of Residence
+subquestion: |
+  ${ users[i].countries_of_residence.table }
+  ${ users[i].countries_of_residence.add_action() }
+---
+id: |
+  revisit users[i].countries_of_citizenship
+continue button field: |
+  users[i].countries_of_citizenship.revisit
+question: |
+  Edit your answers about Users[i].Countries Of Citizenship
+subquestion: |
+  ${ users[i].countries_of_citizenship.table }
+  ${ users[i].countries_of_citizenship.add_action() }
+---
+id: |
+  revisit users[i].countries_traveled_through
+continue button field: |
+  users[i].countries_traveled_through.revisit
+question: |
+  Edit your answers about Users[i].Countries Traveled Through
+subquestion: |
+  ${ users[i].countries_traveled_through.table }
+  ${ users[i].countries_traveled_through.add_action() }
+---
+id: |
+  revisit users[i].prior_immigration_proceedings
+continue button field: |
+  users[i].prior_immigration_proceedings.revisit
+question: |
+  Edit your answers about Users[i].Prior Immigration Proceedings
+subquestion: |
+  ${ users[i].prior_immigration_proceedings.table }
+  ${ users[i].prior_immigration_proceedings.add_action() }
+---
+id: |
+  revisit users[i].travel_documents
+continue button field: |
+  users[i].travel_documents.revisit
+question: |
+  Edit your answers about Users[i].Travel Documents
+subquestion: |
+  ${ users[i].travel_documents.table }
+  ${ users[i].travel_documents.add_action() }
+---
+id: |
+  revisit users[i].alternate_birthdates
+continue button field: |
+  users[i].alternate_birthdates.revisit
+question: |
+  Edit your answers about Users[i].Alternate Birthdates
+subquestion: |
+  ${ users[i].alternate_birthdates.table }
+  ${ users[i].alternate_birthdates.add_action() }
+---
+id: |
+  revisit signed_in_user
+continue button field: |
+  signed_in_user.revisit
+question: |
+  Edit your answers about Signed In User
+subquestion: |
+  ${ signed_in_user.table }
+  ${ signed_in_user.add_action() }
+---
+table: |
+  users.table
+rows: |
+  users
+columns:
+  - ${ users[i] }'s address is: |
+      row_item.address if hasattr(row_item, 'address') else ''
+  - Street address: |
+      row_item.address if hasattr(row_item, 'address') else ''
+  - Suite/Unit/Floor/Room: |
+      row_item.unit if hasattr(row_item, 'unit') else ''
+  - City or Town: |
+      row_item.city if hasattr(row_item, 'city') else ''
+  - State: |
+      row_item.state if hasattr(row_item, 'state') else ''
+  - ZIP: |
+      row_item.zip if hasattr(row_item, 'zip') else ''
+  - Daytime Phone Number (optional): |
+      row_item.phone_number if hasattr(row_item, 'phone_number') else ''
+  - Mobile Telephone Number (optional): |
+      row_item.mobile_number if hasattr(row_item, 'mobile_number') else ''
+  - Email address (optional): |
+      row_item.email if hasattr(row_item, 'email') else ''
+  - ${ users[i] }'s mailing address is: |
+      row_item.mailing_address if hasattr(row_item, 'mailing_address') else ''
+  - ${ users[i].address.address_label}: |
+      row_item.address if hasattr(row_item, 'address') else ''
+  - ${ users[i].address.unit_label}: |
+      row_item.unit if hasattr(row_item, 'unit') else ''
+  - ${ users[i].address.city_label}: |
+      row_item.city if hasattr(row_item, 'city') else ''
+  - ${ users[i].address.zip_label}: |
+      row_item.zip if hasattr(row_item, 'zip') else ''
+  - there_are_any: |
+      row_item.there_are_any if hasattr(row_item, 'there_are_any') else ''
+  - there_are_any: |
+      row_item.there_are_any if hasattr(row_item, 'there_are_any') else ''
+  - Proceeding: |
+      row_item.name if hasattr(row_item, 'name') else ''
+  - Jurisdiction: |
+      row_item.jurisdiction if hasattr(row_item, 'jurisdiction') else ''
+  - Location (City, State): |
+      row_item.location if hasattr(row_item, 'location') else ''
+  - Start Date: |
+      row_item.start_date if hasattr(row_item, 'start_date') else ''
+  - Proceedings are ongoing/pending today: |
+      row_item.proceedings_continuing_to_present if hasattr(row_item, 'proceedings_continuing_to_present') else ''
+  - End Date: |
+      row_item.end_date if hasattr(row_item, 'end_date') else ''
+  - Passport number (if any): |
+      row_item.passport_number if hasattr(row_item, 'passport_number') else ''
+  - Other travel document number (if any): |
+      row_item.other_travel_document_number if hasattr(row_item, 'other_travel_document_number') else ''
+  - What is the expiration date of your most recent passport or travel document?: |
+      row_item.passport_expiration_date if hasattr(row_item, 'passport_expiration_date') else ''
+  - Additional passport or travel document number: |
+      row_item.travel_documents[0] if hasattr(row_item, 'travel_documents[0]') else ''
+  - Additional passport or travel document number: |
+      row_item.travel_documents[1] if hasattr(row_item, 'travel_documents[1]') else ''
+  - ${ users[i] } has more than 3 travel documents: |
+      row_item.there_is_another if hasattr(row_item, 'there_is_another') else ''
+  - Additional passport or travel document number: |
+      row_item.travel_documents[j] if hasattr(row_item, 'travel_documents[j]') else ''
+  - Is this Applicant's first TPS application, or is Applicant re-registering/reapplying for TPS?: |
+      row_item.is_first_TPS_application if hasattr(row_item, 'is_first_TPS_application') else ''
+  - Who Previously Granted the Applicant TPS?: |
+      row_item.who_granted_prior_TPS if hasattr(row_item, 'who_granted_prior_TPS') else ''
+  - there_are_any: |
+      row_item.there_are_any if hasattr(row_item, 'there_are_any') else ''
+  - Other Date of Birth Used: |
+      row_item.alternate_birthdates[0] if hasattr(row_item, 'alternate_birthdates[0]') else ''
+  - Other Date of Birth Used: |
+      row_item.alternate_birthdates[1] if hasattr(row_item, 'alternate_birthdates[1]') else ''
+  - Other Date of Birth Used: |
+      row_item.alternate_birthdates[j] if hasattr(row_item, 'alternate_birthdates[j]') else ''
+  - Gender: |
+      row_item.sex if hasattr(row_item, 'sex') else ''
+  - Ethnicity: |
+      row_item.ethnicity if hasattr(row_item, 'ethnicity') else ''
+  - Race (choose 1)": |
+      row_item.race if hasattr(row_item, 'race') else ''
+  - Height (centimeters): |
+      row_item.height_cm if hasattr(row_item, 'height_cm') else ''
+  - Weight (kilograms): |
+      row_item.weight_kg if hasattr(row_item, 'weight_kg') else ''
+  - Hair Color (choose one): |
+      row_item.hair_color if hasattr(row_item, 'hair_color') else ''
+  - Eye Color (choose one): |
+      row_item.eye_color if hasattr(row_item, 'eye_color') else ''
+  - Marital Status: |
+      row_item.marital_status if hasattr(row_item, 'marital_status') else ''
+  - Explain "other" marital status: |
+      row_item.marital_status_other if hasattr(row_item, 'marital_status_other') else ''
+  - USCIS Online Account Number (if any): |
+      row_item.uscis_account_number if hasattr(row_item, 'uscis_account_number') else ''
+  - Has the Social Security Administration ever officially issued a card to you?: |
+      row_item.has_ssn if hasattr(row_item, 'has_ssn') else ''
+  - U.S. Social Security Number: |
+      row_item.ssn if hasattr(row_item, 'ssn') else ''
+  - Student and Exchange Visitor Information System (SEVIS) Number (if any): |
+      row_item.sevis_number if hasattr(row_item, 'sevis_number') else ''
+  - Marriage Date (to current spouse): |
+      row_item.marriage_date if hasattr(row_item, 'marriage_date') else ''
+  - Marriage Location: |
+      row_item.marriage_location if hasattr(row_item, 'marriage_location') else ''
+  - Marriage City: |
+      row_item.marriage_city if hasattr(row_item, 'marriage_city') else ''
+  - Marriage State: |
+      row_item.marriage_state if hasattr(row_item, 'marriage_state') else ''
+  - Marriage Province: |
+      row_item.marriage_province if hasattr(row_item, 'marriage_province') else ''
+  - Marriage Country: |
+      row_item.marriage_country if hasattr(row_item, 'marriage_country') else ''
+  - Spouse's USCIS Online Account Number (if any and if known): |
+      row_item.online_account_number if hasattr(row_item, 'online_account_number') else ''
+  - Spouse's A-Number (if any and if known) (do not include A-): |
+      row_item.a_number if hasattr(row_item, 'a_number') else ''
+  - ${ users[i] } entered the U.S. (and has resided in the U.S. since) on what date?: |
+      row_item.date_started_us_residence if hasattr(row_item, 'date_started_us_residence') else ''
+  - Date of Last Entry into U.S.: |
+      row_item.date_of_last_entry if hasattr(row_item, 'date_of_last_entry') else ''
+  - Port of Entry (if any): |
+      row_item.port_of_entry if hasattr(row_item, 'port_of_entry') else ''
+  - City/Town of Entry: |
+      row_item.city_of_entry if hasattr(row_item, 'city_of_entry') else ''
+  - Form I-94 Arrival-Departure Record Number (if any): |
+      row_item.i94_arrival_number if hasattr(row_item, 'i94_arrival_number') else ''
+  - ? |
+      Date Applicant's Authorized Period of Stay in the U.S. Expired or Will Expire (as shown on Form I-94 or Crewman's Landing Permit (Form I-95)) (mm/dd/yyyy or duration of status (D/S)
+    : |
+      row_item.authorized_stay_ending_date if hasattr(row_item, 'authorized_stay_ending_date') else ''
+  - Immigration Status (or Lack of Status) When You Last Entered the U.S.: |
+      row_item.immigration_status_last_entry if hasattr(row_item, 'immigration_status_last_entry') else ''
+  - Current Immigration Status or Lack of Status: |
+      row_item.current_immigration_status if hasattr(row_item, 'current_immigration_status') else ''
+  - Has ${ users[i] } ever been in immigration proceedings?: |
+      row_item.has_been_in_immigration_proceedings if hasattr(row_item, 'has_been_in_immigration_proceedings') else ''
+  - What kind of immigration proceedings?: |
+      row_item.kind_of_immigration_proceedings if hasattr(row_item, 'kind_of_immigration_proceedings') else ''
+  - Location of DOJ or DHS proceedings: |
+      row_item.proceedings_dhs_or_doj_hearing_location if hasattr(row_item, 'proceedings_dhs_or_doj_hearing_location') else ''
+  - Location of federal court proceedings: |
+      row_item.federal_court_proceedings_location if hasattr(row_item, 'federal_court_proceedings_location') else ''
+  - Start date of proceedings: |
+      row_item.proceedings_start_date if hasattr(row_item, 'proceedings_start_date') else ''
+  - Proceedings are ongoing/pending today: |
+      row_item.proceedings_continuing_to_present if hasattr(row_item, 'proceedings_continuing_to_present') else ''
+  - End date of proceedings: |
+      row_item.proceedings_end_date if hasattr(row_item, 'proceedings_end_date') else ''
+  - Have you previously filed Form I-765?: |
+      row_item.previously_filed_I765 if hasattr(row_item, 'previously_filed_I765') else ''
+  - Has the Social Security Administration ever officially issued a Social Security card to you?: |
+      row_item.SS_has_issued_card if hasattr(row_item, 'SS_has_issued_card') else ''
+  - 8a. Have you EVER been convicted of any felony committed in the United States?: |
+      row_item.q8a if hasattr(row_item, 'q8a') else ''
+  - 8b. Have you EVER been convicted of any misdemeanor committed in the United States: |
+      row_item.q8b if hasattr(row_item, 'q8b') else ''
+  - ? |
+      8c. Have you EVER been convicted of any particularly serious crime, whether committed inside or outside of the United States
+    : |
+      row_item.q8c if hasattr(row_item, 'q8c') else ''
+  - ? |
+      9a. Have you EVER ordered, incited, assisted, or otherwise participated in the persecution of any person on account of race, religion, nationality, membership in a particular social group, or political opinion?
+    : |
+      row_item.q9a if hasattr(row_item, 'q9a') else ''
+  - ? |
+      9b. Have you EVER committed serious nonpolitical crimes outside of the United States prior to your arrival in the United States?
+    : |
+      row_item.q9b if hasattr(row_item, 'q9b') else ''
+  - ? |
+      9c. Have you EVER or are you NOW engaged in activities that could be reasonable grounds for concluding that you are a danger to the security of the United States?
+    : |
+      row_item.q9c if hasattr(row_item, 'q9c') else ''
+  - ? |
+      10a. Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a crime (other than a purely political offense)?
+    : |
+      row_item.q10a if hasattr(row_item, 'q10a') else ''
+  - ? |
+      10b. Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a violation of any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?
+    : |
+      row_item.q10b if hasattr(row_item, 'q10b') else ''
+  - ? |
+      10c. Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a conspiracy to violate any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?
+    : |
+      row_item.q10c if hasattr(row_item, 'q10c') else ''
+  - ? |
+      11. Have you EVER been convicted of two or more criminal offenses (other than purely political offenses) for which you received sentences to confinement that, when combined, total five years or more?
+    : |
+      row_item.q11 if hasattr(row_item, 'q11') else ''
+  - 12a. Have you EVER trafficked in or are you NOW trafficking in any controlled substance?: |
+      row_item.q12a if hasattr(row_item, 'q12a') else ''
+  - ? |
+      12b. Are you NOW or have you EVER knowingly assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?
+    : |
+      row_item.q12b if hasattr(row_item, 'q12b') else ''
+  - 12c. Are you the spouse or child of an alien who unlawfully trafficked in any controlled substance?: |
+      row_item.q12c if hasattr(row_item, 'q12c') else ''
+  - ? |
+      12d. Are you the spouse or child of an alien who assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?
+    : |
+      row_item.q12d if hasattr(row_item, 'q12d') else ''
+  - ? |
+      12e. Within the previous five years, have you EVER obtained any financial or other benefit from the unlawful activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit was the product of such illicit activity?
+    : |
+      row_item.q12e if hasattr(row_item, 'q12e') else ''
+  - ? |
+      13a. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate any law of the United States relating to espionage or sabotage?
+    : |
+      row_item.q13a if hasattr(row_item, 'q13a') else ''
+  - ? |
+      13b. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate or evade any law prohibiting the export from the United States of goods, technology, or sensitive information?
+    : |
+      row_item.q13b if hasattr(row_item, 'q13b') else ''
+  - ? |
+      13c. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any other unlawful activity in the United States?
+    : |
+      row_item.q13c if hasattr(row_item, 'q13c') else ''
+  - ? |
+      13d. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity in which a purpose is to oppose, control, or overthrow the Government of the United States by force, violence, or other unlawful means, including but not limited to participating in such activities, giving support to others involved in such activities, or being a member or representative of a terrorist organization?
+    : |
+      row_item.q13d if hasattr(row_item, 'q13d') else ''
+  - 14a. Have you EVER or are you NOW engaged in terrorist activities?: |
+      row_item.q14a if hasattr(row_item, 'q14a') else ''
+  - ? |
+      14b. Have you EVER or are you NOW engaged in or plan to engage in activities in the United States that would have potentially serious adverse foreign policy consequences for the United States?
+    : |
+      row_item.q14b if hasattr(row_item, 'q14b') else ''
+  - ? |
+      14c. Have you EVER been or are you NOW a member of the Communist or other totalitarian party, except when membership was involuntary?
+    : |
+      row_item.q14c if hasattr(row_item, 'q14c') else ''
+  - 14d. Have you EVER participated in Nazi persecution or genocide?: |
+      row_item.q14d if hasattr(row_item, 'q14d') else ''
+  - ? |
+      15a. Have you EVER, whether in the United States or any other country, been arrested for breaking or violating any law or ordinance, excluding minor traffic violations?
+    : |
+      row_item.q15a if hasattr(row_item, 'q15a') else ''
+  - ? |
+      15b. Have you EVER, whether in the United States or any other country, been cited, charged, or indicted, for breaking or violating any law or ordinance, excluding minor traffic violations?
+    : |
+      row_item.q15b if hasattr(row_item, 'q15b') else ''
+  - ? |
+      15c. Have you EVER, whether in the United States or any other country, been convicted, fined, imprisoned, placed on probation, received a suspended sentence or deferral of adjudication for breaking or violating any law or ordinance, excluding minor traffic violations?
+    : |
+      row_item.q15c if hasattr(row_item, 'q15c') else ''
+  - ? |
+      16. Have you EVER been the beneficiary of a pardon, amnesty, rehabilitation decree, other act of clemency, or similar action?
+    : |
+      row_item.q16 if hasattr(row_item, 'q16') else ''
+  - 17. Have you EVER committed a serious criminal offense in the United States and asserted immunity from prosecution?: |
+      row_item.q17 if hasattr(row_item, 'q17') else ''
+  - 18a. Have you EVER, within the past 10 years, or are you NOW engaged in prostitution or procurement of prostitution?: |
+      row_item.q18a if hasattr(row_item, 'q18a') else ''
+  - ? |
+      18b. Have you EVER, within the past 10 years (either directly or indirectly) procured or attempted to procure or import prostitutes or persons for the purpose of prostitution?
+    : |
+      row_item.q18b if hasattr(row_item, 'q18b') else ''
+  - 18c. Have you EVER, within the past 10 years, received, in whole or in part, the proceeds of prostitution?: |
+      row_item.q18c if hasattr(row_item, 'q18c') else ''
+  - 19. Have you EVER been or do you intend to be involved in any other commercial vice?: |
+      row_item.q19 if hasattr(row_item, 'q19') else ''
+  - 20a. Have you EVER been ordered removed, and been deported from the United States?: |
+      row_item.q20a if hasattr(row_item, 'q20a') else ''
+  - 20b. Have you EVER voluntarily departed the United States under an order of removal?: |
+      row_item.q20b if hasattr(row_item, 'q20b') else ''
+  - 20c. Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?: |
+      row_item.q20c if hasattr(row_item, 'q20c') else ''
+  - 20d. Has DHS reinstated your prior order of removal?: |
+      row_item.q20d if hasattr(row_item, 'q20d') else ''
+  - ? |
+      20e. Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?
+    : |
+      row_item.q20e if hasattr(row_item, 'q20e') else ''
+  - ? |
+      21. Have you EVER, by fraud or willfully misrepresenting a material fact, sought to obtain a visa or other documentation, admission to the United States, or any other immigration benefit?
+    : |
+      row_item.q21 if hasattr(row_item, 'q21') else ''
+  - 22. Have you EVER assisted any other person to enter the United States in violation of the law?: |
+      row_item.q22 if hasattr(row_item, 'q22') else ''
+  - 23a. Do you NOW have a communicable disease of public health significance?: |
+      row_item.q23a if hasattr(row_item, 'q23a') else ''
+  - ? |
+      23b. Do you NOW have or have you EVER had a physical or mental disorder and behavior (or a history of behavior that is likely to recur) associated with the disorder which has posed or may pose a threat to the property, safety, or welfare of yourself or others?
+    : |
+      row_item.q23b if hasattr(row_item, 'q23b') else ''
+  - 23c. Are you NOW or have you EVER been a drug abuser or drug addict?: |
+      row_item.q23c if hasattr(row_item, 'q23c') else ''
+  - 24. Have you EVER entered the United States as a stowaway?: |
+      row_item.q24 if hasattr(row_item, 'q24') else ''
+  - ? |
+      25. Did the former Immigration and Naturalization Service (INS) EVER impose, or has DHS EVER imposed, civil monetary penalties on you for producing or using false documentation to obtain an immigration benefit?
+    : |
+      row_item.q25 if hasattr(row_item, 'q25') else ''
+  - ? |
+      26. Are you NOW subject to a final order for violation of section 274C (producing and/or using false documentation to unlawfully satisfy a requirement of the Immigration and Nationality Act)?
+    : |
+      row_item.q26 if hasattr(row_item, 'q26') else ''
+  - 27. Do you NOW practice polygamy?: |
+      row_item.q27 if hasattr(row_item, 'q27') else ''
+  - ? |
+      28. Are you NOW the guardian of, and are you accompanying, another individual who has been found to be inadmissible and who has been certified by a medical examiner to be helpless due to sickness, physical or mental disability, or infancy?
+    : |
+      row_item.q28 if hasattr(row_item, 'q28') else ''
+  - ? |
+      29. Have you EVER detained, retained, or withheld the custody of a child having a lawful claim to U.S. citizenship, outside the United States, from a U.S. citizen granted custody?
+    : |
+      row_item.q29 if hasattr(row_item, 'q29') else ''
+  - ? |
+      30a. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in acts involving torture or genocide?
+    : |
+      row_item.q30a if hasattr(row_item, 'q30a') else ''
+  - ? |
+      30b. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in killing any person?
+    : |
+      row_item.q30b if hasattr(row_item, 'q30b') else ''
+  - ? |
+      30c. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in intentionally and severely injuring any person?
+    : |
+      row_item.q30c if hasattr(row_item, 'q30c') else ''
+  - ? |
+      30d. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in engaging in any kind of sexual contact or relations with any person who was being forced or threatened?
+    : |
+      row_item.q30d if hasattr(row_item, 'q30d') else ''
+  - ? |
+      30e. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in limiting or denying any person's ability to exercise religious beliefs?
+    : |
+      row_item.q30e if hasattr(row_item, 'q30e') else ''
+  - ? |
+      31a. Have you EVER served in, been a member of, assisted in, or participated in any military unit, paramilitary unit, police unit, self-defense unit, vigilante unit, rebel group, guerrilla group, militia, or insurgent organization?
+    : |
+      row_item.q31a if hasattr(row_item, 'q31a') else ''
+  - ? |
+      31b. Have you EVER served or worked in any prison, jail, prison camp, detention facility, labor camp, or any other situation that involved detaining persons?
+    : |
+      row_item.q31b if hasattr(row_item, 'q31b') else ''
+  - ? |
+      32. Have you EVER been a member of, assisted in, or participated in any group, unit, or organization of any kind in which you or other persons used any type of weapon against any person or threatened to do so?
+    : |
+      row_item.q32 if hasattr(row_item, 'q32') else ''
+  - ? |
+      33. Have you EVER assisted with or participated in selling or providing weapons to any person who to your knowledge used them against another person, or in transporting weapons to any person who to your knowledge used them against another person?
+    : |
+      row_item.q33 if hasattr(row_item, 'q33') else ''
+  - 34. Have you EVER received any type of military, paramilitary, or weapons training?: |
+      row_item.q34 if hasattr(row_item, 'q34') else ''
+  - 35. Have you EVER unlawfully voted in a United States Federal, state, or local election?: |
+      row_item.q35 if hasattr(row_item, 'q35') else ''
+  - 36. Have you EVER claimed to be a U.S. citizen (in writing or in any other way)?: |
+      row_item.q36 if hasattr(row_item, 'q36') else ''
+  - ? |
+      37a. Have you EVER recruited, enlisted, conscripted, or used any person under 15 years of age to serve in or help an armed force or group?
+    : |
+      row_item.q37a if hasattr(row_item, 'q37a') else ''
+  - ? |
+      37b. Have you EVER used any person under 15 years of age to take part in hostilities or to help or provide services to people in combat?
+    : |
+      row_item.q37b if hasattr(row_item, 'q37b') else ''
+  - ? |
+      38a. Have you EVER committed or conspired to commit human trafficking offenses, as defined in the section 103 of the Victims of Trafficking and Violence Protection Act of 2000, in the United States or outside the United States?
+    : |
+      row_item.q38a if hasattr(row_item, 'q38a') else ''
+  - 38b. Have you EVER knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?: |
+      row_item.q38b if hasattr(row_item, 'q38b') else ''
+  - 38c. Are you NOW the spouse or child of an alien who committed or conspired to commit human trafficking offenses?: |
+      row_item.q38c if hasattr(row_item, 'q38c') else ''
+  - ? |
+      38d. Are you NOW the spouse or child of, or are you yourself, an alien who knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?
+    : |
+      row_item.q38d if hasattr(row_item, 'q38d') else ''
+  - ? |
+      38e. Within the previous five years, have you EVER obtained any financial or other benefit from the human trafficking activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit that you received resulted from such human trafficking?
+    : |
+      row_item.q38e if hasattr(row_item, 'q38e') else ''
+  - ? |
+      39a. Are you NOW or have you EVER engaged in money laundering as described in section 1956 or 1957 of Title 18, United States Code?
+    : |
+      row_item.q39a if hasattr(row_item, 'q39a') else ''
+  - ? |
+      39b. Are you NOW or have you EVER been a knowing aider, abettor, assister, conspirator, or colluder with others in money laundering?
+    : |
+      row_item.q39b if hasattr(row_item, 'q39b') else ''
+  - ? |
+      40. Have you EVER been responsible for or directly carried out particularly severe violations of religious freedom, as defined in section 3 of the International Religious Freedom Act of 1998 (22 U.S.C. section 6402) while serving as a foreign government official?
+    : |
+      row_item.q40 if hasattr(row_item, 'q40') else ''
+  - ? |
+      41. Has an immigration judge or the Board of Immigration Appeals EVER determined that you filed a frivolous asylum application in the past?
+    : |
+      row_item.q41 if hasattr(row_item, 'q41') else ''
+  - Does ${ users[i] } read and understand English?: |
+      row_item.user_reads_english if hasattr(row_item, 'user_reads_english') else ''
+  - Did ${ users[i] } use the ${ interpreter.language } interpreter?: |
+      row_item.user_used_interpreter if hasattr(row_item, 'user_used_interpreter') else ''
+  - Have you ever been known by a different name?: |
+      row_item.there_are_any if hasattr(row_item, 'there_are_any') else ''
+  - City or town of birth: |
+      row_item.city_of_birth if hasattr(row_item, 'city_of_birth') else ''
+  - Birthdate: |
+      row_item.birthdate if hasattr(row_item, 'birthdate') else ''
+  - A Number (do not include A-): |
+      row_item.a_number if hasattr(row_item, 'a_number') else ''
+  - First name: |
+      row_item.first if hasattr(row_item, 'first') else ''
+  - Middle name: |
+      row_item.middle if hasattr(row_item, 'middle') else ''
+  - Last name: |
+      row_item.last if hasattr(row_item, 'last') else ''
+  - Explain your answer to 8a: |
+      row_item.q8a_explanation if hasattr(row_item, 'q8a_explanation') else ''
+  - Explain your answer to 8b: |
+      row_item.q8b_explanation if hasattr(row_item, 'q8b_explanation') else ''
+  - Explain your answer to 8c: |
+      row_item.q8c_explanation if hasattr(row_item, 'q8c_explanation') else ''
+  - Explain your answer to 9a: |
+      row_item.q9a_explanation if hasattr(row_item, 'q9a_explanation') else ''
+  - Explain your answer to 9b: |
+      row_item.q9b_explanation if hasattr(row_item, 'q9b_explanation') else ''
+  - Explain your answer to 9c: |
+      row_item.q9c_explanation if hasattr(row_item, 'q9c_explanation') else ''
+  - Explain your answer to 10a: |
+      row_item.q10a_explanation if hasattr(row_item, 'q10a_explanation') else ''
+  - Explain your answer to 10b: |
+      row_item.q10b_explanation if hasattr(row_item, 'q10b_explanation') else ''
+  - Explain your answer to 10c: |
+      row_item.q10c_explanation if hasattr(row_item, 'q10c_explanation') else ''
+  - Explain your answer to 11: |
+      row_item.q11_explanation if hasattr(row_item, 'q11_explanation') else ''
+  - Explain your answer to 12a: |
+      row_item.q12a_explanation if hasattr(row_item, 'q12a_explanation') else ''
+  - Explain your answer to 12b: |
+      row_item.q12b_explanation if hasattr(row_item, 'q12b_explanation') else ''
+  - Explain your answer to 12c: |
+      row_item.q12c_explanation if hasattr(row_item, 'q12c_explanation') else ''
+  - Explain your answer to 12d: |
+      row_item.q12d_explanation if hasattr(row_item, 'q12d_explanation') else ''
+  - Explain your answer to 12e: |
+      row_item.q12e_explanation if hasattr(row_item, 'q12e_explanation') else ''
+  - Explain your answer to 13a: |
+      row_item.q13a_explanation if hasattr(row_item, 'q13a_explanation') else ''
+  - Explain your answer to 13b: |
+      row_item.q13b_explanation if hasattr(row_item, 'q13b_explanation') else ''
+  - Explain your answer to 13c: |
+      row_item.q13c_explanation if hasattr(row_item, 'q13c_explanation') else ''
+  - Explain your answer to 13d: |
+      row_item.q13d_explanation if hasattr(row_item, 'q13d_explanation') else ''
+  - Explain your answer to 14a: |
+      row_item.q14a_explanation if hasattr(row_item, 'q14a_explanation') else ''
+  - Explain your answer to 14b: |
+      row_item.q14b_explanation if hasattr(row_item, 'q14b_explanation') else ''
+  - Explain your answer to 14c: |
+      row_item.q14c_explanation if hasattr(row_item, 'q14c_explanation') else ''
+  - Explain your answer to 14d: |
+      row_item.q14d_explanation if hasattr(row_item, 'q14d_explanation') else ''
+  - Explain your answer to 15a: |
+      row_item.q15a_explanation if hasattr(row_item, 'q15a_explanation') else ''
+  - Explain your answer to 15b: |
+      row_item.q15b_explanation if hasattr(row_item, 'q15b_explanation') else ''
+  - Explain your answer to 15c: |
+      row_item.q15c_explanation if hasattr(row_item, 'q15c_explanation') else ''
+  - Explain your answer to 16: |
+      row_item.q16_explanation if hasattr(row_item, 'q16_explanation') else ''
+  - Explain your answer to 17: |
+      row_item.q17_explanation if hasattr(row_item, 'q17_explanation') else ''
+  - Explain your answer to 18a: |
+      row_item.q18a_explanation if hasattr(row_item, 'q18a_explanation') else ''
+  - Explain your answer to 18b: |
+      row_item.q18b_explanation if hasattr(row_item, 'q18b_explanation') else ''
+  - Explain your answer to 18c: |
+      row_item.q18c_explanation if hasattr(row_item, 'q18c_explanation') else ''
+  - Explain your answer to 19: |
+      row_item.q19_explanation if hasattr(row_item, 'q19_explanation') else ''
+  - Explain your answer to 20a: |
+      row_item.q20a_explanation if hasattr(row_item, 'q20a_explanation') else ''
+  - Explain your answer to 20b: |
+      row_item.q20b_explanation if hasattr(row_item, 'q20b_explanation') else ''
+  - Explain your answer to 20c: |
+      row_item.q20c_explanation if hasattr(row_item, 'q20c_explanation') else ''
+  - Explain your answer to 20d: |
+      row_item.q20d_explanation if hasattr(row_item, 'q20d_explanation') else ''
+  - Explain your answer to 20e: |
+      row_item.q20e_explanation if hasattr(row_item, 'q20e_explanation') else ''
+  - Explain your answer to 21: |
+      row_item.q21_explanation if hasattr(row_item, 'q21_explanation') else ''
+  - Explain your answer to 22: |
+      row_item.q22_explanation if hasattr(row_item, 'q22_explanation') else ''
+  - Explain your answer to 23a: |
+      row_item.q23a_explanation if hasattr(row_item, 'q23a_explanation') else ''
+  - Explain your answer to 23b: |
+      row_item.q23b_explanation if hasattr(row_item, 'q23b_explanation') else ''
+  - Explain your answer to 23c: |
+      row_item.q23c_explanation if hasattr(row_item, 'q23c_explanation') else ''
+  - Explain your answer to 24: |
+      row_item.q24_explanation if hasattr(row_item, 'q24_explanation') else ''
+  - Explain your answer to 25: |
+      row_item.q25_explanation if hasattr(row_item, 'q25_explanation') else ''
+  - Explain your answer to 26: |
+      row_item.q26_explanation if hasattr(row_item, 'q26_explanation') else ''
+  - Explain your answer to 27: |
+      row_item.q27_explanation if hasattr(row_item, 'q27_explanation') else ''
+  - Explain your answer to 28: |
+      row_item.q28_explanation if hasattr(row_item, 'q28_explanation') else ''
+  - Explain your answer to 29: |
+      row_item.q29_explanation if hasattr(row_item, 'q29_explanation') else ''
+  - Explain your answer to 30a: |
+      row_item.q30a_explanation if hasattr(row_item, 'q30a_explanation') else ''
+  - Explain your answer to 30b: |
+      row_item.q30b_explanation if hasattr(row_item, 'q30b_explanation') else ''
+  - Explain your answer to 30c: |
+      row_item.q30c_explanation if hasattr(row_item, 'q30c_explanation') else ''
+  - Explain your answer to 30d: |
+      row_item.q30d_explanation if hasattr(row_item, 'q30d_explanation') else ''
+  - Explain your answer to 30e: |
+      row_item.q30e_explanation if hasattr(row_item, 'q30e_explanation') else ''
+  - Explain your answer to 31a: |
+      row_item.q31a_explanation if hasattr(row_item, 'q31a_explanation') else ''
+  - Explain your answer to 31b: |
+      row_item.q31b_explanation if hasattr(row_item, 'q31b_explanation') else ''
+  - Explain your answer to 32: |
+      row_item.q32_explanation if hasattr(row_item, 'q32_explanation') else ''
+  - Explain your answer to 33: |
+      row_item.q33_explanation if hasattr(row_item, 'q33_explanation') else ''
+  - Explain your answer to 34: |
+      row_item.q34_explanation if hasattr(row_item, 'q34_explanation') else ''
+  - Explain your answer to 35: |
+      row_item.q35_explanation if hasattr(row_item, 'q35_explanation') else ''
+  - Explain your answer to 36: |
+      row_item.q36_explanation if hasattr(row_item, 'q36_explanation') else ''
+  - Explain your answer to 37a: |
+      row_item.q37a_explanation if hasattr(row_item, 'q37a_explanation') else ''
+  - Explain your answer to 37b: |
+      row_item.q37b_explanation if hasattr(row_item, 'q37b_explanation') else ''
+  - Explain your answer to 38a: |
+      row_item.q38a_explanation if hasattr(row_item, 'q38a_explanation') else ''
+  - Explain your answer to 38b: |
+      row_item.q38b_explanation if hasattr(row_item, 'q38b_explanation') else ''
+  - Explain your answer to 38c: |
+      row_item.q38c_explanation if hasattr(row_item, 'q38c_explanation') else ''
+  - Explain your answer to 38d: |
+      row_item.q38d_explanation if hasattr(row_item, 'q38d_explanation') else ''
+  - Explain your answer to 38e: |
+      row_item.q38e_explanation if hasattr(row_item, 'q38e_explanation') else ''
+  - Explain your answer to 39a: |
+      row_item.q39a_explanation if hasattr(row_item, 'q39a_explanation') else ''
+  - Explain your answer to 39b: |
+      row_item.q39b_explanation if hasattr(row_item, 'q39b_explanation') else ''
+  - Explain your answer to 40: |
+      row_item.q40_explanation if hasattr(row_item, 'q40_explanation') else ''
+  - Explain your answer to 41: |
+      row_item.q41_explanation if hasattr(row_item, 'q41_explanation') else ''
+  - Does the applicant have copies of all of these?: |
+      row_item.ead_required_documents if hasattr(row_item, 'ead_required_documents') else ''
+  - Do you have citizenship in another country?: |
+      row_item.has_additional_citizenship if hasattr(row_item, 'has_additional_citizenship') else ''
+  - Number of ${ users[i] }'s children applying with them today: |
+      row_item.number_children_applying if hasattr(row_item, 'number_children_applying') else ''
+  - Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: |
+      row_item.applied_for_other_immigration_benefit if hasattr(row_item, 'applied_for_other_immigration_benefit') else ''
+  - Type of immigration benefit: |
+      row_item.applied_benefit_type if hasattr(row_item, 'applied_benefit_type') else ''
+  - Receipt date: |
+      row_item.applied_receipt_date if hasattr(row_item, 'applied_receipt_date') else ''
+  - Any other important information to note: |
+      row_item.applied_other_information if hasattr(row_item, 'applied_other_information') else ''
+  - 'What is the proof of parole? Ex: I-94, parole letter, Interim Notice of Parole': |
+      row_item.proof_of_parole if hasattr(row_item, 'proof_of_parole') else ''
+  - Is ${ users[i] }'s proof of parole valid for at least the next 90 days?: |
+      row_item.proof_of_parole_valid_for_90_days if hasattr(row_item, 'proof_of_parole_valid_for_90_days') else ''
+  - ? |
+      Are you in removal proceedings? (Review EOIR list on your table for applicant’s court hearing info, if applicable. If applicant is NOT listed, look up their EOIR case status using their A#: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/))
+    : |
+      row_item.in_removal_proceedings if hasattr(row_item, 'in_removal_proceedings') else ''
+  - Date of first hearing: |
+      row_item.date_removal_proceedings_began if hasattr(row_item, 'date_removal_proceedings_began') else ''
+  - Location of proceedings: |
+      row_item.location_removal_proceedings if hasattr(row_item, 'location_removal_proceedings') else ''
+  - Have you ever been issued a Final Order of Removal?: |
+      row_item.ever_ordered_removed if hasattr(row_item, 'ever_ordered_removed') else ''
+  - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: |
+      row_item.ever_arrested if hasattr(row_item, 'ever_arrested') else ''
+  - ? |
+      List when/where/outcome of EVERY arrest, including those in US and outside of US (review certified dispositions & applicant workbook with legal supervisor)
+    : |
+      row_item.arrest_details if hasattr(row_item, 'arrest_details') else ''
+  - Did you bring your criminal history documents with you?: |
+      row_item.has_criminal_history_documents if hasattr(row_item, 'has_criminal_history_documents') else ''
+  - What country will you be applying for TPS from?: |
+      row_item.tps_application_country if hasattr(row_item, 'tps_application_country') else ''
+  - What documents do you have proving your country of birth?: |
+      row_item.proof_of_birthplace if hasattr(row_item, 'proof_of_birthplace') else ''
+  - Are one or both of your parents Venezuelan nationals?: |
+      row_item.parents_from_venezuela if hasattr(row_item, 'parents_from_venezuela') else ''
+  - Do you have proof of your parents' birthplace?: |
+      row_item.proof_of_parent_birthplace if hasattr(row_item, 'proof_of_parent_birthplace') else ''
+  - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: |
+      row_item.in_other_country_longer_than_6_months if hasattr(row_item, 'in_other_country_longer_than_6_months') else ''
+  - Year: |
+      row_item.date_left_home_country_year if hasattr(row_item, 'date_left_home_country_year') else ''
+  - Year: |
+      row_item.last_entry_date_year if hasattr(row_item, 'last_entry_date_year') else ''
+  - Do you have proof that you were physically present in the US as of July 31, 2023?: |
+      row_item.proof_last_entry_date_before_july_31_2023 if hasattr(row_item, 'proof_last_entry_date_before_july_31_2023') else ''
+  - Do you have proof that you were physically present in the US as of October 3, 2023?: |
+      row_item.proof_last_entry_date_before_october_4_2023 if hasattr(row_item, 'proof_last_entry_date_before_october_4_2023') else ''
+  - Do you have any children applying with you today?: |
+      row_item.has_children_applying_today if hasattr(row_item, 'has_children_applying_today') else ''
+  - Was any child born outside of Venezuela?: |
+      row_item.has_children_applying_not_born_in_venezuela if hasattr(row_item, 'has_children_applying_not_born_in_venezuela') else ''
+  - List each child's name and nationality: |
+      row_item.children_outside_of_venezuela if hasattr(row_item, 'children_outside_of_venezuela') else ''
+  - How did you last enter the US?: |
+      row_item.method_of_entry if hasattr(row_item, 'method_of_entry') else ''
+  - Who entered the US with you?: |
+      row_item.who_entered_with_user if hasattr(row_item, 'who_entered_with_user') else ''
+  - Did your children enter the US separately from you?: |
+      row_item.children_entered_separately if hasattr(row_item, 'children_entered_separately') else ''
+  - Where, when, and with whom did they enter?: |
+      row_item.children_entered_separately_explanation if hasattr(row_item, 'children_entered_separately_explanation') else ''
+  - Did you travel through Central America before entering the US?: |
+      row_item.traveled_through_central_america if hasattr(row_item, 'traveled_through_central_america') else ''
+  - Did you travel through other countries?: |
+      row_item.traveled_through_other_countries if hasattr(row_item, 'traveled_through_other_countries') else ''
+  - Do you have citizenship in another country?: |
+      row_item.has_additional_citizenship if hasattr(row_item, 'has_additional_citizenship') else ''
+  - Other than citizenship, have you had legal status in any other country besides Venezuela?: |
+      row_item.had_legal_status_outside_venezuela if hasattr(row_item, 'had_legal_status_outside_venezuela') else ''
+  - List country(ies) and legal status in each: |
+      row_item.countries_and_legal_status if hasattr(row_item, 'countries_and_legal_status') else ''
+  - Have you applied for any other immigration benefit? (i.e. work permit, TPS, or asylum)?: |
+      row_item.applied_for_other_immigration_benefit if hasattr(row_item, 'applied_for_other_immigration_benefit') else ''
+  - Explain: |
+      row_item.applied_for_other_immigration_benefit_explanation if hasattr(row_item, 'applied_for_other_immigration_benefit_explanation') else ''
+  - ? |
+      Are you in removal proceedings? (Review EOIR list on your table for applicant’s court hearing info, if applicable. If applicant is NOT listed, look up their EOIR case status using their A#: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/))
+    : |
+      row_item.in_removal_proceedings if hasattr(row_item, 'in_removal_proceedings') else ''
+  - Date of first hearing: |
+      row_item.date_removal_proceedings_began if hasattr(row_item, 'date_removal_proceedings_began') else ''
+  - Location of proceedings: |
+      row_item.location_removal_proceedings if hasattr(row_item, 'location_removal_proceedings') else ''
+  - Have you ever been issued a Final Order of Removal?: |
+      row_item.ever_ordered_removed if hasattr(row_item, 'ever_ordered_removed') else ''
+  - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: |
+      row_item.ever_arrested if hasattr(row_item, 'ever_arrested') else ''
+  - ? |
+      List when/where/outcome of EVERY arrest, including those in US and outside of US (review certified dispositions & applicant workbook with legal supervisor)
+    : |
+      row_item.arrest_details if hasattr(row_item, 'arrest_details') else ''
+  - Have you ever claimed to be a US Citizen?: |
+      row_item.claimed_us_citizenship if hasattr(row_item, 'claimed_us_citizenship') else ''
+  - Have you ever been affiliated with any gangs?: |
+      row_item.gang_affiliation if hasattr(row_item, 'gang_affiliation') else ''
+  - Have you ever served in the military or participated in a paramilitary group?: |
+      row_item.served_military if hasattr(row_item, 'served_military') else ''
+  - Have you ever served on a police force?: |
+      row_item.served_police if hasattr(row_item, 'served_police') else ''
+  - Have you ever received weapons training?: |
+      row_item.received_weapons_training if hasattr(row_item, 'received_weapons_training') else ''
+  - Did you ever use a weapon against another person?: |
+      row_item.used_weapon_against_another_person if hasattr(row_item, 'used_weapon_against_another_person') else ''
+  - Have you ever been a member of a terrorist organization?: |
+      row_item.acted_as_terrorist if hasattr(row_item, 'acted_as_terrorist') else ''
+edit:
+  - |
+    address
+  - |
+    address
+  - |
+    unit
+  - |
+    city
+  - |
+    state
+  - |
+    zip
+  - |
+    phone_number
+  - |
+    mobile_number
+  - |
+    email
+  - |
+    mailing_address
+  - |
+    address
+  - |
+    unit
+  - |
+    city
+  - |
+    zip
+  - |
+    there_are_any
+  - |
+    there_are_any
+  - |
+    name
+  - |
+    jurisdiction
+  - |
+    location
+  - |
+    start_date
+  - |
+    proceedings_continuing_to_present
+  - |
+    end_date
+  - |
+    passport_number
+  - |
+    other_travel_document_number
+  - |
+    passport_expiration_date
+  - |
+    travel_documents[0]
+  - |
+    travel_documents[1]
+  - |
+    there_is_another
+  - |
+    travel_documents[j]
+  - |
+    is_first_TPS_application
+  - |
+    who_granted_prior_TPS
+  - |
+    there_are_any
+  - |
+    alternate_birthdates[0]
+  - |
+    alternate_birthdates[1]
+  - |
+    alternate_birthdates[j]
+  - |
+    sex
+  - |
+    ethnicity
+  - |
+    race
+  - |
+    height_cm
+  - |
+    weight_kg
+  - |
+    hair_color
+  - |
+    eye_color
+  - |
+    marital_status
+  - |
+    marital_status_other
+  - |
+    uscis_account_number
+  - |
+    has_ssn
+  - |
+    ssn
+  - |
+    sevis_number
+  - |
+    marriage_date
+  - |
+    marriage_location
+  - |
+    marriage_city
+  - |
+    marriage_state
+  - |
+    marriage_province
+  - |
+    marriage_country
+  - |
+    online_account_number
+  - |
+    a_number
+  - |
+    date_started_us_residence
+  - |
+    date_of_last_entry
+  - |
+    port_of_entry
+  - |
+    city_of_entry
+  - |
+    i94_arrival_number
+  - |
+    authorized_stay_ending_date
+  - |
+    immigration_status_last_entry
+  - |
+    current_immigration_status
+  - |
+    has_been_in_immigration_proceedings
+  - |
+    kind_of_immigration_proceedings
+  - |
+    proceedings_dhs_or_doj_hearing_location
+  - |
+    federal_court_proceedings_location
+  - |
+    proceedings_start_date
+  - |
+    proceedings_continuing_to_present
+  - |
+    proceedings_end_date
+  - |
+    previously_filed_I765
+  - |
+    SS_has_issued_card
+  - |
+    q8a
+  - |
+    q8b
+  - |
+    q8c
+  - |
+    q9a
+  - |
+    q9b
+  - |
+    q9c
+  - |
+    q10a
+  - |
+    q10b
+  - |
+    q10c
+  - |
+    q11
+  - |
+    q12a
+  - |
+    q12b
+  - |
+    q12c
+  - |
+    q12d
+  - |
+    q12e
+  - |
+    q13a
+  - |
+    q13b
+  - |
+    q13c
+  - |
+    q13d
+  - |
+    q14a
+  - |
+    q14b
+  - |
+    q14c
+  - |
+    q14d
+  - |
+    q15a
+  - |
+    q15b
+  - |
+    q15c
+  - |
+    q16
+  - |
+    q17
+  - |
+    q18a
+  - |
+    q18b
+  - |
+    q18c
+  - |
+    q19
+  - |
+    q20a
+  - |
+    q20b
+  - |
+    q20c
+  - |
+    q20d
+  - |
+    q20e
+  - |
+    q21
+  - |
+    q22
+  - |
+    q23a
+  - |
+    q23b
+  - |
+    q23c
+  - |
+    q24
+  - |
+    q25
+  - |
+    q26
+  - |
+    q27
+  - |
+    q28
+  - |
+    q29
+  - |
+    q30a
+  - |
+    q30b
+  - |
+    q30c
+  - |
+    q30d
+  - |
+    q30e
+  - |
+    q31a
+  - |
+    q31b
+  - |
+    q32
+  - |
+    q33
+  - |
+    q34
+  - |
+    q35
+  - |
+    q36
+  - |
+    q37a
+  - |
+    q37b
+  - |
+    q38a
+  - |
+    q38b
+  - |
+    q38c
+  - |
+    q38d
+  - |
+    q38e
+  - |
+    q39a
+  - |
+    q39b
+  - |
+    q40
+  - |
+    q41
+  - |
+    user_reads_english
+  - |
+    user_used_interpreter
+  - |
+    there_are_any
+  - |
+    city_of_birth
+  - |
+    birthdate
+  - |
+    a_number
+  - |
+    first
+  - |
+    middle
+  - |
+    last
+  - |
+    q8a_explanation
+  - |
+    q8b_explanation
+  - |
+    q8c_explanation
+  - |
+    q9a_explanation
+  - |
+    q9b_explanation
+  - |
+    q9c_explanation
+  - |
+    q10a_explanation
+  - |
+    q10b_explanation
+  - |
+    q10c_explanation
+  - |
+    q11_explanation
+  - |
+    q12a_explanation
+  - |
+    q12b_explanation
+  - |
+    q12c_explanation
+  - |
+    q12d_explanation
+  - |
+    q12e_explanation
+  - |
+    q13a_explanation
+  - |
+    q13b_explanation
+  - |
+    q13c_explanation
+  - |
+    q13d_explanation
+  - |
+    q14a_explanation
+  - |
+    q14b_explanation
+  - |
+    q14c_explanation
+  - |
+    q14d_explanation
+  - |
+    q15a_explanation
+  - |
+    q15b_explanation
+  - |
+    q15c_explanation
+  - |
+    q16_explanation
+  - |
+    q17_explanation
+  - |
+    q18a_explanation
+  - |
+    q18b_explanation
+  - |
+    q18c_explanation
+  - |
+    q19_explanation
+  - |
+    q20a_explanation
+  - |
+    q20b_explanation
+  - |
+    q20c_explanation
+  - |
+    q20d_explanation
+  - |
+    q20e_explanation
+  - |
+    q21_explanation
+  - |
+    q22_explanation
+  - |
+    q23a_explanation
+  - |
+    q23b_explanation
+  - |
+    q23c_explanation
+  - |
+    q24_explanation
+  - |
+    q25_explanation
+  - |
+    q26_explanation
+  - |
+    q27_explanation
+  - |
+    q28_explanation
+  - |
+    q29_explanation
+  - |
+    q30a_explanation
+  - |
+    q30b_explanation
+  - |
+    q30c_explanation
+  - |
+    q30d_explanation
+  - |
+    q30e_explanation
+  - |
+    q31a_explanation
+  - |
+    q31b_explanation
+  - |
+    q32_explanation
+  - |
+    q33_explanation
+  - |
+    q34_explanation
+  - |
+    q35_explanation
+  - |
+    q36_explanation
+  - |
+    q37a_explanation
+  - |
+    q37b_explanation
+  - |
+    q38a_explanation
+  - |
+    q38b_explanation
+  - |
+    q38c_explanation
+  - |
+    q38d_explanation
+  - |
+    q38e_explanation
+  - |
+    q39a_explanation
+  - |
+    q39b_explanation
+  - |
+    q40_explanation
+  - |
+    q41_explanation
+  - |
+    ead_required_documents
+  - |
+    has_additional_citizenship
+  - |
+    number_children_applying
+  - |
+    applied_for_other_immigration_benefit
+  - |
+    applied_benefit_type
+  - |
+    applied_receipt_date
+  - |
+    applied_other_information
+  - |
+    proof_of_parole
+  - |
+    proof_of_parole_valid_for_90_days
+  - |
+    in_removal_proceedings
+  - |
+    date_removal_proceedings_began
+  - |
+    location_removal_proceedings
+  - |
+    ever_ordered_removed
+  - |
+    ever_arrested
+  - |
+    arrest_details
+  - |
+    has_criminal_history_documents
+  - |
+    tps_application_country
+  - |
+    proof_of_birthplace
+  - |
+    parents_from_venezuela
+  - |
+    proof_of_parent_birthplace
+  - |
+    in_other_country_longer_than_6_months
+  - |
+    date_left_home_country_year
+  - |
+    last_entry_date_year
+  - |
+    proof_last_entry_date_before_july_31_2023
+  - |
+    proof_last_entry_date_before_october_4_2023
+  - |
+    has_children_applying_today
+  - |
+    has_children_applying_not_born_in_venezuela
+  - |
+    children_outside_of_venezuela
+  - |
+    method_of_entry
+  - |
+    who_entered_with_user
+  - |
+    children_entered_separately
+  - |
+    children_entered_separately_explanation
+  - |
+    traveled_through_central_america
+  - |
+    traveled_through_other_countries
+  - |
+    has_additional_citizenship
+  - |
+    had_legal_status_outside_venezuela
+  - |
+    countries_and_legal_status
+  - |
+    applied_for_other_immigration_benefit
+  - |
+    applied_for_other_immigration_benefit_explanation
+  - |
+    in_removal_proceedings
+  - |
+    date_removal_proceedings_began
+  - |
+    location_removal_proceedings
+  - |
+    ever_ordered_removed
+  - |
+    ever_arrested
+  - |
+    arrest_details
+  - |
+    claimed_us_citizenship
+  - |
+    gang_affiliation
+  - |
+    served_military
+  - |
+    served_police
+  - |
+    received_weapons_training
+  - |
+    used_weapon_against_another_person
+  - |
+    acted_as_terrorist
+---
+id: Edit users
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table2 }
+  ${ users.add_action() }
+---
+table: users.table2
+rows: users
+columns:
+  - Name: |
+      row_item.name.full() if defined("row_item.name.middle") else ""
+  - Previous names[0]: |
+      row_item.aliases[0] if defined("row_item.aliases[0].middle") else ""
+  - Birthdate: |
+      row_item.birthdate if defined("row_item.birthdate") else ""
+  - Previous names[1]: |
+      row_item.aliases[1] if defined("row_item.aliases[1].middle") else ""
+  - Gender: |
+      row_item.sex if defined("row_item.sex") else ""
+  - Mailing address: |
+      row_item.mailing_address.block() if defined("row_item.mailing_address.zip") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.country") else ""
+  - Phone number: |
+      row_item.phone_number if defined("row_item.phone_number") else ""
+  - Mobile number: |
+      row_item.mobile_number if defined("row_item.mobile_number") else ""
+  - Email: |
+      row_item.email if defined("row_item.email") else ""
+edit:
+  - name.middle
+  - previous_names[0].middle
+  - birthdate
+  - previous_names[1].middle
+  - gender
+  - mailing_address.zip
+  - address.country
+  - phone_number
+  - mobile_number
+  - email
+confirm: True

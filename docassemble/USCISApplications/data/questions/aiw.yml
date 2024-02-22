@@ -20,7 +20,14 @@ attachment:
       - "gender_other": ${ users[i].sex.lower() not in ("male", "female") }
       - "race_asian": ${ users[i].race.get("asian") }
       - "race_black": ${ users[i].race.get("black") }
-      - "race_caucasian_latino": ${ users[i].race.get("white") or users[i].ethnicity == "hispanic" }
+      - "race_caucasian_latino": |
+          % if users[i].race.get("white") and users[i].ethnicity == "hispanic":
+          Yes
+          % elif users[i].race.get("white"):
+          Yes
+          % else:
+          No
+          % endif
       - "race_native_american": ${ users[i].race.get("native_american") or users[i].race.get("pacific_islander") }
       - "race_unknown": ${ users[i].race.all_false() or users[i].race.get("other") }
       - "eye_color_black": ${ users[i].eye_color == "black" }

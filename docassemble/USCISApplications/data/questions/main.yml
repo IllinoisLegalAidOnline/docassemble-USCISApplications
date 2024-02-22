@@ -5,6 +5,7 @@ include:
   - aiw.yml
   - combined_application_questions.yml
   - docassemble.ILAO:ilao-interview-framework.yml
+  - review_screen.yml
 ---
 default screen parts:
   under: |
@@ -117,6 +118,7 @@ code: |
     nav.set_section(f"users_{idx}_signpost_app")
     user.signpost
     user.complete
+    user.check_work
 
   if application_kind == "ead_and_tps" and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users]):
     for user in users:
@@ -153,17 +155,17 @@ data:
   - section_retainer: Limited Retainer
   - section_screener: Verify eligibility
   - section_application: Application
-  # - review_USCIS_Applications: Review 
+  - review_USCIS_Applications: Review 
   - section_download: Download and print
 ---
 code: |
   if len(users) > 1:
-    sections = default_sections[:-3]
+    sections = default_sections[:-4]
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-1:]
+    sections.extend(default_sections[-2:]
     )
     nav.set_sections(sections)
   update_sections = True
@@ -360,6 +362,7 @@ fields:
     default: |
       ${ users[0].country_of_birth }      
   - City or town of birth: users[i].city_of_birth
+  - State/Province of birth: users[i].state_of_birth  
   - Birthdate: users[i].birthdate
     datatype: BirthDate
   - A Number (do not include A-): users[i].a_number
@@ -420,9 +423,21 @@ table: users.initial_review_table
 rows: users
 columns:
   - Name: |
-      row_item
+      row_item.name.full(middle="full")
+  - Country of birth: |
+      row_item.country_of_birth
+  - City of birth: |
+      row_item.city_of_birth
+  - State/Province of birth: |
+      row_item.state_of_birth
+  - Country of last residence: |
+      row_item.last_country_of_residence
   - Date of birth: |
       row_item.birthdate.format("MM/dd/yyyy")
+  - Age: |
+      row_item.age_in_years()
+  - A-Number: |
+      row_item.a_number
 edit:
   - name.first
 confirm: True

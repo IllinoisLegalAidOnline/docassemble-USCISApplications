@@ -261,11 +261,11 @@ subquestion: |
   % endif
 
   % if i + 1 == len(users):
-  This is set of questions is for the **last** member of this family group.
+  This set of questions is for the **last** member of this family group.
 
   When you're done with the questions for ${ bold(users[i]) }, you'll be able to review your answers and download the completed application.
   % else:
-  This is set of questions is for the ${ ordinal(i) } family member of ${ len(users) }.
+  This set of questions is for the ${ ordinal(i) } family member of ${ len(users) }.
 
   When you're done with the questions for ${ bold(users[i]) }, you'll be able to move on to the next person in the family group.
   % endif

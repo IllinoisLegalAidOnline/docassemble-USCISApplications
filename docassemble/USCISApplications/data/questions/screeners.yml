@@ -11,6 +11,14 @@ subquestion: |
       given by <strong>${ users[i] }</strong>.
     </p>
   </div>
+
+  <div class="alert alert-info" role="alert">
+    <h2 class="h4">Ask all questions on this page</h2>
+    <p>
+      When you have finished the screening questions for each applicant, a
+      supervisor will check your work and decide if each applicant can continue
+      or not.
+    </p>
 fields:
   - Does the applicant have copies of all of these?: users[i].ead_required_documents
     datatype: checkboxes
@@ -18,14 +26,14 @@ fields:
       - National ID
       - I-94 or other proof of unexpired parole
       - Shelter letter / letter from city
-    minlength: 3
-    validation messages:
-      minlength: |
-        Applicant must have **copies** of all of these documents to continue.
-        Flag a runner to make copies and printing if needed.
+    none of the above: False
     show if:
       code: |
         users[i].age_in_years() > 13
+  - note: |
+      If the applicant does not have copies of all of these documents, flag a runner to make copies and print if needed.
+    js show if: |
+      val("users[i].ead_required_documents") && val("users[i].ead_required_documents").length < 3
   - First country you are a citizen of: users[i].countries_of_citizenship[0]
     code: uscis_countries_list()
     default: ${ users[i].country_of_birth }
@@ -95,6 +103,13 @@ continue button field: review_ead_screening_questions
 question: |
   EAD eligibility screener
 subquestion: |
+  <div class="alert alert-info" role="alert">
+    <h2 class="h4">Call a supervisor to check if the applicants can continue</h2>
+    <p>
+      Wait for the supervisor to check your work and decide if each applicant can continue or not.
+    </p>
+  </div>
+
   <div class="accordion" id="userAccordion">
     % for user in users:
     <div class="accordion-item">
@@ -469,6 +484,13 @@ continue button field: review_tps_screening_questions
 question: | 
   Review TPS screening questions
 subquestion: |
+  <div class="alert alert-info" role="alert">
+    <h2 class="h4">Call a supervisor to check if the applicants can continue</h2>
+    <p>
+      Wait for the supervisor to check your work and decide if each applicant can continue or not.
+    </p>
+  </div>
+  
   <div class="accordion" id="userAccordion">
     % for user in users:
     <div class="accordion-item">

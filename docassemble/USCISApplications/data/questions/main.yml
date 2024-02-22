@@ -136,7 +136,6 @@ code: |
         user.have_you_ever_questions
       user.countries_of_citizenship
       user.signpost
-      user.complete
       user.check_work
 
   if application_kind == "ead_and_tps" and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
@@ -1027,7 +1026,7 @@ attachment:
   variable name: users[i].continuous_residence_addendum[j]
   name: ${ users[i] } - Affidavit of Continuous Residence Addendum
   filename: ${ space_to_underscore(f"{users[i]} - Affidavit of Continuous Residence Addendum") }
-  docx template file: TPS_legal_screener.docx
+  docx template file: TPS_affidavit_continuous_residence.docx
   skip undefined: True
 ---
 attachment:

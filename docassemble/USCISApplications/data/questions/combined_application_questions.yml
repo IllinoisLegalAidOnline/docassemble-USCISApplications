@@ -1681,10 +1681,10 @@ code: |
 ---
 # ALDocument objects specify the metadata for each template
 objects:
-  - users[i].i_821_attachment: ALDocument.using(title="I-821", filename=f"{users[i]} - I-821", has_addendum=False, )
+  - users[i].i_821_attachment: ALDocument.using(title="I-821", filename="I-821", has_addendum=False)
 ---
 objects:
-  - users[i].i_765_attachment: ALDocument.using(title="I-765", filename=f"{users[i]} - I-765", has_addendum=False, )
+  - users[i].i_765_attachment: ALDocument.using(title="I-765", filename="I-765", has_addendum=False )
 ---
 code: |
   users[i].i_821_attachment.enabled = users[i].application_is_approved and application_kind == "ead_and_tps"
@@ -1693,7 +1693,7 @@ code: |
   users[i].i_765_attachment.enabled = users[i].application_is_approved # and users[i].age_in_years() >= 16 # You can't get work authorization if under 16! but it's not a desired screening criterion for TRP
 ---
 objects:
-  - users[i].tps_yes_answer_addendum: ALDocument.using(title="TPS Yes Answer Addendum", filename=f"{users[i]} - TPS Yes Answer Addendum", has_addendum=False, )
+  - users[i].tps_yes_answer_addendum: ALDocument.using(title="TPS Yes Answer Addendum", filename="TPS Yes Answer Addendum", has_addendum=False )
 ---
 code: |
   users[i].tps_yes_answer_addendum.enabled = users[i].application_is_approved and application_kind == "ead_and_tps" and any([users[i].q8a, users[i].q8b, users[i].q8c, users[i].q9a, users[i].q9b, users[i].q9c, users[i].q10a, users[i].q10b, users[i].q10c, users[i].q11, users[i].q12a, users[i].q12b, users[i].q12c, users[i].q12d, users[i].q12e, users[i].q13a, users[i].q13b, users[i].q13c, users[i].q13d, users[i].q14a, users[i].q14b, users[i].q14c, users[i].q14d, users[i].q15a, users[i].q15b, users[i].q15c, users[i].q16, users[i].q17, users[i].q18a, users[i].q18b, users[i].q18c, users[i].q19, users[i].q20a, users[i].q20b, users[i].q20c, users[i].q20d, users[i].q20e, users[i].q21, users[i].q22, users[i].q23a, users[i].q23b, users[i].q23c, users[i].q24, users[i].q25, users[i].q26, users[i].q27, users[i].q28, users[i].q29, users[i].q30a, users[i].q30b, users[i].q30c, users[i].q30d, users[i].q30e, users[i].q31a, users[i].q31b, users[i].q32, users[i].q33, users[i].q34, users[i].q35, users[i].q36, users[i].q37a, users[i].q37b, users[i].q38a, users[i].q38b, users[i].q38c, users[i].q38d, users[i].q38e, users[i].q39a, users[i].q39b, users[i].q40, users[i].q41])
@@ -1726,16 +1726,16 @@ attachment:
     - "is_judge_re_applicatioin": ${ not users[i].is_first_TPS_application == 'First TPS Application' }
     - "users1_a_number": ${ users[i].a_number }
     - "users1_uscis_account_number": ${ users[i].uscis_account_number }
-    - "users1_previous_names1_last": ${ users[i].aliases[0].last }
+    - "users1_previous_names1_last": ${ users[i].aliases.item(0).last }
     - "users1_ssn": ${ users[i].ssn }
-    - "users1_previous_names1_first": ${ users[i].aliases[0].first }
+    - "users1_previous_names1_first": ${ users[i].aliases.item(0).first }
     - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
-    - "users1_previous_names1_middle": ${ users[i].aliases[0].middle }
-    - "users1_previous_names2_last": ${ users[i].aliases[1].last }
-    - "users1_previous_names2_first": ${ users[i].aliases[1].first }
+    - "users1_previous_names1_middle": ${ users[i].aliases.item(0).middle }
+    - "users1_previous_names2_last": ${ users[i].aliases.item(1).last }
+    - "users1_previous_names2_first": ${ users[i].aliases.item(1).first }
     - "users1_alternate_birthdate": ${ users[i].alternate_birthdates[0].format('MM/dd/yyyy') }
     - "users1_alternate_birthdate_2": ${ users[i].alternate_birthdates[1].format('MM/dd/yyyy') }
-    - "users1_previous_names2_middle": ${ users[i].aliases[1].middle }
+    - "users1_previous_names2_middle": ${ users[i].aliases.item(1).middle }
     - "users1_gender_male": ${ users[i].sex == "male"}
     - "users1_gender_female": ${ users[i].sex == "female"}
     - "users1_mailing_address_in_care_of": ${ users[i].mailing_address.in_care_of }
@@ -2193,15 +2193,15 @@ attachment:
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
-    - "users1_previous_names1_last": ${ users[i].aliases[0].last }
-    - "users1_previous_names1_first": ${ users[i].aliases[0].first }
-    - "users1_previous_names1_middle": ${ users[i].aliases[0].middle }
-    - "users1_previous_names2_last": ${ users[i].aliases[1].last }
-    - "users1_previous_names2_first": ${ users[i].aliases[1].first }
-    - "users1_previous_names2_middle": ${ users[i].aliases[1].middle }
-    - "users1_previous_names3_last": ${ users[i].aliases[2].last }
-    - "users1_previous_names3_first": ${ users[i].aliases[2].first }
-    - "users1_previous_names3_middle": ${ users[i].aliases[2].middle }
+    - "users1_previous_names1_last": ${ users[i].aliases.item(0).last }
+    - "users1_previous_names1_first": ${ users[i].aliases.item(0).first }
+    - "users1_previous_names1_middle": ${ users[i].aliases.item(0).middle }
+    - "users1_previous_names2_last": ${ users[i].aliases.item(1).last }
+    - "users1_previous_names2_first": ${ users[i].aliases.item(1).first }
+    - "users1_previous_names2_middle": ${ users[i].aliases.item(1).middle }
+    - "users1_previous_names3_last": ${ users[i].aliases.item(2).last }
+    - "users1_previous_names3_first": ${ users[i].aliases.item(2).first }
+    - "users1_previous_names3_middle": ${ users[i].aliases.item(2).middle }
     - "has_ssn": ${ users[i].has_ssn }
     - "users1_ssn": ${ users[i].ssn }
     # - "users1_wants_ssn": Yes # Pre-checked on form

@@ -174,17 +174,17 @@ data:
   - section_retainer: Limited Retainer
   - section_screener: Verify eligibility
   - section_application: Application
-  - review_USCIS_Applications: Review 
+  #- review_USCIS_Applications: Review 
   - section_download: Download and print
 ---
 code: |
   if len(users) > 1:
-    sections = default_sections[:-4]
+    sections = default_sections[:-3]
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-2:]
+    sections.extend(default_sections[-1:]
     )
     nav.set_sections(sections)
   update_sections = True

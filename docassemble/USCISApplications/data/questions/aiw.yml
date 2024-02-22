@@ -7,7 +7,9 @@ attachment:
     editable: False
     fields:
       - "users1_a_number": ${ users[i].a_number }
-      - "users1_name_full": ${ users[i] }
+      - "users1_name_first": ${ users[i].name.first }
+      - "users1_name_middle": ${ users[i].name.middle }
+      - "users1_name_last": ${ users[i].name.last }
       - "users1_aliases1": ${ users[i].aliases.item(0) }
       - "users1_aliases2": ${ users[i].aliases.item(1) }
       - "users1_birthdate": ${ users[i].birthdate }

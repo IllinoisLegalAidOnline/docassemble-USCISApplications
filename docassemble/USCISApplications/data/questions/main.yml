@@ -948,21 +948,21 @@ code: |
 objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
   - users[i].document_bundle: ALDocumentBundle.using(title=f"{users[i]} - All documents to print and file", filename=space_to_underscore(f"{users[i]} - all_documents"), enabled=True, elements=[
-        users[i].limited_scope_retainer,
-        users[i].applicant_intake_worksheet,
-        users[i].fee_waiver_ead,
-        users[i].fee_waiver_tps,
-        users[i].i_821_attachment,
-        users[i].i_765_attachment,
         users[i].ead_legal_screener,
         users[i].tps_legal_screener,
+        users[i].limited_scope_retainer,
+        users[i].applicant_intake_worksheet,
+        users[i].i_821_attachment,
         users[i].military_service_addendum,
         users[i].transit_through_ca_addendum,
         users[i].child_venezuelan_nationals_addendum,
         users[i].smuggling_addendum,
         users[i].continuous_residence_addendum,
         users[i].tps_yes_answer_addendum,
+        users[i].fee_waiver_tps,
+        users[i].i_765_attachment,
         users[i].ead_interim_parole_addendum,
+        users[i].fee_waiver_ead,
       ])
 ---
 code: |

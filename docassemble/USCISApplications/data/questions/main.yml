@@ -1027,7 +1027,7 @@ attachment:
   variable name: users[i].continuous_residence_addendum[j]
   name: ${ users[i] } - Affidavit of Continuous Residence Addendum
   filename: ${ space_to_underscore(f"{users[i]} - Affidavit of Continuous Residence Addendum") }
-  docx template file: TPS_legal_screener.docx
+  docx template file: TPS_affidavit_continuous_residence.docx
   skip undefined: True
 ---
 attachment:

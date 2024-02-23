@@ -1101,7 +1101,7 @@ code: |
     - Taiwan, Province of China becomes "Taiwan"
     - Tanzania, United Republic of becomes "Tanzania"
     - Åland Islands becomes "Aland Islands"
-    """
+    """`
     country_names = [next(iter(item.values())) for item in countries_list()]
     country_names[country_names.index("Bolivia, Plurinational State of")] = "Bolivia"
     country_names[country_names.index("Venezuela, Bolivarian Republic of")] = "Venezuela"

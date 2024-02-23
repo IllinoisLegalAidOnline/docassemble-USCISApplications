@@ -70,20 +70,26 @@ fields:
       lambda y: y.on_one_line()
     none of the above: |
       Somewhere else
-    disable others: True
+    disable others:
+      - users[i].address.address
+      - users[i].address.city
+      - users[i].address.zip
+      - users[i].address.unit
+      - users[i].address.state
+      - users[i].address.country
   - Street address: users[i].address.address
     address autocomplete: True
-    default: ${ showifdef("users[0].address.address ") }
+    # default: ${ showifdef("users[0].address.address ") }
   - Suite/Unit/Floor/Room: users[i].address.unit
     required: False
-    default: ${ showifdef("users[0].address.unit ") }
+    # default: ${ showifdef("users[0].address.unit ") }
   - City or Town: users[i].address.city
-    default: ${ showifdef("users[0].address.city ") }
+    # default: ${ showifdef("users[0].address.city ") }
   - State: users[i].address.state
     required: False
-    default: ${ showifdef("users[0].address.state ") }
+    # default: ${ showifdef("users[0].address.state ") }
   - ZIP: users[i].address.zip
-    default: ${ showifdef("users[0].address.zip ") }
+    # default: ${ showifdef("users[0].address.zip ") }
   - Daytime Phone Number (optional): users[i].phone_number
     required: false
     default: |
@@ -102,29 +108,28 @@ fields:
   - ${ users[0] }'s mailing address is: users[0].mailing_address
     datatype: object_radio
     choices:
-      - users[i].address if defined("users[i].address.address") else None
+      - users[0].address if defined("users[0].address.address") else None
     object labeler: |
       lambda y: y.on_one_line()
     none of the above: |
       Somewhere else
-    disable others: True      
+    disable others: True
     show if:
       code: |
         defined("users[0].address.address")
-  - ${ users[0].address.address_label}: users[0].mailing_address.address
+  - ${ users[0].address.address_label }: users[0].mailing_address.address
     address autocomplete: True
-  - ${ users[0].address.unit_label}: users[0].mailing_address.unit
+  - ${ users[0].address.unit_label }: users[0].mailing_address.unit
     required: False
-  - ${ users[0].address.city_label}: users[0].mailing_address.city
-  - ${ users[0].address.state_label}: users[0].mailing_address.state
+  - ${ users[0].address.city_label }: users[0].mailing_address.city
+  - ${ users[0].address.state_label }: users[0].mailing_address.state
     code: |
       states_list(country_code=AL_DEFAULT_COUNTRY)
     default: ${ AL_DEFAULT_STATE }
-  - ${ users[0].address.zip_label}: users[0].mailing_address.zip
+  - ${ users[0].address.zip_label }: users[0].mailing_address.zip
     required: False      
-  - ${ users[0].address.country_label}: users[0].mailing_address.country
-    code: countries_list()
-    default: ${ AL_DEFAULT_COUNTRY }    
+  - ${ users[0].address.country_label }: users[0].mailing_address.country
+    code: uscis_countries_list()
 ---
 id: your mailing address
 question: |
@@ -198,8 +203,8 @@ subquestion: |
   % endif
 fields:
   - Select a Country: users[i].countries_of_residence[j].name
-    code: |
-      [next(iter(item.values())) for item in countries_list()]
+    code: uscis_countries_list()
+    
   # - Were you ever a **citizen** of this country?: users[i].countries_of_residence[j].was_ever_citizen
   #   datatype: yesnoradio
   # - Are you **still** a citizen of this country **today**?: users[i].countries_of_residence[j].is_still_citizen

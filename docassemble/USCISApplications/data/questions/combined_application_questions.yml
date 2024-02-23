@@ -1756,8 +1756,14 @@ attachment:
     # - "users1_mailing_address_is_floor": ''
     - "city_of_birth": ${ users[i].city_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
-    - "users1_countries_of_residence": ${ users[i].countries_of_residence }
-    - "users1_countries_of_citizenship": ${ users[i].countries_of_citizenship }
+    - "users1_countries_of_residence_1": ${ users[i].countries_of_residence.item(0) }
+    - "users1_countries_of_residence_2": ${ users[i].countries_of_residence.item(1) }
+    - "users1_countries_of_residence_3": ${ users[i].countries_of_residence.item(2) }
+    - "users1_countries_of_residence_4": ${ users[i].countries_of_residence.item(3) }
+    - "users1_countries_of_citizenship_1": ${ users[i].countries_of_citizenship.item(0) }
+    - "users1_countries_of_citizenship_2": ${ users[i].countries_of_citizenship.item(1) }
+    - "users1_countries_of_citizenship_3": ${ users[i].countries_of_citizenship.item(2) }
+    - "users1_countries_of_citizenship_4": ${ users[i].countries_of_citizenship.item(3) }
     - "users1_address_address": ${ users[i].address.address }
     # - "users1_address_is_apt": ${ users[i].address_is_apt }
     # - "users1_address_is_suite": ${ users[i].address_is_suite }

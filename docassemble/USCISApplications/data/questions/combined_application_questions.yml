@@ -2038,23 +2038,23 @@ attachment:
     - "q28_yes": ${ users[i].q28 }
     - "q28_no": ${ not users[i].q28 }
     - "q20c_yes": |
-        % if users[i].q2a or users[i].20b:
+        % if users[i].q20a or users[i].q20b:
         ${ users[i].q20c }
         % endif
     - "q20c_no": |
-        % if users[i].q2a or users[i].20b:
+        % if users[i].q20a or users[i].q20b:
         ${ not users[i].q20c }
-        % if users[i].q2a or users[i].20b:
+        % endif
     - "q20d_yes": |
-        % if users[i].q2a or users[i].20b:
+        % if users[i].q20a or users[i].q20b:
         ${ users[i].q20d }
         % endif
     - "q20d_no": |
-        % if users[i].q2a or users[i].20b:
+        % if users[i].q20a or users[i].q20b:
         ${ users[i].q20d == False }
         % endif
     - "q20d_idk": |
-        % if users[i].q2a or users[i].20b:
+        % if users[i].q20a or users[i].q20b:
         ${ users[i].q20d is None }
         % endif
     - "q29_yes": ${ users[i].q29 }

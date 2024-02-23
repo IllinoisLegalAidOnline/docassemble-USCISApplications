@@ -81,7 +81,7 @@ fields:
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
-  - Date of first hearing: users[i].date_removal_proceedings_began
+  - Start Date of Proceedings: users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
     max: ${ today() }
     show if: users[i].in_removal_proceedings
@@ -436,7 +436,7 @@ fields:
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
-  - Date of first hearing: users[i].date_removal_proceedings_began
+  - Start Date of Proceedings (date docketed): users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
     max: ${ today() }
     show if: users[i].in_removal_proceedings
@@ -490,7 +490,7 @@ subquestion: |
       Wait for the supervisor to check your work and decide if each applicant can continue or not.
     </p>
   </div>
-  
+
   <div class="accordion" id="userAccordion">
     % for user in users:
     <div class="accordion-item">

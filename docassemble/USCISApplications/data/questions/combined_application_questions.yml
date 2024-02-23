@@ -70,20 +70,26 @@ fields:
       lambda y: y.on_one_line()
     none of the above: |
       Somewhere else
-    disable others: True
+    disable others:
+      - users[i].address.address
+      - users[i].address.city
+      - users[i].address.zip
+      - users[i].address.unit
+      - users[i].address.state
+      - users[i].address.country
   - Street address: users[i].address.address
     address autocomplete: True
-    default: ${ showifdef("users[0].address.address ") }
+    # default: ${ showifdef("users[0].address.address ") }
   - Suite/Unit/Floor/Room: users[i].address.unit
     required: False
-    default: ${ showifdef("users[0].address.unit ") }
+    # default: ${ showifdef("users[0].address.unit ") }
   - City or Town: users[i].address.city
-    default: ${ showifdef("users[0].address.city ") }
+    # default: ${ showifdef("users[0].address.city ") }
   - State: users[i].address.state
     required: False
-    default: ${ showifdef("users[0].address.state ") }
+    # default: ${ showifdef("users[0].address.state ") }
   - ZIP: users[i].address.zip
-    default: ${ showifdef("users[0].address.zip ") }
+    # default: ${ showifdef("users[0].address.zip ") }
   - Daytime Phone Number (optional): users[i].phone_number
     required: false
     default: |
@@ -102,29 +108,28 @@ fields:
   - ${ users[0] }'s mailing address is: users[0].mailing_address
     datatype: object_radio
     choices:
-      - users[i].address if defined("users[i].address.address") else None
+      - users[0].address if defined("users[0].address.address") else None
     object labeler: |
       lambda y: y.on_one_line()
     none of the above: |
       Somewhere else
-    disable others: True      
+    disable others: True
     show if:
       code: |
         defined("users[0].address.address")
-  - ${ users[0].address.address_label}: users[0].mailing_address.address
+  - ${ users[0].address.address_label }: users[0].mailing_address.address
     address autocomplete: True
-  - ${ users[0].address.unit_label}: users[0].mailing_address.unit
+  - ${ users[0].address.unit_label }: users[0].mailing_address.unit
     required: False
-  - ${ users[0].address.city_label}: users[0].mailing_address.city
-  - ${ users[0].address.state_label}: users[0].mailing_address.state
+  - ${ users[0].address.city_label }: users[0].mailing_address.city
+  - ${ users[0].address.state_label }: users[0].mailing_address.state
     code: |
       states_list(country_code=AL_DEFAULT_COUNTRY)
     default: ${ AL_DEFAULT_STATE }
-  - ${ users[0].address.zip_label}: users[0].mailing_address.zip
+  - ${ users[0].address.zip_label }: users[0].mailing_address.zip
     required: False      
-  - ${ users[0].address.country_label}: users[0].mailing_address.country
-    code: countries_list()
-    default: ${ AL_DEFAULT_COUNTRY }    
+  - ${ users[0].address.country_label }: users[0].mailing_address.country
+    code: uscis_countries_list()
 ---
 id: your mailing address
 question: |
@@ -198,8 +203,8 @@ subquestion: |
   % endif
 fields:
   - Select a Country: users[i].countries_of_residence[j].name
-    code: |
-      [next(iter(item.values())) for item in countries_list()]
+    code: uscis_countries_list()
+    
   # - Were you ever a **citizen** of this country?: users[i].countries_of_residence[j].was_ever_citizen
   #   datatype: yesnoradio
   # - Are you **still** a citizen of this country **today**?: users[i].countries_of_residence[j].is_still_citizen
@@ -435,14 +440,18 @@ subquestion: |
   You must list all passport numbers, even if expired. Start with the most
   recent.
 fields:
+  - Do you have a passport?: users[i].has_passport
+    datatype: yesnoradio
   - Passport number (if any): users[i].passport_number
     maxlength: 38
     required: false
+    show if: users[i].has_passport
   - What country issued your most recent passport: users[i].passport_issuing_country
     code: |
       uscis_countries_list()
     default: |
       ${ users[i].country_of_birth }
+    show if: users[i].has_passport
   - Other travel document number (if any): users[i].other_travel_document_number
     required: false
   - What is the expiration date of your most recent passport or travel document?: users[i].passport_expiration_date
@@ -462,10 +471,10 @@ question: |
 subquestion: |
   Tap "add another" to list another travel document.
 
-  % if users[i].passport_number or users[i].other_travel_document_number:
+  % if (users[i].has_passport and users[i].passport_number) or users[i].other_travel_document_number:
   You have already told us about the following travel documents:
 
-  % if users[i].passport_number:
+  % if users[i].has_passport and users[i].passport_number:
   * ${ users[i].passport_number }
   % endif
   % if users[i].other_travel_document_number:
@@ -1751,8 +1760,14 @@ attachment:
     # - "users1_mailing_address_is_floor": ''
     - "city_of_birth": ${ users[i].city_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
-    - "users1_countries_of_residence": ${ users[i].countries_of_residence }
-    - "users1_countries_of_citizenship": ${ users[i].countries_of_citizenship }
+    - "users1_countries_of_residence_1": ${ users[i].countries_of_residence.item(0) }
+    - "users1_countries_of_residence_2": ${ users[i].countries_of_residence.item(1) }
+    - "users1_countries_of_residence_3": ${ users[i].countries_of_residence.item(2) }
+    - "users1_countries_of_residence_4": ${ users[i].countries_of_residence.item(3) }
+    - "users1_countries_of_citizenship_1": ${ users[i].countries_of_citizenship.item(0) }
+    - "users1_countries_of_citizenship_2": ${ users[i].countries_of_citizenship.item(1) }
+    - "users1_countries_of_citizenship_3": ${ users[i].countries_of_citizenship.item(2) }
+    - "users1_countries_of_citizenship_4": ${ users[i].countries_of_citizenship.item(3) }
     - "users1_address_address": ${ users[i].address.address }
     # - "users1_address_is_apt": ${ users[i].address_is_apt }
     # - "users1_address_is_suite": ${ users[i].address_is_suite }
@@ -1789,14 +1804,20 @@ attachment:
     - "state_of_entry": ${ users[i].state_of_entry }
     - "i94_arrival_number": ${ users[i].i94_arrival_number }
     - "authorized_stay_ending_date": ${ users[i].authorized_stay_ending_date }
-    - "passport_number": ${ users[i].passport_number }
-    - "most_recent_passport_country_issuing": ${ users[i].passport_issuing_country }
+    - "passport_number": |
+        % if users[i].has_passport:
+        ${ users[i].passport_number }
+        % endif
+    - "most_recent_passport_country_issuing": |
+        % if users[i].has_passport:
+        ${ users[i].passport_issuing_country }
+        % endif
     - "passport_or_travel_document_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
     - "travel_document_number": ${ users[i].other_travel_document_number }
     - "additional_passport_number_1": ${ users[i].travel_documents.item(0) }
     - "additional_passport_number_2": ${ users[i].travel_documents.item(1) }
-    - "ethnicity_hispanic_yes": ${ users[i].ethnicity == "Hispanic or Latino" }
-    - "ethnicity_hispanic_no": ${ not users[i].ethnicity == "Hispanic or Latino" }
+    - "ethnicity_hispanic_yes": ${ users[i].ethnicity.lower() == "hispanic" }
+    - "ethnicity_hispanic_no": ${ users[i].ethnicity.lower() == "not_hispanic" }
     - "race_white": ${ users[i].race['white'] }
     - "race_asian": ${ users[i].race['asian'] }
     - "race_black": ${ users[i].race['black'] }
@@ -2016,13 +2037,28 @@ attachment:
     - "q20b_no": ${ not users[i].q20b }
     - "q28_yes": ${ users[i].q28 }
     - "q28_no": ${ not users[i].q28 }
-    - "q20c_yes": ${ users[i].q20c }
-    - "q20c_no": ${ not users[i].q20c }
+    - "q20c_yes": |
+        % if users[i].q20a or users[i].q20b:
+        ${ users[i].q20c }
+        % endif
+    - "q20c_no": |
+        % if users[i].q20a or users[i].q20b:
+        ${ not users[i].q20c }
+        % endif
+    - "q20d_yes": |
+        % if users[i].q20a or users[i].q20b:
+        ${ users[i].q20d }
+        % endif
+    - "q20d_no": |
+        % if users[i].q20a or users[i].q20b:
+        ${ users[i].q20d == False }
+        % endif
+    - "q20d_idk": |
+        % if users[i].q20a or users[i].q20b:
+        ${ users[i].q20d is None }
+        % endif
     - "q29_yes": ${ users[i].q29 }
     - "q29_no": ${ not users[i].q29 }
-    - "q20d_yes": ${ users[i].q20d }
-    - "q20d_no": ${ users[i].q20d == False }
-    - "q20d_idk": ${ users[i].q20d is None }
     - "q30a_yes": ${ users[i].q30a }
     - "q30a_no": ${ not users[i].q30a }
     - "q20e_yes": ${ users[i].q20e }
@@ -2243,7 +2279,10 @@ attachment:
     - "country_of_birth": ${ users[i].country_of_birth }
     - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
     - "i94_arrival_number": ${ users[i].i94_arrival_number }
-    - "passport_number": ${ users[i].passport_number }
+    - "passport_number": |
+        % if users[i].has_passport:
+        ${ users[i].passport_number }
+        % endif
     - "travel_document_number": ${ users[i].other_travel_document_number }
     - "passport_country_of_issue": ${ users[i].passport_issuing_country }
     - "passport_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }

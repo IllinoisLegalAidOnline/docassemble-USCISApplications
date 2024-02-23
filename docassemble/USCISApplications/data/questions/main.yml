@@ -126,7 +126,7 @@ code: |
       user.countries_of_residence.gather()
       if user.countries_of_residence.there_are_any:
         user.countries_of_residence_review
-      user.passport_number
+      user.has_passport
       user.travel_documents.gather()
       user.i94_arrival_number
       user.has_been_in_immigration_proceedings

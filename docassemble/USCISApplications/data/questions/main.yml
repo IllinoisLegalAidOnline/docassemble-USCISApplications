@@ -898,6 +898,8 @@ subquestion: |
 
   ${ action_button_html(user.cached_pdf.url_for(), label=f"{ user}'s application", icon="file-pdf", size="lg", color="primary") }
   % endfor
+
+  ${ action_button_html(url_of("new_session"), label="Start a new application", icon="square-plus", size="lg", color="secondary") }
 ---
 objects:
   - users[i].limited_scope_retainer: ALDocument.using(title=f"{users[i]} - Limited Scope Retainer", filename=space_to_underscore(f"{users[i]} - Limited Scope Retainer"), has_addendum=False)

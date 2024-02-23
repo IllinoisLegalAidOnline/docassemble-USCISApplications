@@ -1924,12 +1924,12 @@ attachment:
     - "last_country_of_residence": ${ users[i].last_country_of_residence }
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
     - "date_started_us_residence": ${ users[i].date_started_us_residence.format("MM/dd/yyyy") }
-    - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
+    - "entered_country_other_than_residence_country_before_us": Yes
     - "other_countries_entered_list": "See addendum for 1.c-7"
-    - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
-    - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
-    - "other_country_immigration_status": ${ other_country_immigration_status }
-    - "other_country_immigration_status_offered": ${ other_country_immigration_status_offered }
+    - "other_country_entered_start_date": ${ users[i].date_left_home_country_month } ${ users[i].date_left_home_country_year }
+    - "other_country_entered_end_date": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
+    - "other_country_immigration_status": 'No status'
+    - "other_country_immigration_status_offered": No
     - "other_country_immigration_status_names_and_status": ${ other_country_immigration_status_names_and_status }
     - "other_coutnry_immigration_status_why_refused": ${ other_coutnry_immigration_status_why_refused }
     - "q8a_yes": ${ users[i].q8a }
@@ -2219,11 +2219,11 @@ attachment:
     - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
     - "mailing_address_is_physical_address_yes": ${ users[i].mailing_address == users[i].address }
     - "mailing_address_is_physical_address_no": ${ not users[i].mailing_address == users[i].address }
-    - "users1_address_address": ${ users[i].address.address }
-    - "users1_address_unit": ${ users[i].address.unit }
-    - "users1_address_city": ${ users[i].address.city }
-    - "users1_address_state": ${ users[i].address.state }
-    - "users1_address_zip": ${ users[i].address.zip }
+    - "users1_address_address": ${ users[i].address.address if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_unit": ${ users[i].address.unit if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_city": ${ users[i].address.city if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_state": ${ users[i].address.state if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_zip": ${ users[i].address.zip if users[i].mailing_address != users[i].address else '' }
     - "users1_a_number": ${ users[i].a_number }
     - "users1_uscis_account_number": ${ users[i].uscis_account_number }
     - "users1_gender": ${ users[i].sex == 'male' }
@@ -2248,7 +2248,7 @@ attachment:
     - "passport_country_of_issue": ${ users[i].passport_issuing_country }
     - "passport_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
     - "date_of_last_arrival": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
-    - "place_of_last_arrival": ${ f'{users[i].users[i].city_of_entry}, {users[i].state_of_entry}' }
+    - "place_of_last_arrival": ${ users[i].users[i].city_of_entry }, ${ users[i].state_of_entry } 
     - "immigration_status_at_last_arrival": ${ users[i].immigration_status_last_entry }
     - "current_immigration_status": ${ users[i].current_immigration_status }
     - "sevis_number": ${ users[i].sevis_number }

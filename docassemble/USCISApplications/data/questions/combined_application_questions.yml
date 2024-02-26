@@ -27,7 +27,14 @@ subquestion: |
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
-  - Suite/Unit/Floor/Room: users[0].address.unit
+  - Address is a: users[0].address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: users[0].address.unit
     required: False
   - City or Town: users[0].address.city
   - State: users[0].address.state
@@ -80,7 +87,14 @@ fields:
   - Street address: users[i].address.address
     address autocomplete: True
     # default: ${ showifdef("users[0].address.address ") }
-  - Suite/Unit/Floor/Room: users[i].address.unit
+  - Address is a: users[i].address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: users[i].address.unit
     required: False
     # default: ${ showifdef("users[0].address.unit ") }
   - City or Town: users[i].address.city
@@ -119,7 +133,14 @@ fields:
         defined("users[0].address.address")
   - ${ users[0].address.address_label }: users[0].mailing_address.address
     address autocomplete: True
-  - ${ users[0].address.unit_label }: users[0].mailing_address.unit
+  - Address is a: users[0].mailing_address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: users[0].mailing_address.unit
     required: False
   - ${ users[0].address.city_label }: users[0].mailing_address.city
   - ${ users[0].address.state_label }: users[0].mailing_address.state
@@ -148,9 +169,16 @@ fields:
     show if:
       code: |
         defined("users[i].address.address")
+  - Address is a: users[i].mailing_address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
   - ${ users[i].address.address_label}: users[i].mailing_address.address
     address autocomplete: True
-  - ${ users[i].address.unit_label}: users[i].mailing_address.unit
+  - Apartment/Suite/Floor number: users[i].mailing_address.unit
     required: False
   - ${ users[i].address.city_label}: users[i].mailing_address.city
   - ${ users[i].address.state_label}: users[i].mailing_address.state
@@ -1755,9 +1783,9 @@ attachment:
     - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
     - "mailing_address_is_physical_address_yes": ${ users[i].mailing_address == users[i].address }
     - "mailing_address_is_physical_address_no": ${ not users[i].mailing_address == users[i].address }
-    # - "users1_mailing_address_is_apt": ''
-    # - "users1_mailing_address_is_suite": ''
-    # - "users1_mailing_address_is_floor": ''
+    - "users1_mailing_address_is_apt": ${ users[i].mailing_address.address_type == 'apt' }
+    - "users1_mailing_address_is_suite": ${ users[i].mailing_address.address_type == 'suite' }
+    - "users1_mailing_address_is_floor": ${ users[i].mailing_address.address_type == 'floor' }
     - "city_of_birth": ${ users[i].city_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
     - "users1_countries_of_residence_1": ${ users[i].countries_of_residence.item(0) }
@@ -1769,9 +1797,9 @@ attachment:
     - "users1_countries_of_citizenship_3": ${ users[i].countries_of_citizenship.item(2) }
     - "users1_countries_of_citizenship_4": ${ users[i].countries_of_citizenship.item(3) }
     - "users1_address_address": ${ users[i].address.address }
-    # - "users1_address_is_apt": ${ users[i].address_is_apt }
-    # - "users1_address_is_suite": ${ users[i].address_is_suite }
-    # - "users1_address_is_floor": ${ users[i].address_is_floor }
+    - "users1_address_is_apt": ${ users[i].address.address_type == 'apt'}
+    - "users1_address_is_suite": ${ users[i].address.address_type == 'suite'}
+    - "users1_address_is_floor": ${ users[i].address.address_type == 'floor'}
     - "users1_address_unit": ${ users[i].address.unit }
     - "users1_address_city": ${ users[i].address.city }
     - "users1_address_state": ${ users[i].address.state }
@@ -2241,12 +2269,12 @@ attachment:
     - "has_ssn": ${ users[i].has_ssn }
     - "users1_ssn": ${ users[i].ssn }
     # - "users1_wants_ssn": Yes # Pre-checked on form
-    # - "users1_mailing_address_is_apt": ${ users1_mailing_address_is_apt }
-    # - "users1_mailing_address_is_suite": ${ users1_mailing_address_is_suite }
-    # - "users1_mailing_address_is_floor": ${ users1_mailing_address_is_floor }
-    # - "users1_address_is_apt": ${ users1_address_is_apt }
-    # - "users1_address_is_suite": ${ users1_address_is_suite }
-    # - "users1_address_is_floor": ${ users1_address_is_floor }
+    - "users1_mailing_address_is_apt": ${ users[i].mailing_address.address_type == 'apt' }
+    - "users1_mailing_address_is_suite": ${ users[i].mailing_address.address_type == 'suite' }
+    - "users1_mailing_address_is_floor": ${ users[i].mailing_address.address_type == 'floor' }
+    - "users1_address_is_apt": ${ users[i].address.address_type == 'apt' }
+    - "users1_address_is_suite": ${ users[i].address.address_type == 'suite' }
+    - "users1_address_is_floor": ${ users[i].address.address_type == 'floor' }
     - "users1_mailing_address_in_care_of": ${ users[i].mailing_address.in_care_of }
     - "users1_mailing_address_address": ${ users[i].mailing_address.address }
     - "users1_mailing_address_unit": ${ users[i].mailing_address.unit }

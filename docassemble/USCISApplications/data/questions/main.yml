@@ -76,7 +76,7 @@ code: |
   if interpreter_present:
     interpreter.name.first
   preparer.name.first
-  preparer.is_attorney
+  preparer_is_attorney
   users.gather()
   review_initial_user_list
   nav.set_section("section_retainer")
@@ -281,9 +281,10 @@ code: |
 ---
 sets:
   - preparer.name.first
+  - preparer_is_attorney
 id: preparer name interpreter present
 question: |
-  What is the name of the volunteer or person asking questions today?
+  Who is the volunteer/preparer assisting the applicant(s) with this application?
 fields:
   - Someone already named: preparer
     datatype: object_radio
@@ -296,13 +297,7 @@ fields:
       [signed_in_user, interpreter] if user_logged_in() and interpreter_present else [signed_in_user] if user_logged_in() else [interpreter] if interpreter_present else []
   - code: |
       preparer.name_fields(person_or_business="person", show_suffix=False,)
----
-generic object: ALIndividual
-id: preparer is attorney
-question: |
-  Is the preparer an attorney or accredited representative?
-fields:
-  - Is the preparer an attorney or accredited representative?: x.is_attorney
+  - Is the preparer an attorney or accredited representative?: preparer_is_attorney
     datatype: yesnoradio
 ---
 id: people
@@ -1139,6 +1134,7 @@ attachment:
   filename: cover_page
   pdf template file: cover_page.pdf
   skip undefined: True
+  editable: False
   fields:
     - "document_set_for": ${ users[i].name.full(middle="full") }
 ---
@@ -1148,5 +1144,6 @@ attachment:
   filename: ending_page
   pdf template file: ending_page.pdf
   skip undefined: True
+  editable: False
   fields:
     - "document_set_for": ${ users[i].name.full(middle="full") }

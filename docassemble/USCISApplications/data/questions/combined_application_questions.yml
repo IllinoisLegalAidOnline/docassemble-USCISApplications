@@ -9,7 +9,7 @@ objects:
   - users[i].countries_traveled_through: DAList.using(object_type=DAObject, there_are_any=True, there_is_another=False, complete_attribute='entry_date')
   - users[i].prior_immigration_proceedings: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='jurisdiction')
   #- users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
-  - users[i].travel_documents: DAList.using(there_are_any=True)
+  - users[i].travel_documents: DAList.using(there_are_any=True, there_is_another=False)
   - users[i].alternate_birthdates: DAList
   #- users[i].spouse: ALIndividual # need?
   #- users[i].spouse.prior_TPS: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='start_date') # need?
@@ -489,8 +489,8 @@ fields:
     required: false
   - Additional passport or travel document number: users[i].travel_documents[1]
     required: false
-  - ${ users[i] } has more than 3 travel documents: users[i].travel_documents.there_is_another
-    datatype: yesnowide
+#  - ${ users[i] } has more than 3 travel documents: users[i].travel_documents.there_is_another
+#    datatype: yesnowide
 ---
 id: collect more docs
 list collect: True
@@ -599,7 +599,7 @@ fields:
       - Not Hispanic or Latino: not_hispanic
     default: |
       ${ showifdef("users[0].ethnicity") if i > 0 else ""}
-  - Race (choose 1)": users[i].race
+  - "Race (choose 1)": users[i].race
     datatype: checkboxes
     choices:
       - White: white
@@ -1654,14 +1654,14 @@ fields:
     maxlength: 8
   - "3": _3
     maxlength: 39
-  - "Sign and date each sheet": sign_and_date_each_sheet
-    maxlength: 28
-  - "First name 9": First_Name_9
-    maxlength: 28
-  - "Middle name 8": Middle_Name_8
-    maxlength: 28
-  - "A 3": A_3
-    maxlength: 21
+#  - "Sign and date each sheet": sign_and_date_each_sheet
+#    maxlength: 28
+#  - "First name 9": First_Name_9
+#    maxlength: 28
+#  - "Middle name 8": Middle_Name_8
+#    maxlength: 28
+#  - "A 3": A_3
+#    maxlength: 21
   - "Page number": Page_Number
     maxlength: 8
   - "Part number": Part_Number
@@ -2157,10 +2157,10 @@ attachment:
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
-    - "preparer_is_attorney_yes": ${ preparer.is_attorney }
-    - "preparer_is_attorney_no": ${ not preparer.is_attorney }
+    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
     - "preparer_full_rep": No
-    - "preparer_limited_rep": ${ preparer.is_attorney }
+    - "preparer_limited_rep": ${ preparer_is_attorney }
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_organization": ""
@@ -2180,7 +2180,7 @@ attachment:
     - "8_3": ${ _3 }
     - "9_3": ${ _3 }
     - "10_3": ${ _3 }
-    - "sign and date each sheet": ${ users[i].name.last } # TODO: fix the field name?
+    - "sign and date each sheet": ${ users[i].name.last }
     - "First Name_9": ${ users[i].name.first }
     - "Middle Name_8": ${ users[i].name.middle }
     - "A_3": ${ users[i].a_number }
@@ -2283,11 +2283,11 @@ attachment:
     - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
     - "mailing_address_is_physical_address_yes": ${ users[i].mailing_address == users[i].address }
     - "mailing_address_is_physical_address_no": ${ not users[i].mailing_address == users[i].address }
-    - "users1_address_address": ${ users[i].address.address }
-    - "users1_address_unit": ${ users[i].address.unit }
-    - "users1_address_city": ${ users[i].address.city }
-    - "users1_address_state": ${ users[i].address.state }
-    - "users1_address_zip": ${ users[i].address.zip }
+    - "users1_address_address": ${ users[i].address.address if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_unit": ${ users[i].address.unit if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_city": ${ users[i].address.city if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_state": ${ users[i].address.state if users[i].mailing_address != users[i].address else '' }
+    - "users1_address_zip": ${ users[i].address.zip if users[i].mailing_address != users[i].address else '' }
     - "users1_a_number": ${ users[i].a_number }
     - "users1_uscis_account_number": ${ users[i].uscis_account_number }
     - "users1_gender": ${ users[i].sex == 'male' }
@@ -2315,7 +2315,7 @@ attachment:
     - "passport_country_of_issue": ${ users[i].passport_issuing_country }
     - "passport_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
     - "date_of_last_arrival": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
-    - "place_of_last_arrival": ${ f'{users[i].users[i].city_of_entry}, {users[i].state_of_entry}' }
+    - "place_of_last_arrival": ${ users[i].city_of_entry }${ ', ' if showifdef('users[i].city_of_entry') else '' }${ users[i].state_of_entry }
     - "immigration_status_at_last_arrival": ${ users[i].immigration_status_last_entry }
     - "current_immigration_status": ${ users[i].current_immigration_status }
     - "sevis_number": ${ users[i].sevis_number }
@@ -2335,13 +2335,13 @@ attachment:
         % endif
     - "user_reads_english": ${ users[i].user_reads_english }
     - "user_used_interpreter": ${ users[i].user_used_interpreter }
-    - "interpreter_spoke_language": ${ users[i].interpreter_spoke_language }
-    - "interpreter_spoke_language__1": ${ users[i].interpreter_spoke_language }
+    - "interpreter_spoke_language": ${ interpreter.language }
+    - "interpreter_spoke_language__1": ${ interpreter.language }
     - "user_used_preparer": True
-    - "preparer_name": ${ preparer[0] }
-    - "users1_phone_number": ${ users[i].daytime_phone }
-    - "users1_mobile_number": ${ users[i].mobile_phone_number }
-    - "users1_email": ${ users[i].email_address }
+    - "preparer_name": ${ preparer.name.full() }
+    - "users1_phone_number": ${ users[i].phone_number}
+    - "users1_mobile_number": ${ users[i].mobile_number }
+    - "users1_email": ${ users[i].email }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
  #   - "is_abc_salvadoran_guatemalan_national": ${ users[i].country_of birth == "Guatemala" or users[i].country_of birth == "El Salvador" or xxxxxxxxx##### }
@@ -2350,8 +2350,8 @@ attachment:
     - "interpreter_organization": ${ interpreter.organization }
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_name_last": ${ preparer.name.last }
-    - "preparer_is_attorney_yes": ${ preparer.is_attorney }
-    - "preparer_is_attorney_no": ${ not preparer.is_attorney }
+    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
     - "preparer_full_rep": No
     - "preparer_limited_rep": Yes
 #   # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
@@ -2374,7 +2374,7 @@ attachment:
     - "Item Number_3": ${ Item_Number_3 }
     - "sign and date each sheet": ${ users[i].name.last }
     - "First Name_7": ${ users[i].name.first }
-    - "Middle Name_5": ${ users[i.name.first] }
+    - "Middle Name_5": ${ users[i].name.middle }
     - "Page Number_4": ${ Page_Number_4 }
     - "Part Number_4": ${ Part_Number_4 }
     - "Item Number_4": ${ Item_Number_4 }

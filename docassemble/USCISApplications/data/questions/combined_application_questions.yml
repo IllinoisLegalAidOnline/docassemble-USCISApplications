@@ -84,6 +84,7 @@ fields:
       - users[i].address.unit
       - users[i].address.state
       - users[i].address.country
+      - users[i].address.address_type
   - Street address: users[i].address.address
     address autocomplete: True
     # default: ${ showifdef("users[0].address.address ") }

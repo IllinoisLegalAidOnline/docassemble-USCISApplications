@@ -258,6 +258,88 @@ columns:
 edit: 
   - row_item.name
 ---
+id: status in other countries
+question: |
+  Countries traveled through before entering the US for ${ users[i] }
+subquestion: |
+  You said that you traveled through these countries before entering the United States:
+
+  % if users[i].traveled_through_central_america:
+  Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico
+  % else:
+  ${ users[i].other_countries_traveled_through }
+  % endif
+fields:
+  - note: |
+      What date did you enter the first country?
+    grid: 4
+  - Month: users[i].date_entered_first_country_month
+    default: |
+      ${ showifdef("users[0].date_entered_first_country_month") if i > 0 else '' }
+    label above field: True
+    grid: 5
+    choices:
+      - January: 01
+      - February: 02
+      - March: 03
+      - April: 04
+      - May: 05
+      - June: 06
+      - July: 07
+      - August: 08
+      - September: 09
+      - October: 10
+      - November: 11
+      - December: 12
+  - Year: users[i].date_entered_first_country_year
+    datatype: integer
+    label above field: True
+    grid: 3
+    default: |
+      ${ showifdef("users[0].date_entered_first_country_year") if i > 0 else '' }
+  - note: |
+      What date did you leave the **last** country?
+    grid: 4
+  - Month: users[i].date_left_last_country_month
+    default: |
+      ${ showifdef("users[0].date_left_last_country_month") if i > 0 else '' }
+    label above field: True
+    grid: 5
+    choices:
+      - January: 01
+      - February: 02
+      - March: 03
+      - April: 04
+      - May: 05
+      - June: 06
+      - July: 07
+      - August: 08
+      - September: 09
+      - October: 10
+      - November: 11
+      - December: 12
+  - Year: users[i].date_left_last_country_year
+    label above field: True
+    datatype: integer
+    grid: 3
+    default: |
+      ${ showifdef("users[0].date_left_last_country_year") if i > 0 else '' }
+  - Did you have immigration status in any of the countries you traveled through?: users[i].has_immigration_status_in_countries_traveled_through
+    datatype: yesnoradio
+  - What status do you have, if any, in any of the countries you traveled through?: users[i].immigration_status_in_countries_traveled_through
+    show if: users[i].has_immigration_status_in_countries_traveled_through
+  - Were you ever offered immigration status in any country you traveled through that you did not accept?: users[i].other_country_immigration_status_offered
+    datatype: yesnoradio
+    default: ${ showifdef("users[0].other_country_immigration_status_offered") if i > 0 else ''}
+  - Describe the name of each country, nature of the status, and the dates when it was offered: users[i].other_country_immigration_status_names_and_status
+    datatype: area
+    show if: users[i].other_country_immigration_status_offered
+    default: ${ showifdef("users[0].other_country_immigration_status_names_and_status") if i > 0 else ''}
+  - Why did you not accept the status offered?: users[i].other_country_immigration_status_why_refused
+    datatype: area
+    show if: users[i].other_country_immigration_status_offered
+    default: ${ showifdef("users[0].other_country_immigration_status_why_refused") }
+---
 # id: any more countries of citizenship
 # question: |
 #   Are there any other countries where you are a citizen?
@@ -1974,14 +2056,34 @@ attachment:
     - "last_country_of_residence": ${ users[i].last_country_of_residence }
     - "children1_applying_for_tps": ${ children1_applying_for_tps }
     - "date_started_us_residence": ${ users[i].date_started_us_residence.format("MM/dd/yyyy") }
-    - "entered_country_other_than_residence_country_before_us": ${ entered_country_other_than_residence_country_before_us }
-    - "other_countries_entered_list": "See addendum for 1.c-7"
-    - "other_country_entered_start_date": ${ other_country_entered_start_date.format('MM/dd/yyyy') }
-    - "other_country_entered_end_date": ${ other_country_entered_end_date.format('MM/dd/yyyy') }
-    - "other_country_immigration_status": ${ other_country_immigration_status }
-    - "other_country_immigration_status_offered": ${ other_country_immigration_status_offered }
-    - "other_country_immigration_status_names_and_status": ${ other_country_immigration_status_names_and_status }
-    - "other_coutnry_immigration_status_why_refused": ${ other_coutnry_immigration_status_why_refused }
+    - "entered_country_other_than_residence_country_before_us_yes": ${ users[i].traveled_through_central_america or users[i].traveled_through_other_countries }
+    - "entered_country_other_than_residence_country_before_us_no": ${ not( users[i].traveled_through_central_america or users[i].traveled_through_other_countries) }
+    - "other_countries_entered_list": |
+        % if users[i].traveled_through_central_america or users[i].traveled_through_other_countries:
+        See addendum for 1.c-4
+        % endif
+    - "other_country_entered_start_date": |
+        % if users[i].traveled_through_central_america or users[i].traveled_through_other_countries:
+        ${ users[i].date_entered_first_country_month }
+        /
+        ${ users[i].date_entered_first_country_year }
+        % endif
+    - "other_country_entered_end_date": |
+        % if users[i].traveled_through_central_america or users[i].traveled_through_other_countries:
+        ${ users[i].date_left_last_country_month }
+        /
+        ${ users[i].date_left_last_country_year }
+        % endif
+    - "other_country_immigration_status": |
+        % if users[i].has_immigration_status_in_countries_traveled_through:
+        ${ users[i].immigration_status_in_countries_traveled_through }
+        % else:
+        No status
+        % endif
+    - "other_country_immigration_status_offered_yes": ${ users[i].other_country_immigration_status_offered }
+    - "other_country_immigration_status_offered_no": ${ not users[i].other_country_immigration_status_offered }
+    - "other_country_immigration_status_names_and_status": ${ users[i].other_country_immigration_status_names_and_status }
+    - "other_country_immigration_status_why_refused": ${ users[i].other_country_immigration_status_why_refused }
     - "q8a_yes": ${ users[i].q8a }
     - "q8a_no": ${ not users[i].q8a }
     - "q8b_yes": ${ users[i].q8b }

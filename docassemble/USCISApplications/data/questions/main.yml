@@ -133,6 +133,8 @@ code: |
       user.father_first_name
       user.previously_filed_I765
       if application_kind == "ead_and_tps":
+        if user.traveled_through_other_countries:
+          user.date_entered_first_country_month
         user.have_you_ever_questions
       user.countries_of_citizenship
       user.signpost

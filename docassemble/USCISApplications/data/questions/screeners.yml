@@ -481,9 +481,9 @@ fields:
       code: |
         users[i].age_in_years() < 14
 # commented out while troubleshooting validation error message location
-#validation code: |
-#  if users[i].last_entry_date_year < users[i].date_left_home_country_year:
-#    validation_error("Year of last US entry must be after year left home country.", field=users[i].last_entry_date_year)
+validation code: |
+  if users[i].last_entry_date_year < users[i].date_left_home_country_year:
+    validation_error("Year of last US entry must be after year left home country.", field="users[i].last_entry_date_year")
 ---
 id: review_tps_screening_questions
 continue button field: review_tps_screening_questions

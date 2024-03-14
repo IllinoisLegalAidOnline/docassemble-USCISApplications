@@ -4,7 +4,7 @@ continue button field: users[i].ead_screening_questions
 question: |
   EAD eligibility screener for ${ users[i] }
 subquestion: |
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Note to screener</h2>
     <p>
       Some of the questions below are written so you can read them aloud. Enter the answer
@@ -12,7 +12,7 @@ subquestion: |
     </p>
   </div>
 
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Ask all questions on this page</h2>
     <p>
       When you have finished the screening questions for each applicant, a
@@ -83,7 +83,7 @@ fields:
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
   - Start Date of Proceedings: users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
-    max: ${ today() }
+    alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
@@ -103,7 +103,7 @@ continue button field: review_ead_screening_questions
 question: |
   EAD eligibility screener
 subquestion: |
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Call a supervisor to check if the applicants can continue</h2>
     <p>
       Wait for the supervisor to check your work and decide if each applicant can continue or not.
@@ -197,7 +197,7 @@ question: |
   TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
 subquestion: |
   % if i == 0:
-  <div class="p-3 mb-2 bg-info text-dark border border-info rounded-3" role="alert">
+  <div class="p-3 mb-2 bg-info text-dark border border-info rounded-0" role="alert">
     <h2 class="h4">Note to screener</h2>
     <p>
       To complete this form, you may need to review the applicant's:
@@ -216,7 +216,7 @@ subquestion: |
   </div>
   % endif
 
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Ask all questions on this page</h2>
     <p>
       When you have finished the screening questions for each applicant, a
@@ -301,6 +301,7 @@ fields:
     label above field: True
     datatype: integer    
     grid: 3
+    max: ${ current_datetime().year}
   - note: |
       When did you last enter the US? (check immigration documents)
     grid: 3
@@ -327,6 +328,7 @@ fields:
     label above field: True
     datatype: integer
     grid: 3
+    max: ${ current_datetime().year}
     default: |
       ${ showifdef("users[0].last_entry_date_year") if i > 0 else ''}
   - Do you have proof that you were physically present in the US as of July 31, 2023?: users[i].proof_last_entry_date_before_july_31_2023
@@ -438,7 +440,7 @@ fields:
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
   - Start Date of Proceedings (date docketed): users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
-    max: ${ today() }
+    alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
@@ -478,13 +480,17 @@ fields:
     hide if:
       code: |
         users[i].age_in_years() < 14
+# commented out while troubleshooting validation error message location
+#validation code: |
+#  if users[i].last_entry_date_year < users[i].date_left_home_country_year:
+#    validation_error("Year of last US entry must be after year left home country.", field=users[i].last_entry_date_year)
 ---
 id: review_tps_screening_questions
 continue button field: review_tps_screening_questions
 question: | 
   Review TPS screening questions
 subquestion: |
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Call a supervisor to check if the applicants can continue</h2>
     <p>
       Wait for the supervisor to check your work and decide if each applicant can continue or not.

@@ -170,6 +170,8 @@ fields:
     show if:
       code: |
         defined("users[i].address.address")
+  - ${ users[i].address.address_label}: users[i].mailing_address.address
+    address autocomplete: True
   - Address is a: users[i].mailing_address.address_type
     datatype: radio
     choices:
@@ -177,8 +179,6 @@ fields:
       - Suite: suite
       - Floor: floor
       - Other (including house): other
-  - ${ users[i].address.address_label}: users[i].mailing_address.address
-    address autocomplete: True
   - Apartment/Suite/Floor number: users[i].mailing_address.unit
     required: False
   - ${ users[i].address.city_label}: users[i].mailing_address.city
@@ -293,6 +293,7 @@ fields:
       - December: 12
   - Year: users[i].date_entered_first_country_year
     datatype: integer
+    max: ${ current_datetime().year}
     label above field: True
     grid: 3
     default: |
@@ -321,6 +322,7 @@ fields:
   - Year: users[i].date_left_last_country_year
     label above field: True
     datatype: integer
+    max: ${ current_datetime().year}
     grid: 3
     default: |
       ${ showifdef("users[0].date_left_last_country_year") if i > 0 else '' }
@@ -507,13 +509,13 @@ fields:
     maxlength: 38
   - Start Date: users[i].prior_immigration_proceedings[j].start_date
     datatype: date
-    max: ${ today() }
+    max: ${ today().format("yyyy-MM-dd") }
   - Proceedings are ongoing/pending today: users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present
     datatype: yesnowide
     grid: 6
   - End Date: users[i].prior_immigration_proceedings[j].end_date
     datatype: date
-    max: ${ today() }
+    max: ${ today().format("yyyy-MM-dd") }
     grid: 6
     disable if: users[i].prior_immigration_proceedings[j].proceedings_continuing_to_present
 validation code: |
@@ -626,11 +628,11 @@ fields:
     datatype: yesnoradio
   - "Other Date of Birth Used": users[i].alternate_birthdates[0]
     datatype: BirthDate
-    max: ${ today() }
+    alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].alternate_birthdates.there_are_any
   - "Other Date of Birth Used": users[i].alternate_birthdates[1]
     datatype: BirthDate
-    max: ${ today() }
+    alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].alternate_birthdates.there_are_any
     required: False
   - note: |
@@ -650,7 +652,7 @@ subquestion: |
 fields:
   - Other Date of Birth Used: users[i].alternate_birthdates[j]
     datatype: BirthDate
-    max: ${ today() }
+    alMax: ${ today().format("yyyy-MM-dd") }
 ---
 # id: alternate birthdates there is another
 # question: |
@@ -763,7 +765,7 @@ question: |
 fields:
   - "Marriage Date (to current spouse)": users[i].marriage_date
     datatype: date
-    max: ${ today() }
+    max: ${ today().format("yyyy-MM-dd") }
   - "Marriage Location": users[i].marriage_location # looking at the form, it is unknown if this solicits a street address or something like 'the holy temple of so and so'
     maxlength: 38
   - "Marriage City": users[i].marriage_city
@@ -785,12 +787,12 @@ question: |
 fields:
   - "${ users[i] } entered the U.S. (and has resided in the U.S. since) on what date?": users[i].date_started_us_residence
     datatype: date
-    max: ${ today() }
+    max: ${ today().format("yyyy-MM-dd") }
     default: |
       ${ showifdef("users[0].date_started_us_residence") if i > 0 else "" }
   - "Date of Last Entry into U.S.": users[i].date_of_last_entry # what's the difference with above question?
     datatype: date
-    max: ${ today() }
+    max: ${ today().format("yyyy-MM-dd") }
     default: |
       ${ showifdef("users[0].date_of_last_entry") if i > 0 else "" }
   - "Port of Entry (if any)": users[i].port_of_entry
@@ -870,7 +872,7 @@ fields:
       ${ showifdef("users[0].federal_court_proceedings_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") and users[0].kind_of_immigration_proceedings["federal_court"] else "" }
   - Start date of proceedings: users[i].proceedings_start_date
     datatype: date
-    max: ${ today() }
+    max: ${ today().format("yyyy-MM-dd") }
     show if: users[i].has_been_in_immigration_proceedings
     default: |
       ${ showifdef("users[0].proceedings_start_date") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
@@ -881,7 +883,7 @@ fields:
       ${ showifdef("users[0].proceedings_continuing_to_present") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
   - End date of proceedings: users[i].proceedings_end_date
     datatype: date
-    max: ${ today() }
+    max: ${ today().format("yyyy-MM-dd") }
     js show if: |
       val("users[i].has_been_in_immigration_proceedings") && !val("users[i].proceedings_continuing_to_present")
     required: False

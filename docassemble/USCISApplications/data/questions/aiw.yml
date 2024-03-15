@@ -11,13 +11,29 @@ attachment:
       - "users1_name_first": ${ users[i].name.first }
       - "users1_name_middle": ${ users[i].name.middle }
       - "users1_name_last": ${ users[i].name.last }
-      - "users1_aliases1": |
+      - "users1_aliases1_first": |
           % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 0:
-          ${ users[i].aliases.item(0) }
+          ${ users[i].aliases.item(0).first }
           % endif
-      - "users1_aliases2": |
+      - "users1_aliases1_middle": |
+          % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 0:
+          ${ users[i].aliases.item(0).middle }
+          % endif
+      - "users1_aliases1_last": |
+          % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 0:
+          ${ users[i].aliases.item(0).last }
+          % endif
+      - "users1_aliases2_first": |
           % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 1:
-          ${ users[i].aliases.item(1) }
+          ${ users[i].aliases.item(1).first }
+          % endif
+      - "users1_aliases2_middle": |
+          % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 1:
+          ${ users[i].aliases.item(1).middle }
+          % endif
+      - "users1_aliases2_last": |
+          % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 1:
+          ${ users[i].aliases.item(1).last }
           % endif
       - "users1_birthdate": ${ users[i].birthdate }
       - "country_of_citizenship": ${ users[i].country_of_birth }

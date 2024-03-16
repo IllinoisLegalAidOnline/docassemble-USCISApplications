@@ -748,11 +748,6 @@ fields:
   - "USCIS Online Account Number (if any)": users[i].uscis_account_number
     maxlength: 28
     required: false
-  - "Has the Social Security Administration ever officially issued a card to you?": users[i].has_ssn
-    datatype: yesnoradio
-  - "U.S. Social Security Number": users[i].ssn
-    maxlength: 11
-    show if: users[i].has_ssn
   - Student and Exchange Visitor Information System (SEVIS) Number (if any): users[i].sevis_number
     maxlength: 21
     required: false
@@ -894,8 +889,12 @@ question: |
 fields:
   - Have you previously filed Form I-765?: users[i].previously_filed_I765
     datatype: yesnoradio
-  - Has the Social Security Administration ever officially issued a Social Security card to you?: users[i].SS_has_issued_card
+  - "Has the Social Security Administration ever officially issued a card to you?": users[i].has_ssn
     datatype: yesnoradio
+  - "U.S. Social Security Number (without -)": users[i].ssn
+    maxlength: 9
+    minlength: 9
+    show if: users[i].has_ssn
 ---
 id: father and mother birth name
 question: |
@@ -2370,7 +2369,10 @@ attachment:
     - "users1_previous_names3_first": ${ users[i].aliases.item(2).first }
     - "users1_previous_names3_middle": ${ users[i].aliases.item(2).middle }
     - "has_ssn": ${ users[i].has_ssn }
-    - "users1_ssn": ${ users[i].ssn }
+    - "users1_ssn": |
+        % if users[i].has_ssn:
+        ${ users[i].ssn }
+        % endif
     # - "users1_wants_ssn": Yes # Pre-checked on form
     - "users1_mailing_address_is_apt": ${ users[i].mailing_address.address_type == 'apt' }
     - "users1_mailing_address_is_suite": ${ users[i].mailing_address.address_type == 'suite' }

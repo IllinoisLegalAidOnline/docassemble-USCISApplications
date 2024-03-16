@@ -834,7 +834,7 @@ fields:
     #   - Yes: Yes_2
     #   - No: No_2
     default: |
-      ${ showifdef("users[0].has_been_in_immigration_proceedings") if i > 0 else "" }
+      ${ users[i].in_removal_proceedings }
   - What kind of immigration proceedings?: users[i].kind_of_immigration_proceedings
     datatype: checkboxes
     choices:
@@ -852,6 +852,8 @@ fields:
     required: False
     default: |
       ${ showifdef("users[0].proceedings_dhs_or_doj_hearing_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+    js show if: |
+      val("users[i].kind_of_immigration_proceedings['immigration_court']") || val("users[i].kind_of_immigration_proceedings['bia']")
   - Location of federal court proceedings: users[i].federal_court_proceedings_location
     maxlength: 38
     show if: users[i].kind_of_immigration_proceedings["federal_court"]

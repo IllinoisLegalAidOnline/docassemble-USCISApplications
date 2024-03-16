@@ -779,15 +779,10 @@ question: |
   U.S. entry information
 fields:
   - "${ users[i] } entered the U.S. (and has resided in the U.S. since) on what date?": users[i].date_started_us_residence
-    datatype: date
-    max: ${ today() }
+    datatype: ThreePartsDate
+    max: ${ today().format("MM/dd/yyyy") }
     default: |
-      ${ showifdef("users[0].date_started_us_residence") if i > 0 else "" }
-  - "Date of Last Entry into U.S.": users[i].date_of_last_entry # what's the difference with above question?
-    datatype: date
-    max: ${ today() }
-    default: |
-      ${ showifdef("users[0].date_of_last_entry") if i > 0 else "" }
+      ${ users[i].date_of_last_entry }
   - "Port of Entry (if any)": users[i].port_of_entry
     maxlength: 38
     required: False

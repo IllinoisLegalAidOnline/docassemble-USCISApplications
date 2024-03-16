@@ -83,7 +83,7 @@ fields:
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
   - Start Date of Proceedings: users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
-    max: ${ today() }
+    alMax: ${ today() }
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
@@ -256,16 +256,14 @@ fields:
       ${ showifdef("users[0].proof_of_birthplace") if i > 0 else '' }
   - Are one or both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnoradio
-  # This show if logic was getting the screen stuck
-  # TODO: see if we can get it working later with this enabled again
-  #   # show if:
-  #   #   code: |
-  #   #     not "venezuela" in users[i].country_of_birth.lower()
-  # - note: |
-  #     We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
-  #   show if:
-  #     code: |
-  #       "venezuela" in users[i].country_of_birth.lower()
+    show if:
+      code: |
+        not "venezuela" in users[i].country_of_birth.lower()
+  - note: |
+      We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
+    show if:
+      code: |
+        "venezuela" in users[i].country_of_birth.lower()
   - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
     datatype: yesnoradio
     show if: users[i].parents_from_venezuela

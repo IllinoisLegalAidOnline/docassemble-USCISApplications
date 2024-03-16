@@ -824,42 +824,48 @@ fields:
     default: |
       ${ showifdef("users[0].current_immigration_status") if i > 0 else "" }
 ---
+objects:
+  - users[i].kind_of_immigration_proceedings: DADict.using(auto_gather=False, gathered=True)
+---
 id: immigration proceedings
 question: |
   Information about immigration proceedings
 fields:
   - "Has ${ users[i] } ever been in immigration proceedings?": users[i].has_been_in_immigration_proceedings
     datatype: yesnoradio
-    # choices:
-    #   - Yes: Yes_2
-    #   - No: No_2
-    default: |
-      ${ users[i].in_removal_proceedings }
-  - What kind of immigration proceedings?: users[i].kind_of_immigration_proceedings
-    datatype: checkboxes
-    choices:
-      - Immigration court (before a judge): immigration_court
-      - Board of Immigration Appeals (BIA): bia
-      - I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues.: federal_court
-    none of the above: False
-    minlength: 1
+    default: ${ users[i].in_removal_proceedings }
+  - note: |
+      What kind of immigration proceedings?
+    show if: users[i].has_been_in_immigration_proceedings
+  - "Immigration court (before a judge)": users[i].kind_of_immigration_proceedings["immigration_court"]
+    datatype: yesno
     show if: users[i].has_been_in_immigration_proceedings
     default: |
-       ${ showifdef("users[0].kind_of_immigration_proceedings") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+      ${ showifdef("users[0].kind_of_immigration_proceedings['immigration_court']") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else False  }
+  - "Board of Immigration Appeals (BIA)": users[i].kind_of_immigration_proceedings["bia"]
+    datatype: yesno
+    show if: users[i].has_been_in_immigration_proceedings
+    default: |
+      ${ showifdef("users[0].kind_of_immigration_proceedings['bia']") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else False  }
+  - "I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues.": users[i].kind_of_immigration_proceedings["federal_court"]
+    datatype: yesno
+    show if: users[i].has_been_in_immigration_proceedings
+    default: |
+      ${ showifdef("users[0].kind_of_immigration_proceedings['federal_court']") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else False  }
   - Location of DOJ or DHS proceedings:  users[i].proceedings_dhs_or_doj_hearing_location
     maxlength: 38
     show if: users[i].has_been_in_immigration_proceedings
     required: False
     default: |
-      ${ showifdef("users[0].proceedings_dhs_or_doj_hearing_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+      ${ showifdef("users[0].proceedings_dhs_or_doj_hearing_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else showifdef("users[i].location_removal_proceedings") }
     js show if: |
-      val("users[i].kind_of_immigration_proceedings['immigration_court']") || val("users[i].kind_of_immigration_proceedings['bia']")
+      val('users[i].kind_of_immigration_proceedings["immigration_court"]') || val('users[i].kind_of_immigration_proceedings["bia"]')
   - Location of federal court proceedings: users[i].federal_court_proceedings_location
     maxlength: 38
     show if: users[i].kind_of_immigration_proceedings["federal_court"]
     required: False
     default: |
-      ${ showifdef("users[0].federal_court_proceedings_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") and users[0].kind_of_immigration_proceedings["federal_court"] else "" }
+      ${ showifdef("users[0].federal_court_proceedings_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") and showifdef("users[0].kind_of_immigration_proceedings['federal_court']") else showifdef("users[i].location_removal_proceedings") }
   - Start date of proceedings: users[i].proceedings_start_date
     datatype: date
     max: ${ today() }

@@ -20,7 +20,7 @@ attachment:
           ${ users[i].aliases.item(1) }
           % endif
       - "users1_birthdate": ${ users[i].birthdate }
-      - "country_of_citizenship": ${ users[i].country_of_birth }
+      - "country_of_citizenship": ${ comma_list(users[i].countries_of_citizenship.elements) }
       - "country_of_birth": ${ users[i].country_of_birth }
       - "gender_male": ${ users[i].sex.lower() == "male" }
       - "gender_female": ${ users[i].sex.lower() == "female" }

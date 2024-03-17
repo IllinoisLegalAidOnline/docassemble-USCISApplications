@@ -83,7 +83,7 @@ fields:
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
   - Start Date of Proceedings: users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
-    max: ${ today() }
+    alMax: ${ today() }
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
@@ -256,16 +256,14 @@ fields:
       ${ showifdef("users[0].proof_of_birthplace") if i > 0 else '' }
   - Are one or both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnoradio
-  # This show if logic was getting the screen stuck
-  # TODO: see if we can get it working later with this enabled again
-  #   # show if:
-  #   #   code: |
-  #   #     not "venezuela" in users[i].country_of_birth.lower()
-  # - note: |
-  #     We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
-  #   show if:
-  #     code: |
-  #       "venezuela" in users[i].country_of_birth.lower()
+    show if:
+      code: |
+        not "venezuela" in users[i].country_of_birth.lower()
+  - note: |
+      We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
+    show if:
+      code: |
+        "venezuela" in users[i].country_of_birth.lower()
   - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
     datatype: yesnoradio
     show if: users[i].parents_from_venezuela
@@ -301,34 +299,11 @@ fields:
     label above field: True
     datatype: integer    
     grid: 3
-  - note: |
-      When did you last enter the US? (check immigration documents)
-    grid: 3
-  - label: Month
-    field: users[i].last_entry_date_month
-    label above field: True
-    grid: 6
-    choices:
-      - January
-      - February
-      - March
-      - April
-      - May
-      - June
-      - July
-      - August
-      - September
-      - October
-      - November
-      - December
+  - "When did you last enter the US? (check immigration documents)": users[i].date_of_last_entry
+    datatype: ThreePartsDate
+    alMax: ${ today().format("MM/dd/yyyy") }
     default: |
-      ${ showifdef("users[0].last_entry_date_month") if i > 0 else ''}
-  - Year: users[i].last_entry_date_year
-    label above field: True
-    datatype: integer
-    grid: 3
-    default: |
-      ${ showifdef("users[0].last_entry_date_year") if i > 0 else ''}
+      ${ showifdef("users[0].date_of_last_entry") if i > 0 else "" }
   - Do you have proof that you were physically present in the US as of July 31, 2023?: users[i].proof_last_entry_date_before_july_31_2023
     datatype: checkboxes
     choices:
@@ -519,7 +494,7 @@ subquestion: |
             <li>Stayed in another country for more than 6 months before arriving to the US: ${ 'Yes' if user.in_other_country_longer_than_6_months else 'No' }</li>
             % endif
             <li>Date of leaving home country: ${ showifdef("user.date_left_home_country_month") }, ${ showifdef("user.date_left_home_country_year") }</li>
-            <li>Date of last entry to the US: ${ showifdef("user.last_entry_date_month") }, ${ showifdef("user.last_entry_date_year") }</li>
+            <li>Date of last entry to the US: ${ showifdef("users[i].date_of_last_entry") }</li>
             <li>Has proof of physical presence in the US as of July 31, 2023: ${ showifdef("user.proof_last_entry_date_before_july_31_2023") }</li>
             <li>Has proof of physical presence in the US as of October 3, 2023: ${ showifdef("user.proof_last_entry_date_before_october_4_2023") }</li>
             <li>Has children applying today: ${ 'Yes' if showifdef("user.has_children_applying_today") else 'No' }</li>

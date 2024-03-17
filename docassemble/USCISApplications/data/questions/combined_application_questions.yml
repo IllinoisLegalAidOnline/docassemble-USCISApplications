@@ -85,6 +85,8 @@ fields:
       - users[i].address.state
       - users[i].address.country
       - users[i].address.address_type
+    default: |
+      users[0].address if i > 0 else None
   - Street address: users[i].address.address
     address autocomplete: True
     # default: ${ showifdef("users[0].address.address ") }
@@ -123,7 +125,7 @@ fields:
   - ${ users[0] }'s mailing address is: users[0].mailing_address
     datatype: object_radio
     choices:
-      - users[0].address if defined("users[0].address.address") else None
+      - users[0].mailing_address if defined("users[0].mailing_address.address") else users[0].address if defined("users[0].address.address") else None
     object labeler: |
       lambda y: y.on_one_line()
     none of the above: |
@@ -132,6 +134,8 @@ fields:
     show if:
       code: |
         defined("users[0].address.address")
+    default: |
+      users[0].address
   - ${ users[0].address.address_label }: users[0].mailing_address.address
     address autocomplete: True
   - Address is a: users[0].mailing_address.address_type
@@ -160,7 +164,7 @@ fields:
   - ${ users[i] }'s mailing address is: users[i].mailing_address
     datatype: object_radio
     choices:
-      - users[0].address if defined("users[0].address.address") else None
+      - users[0].mailing_address if defined("users[0].mailing_address.address") else None
       - users[i].address if defined("users[i].address.address") else None
     object labeler: |
       lambda y: y.on_one_line()
@@ -170,6 +174,8 @@ fields:
     show if:
       code: |
         defined("users[i].address.address")
+    default: |
+      users[0].mailing_address if i > 0 else None
   - Address is a: users[i].mailing_address.address_type
     datatype: radio
     choices:
@@ -748,11 +754,6 @@ fields:
   - "USCIS Online Account Number (if any)": users[i].uscis_account_number
     maxlength: 28
     required: false
-  - "Has the Social Security Administration ever officially issued a card to you?": users[i].has_ssn
-    datatype: yesnoradio
-  - "U.S. Social Security Number": users[i].ssn
-    maxlength: 11
-    show if: users[i].has_ssn
   - Student and Exchange Visitor Information System (SEVIS) Number (if any): users[i].sevis_number
     maxlength: 21
     required: false
@@ -784,15 +785,10 @@ question: |
   U.S. entry information
 fields:
   - "${ users[i] } entered the U.S. (and has resided in the U.S. since) on what date?": users[i].date_started_us_residence
-    datatype: date
-    max: ${ today() }
+    datatype: ThreePartsDate
+    max: ${ today().format("MM/dd/yyyy") }
     default: |
-      ${ showifdef("users[0].date_started_us_residence") if i > 0 else "" }
-  - "Date of Last Entry into U.S.": users[i].date_of_last_entry # what's the difference with above question?
-    datatype: date
-    max: ${ today() }
-    default: |
-      ${ showifdef("users[0].date_of_last_entry") if i > 0 else "" }
+      ${ users[i].date_of_last_entry }
   - "Port of Entry (if any)": users[i].port_of_entry
     maxlength: 38
     required: False
@@ -834,40 +830,47 @@ fields:
     default: |
       ${ showifdef("users[0].current_immigration_status") if i > 0 else "" }
 ---
+objects:
+  - users[i].kind_of_immigration_proceedings: DADict.using(auto_gather=False, gathered=True)
+---
 id: immigration proceedings
 question: |
   Information about immigration proceedings
 fields:
   - "Has ${ users[i] } ever been in immigration proceedings?": users[i].has_been_in_immigration_proceedings
     datatype: yesnoradio
-    # choices:
-    #   - Yes: Yes_2
-    #   - No: No_2
-    default: |
-      ${ showifdef("users[0].has_been_in_immigration_proceedings") if i > 0 else "" }
-  - What kind of immigration proceedings?: users[i].kind_of_immigration_proceedings
-    datatype: checkboxes
-    choices:
-      - Immigration court (before a judge): immigration_court
-      - Board of Immigration Appeals (BIA): bia
-      - I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues.: federal_court
-    none of the above: False
-    minlength: 1
+    default: ${ users[i].in_removal_proceedings }
+  - note: |
+      What kind of immigration proceedings?
+    show if: users[i].has_been_in_immigration_proceedings
+  - "Immigration court (before a judge)": users[i].kind_of_immigration_proceedings["immigration_court"]
+    datatype: yesno
     show if: users[i].has_been_in_immigration_proceedings
     default: |
-       ${ showifdef("users[0].kind_of_immigration_proceedings") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+      ${ showifdef("users[0].kind_of_immigration_proceedings['immigration_court']") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else False  }
+  - "Board of Immigration Appeals (BIA)": users[i].kind_of_immigration_proceedings["bia"]
+    datatype: yesno
+    show if: users[i].has_been_in_immigration_proceedings
+    default: |
+      ${ showifdef("users[0].kind_of_immigration_proceedings['bia']") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else False  }
+  - "I am no longer in Department of Justice (DOJ) or Department of Homeland Security (DHS) immigration proceedings, but I am or was in Federal court proceedings regarding immigration issues.": users[i].kind_of_immigration_proceedings["federal_court"]
+    datatype: yesno
+    show if: users[i].has_been_in_immigration_proceedings
+    default: |
+      ${ showifdef("users[0].kind_of_immigration_proceedings['federal_court']") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else False  }
   - Location of DOJ or DHS proceedings:  users[i].proceedings_dhs_or_doj_hearing_location
     maxlength: 38
-    show if: users[i].has_been_in_immigration_proceedings
     required: False
     default: |
-      ${ showifdef("users[0].proceedings_dhs_or_doj_hearing_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+      ${ showifdef("users[0].proceedings_dhs_or_doj_hearing_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else showifdef("users[i].location_removal_proceedings") }
+    js show if: |
+      val("users[i].has_been_in_immigration_proceedings") && (val('users[i].kind_of_immigration_proceedings["immigration_court"]') || val('users[i].kind_of_immigration_proceedings["bia"]'))
   - Location of federal court proceedings: users[i].federal_court_proceedings_location
     maxlength: 38
     show if: users[i].kind_of_immigration_proceedings["federal_court"]
     required: False
     default: |
-      ${ showifdef("users[0].federal_court_proceedings_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") and users[0].kind_of_immigration_proceedings["federal_court"] else "" }
+      ${ showifdef("users[0].federal_court_proceedings_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") and showifdef("users[0].kind_of_immigration_proceedings['federal_court']") else showifdef("users[i].location_removal_proceedings") }
   - Start date of proceedings: users[i].proceedings_start_date
     datatype: date
     max: ${ today() }
@@ -894,8 +897,12 @@ question: |
 fields:
   - Have you previously filed Form I-765?: users[i].previously_filed_I765
     datatype: yesnoradio
-  - Has the Social Security Administration ever officially issued a Social Security card to you?: users[i].SS_has_issued_card
+  - "Has the Social Security Administration ever officially issued a card to you?": users[i].has_ssn
     datatype: yesnoradio
+  - "U.S. Social Security Number (without -)": users[i].ssn
+    maxlength: 9
+    minlength: 9
+    show if: users[i].has_ssn
 ---
 id: father and mother birth name
 question: |
@@ -2370,7 +2377,10 @@ attachment:
     - "users1_previous_names3_first": ${ users[i].aliases.item(2).first }
     - "users1_previous_names3_middle": ${ users[i].aliases.item(2).middle }
     - "has_ssn": ${ users[i].has_ssn }
-    - "users1_ssn": ${ users[i].ssn }
+    - "users1_ssn": |
+        % if users[i].has_ssn:
+        ${ users[i].ssn }
+        % endif
     # - "users1_wants_ssn": Yes # Pre-checked on form
     - "users1_mailing_address_is_apt": ${ users[i].mailing_address.address_type == 'apt' }
     - "users1_mailing_address_is_suite": ${ users[i].mailing_address.address_type == 'suite' }

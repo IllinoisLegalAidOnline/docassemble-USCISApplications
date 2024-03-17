@@ -36,7 +36,7 @@ attachment:
           ${ users[i].aliases.item(1).last }
           % endif
       - "users1_birthdate": ${ users[i].birthdate }
-      - "country_of_citizenship": ${ users[i].country_of_birth }
+      - "country_of_citizenship": ${ comma_list(users[i].countries_of_citizenship.elements) }
       - "country_of_birth": ${ users[i].country_of_birth }
       - "gender_male": ${ users[i].sex.lower() == "male" }
       - "gender_female": ${ users[i].sex.lower() == "female" }
@@ -82,12 +82,3 @@ attachment:
       - "height_inches": ${ int((users[i].height_cm * 0.0328084 - int(users[i].height_cm * 0.0328084)) * 12) }"
       - "weight_kilos": ${ users[i].weight_kg }
       - "weight_pounds": ${ int(users[i].weight_kg * 2.20462) }
-    
----
-id: country of citizenship
-question: |
-  Country of citizenship (temporary, shouldn't appear)      
-fields:
-  - Country of citizenship: users[i].country_of_citizenship
-    code: |
-      uscis_countries_list()

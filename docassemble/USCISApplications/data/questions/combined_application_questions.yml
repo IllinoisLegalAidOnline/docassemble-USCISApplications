@@ -854,12 +854,11 @@ fields:
       ${ showifdef("users[0].kind_of_immigration_proceedings['federal_court']") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else False  }
   - Location of DOJ or DHS proceedings:  users[i].proceedings_dhs_or_doj_hearing_location
     maxlength: 38
-    show if: users[i].has_been_in_immigration_proceedings
     required: False
     default: |
       ${ showifdef("users[0].proceedings_dhs_or_doj_hearing_location") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else showifdef("users[i].location_removal_proceedings") }
     js show if: |
-      val('users[i].kind_of_immigration_proceedings["immigration_court"]') || val('users[i].kind_of_immigration_proceedings["bia"]')
+      val("users[i].has_been_in_immigration_proceedings") && (val('users[i].kind_of_immigration_proceedings["immigration_court"]') || val('users[i].kind_of_immigration_proceedings["bia"]'))
   - Location of federal court proceedings: users[i].federal_court_proceedings_location
     maxlength: 38
     show if: users[i].kind_of_immigration_proceedings["federal_court"]

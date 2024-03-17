@@ -16,6 +16,19 @@ objects:
   #- users[i].former_spouses: ALPeopleList.using(ask_number=True) # need?
   #- users[i].children: ALPeopleList.using(ask_number=True) # need?
 ---
+id: parent of user i
+question: |
+  Who is ${ users[i] }'s parent?
+subquestion: |
+  Because ${ users[i] } is a minor, the parent's signature will be used in any addenda.
+fields:
+  - Parent: users[i].parent
+    datatype: object_radio
+    choices:
+      - users.complete_elements()
+    exclude:
+      - users[i]
+---
 code: |
   users[i].alternate_birthdates.there_is_another = False
 ---
@@ -42,10 +55,16 @@ fields:
   - ZIP: users[0].address.zip
   - Daytime Phone Number (optional): users[0].phone_number
     required: false
+    default: |
+      ${ showifdef("users[i].parent.phone_number") if users[i].age_in_years() < 14 else '' }
   - Mobile Telephone Number (optional): users[0].mobile_number
     required: false
+    default: |
+      ${ showifdef("users[i].parent.mobile_number") if users[i].age_in_years() < 14 else '' }
   - Email address (optional): users[0].email
     required: false
+    default: |
+      ${ showifdef("users[i].parent.email") if users[i].age_in_years() < 14 else '' }
 ---
 code: |
   address_choices = []

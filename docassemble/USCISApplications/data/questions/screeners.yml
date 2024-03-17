@@ -378,7 +378,7 @@ fields:
     datatype: area
     show if: users[i].traveled_through_other_countries
     default: |
-      ${ showifdef("users[0].countries_traveled_through") if i > 0 else '' }
+      ${ showifdef("users[0].other_countries_traveled_through") if i > 0 else '' }
   - First country you are a citizen of: users[i].countries_of_citizenship[0]
     code: uscis_countries_list()
     default: ${ users[i].country_of_birth }

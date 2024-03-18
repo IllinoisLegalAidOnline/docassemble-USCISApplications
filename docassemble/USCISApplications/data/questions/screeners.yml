@@ -197,7 +197,7 @@ question: |
   TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
 subquestion: |
   % if i == 0:
-  <div class="p-3 mb-2 bg-info text-dark border border-info rounded-0" role="alert">
+  <div class="p-3 mb-2 bg-info text-dark border border-info rounded-0 ilao-info" role="alert">
     <h2 class="h4">Note to screener</h2>
     <p>
       To complete this form, you may need to review the applicant's:
@@ -397,11 +397,11 @@ fields:
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].traveled_through_central_america") if i > 0 else '' }
-  - Did you travel through other countries?: users[i].traveled_through_other_countries
+  - Did you travel through other countries besides Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico?: users[i].traveled_through_other_countries
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].traveled_through_other_countries") if i > 0 else '' }
-  - Which countries? (list all countries, incuding those in South America, with a comma between each country): users[i].other_countries_traveled_through
+  - Which other countries? (list all countries, incuding those in South America, with a comma between each country): users[i].other_countries_traveled_through
     datatype: area
     show if: users[i].traveled_through_other_countries
     default: |
@@ -480,10 +480,6 @@ fields:
     hide if:
       code: |
         users[i].age_in_years() < 14
-# commented out while troubleshooting validation error message location
-validation code: |
-  if users[i].last_entry_date_year < users[i].date_left_home_country_year:
-    validation_error("Year of last US entry must be after year left home country.", field="users[i].last_entry_date_year")
 ---
 id: review_tps_screening_questions
 continue button field: review_tps_screening_questions

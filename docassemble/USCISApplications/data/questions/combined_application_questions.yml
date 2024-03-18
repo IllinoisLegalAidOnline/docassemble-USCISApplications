@@ -2062,7 +2062,7 @@ attachment:
     - "entered_country_other_than_residence_country_before_us_no": ${ not( users[i].traveled_through_central_america or users[i].traveled_through_other_countries) }
     - "other_countries_entered_list": |
         % if users[i].traveled_through_central_america or users[i].traveled_through_other_countries:
-        See addendum for 1.c-4
+        See addendum
         % endif
     - "other_country_entered_start_date": |
         % if users[i].traveled_through_central_america or users[i].traveled_through_other_countries:
@@ -2082,8 +2082,8 @@ attachment:
         % else:
         No status
         % endif
-    - "other_country_immigration_status_offered_yes": ${ users[i].other_country_immigration_status_offered }
-    - "other_country_immigration_status_offered_no": ${ not users[i].other_country_immigration_status_offered }
+    - "other_country_immigration_status_offered_yes": ${ True if users[i].other_country_immigration_status_offered else '' }
+    - "other_country_immigration_status_offered_no": ${ True if not users[i].other_country_immigration_status_offered or users[i].traveled_through_other_countries == False else '' }
     - "other_country_immigration_status_names_and_status": ${ users[i].other_country_immigration_status_names_and_status }
     - "other_country_immigration_status_why_refused": ${ users[i].other_country_immigration_status_why_refused }
     - "q8a_yes": ${ users[i].q8a }

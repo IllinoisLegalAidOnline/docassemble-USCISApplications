@@ -118,6 +118,8 @@ code: |
     nav.set_section(f"users_{idx}_signpost_app")
     if user.application_is_approved:
       user.signpost
+      if user.age_in_years() < 14:
+        user.parent
       user.user_reads_english
       user.sex
       user.alternate_birthdates.gather()

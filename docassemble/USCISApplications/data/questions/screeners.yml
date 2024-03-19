@@ -273,6 +273,9 @@ fields:
         "venezuela" in users[i].country_of_birth.lower()
   - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
     datatype: yesnoradio
+    show if:
+      code: |
+        not "venezuela" in users[i].country_of_birth.lower()
     js show if: |
       val("users[i].parents_from_venezuela") || val("users[i].one_parent_from_venezuela")
   - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: users[i].in_other_country_longer_than_6_months

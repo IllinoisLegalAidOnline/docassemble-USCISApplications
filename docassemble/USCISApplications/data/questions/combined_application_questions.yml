@@ -1616,11 +1616,7 @@ fields:
   - "31b. Have you EVER served or worked in any prison, jail, prison camp, detention facility, labor camp, or any other situation that involved detaining persons?": users[i].q31b
     datatype: yesnoradio
     default: |
-      % if users[i].age_in_years() > 13:
-      ${ users[i].served_police }
-      % else:
-      False
-      % endif
+      ${ showifdef("users[0].served_police") if i > 0 else ''}
     grid: 6
     label above field: True
   - "32. Have you EVER been a member of, assisted in, or participated in any group, unit, or organization of any kind in which you or other persons used any type of weapon against any person or threatened to do so?": users[i].q32

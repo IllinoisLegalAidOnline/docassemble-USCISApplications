@@ -254,9 +254,16 @@ fields:
       - Other
     default: |
       ${ showifdef("users[0].proof_of_birthplace") if i > 0 else '' }
-  - Are one or both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
+  - Are both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnoradio
     show if:
+      code: |
+        not "venezuela" in users[i].country_of_birth.lower()
+  - Is at least one of your parents Venezuelan by birth?: users[i].one_parent_from_venezuela
+    datatype: yesnoradio
+    show if:
+      variable: users[i].parents_from_venezuela
+      is: False
       code: |
         not "venezuela" in users[i].country_of_birth.lower()
   - note: |
@@ -266,7 +273,8 @@ fields:
         "venezuela" in users[i].country_of_birth.lower()
   - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
     datatype: yesnoradio
-    show if: users[i].parents_from_venezuela
+    js show if: |
+      val("users[i].parents_from_venezuela") || val("users[i].one_parent_from_venezuela")
   - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: users[i].in_other_country_longer_than_6_months
     datatype: yesnoradio
     default: |
@@ -433,6 +441,39 @@ fields:
     hide if:
       code: |
         users[i].age_in_years() < 14
+  - Military force: users[i].military_force
+    show if: users[i].served_military
+    grid: 4
+    label above field: True
+  - Branch: users[i].military_branch
+    show if: users[i].served_military
+    grid: 4
+    label above field: True
+  - Rank: users[i].military_rank
+    show if: users[i].served_military
+    grid: 4
+    label above field: True
+  - Duties: users[i].military_duties
+    show if: users[i].served_military
+    datatype: area
+  - note: |
+      What dates did you serve?
+    grid: 4
+    show if: users[i].served_military
+  - From (include a year): users[i].military_service_start
+    grid: 4
+    show if: users[i].served_military
+    label above field: True
+  - To: users[i].military_service_end
+    grid: 4
+    show if: users[i].served_military
+    label above field: True
+  - Was your military service voluntary, or involuntary?: users[i].voluntary_military_service
+    datatype: radio
+    choices:
+      - Voluntary: voluntary
+      - Involuntary: involuntary
+    show if: users[i].served_military
   - Have you ever served on a police force?: users[i].served_police
     datatype: yesnoradio
     hide if:
@@ -443,6 +484,14 @@ fields:
     hide if:
       code: |
         users[i].age_in_years() < 14
+  - What weapons?: users[i].weapons_trained_in
+    datatype: area
+    rows: 2
+    show if: 
+      variable: users[i].received_weapons_training
+      is: True
+      code: |
+        users[i].age_in_years() > 14
   - Did you ever use a weapon against another person?: users[i].used_weapon_against_another_person
     datatype: yesnoradio
     hide if:

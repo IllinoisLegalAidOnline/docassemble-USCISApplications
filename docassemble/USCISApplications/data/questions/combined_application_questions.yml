@@ -567,7 +567,7 @@ fields:
     required: false
   - What is the expiration date of your most recent passport or travel document?: users[i].passport_expiration_date
     datatype: date
-    required: false      
+    show if: users[i].has_passport
   - Additional passport or travel document number: users[i].travel_documents[0]
     required: false
   - Additional passport or travel document number: users[i].travel_documents[1]
@@ -1021,230 +1021,11 @@ fields:
 id: have you evers
 continue button field: users[i].have_you_ever_questions
 question: |
-  Eligibility standards (${ users[i] })
+  Eligibility Questions (for ${ users[i] })
 subquestion: |
   <button id="make_all_false" class="btn btn-info">
     <i class="fas fa-circle-xmark"></i> Set all unchecked to "No"
   </button>
-
-  % if i > 0 and users[0].application_is_approved:
-  The following questions will be defaulted to **Yes**, based on ${ users[0] }'s responses:
-
-  % if users[0].q8a:
-  * 8a. Have you EVER been convicted of any felony committed in the United States?
-  % endif
-  % if users[0].q8b:
-  * 8b. Have you EVER been convicted of any misdemeanor committed in the United States
-  % endif
-  % if users[0].q8c:
-  * 8c. Have you EVER been convicted of any particularly serious crime, whether committed inside or outside of the United States
-  % endif
-  % if users[0].q9a:
-  * 9a. Have you EVER ordered, incited, assisted, or otherwise participated in the persecution of any person on account of race, religion, nationality, membership in a particular social group, or political opinion?
-  % endif
-  % if users[0].q9b:
-  * 9b. Have you EVER committed serious nonpolitical crimes outside of the United States prior to your arrival in the United States?
-  % endif
-  % if users[0].q9c:
-  * 9c. Have you EVER or are you NOW engaged in activities that could be reasonable grounds for concluding that you are a danger to the security of the United States?
-  % endif
-  % if users[0].q10a:
-  * 10a. Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a crime (other than a purely political offense)?
-  % endif
-  % if users[0].q10b:
-  * 10b. Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a violation of any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?
-  % endif
-  % if users[0].q10c:
-  * 10c. Have you EVER been convicted of or have you EVER committed acts which constitute the essential elements of a conspiracy to violate any law relating to a controlled substance as defined in section 102 of the Controlled Substances Act?
-  % endif
-  % if users[0].q11:
-  * 11. Have you EVER been convicted of two or more criminal offenses (other than purely political offenses) for which you received sentences to confinement that, when combined, total five years or more?
-  % endif
-  % if users[0].q12a:
-  * 12a. Have you EVER trafficked in or are you NOW trafficking in any controlled substance?
-  % endif
-  % if users[0].q12b:
-  * 12b. Are you NOW or have you EVER knowingly assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?
-  % endif
-  % if users[0].q12c:
-  * 12c. Are you the spouse or child of an alien who unlawfully trafficked in any controlled substance?
-  % endif
-  % if users[0].q12d:
-  * 12d. Are you the spouse or child of an alien who assisted, abetted, conspired, or colluded with others in the unlawful trafficking of any controlled substance?
-  % endif
-  % if users[0].q12e:
-  * 12e. Within the previous five years, have you EVER obtained any financial or other benefit from the unlawful activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit was the product of such illicit activity?
-  % endif
-  % if users[0].q13a:
-  * 13a. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate any law of the United States relating to espionage or sabotage?
-  % endif
-  % if users[0].q13b:
-  * 13b. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity to violate or evade any law prohibiting the export from the United States of goods, technology, or sensitive information?
-  % endif
-  % if users[0].q13c:
-  * 13c. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any other unlawful activity in the United States?
-  % endif
-  % if users[0].q13d:
-  * 13d. Have you EVER engaged, or do you plan to engage, solely, principally, or incidentally, in any activity in which a purpose is to oppose, control, or overthrow the Government of the United States by force, violence, or other unlawful means, including but not limited to participating in such activities, giving support to others involved in such activities, or being a member or representative of a terrorist organization?
-  % endif
-  % if users[0].q14a:
-  * 14a. Have you EVER or are you NOW engaged in terrorist activities?
-  % endif
-  % if users[0].q14b:
-  * 14b. Have you EVER or are you NOW engaged in or plan to engage in activities in the United States that would have potentially serious adverse foreign policy consequences for the United States?
-  % endif
-  % if users[0].q14c:
-  * 14c. Have you EVER been or are you NOW a member of the Communist or other totalitarian party, except when membership was involuntary?
-  % endif
-  % if users[0].q14d:
-  * 14d. Have you EVER participated in Nazi persecution or genocide?
-  % endif
-  % if users[0].q15a:
-  * 15a. Have you EVER, whether in the United States or any other country, been arrested for breaking or violating any law or ordinance, excluding minor traffic violations?
-  % endif
-  % if users[0].q15b:
-  * 15b. Have you EVER, whether in the United States or any other country, been cited, charged, or indicted, for breaking or violating any law or ordinance, excluding minor traffic violations?
-  % endif
-  % if users[0].q15c:
-  * 15c. Have you EVER, whether in the United States or any other country, been convicted, fined, imprisoned, placed on probation, received a suspended sentence or deferral of adjudication for breaking or violating any law or ordinance, excluding minor traffic violations?
-  % endif
-  % if users[0].q16:
-  * 16. Have you EVER been the beneficiary of a pardon, amnesty, rehabilitation decree, other act of clemency, or similar action?
-  % endif
-  % if users[0].q17:
-  * 17. Have you EVER committed a serious criminal offense in the United States and asserted immunity from prosecution?
-  % endif
-  % if users[0].q18a:
-  * 18a. Have you EVER, within the past 10 years, or are you NOW engaged in prostitution or procurement of prostitution?
-  % endif
-  % if users[0].q18b:
-  * 18b. Have you EVER, within the past 10 years (either directly or indirectly) procured or attempted to procure or import prostitutes or persons for the purpose of prostitution?
-  % endif
-  % if users[0].q18c:
-  * 18c. Have you EVER, within the past 10 years, received, in whole or in part, the proceeds of prostitution?
-  % endif
-  % if users[0].q19:
-  * 19. Have you EVER been or do you intend to be involved in any other commercial vice?
-  % endif
-  % if users[0].q20a:
-  * 20a. Have you EVER been ordered removed, and been deported from the United States?
-  % endif
-  % if users[0].q20a:
-  * 20b. Have you EVER voluntarily departed the United States under an order of removal?
-  % endif
-  % if users[0].q20c:
-  * 20c. Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?
-  % endif
-  % if users[0].q20a and users[0].q20d:
-  * 20d. Has DHS reinstated your prior order of removal?
-  % endif
-  % if users[0].q20e:
-  * 20e. Have you EVER failed to attend or remain in attendance at any immigration proceedings to determine your admissibility or deportability?
-  % endif
-  % if users[0].q21:
-  * 21. Have you EVER, by fraud or willfully misrepresenting a material fact, sought to obtain a visa or other documentation, admission to the United States, or any other immigration benefit?
-  % endif
-  % if users[0].q22:
-  * 22. Have you EVER assisted any other person to enter the United States in violation of the law?
-  % endif
-  % if users[0].q23a:
-  * 23a. Do you NOW have a communicable disease of public health significance?
-  % endif
-  % if users[0].q23b:
-  * 23b. Do you NOW have or have you EVER had a physical or mental disorder and behavior (or a history of behavior that is likely to recur) associated with the disorder which has posed or may pose a threat to the property, safety, or welfare of yourself or others?
-  % endif
-  % if users[0].q23c:
-  * 23c. Are you NOW or have you EVER been a drug abuser or drug addict?
-  % endif
-  % if users[0].q24:
-  * 24. Have you EVER entered the United States as a stowaway?"
-  % endif
-  % if users[0].q25:
-  * 25. Did the former Immigration and Naturalization Service (INS) EVER impose, or has DHS EVER imposed, civil monetary penalties on you for producing or using false documentation to obtain an immigration benefit?
-  % endif
-  % if users[0].q26:
-  * 26. Are you NOW subject to a final order for violation of section 274C (producing and/or using false documentation to unlawfully satisfy a requirement of the Immigration and Nationality Act)?
-  % endif
-  % if users[0].q27:
-  * 27. Do you NOW practice polygamy?
-  % endif
-  % if users[0].q28:
-  * 28. Are you NOW the guardian of, and are you accompanying, another individual who has been found to be inadmissible and who has been certified by a medical examiner to be helpless due to sickness, physical or mental disability, or infancy?
-  % endif
-  % if users[0].q29:
-  * 29. Have you EVER detained, retained, or withheld the custody of a child having a lawful claim to U.S. citizenship, outside the United States, from a U.S. citizen granted custody?
-  % endif
-  % if users[0].q30a:
-  * 30a. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in acts involving torture or genocide?
-  % endif
-  % if users[0].q30b:
-  * 30b. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in killing any person?
-  % endif
-  % if users[0].q30c:
-  * 30c. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in intentionally and severely injuring any person?
-  % endif
-  % if users[0].q30d:
-  * 30d. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in engaging in any kind of sexual contact or relations with any person who was being forced or threatened?
-  % endif
-  % if users[0].q30e:
-  * 30e. Have you EVER ordered, incited, called for, committed, assisted, helped with, or otherwise participated in limiting or denying any person's ability to exercise religious beliefs?
-  % endif
-  % if users[0].q31a:
-  * 31a. Have you EVER served in, been a member of, assisted in, or participated in any military unit, paramilitary unit, police unit, self-defense unit, vigilante unit, rebel group, guerrilla group, militia, or insurgent organization?
-  % endif
-  % if users[0].q31b:
-  * 31b. Have you EVER served or worked in any prison, jail, prison camp, detention facility, labor camp, or any other situation that involved detaining persons?
-  % endif
-  % if users[0].q32:
-  * 32. Have you EVER been a member of, assisted in, or participated in any group, unit, or organization of any kind in which you or other persons used any type of weapon against any person or threatened to do so?
-  % endif
-  % if users[0].q33:
-  * 33. Have you EVER assisted with or participated in selling or providing weapons to any person who to your knowledge used them against another person, or in transporting weapons to any person who to your knowledge used them against another person?
-  % endif
-  % if users[0].q34:
-  * 34. Have you EVER received any type of military, paramilitary, or weapons training?
-  % endif
-  % if users[0].q35:
-  * 35. Have you EVER unlawfully voted in a United States Federal, state, or local election?
-  % endif
-  % if users[0].q36:
-  * 36. Have you EVER claimed to be a U.S. citizen (in writing or in any other way)?
-  % endif
-  % if users[0].q37a:
-  * 37a. Have you EVER recruited, enlisted, conscripted, or used any person under 15 years of age to serve in or help an armed force or group?
-  % endif
-  % if users[0].q37b:
-  * 37b. Have you EVER used any person under 15 years of age to take part in hostilities or to help or provide services to people in combat?
-  % endif
-  % if users[0].q38a:
-  * 38a. Have you EVER committed or conspired to commit human trafficking offenses, as defined in the section 103 of the Victims of Trafficking and Violence Protection Act of 2000, in the United States or outside the United States?
-  % endif
-  % if users[0].q38b:
-  * 38b. Have you EVER knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?
-  % endif
-  % if users[0].q38c:
-  * 38c. Are you NOW the spouse or child of an alien who committed or conspired to commit human trafficking offenses?
-  % endif
-  % if users[0].q38d:
-  * 38d. Are you NOW the spouse or child of, or are you yourself, an alien who knowingly aided, abetted, assisted, conspired, or colluded with a human trafficker?
-  % endif
-  % if users[0].q38e:
-  * 38e. Within the previous five years, have you EVER obtained any financial or other benefit from the human trafficking activity of your spouse (including former spouses) or parents, and you knew, or reasonably should have known, that the financial or other benefit that you received resulted from such human trafficking?
-  % endif
-  % if users[0].q39a:
-  * 39a. Are you NOW or have you EVER engaged in money laundering as described in section 1956 or 1957 of Title 18, United States Code?
-  % endif
-  % if users[0].q39b:
-  * 39b. Are you NOW or have you EVER been a knowing aider, abettor, assister, conspirator, or colluder with others in money laundering?
-  % endif
-  % if users[0].q40:
-  * 40. Have you EVER been responsible for or directly carried out particularly severe violations of religious freedom, as defined in section 3 of the International Religious Freedom Act of 1998 (22 U.S.C. section 6402) while serving as a foreign government official?
-  % endif
-  % if users[0].q41:
-  * 41. Has an immigration judge or the Board of Immigration Appeals EVER determined that you filed a frivolous asylum application in the past?
-  % endif
-
-  % endif
 fields:
   - note: |
       <h2 class="h4">Criminal offenses and human rights violations</h2>
@@ -1462,12 +1243,12 @@ fields:
     default: ${ showifdef("users[0].q20b") if i > 0 else ''}
     grid: 6
     label above field: True
-  - "20c. Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
+  - "20c. ***Only answer this question if you answered 'Yes' to Question 20a OR 20b above:***[BR] Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
     datatype: yesnoradio
     default: ${ showifdef("users[0].q20c") if i > 0 else ''}
     grid: 6
     label above field: True
-  - "20d. Has DHS reinstated your prior order of removal?": users[i].q20d
+  - "20d. ***Only answer this question if you answered 'Yes' to Question 20c (left):***[BR]Has DHS reinstated your prior order of removal?": users[i].q20d
     datatype: yesnomaybe
     label above field: True
     grid: 6

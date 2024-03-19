@@ -4,7 +4,7 @@ continue button field: users[i].ead_screening_questions
 question: |
   EAD eligibility screener for ${ users[i] }
 subquestion: |
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Note to screener</h2>
     <p>
       Some of the questions below are written so you can read them aloud. Enter the answer
@@ -12,7 +12,7 @@ subquestion: |
     </p>
   </div>
 
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Ask all questions on this page</h2>
     <p>
       When you have finished the screening questions for each applicant, a
@@ -83,7 +83,7 @@ fields:
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
   - Start Date of Proceedings: users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
-    max: ${ today() }
+    alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
@@ -103,7 +103,7 @@ continue button field: review_ead_screening_questions
 question: |
   EAD eligibility screener
 subquestion: |
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Call a supervisor to check if the applicants can continue</h2>
     <p>
       Wait for the supervisor to check your work and decide if each applicant can continue or not.
@@ -197,7 +197,7 @@ question: |
   TPS eligibility screener for ${ bold(users[i]) } (DOB: ${ users[i].birthdate.format("MM/dd/yyyy") })
 subquestion: |
   % if i == 0:
-  <div class="p-3 mb-2 bg-info text-dark border border-info rounded-3" role="alert">
+  <div class="p-3 mb-2 bg-info text-dark border border-info rounded-0 ilao-info" role="alert">
     <h2 class="h4">Note to screener</h2>
     <p>
       To complete this form, you may need to review the applicant's:
@@ -216,7 +216,7 @@ subquestion: |
   </div>
   % endif
 
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Ask all questions on this page</h2>
     <p>
       When you have finished the screening questions for each applicant, a
@@ -254,21 +254,27 @@ fields:
       - Other
     default: |
       ${ showifdef("users[0].proof_of_birthplace") if i > 0 else '' }
-  - Are one or both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
+  - Are both of your parents Venezuelan nationals?: users[i].parents_from_venezuela
     datatype: yesnoradio
-  # This show if logic was getting the screen stuck
-  # TODO: see if we can get it working later with this enabled again
-  #   # show if:
-  #   #   code: |
-  #   #     not "venezuela" in users[i].country_of_birth.lower()
-  # - note: |
-  #     We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
-  #   show if:
-  #     code: |
-  #       "venezuela" in users[i].country_of_birth.lower()
+    show if:
+      code: |
+        not "venezuela" in users[i].country_of_birth.lower()
+  - Is at least one of your parents Venezuelan by birth?: users[i].one_parent_from_venezuela
+    datatype: yesnoradio
+    show if:
+      variable: users[i].parents_from_venezuela
+      is: False
+      code: |
+        not "venezuela" in users[i].country_of_birth.lower()
+  - note: |
+      We **won't** ask if both parents are Venezuelan nationals because the applicant was born in Venezuela.
+    show if:
+      code: |
+        "venezuela" in users[i].country_of_birth.lower()
   - "Do you have proof of your parents' birthplace?": users[i].proof_of_parent_birthplace
     datatype: yesnoradio
-    show if: users[i].parents_from_venezuela
+    js show if: |
+      val("users[i].parents_from_venezuela") || val("users[i].one_parent_from_venezuela")
   - After leaving your home country, were you in any other country for more than 6 months before arriving to the US?: users[i].in_other_country_longer_than_6_months
     datatype: yesnoradio
     default: |
@@ -301,34 +307,11 @@ fields:
     label above field: True
     datatype: integer    
     grid: 3
-  - note: |
-      When did you last enter the US? (check immigration documents)
-    grid: 3
-  - label: Month
-    field: users[i].last_entry_date_month
-    label above field: True
-    grid: 6
-    choices:
-      - January
-      - February
-      - March
-      - April
-      - May
-      - June
-      - July
-      - August
-      - September
-      - October
-      - November
-      - December
+  - "When did you last enter the US? (check immigration documents)": users[i].date_of_last_entry
+    datatype: ThreePartsDate
+    alMax: ${ today().format("MM/dd/yyyy") }
     default: |
-      ${ showifdef("users[0].last_entry_date_month") if i > 0 else ''}
-  - Year: users[i].last_entry_date_year
-    label above field: True
-    datatype: integer
-    grid: 3
-    default: |
-      ${ showifdef("users[0].last_entry_date_year") if i > 0 else ''}
+      ${ showifdef("users[0].date_of_last_entry") if i > 0 else "" }
   - Do you have proof that you were physically present in the US as of July 31, 2023?: users[i].proof_last_entry_date_before_july_31_2023
     datatype: checkboxes
     choices:
@@ -391,11 +374,11 @@ fields:
     show if: users[i].children_entered_separately
     default: |
       ${ showifdef("users[0].children_entered_separately_explanation") if i > 0 else '' }
-  - Did you travel through Central America (Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico) before entering the US?: users[i].traveled_through_central_america
+  - Did you travel through Central America (Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico) (Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico) before entering the US?: users[i].traveled_through_central_america
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].traveled_through_central_america") if i > 0 else '' }
-  - Did you travel through other countries?: users[i].traveled_through_other_countries
+  - Did you travel through other countries besides Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico?: users[i].traveled_through_other_countries
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].traveled_through_other_countries") if i > 0 else '' }
@@ -403,7 +386,7 @@ fields:
     datatype: area
     show if: users[i].traveled_through_other_countries
     default: |
-      ${ showifdef("users[0].countries_traveled_through") if i > 0 else '' }
+      ${ showifdef("users[0].other_countries_traveled_through") if i > 0 else '' }
   - First country you are a citizen of: users[i].countries_of_citizenship[0]
     code: uscis_countries_list()
     default: ${ users[i].country_of_birth }
@@ -438,7 +421,7 @@ fields:
       ${ showifdef("users[0].in_removal_proceedings") if i > 0 else '' }
   - Start Date of Proceedings (date docketed): users[i].date_removal_proceedings_began
     datatype: ThreePartsDate
-    max: ${ today() }
+    alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].in_removal_proceedings
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
@@ -458,6 +441,39 @@ fields:
     hide if:
       code: |
         users[i].age_in_years() < 14
+  - Military force: users[i].military_force
+    show if: users[i].served_military
+    grid: 4
+    label above field: True
+  - Branch: users[i].military_branch
+    show if: users[i].served_military
+    grid: 4
+    label above field: True
+  - Rank: users[i].military_rank
+    show if: users[i].served_military
+    grid: 4
+    label above field: True
+  - Duties: users[i].military_duties
+    show if: users[i].served_military
+    datatype: area
+  - note: |
+      What dates did you serve?
+    grid: 4
+    show if: users[i].served_military
+  - From (include a year): users[i].military_service_start
+    grid: 4
+    show if: users[i].served_military
+    label above field: True
+  - To: users[i].military_service_end
+    grid: 4
+    show if: users[i].served_military
+    label above field: True
+  - Was your military service voluntary, or involuntary?: users[i].voluntary_military_service
+    datatype: radio
+    choices:
+      - Voluntary: voluntary
+      - Involuntary: involuntary
+    show if: users[i].served_military
   - Have you ever served on a police force?: users[i].served_police
     datatype: yesnoradio
     hide if:
@@ -468,6 +484,14 @@ fields:
     hide if:
       code: |
         users[i].age_in_years() < 14
+  - What weapons?: users[i].weapons_trained_in
+    datatype: area
+    rows: 2
+    show if: 
+      variable: users[i].received_weapons_training
+      is: True
+      code: |
+        users[i].age_in_years() > 14
   - Did you ever use a weapon against another person?: users[i].used_weapon_against_another_person
     datatype: yesnoradio
     hide if:
@@ -484,7 +508,7 @@ continue button field: review_tps_screening_questions
 question: | 
   Review TPS screening questions
 subquestion: |
-  <div class="alert alert-info" role="alert">
+  <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Call a supervisor to check if the applicants can continue</h2>
     <p>
       Wait for the supervisor to check your work and decide if each applicant can continue or not.
@@ -519,7 +543,7 @@ subquestion: |
             <li>Stayed in another country for more than 6 months before arriving to the US: ${ 'Yes' if user.in_other_country_longer_than_6_months else 'No' }</li>
             % endif
             <li>Date of leaving home country: ${ showifdef("user.date_left_home_country_month") }, ${ showifdef("user.date_left_home_country_year") }</li>
-            <li>Date of last entry to the US: ${ showifdef("user.last_entry_date_month") }, ${ showifdef("user.last_entry_date_year") }</li>
+            <li>Date of last entry to the US: ${ showifdef("users[i].date_of_last_entry") }</li>
             <li>Has proof of physical presence in the US as of July 31, 2023: ${ showifdef("user.proof_last_entry_date_before_july_31_2023") }</li>
             <li>Has proof of physical presence in the US as of October 3, 2023: ${ showifdef("user.proof_last_entry_date_before_october_4_2023") }</li>
             <li>Has children applying today: ${ 'Yes' if showifdef("user.has_children_applying_today") else 'No' }</li>

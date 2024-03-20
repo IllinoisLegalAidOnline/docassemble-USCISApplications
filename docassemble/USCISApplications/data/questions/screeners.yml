@@ -441,9 +441,9 @@ fields:
     datatype: yesnoradio
   - Have you ever served in the military or participated in a paramilitary group?: users[i].served_military
     datatype: yesnoradio
-    hide if:
-      code: |
-        users[i].age_in_years() < 14
+    # hide if:
+    #   code: |
+    #     users[i].age_in_years() < 14
   - Military force: users[i].military_force
     show if: users[i].served_military
     grid: 4
@@ -479,32 +479,33 @@ fields:
     show if: users[i].served_military
   - Have you ever served on a police force?: users[i].served_police
     datatype: yesnoradio
-    hide if:
-      code: |
-        users[i].age_in_years() < 14
+    # hide if:
+    #   code: |
+    #     users[i].age_in_years() < 14
   - Have you ever received weapons training?: users[i].received_weapons_training
     datatype: yesnoradio
-    hide if:
-      code: |
-        users[i].age_in_years() < 14
+    # hide if:
+    #   code: |
+    #     users[i].age_in_years() < 14
   - What weapons?: users[i].weapons_trained_in
     datatype: area
     rows: 2
     show if: 
       variable: users[i].received_weapons_training
       is: True
-      code: |
-        users[i].age_in_years() > 14
+    # hide if:
+    #   code: |
+    #     users[i].age_in_years() < 14
   - Did you ever use a weapon against another person?: users[i].used_weapon_against_another_person
     datatype: yesnoradio
-    hide if:
-      code: |
-        users[i].age_in_years() < 14
+    # hide if:
+    #   code: |
+    #     users[i].age_in_years() < 14
   - Have you ever been a member of a terrorist organization?: users[i].acted_as_terrorist
     datatype: yesnoradio
-    hide if:
-      code: |
-        users[i].age_in_years() < 14
+    # hide if:
+    #   code: |
+    #     users[i].age_in_years() < 14
 ---
 id: review_tps_screening_questions
 continue button field: review_tps_screening_questions

@@ -594,7 +594,7 @@ fields:
     required: false
   - What is the expiration date of your most recent passport or travel document?: users[i].passport_expiration_date
     datatype: date
-    show if: users[i].has_passport
+    required: False
   - Additional passport or travel document number: users[i].travel_documents[0]
     required: false
   - Additional passport or travel document number: users[i].travel_documents[1]

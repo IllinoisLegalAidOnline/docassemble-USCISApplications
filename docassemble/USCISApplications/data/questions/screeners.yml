@@ -67,6 +67,11 @@ fields:
       ${ showifdef("users[0].applied_other_information") if i > 0 else '' }
     show if: users[i].applied_for_other_immigration_benefit
     datatype: area
+  - "When did you last enter the US? (check immigration documents)": users[i].date_of_last_entry
+    datatype: ThreePartsDate
+    alMax: ${ today().format("MM/dd/yyyy") }
+    default: |
+      ${ showifdef("users[0].date_of_last_entry") if i > 0 else "" }
   - "What is the proof of parole? Ex: I-94, parole letter, Interim Notice of Parole": users[i].proof_of_parole
     datatype: area
     rows: 2

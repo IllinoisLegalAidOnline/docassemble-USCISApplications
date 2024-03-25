@@ -347,7 +347,7 @@ fields:
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].has_children_applying_today") if i > 0 and users[i].age_in_years() > 8 else '' }
-  - Was any child born outside of Venezuela?: users[i].has_children_applying_not_born_in_venezuela
+  - Were any of the children applying with you today born outside of Venezuela?: users[i].has_children_applying_not_born_in_venezuela
     show if: users[i].has_children_applying_today
     datatype: yesnoradio
     default: |

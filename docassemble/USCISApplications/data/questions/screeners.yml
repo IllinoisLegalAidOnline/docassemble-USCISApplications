@@ -113,6 +113,10 @@ subquestion: |
     <p>
       Wait for the supervisor to check your work and decide if each applicant can continue or not.
     </p>
+    <p>
+    If any applicant is screened out, continue the interview for the remaining applicants.
+    The applicant should stay until you are able to print the screener and retainer agreement.
+    <p>
   </div>
 
   <div class="accordion" id="userAccordion">
@@ -522,6 +526,10 @@ subquestion: |
     <p>
       Wait for the supervisor to check your work and decide if each applicant can continue or not.
     </p>
+    <p>
+    If any applicant is screened out, continue the interview for the remaining applicants.
+    The applicant should stay until you are able to print the screener and retainer agreement.
+    <p>
   </div>
 
   <div class="accordion" id="userAccordion">

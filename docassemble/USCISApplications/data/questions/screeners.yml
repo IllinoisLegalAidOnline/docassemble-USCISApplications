@@ -116,7 +116,7 @@ subquestion: |
     <p>
     If any applicant is screened out, continue the interview for the remaining applicants.
     The applicant should stay until you are able to print the screener and retainer agreement.
-    <p>
+    </p>
   </div>
 
   <div class="accordion" id="userAccordion">
@@ -529,7 +529,7 @@ subquestion: |
     <p>
     If any applicant is screened out, continue the interview for the remaining applicants.
     The applicant should stay until you are able to print the screener and retainer agreement.
-    <p>
+    </p>
   </div>
 
   <div class="accordion" id="userAccordion">

@@ -1271,12 +1271,12 @@ fields:
     default: ${ showifdef("users[0].q20b") if i > 0 else ''}
     grid: 6
     label above field: True
-  - "20c. ***Only answer this question if you answered 'Yes' to Question 20a OR 20b above:***[BR] Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
+  - "20c. ***Only answer this question if you answered 'Yes' to Question 20a OR 20b:***[BR] Have you re-entered the United States unlawfully at any time after you were deported or you voluntarily departed?": users[i].q20c
     datatype: yesnoradio
     default: ${ showifdef("users[0].q20c") if i > 0 else ''}
     grid: 6
     label above field: True
-  - "20d. ***Only answer this question if you answered 'Yes' to Question 20c (left):***[BR]Has DHS reinstated your prior order of removal?": users[i].q20d
+  - "20d. ***Only answer this question if you answered 'Yes' to Question 20c:***[BR]Has DHS reinstated your prior order of removal?": users[i].q20d
     datatype: yesnomaybe
     label above field: True
     grid: 6

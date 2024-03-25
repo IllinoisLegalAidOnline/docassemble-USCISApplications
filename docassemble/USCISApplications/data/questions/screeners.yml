@@ -232,6 +232,7 @@ subquestion: |
       supervisor will check your work and decide if each applicant can continue
       or not.
     </p>
+  </div>
 fields:
   - What country will you be applying for TPS from?: users[i].tps_application_country
     datatype: combobox

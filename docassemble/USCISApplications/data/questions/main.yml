@@ -394,17 +394,33 @@ fields:
     code: |
       uscis_countries_list()      
 ---
-id: Has user i been known by a different name before?
+id: Has user 0 been known by a different name before?
 question: |
-  Has ${ users[i] } ever been known by a different name or alias?  
+  Has ${ users[0] } ever been known by a different name or alias?  
 fields:
   - no label: users[0].aliases.there_are_any
     datatype: yesnoradio
 ---
+id: Has user i been known by a different name before?
+question: |
+  Has ${ users[i] } ever been known by a different name or alias?  
+fields:
+  - no label: users[i].aliases.there_are_any
+    datatype: yesnoradio
+---
+id: user 0 name i
+question: |
+  What was ${ users[0] }'s ${ ordinal(i) } alias or other name?
+fields:
+  - First name: users[0].aliases[i].first
+  - Middle name: users[0].aliases[i].middle
+    required: False
+  - Last name: users[0].aliases[i].last
+---
 generic object: ALIndividual
 id: x i name
 question: |
-  What is the ${ ordinal(i) } other name that ${ x } has been known by?
+  What was ${ x }'s ${ ordinal(i) } alias or other name?
 fields:
   - First name: x.aliases[i].first
   - Middle name: x.aliases[i].middle
@@ -421,23 +437,23 @@ fields:
   - no label: x.aliases.there_is_another
     datatype: yesnoradio  
 ---
-id: name i
+id: has user 0 known by a different name again
 question: |
-  What was ${ users[0].name }'s ${ ordinal(i) } alias or other name?
-fields:
-  - First name: users[0].aliases[i].first
-  - Middle name: users[0].aliases[i].middle
-    required: False
-  - Last name: users[0].aliases[i].last
----
-id: have you been known by a different name again
-question: |
-  Has ${ users[0].name } been known by any other names?
+  Has ${ users[0] } been known by any other names?
 subquestion: |
   So far you entered ${comma_and_list(users[0].aliases)}.
 fields:
   - no label: users[0].aliases.there_is_another
     datatype: yesnoradio
+---
+code: |
+  if len(users[i].aliases.complete_elements()) >= 2:
+    users[i].aliases.there_is_another = False
+---
+code: |
+  if len(users[0].aliases.complete_elements()) >= 2:
+    users[0].aliases.there_is_another = False
+
 ---
 table: users.initial_review_table
 rows: users
@@ -869,7 +885,7 @@ question: |
 subquestion: |
   This can take a few minutes.
 
-  <div class="spinner-border text-primary d-flex justify-content-center" role="status" style="border: 0.25rem solid #007bff;">
+  <div class="spinner-border text-primary d-flex justify-content-center" role="status" style="border: 0.25rem solid #0079d0;">
     <span class="sr-only">Creating PDFs...</span>
   </div>
 event: waiting_screen

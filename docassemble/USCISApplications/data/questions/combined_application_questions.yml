@@ -235,22 +235,22 @@ code: |
 ---
 id: countries resided in are there any
 question: |
-  Did Applicant **live** in another country before entering the U.S.?
+  Did Applicant **reside** in another country before entering the U.S.?
 fields:
   - no label: users[i].countries_of_residence.there_are_any # the wording of this question is taken from the sample I-821, page 2, question 15. It seems to me this question will almost always be yes, since a person has to "live" somewhere, but perhaps there's a definitional problem here...
     datatype: yesnoradio
 ---
 id: countries resided in
 question: |
-  Which country or countries have you lived in before entering the U.S.?
+  Which country or countries have you resided in before entering the U.S.?
 subquestion: |
   We will ask about each country one at a time.
 
   % if len(users[i].countries_of_residence.complete_elements()):
-  Countries you **lived in** before entering the U.S.:[BR]
+  Countries you **resided in** before entering the U.S.:[BR]
   
   % for country in users[i].countries_of_residence.complete_elements():
-  **${ country.name }**
+  * **${ country.name }**
   % endfor
   
   [NEWLINE]
@@ -267,7 +267,7 @@ fields:
 ---
 id: countries resided in review screen
 question: |
-  Review the countries you **lived in** before entering the U.S.
+  Review the countries you **resided in** before entering the U.S.
 subquestion: |
   ${ users[i].countries_of_residence.table }
   ${ users[i].countries_of_residence.add_action(label=bold('Add Another Country'), color='warning') }

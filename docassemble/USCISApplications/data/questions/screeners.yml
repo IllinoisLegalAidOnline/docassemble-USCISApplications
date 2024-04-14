@@ -394,11 +394,11 @@ fields:
     show if: users[i].children_entered_separately
     default: |
       ${ showifdef("users[0].children_entered_separately_explanation") if i > 0 else '' }
-  - Did you travel through Central America (Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico) (Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico) before entering the US?: users[i].traveled_through_central_america
+  - Did you travel through Central America (Venezuela, Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico) before entering the US?: users[i].traveled_through_central_america
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].traveled_through_central_america") if i > 0 else '' }
-  - Did you travel through other countries besides Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico?: users[i].traveled_through_other_countries
+  - Did you travel through other countries besides Venezuela, Colombia, Panama, Costa Rica, Nicaragua, Honduras, Guatemala, and Mexico?: users[i].traveled_through_other_countries
     datatype: yesnoradio
     default: |
       ${ showifdef("users[0].traveled_through_other_countries") if i > 0 else '' }

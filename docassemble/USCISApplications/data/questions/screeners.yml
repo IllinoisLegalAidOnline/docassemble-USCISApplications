@@ -194,11 +194,18 @@ fields:
   - Supervisor notes: supervisor_notes
     required: False
     datatype: area
-  - What addenda should be included?: selected_addenda
-    datatype: checkboxes
-    choices:
-      - EAD interim parole: ead_interim_parole
-        default: True
+  - code: |
+      [
+        {
+          "label": f"What addenda should be included for {user}?", 
+          "field": user.attr_name("addenda"),
+          "datatype": "checkboxes",
+          "choices": [
+            {"EAD interim parole": "ead_interim_parole"},
+          ],
+        }
+        for user in users
+      ]
 ---
 id: tps_screening_questions
 continue button field: users[i].tps_screening_questions

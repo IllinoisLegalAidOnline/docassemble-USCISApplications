@@ -88,5 +88,5 @@ jobs:
           INSTALL_METHOD: "server"
           #### Developer note: Useful for temporarily shortening ALKiln tests
           #### to debug the docker install step
-          ALKILN_TAG_EXPRESSION: "@1"
+          #          ALKILN_TAG_EXPRESSION: "@1"
 

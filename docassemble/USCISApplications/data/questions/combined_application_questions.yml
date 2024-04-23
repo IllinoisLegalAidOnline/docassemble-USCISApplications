@@ -767,6 +767,12 @@ fields:
     show if: 
       variable: users[i].marital_status
       is: "other"
+  - "Marriage Date": users[i].marriage_date
+    datatype: date
+    max: ${ today().format("yyyy-MM-dd") }
+    show if:
+      variable: users[i].marital_status
+      is: 'married'
 ---
 id: applicant info
 question: |
@@ -779,27 +785,27 @@ fields:
     maxlength: 21
     required: false
 ---
-id: current spouse and marriage info
-question: |
-  Current Spouse & Marriage Info
-fields:
-  - "Marriage Date (to current spouse)": users[i].marriage_date
-    datatype: date
-    max: ${ today().format("yyyy-MM-dd") }
-  - "Marriage Location": users[i].marriage_location # looking at the form, it is unknown if this solicits a street address or something like 'the holy temple of so and so'
-    maxlength: 38
-  - "Marriage City": users[i].marriage_city
-    maxlength: 24
-  - "Marriage State": users[i].marriage_state
-    maxlength: 5
-  - "Marriage Province": users[i].marriage_province
-    maxlength: 24
-  - "Marriage Country": users[i].marriage_country
-    maxlength: 38
-  - "Spouse's USCIS Online Account Number (if any and if known)": users[i].spouse.online_account_number
-    maxlength: 28
-  - "Spouse's A-Number (if any and if known) (do not include A-)": users[i].spouse.a_number
-    maxlength: 20
+#id: current spouse and marriage info
+#question: |
+#  Current Spouse & Marriage Info
+#fields:
+#  - "Marriage Date (to current spouse)": users[i].marriage_date
+#    datatype: date
+#    max: ${ today().format("yyyy-MM-dd") }
+#  - "Marriage Location": users[i].marriage_location # looking at the form, it is unknown if this solicits a street address or something like 'the holy temple of so and so'
+#    maxlength: 38
+#  - "Marriage City": users[i].marriage_city
+#    maxlength: 24
+#  - "Marriage State": users[i].marriage_state
+#    maxlength: 5
+#  - "Marriage Province": users[i].marriage_province
+#    maxlength: 24
+#  - "Marriage Country": users[i].marriage_country
+#    maxlength: 38
+#  - "Spouse's USCIS Online Account Number (if any and if known)": users[i].spouse.online_account_number
+#    maxlength: 28
+#  - "Spouse's A-Number (if any and if known) (do not include A-)": users[i].spouse.a_number
+#    maxlength: 20
 ---
 id: U.S. entry info and travel documents
 question: |

@@ -1017,7 +1017,7 @@ code: |
   users[i].tps_legal_screener.enabled = not application_kind == "ead_only"
 ---
 code: |
-  users[i].ead_interim_parole_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only")
+  users[i].ead_interim_parole_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only") and users[i].addenda["ead_interim_parole"]
 ---
 attachment:
   variable name: users[i].military_service_addendum[j]

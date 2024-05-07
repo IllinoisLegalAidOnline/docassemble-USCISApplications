@@ -357,7 +357,7 @@ fields:
     datatype: area
     show if: users[i].lived_in_countries_traveled_through
     default: |
-      ${ showifdef("users[0].lived_in_countries_traveled_through") if i > 0 else '' }
+      ${ showifdef("users[0].lived_in_countries_traveled_through_dates") if i > 0 else '' }
   - Did you ever return to your home country after living in another country, and before you entered the US?: users[i].returned_to_home_country
     datatype: yesnoradio
     show if: users[i].lived_in_countries_traveled_through

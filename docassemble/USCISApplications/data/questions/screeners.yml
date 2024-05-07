@@ -377,14 +377,14 @@ fields:
     default: |
       ${ showifdef("users[0].method_of_entry") if i > 0 else '' }
   - Who entered the US with you?: users[i].who_entered_with_user
-    datatype: radio
+    datatype: checkboxes
     choices:
       - Spouse: spouse
-      - Children, with or without spouse: children
+      - Child or Children: children
+      - Parent(s): parents
       - Entered alone: entered alone
       - Other or N/A: other or N/A
-    default: |
-      ${ showifdef("users[0].who_entered_with_user") if i > 0 else '' }
+    none of the above: False
   - Did your children enter the US separately from you?: users[i].children_entered_separately
     datatype: yesnoradio
     default: |
@@ -575,7 +575,7 @@ subquestion: |
             <li>Any child born outside of Venezuela: ${ 'Yes' if showifdef("user.has_children_applying_not_born_in_venezuela") else 'No' }</li>
             <li>Children's names and nationalities: ${ showifdef("user.children_outside_of_venezuela") }</li>
             <li>Method of last entry to the US: ${ showifdef("user.method_of_entry") }</li>
-            <li>Accompanied by during US entry: ${ showifdef("user.who_entered_with_user") }</li>
+            <li>Accompanied by during US entry: ${ user.who_entered_with_user.true_values() }</li>
             <li>Children entered the US separately: ${ 'Yes' if showifdef("user.children_entered_separately") else 'No' }</li>
             <li>Details of children's entry to the US: ${ showifdef("user.children_entered_separately_explanation") }</li>
             <li>Had legal status in another country besides Venezuela: ${ 'Yes' if showifdef("user.had_legal_status_outside_venezuela") else 'No' }</li>

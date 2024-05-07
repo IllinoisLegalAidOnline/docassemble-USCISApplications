@@ -2189,9 +2189,6 @@ attachment:
     - "users1_mailing_address_is_apt": ${ users[i].mailing_address.address_type == 'apt' }
     - "users1_mailing_address_is_suite": ${ users[i].mailing_address.address_type == 'suite' }
     - "users1_mailing_address_is_floor": ${ users[i].mailing_address.address_type == 'floor' }
-    - "users1_address_is_apt": ${ users[i].address.address_type == 'apt' }
-    - "users1_address_is_suite": ${ users[i].address.address_type == 'suite' }
-    - "users1_address_is_floor": ${ users[i].address.address_type == 'floor' }
     - "users1_mailing_address_in_care_of": ${ users[i].mailing_address.in_care_of }
     - "users1_mailing_address_address": ${ users[i].mailing_address.address }
     - "users1_mailing_address_unit": ${ users[i].mailing_address.unit }
@@ -2200,6 +2197,9 @@ attachment:
     - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
     - "mailing_address_is_physical_address_yes": ${ users[i].mailing_address == users[i].address }
     - "mailing_address_is_physical_address_no": ${ not users[i].mailing_address == users[i].address }
+    - "users1_address_is_apt": ${ users[i].address.address_type == 'apt' if users[i].mailing_address.address_type != users[i].address.address_type else '' }
+    - "users1_address_is_suite": ${ users[i].address.address_type == 'suite' if users[i].mailing_address.address_type != users[i].address.address_type else '' }
+    - "users1_address_is_floor": ${ users[i].address.address_type == 'floor' if users[i].mailing_address.address_type != users[i].address.address_type else '' }    
     - "users1_address_address": ${ users[i].address.address if users[i].mailing_address != users[i].address else '' }
     - "users1_address_unit": ${ users[i].address.unit if users[i].mailing_address != users[i].address else '' }
     - "users1_address_city": ${ users[i].address.city if users[i].mailing_address != users[i].address else '' }

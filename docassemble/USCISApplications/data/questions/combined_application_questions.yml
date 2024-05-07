@@ -944,29 +944,24 @@ id: father and mother birth name
 question: |
   **Birth** names of ${users[i]}'s parents
 subquestion: |
-  (You can select the name of a family member who has already been named or 
-  type a new name)
+  If the applicant does not know the birth name of parent,
+  enter "unknown".
+
+  Otherwise, enter the name exactly as it was on the parent's 
+  birth certificate.
 fields:
-  - Father's First (Given) Name at Birth: users[i].father_first_name
+  - note: |
+      <h2 class="h4">Father's Birth Name</h2>
+  - First name: users[i].father_first_name
     maxlength: 28
-    datatype: combobox
-    code: |
-      [user.name.first for user in users if user != users[i]]
-  - Father's Last (Family) Name at Birth: users[i].father_last_name
+  - Last name: users[i].father_last_name
     maxlength: 28
-    datatype: combobox
-    code: |
-      [user.name.last for user in users if user != users[i]]    
-  - Mother's First (Given) Name at Birth: users[i].mother_first_name
+  - note: |
+      <h2 class="h4">Mother's Birth Name</h2>
+  - First name: users[i].mother_first_name
     maxlength: 28
-    datatype: combobox
-    code: |
-      [user.name.first for user in users if user != users[i]]
-  - Mother's Last (Family) Name at Birth: users[i].mother_last_name
-    maxlength: 28 
-    datatype: combobox
-    code: |
-      [user.name.last for user in users if user != users[i]]
+  - Last name: users[i].mother_last_name
+    maxlength: 28
 ---
 ###################################################################################
 id: former spouse nationality and travel documents

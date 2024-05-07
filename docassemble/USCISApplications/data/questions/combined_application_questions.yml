@@ -296,7 +296,7 @@ subquestion: |
   % endif
 fields:
   - note: |
-      What date did you enter the first country?
+      What date did you enter the first country, after you left your home country?
     grid: 4
   - Month: users[i].date_entered_first_country_month
     default: |
@@ -324,7 +324,7 @@ fields:
     default: |
       ${ showifdef("users[0].date_entered_first_country_year") if i > 0 else '' }
   - note: |
-      What date did you leave the **last** country?
+      What date did you leave the **last** country you traveled through before you entered the US?
     grid: 4
   - Month: users[i].date_left_last_country_month
     default: |
@@ -351,6 +351,21 @@ fields:
     grid: 3
     default: |
       ${ showifdef("users[0].date_left_last_country_year") if i > 0 else '' }
+  - Did you ever live in any of the countries you traveled through?: users[i].lived_in_countries_traveled_through
+    datatype: yesnoradio
+  - Which country, and what dates did you live there?: users[i].lived_in_countries_traveled_through_dates
+    datatype: area
+    show if: users[i].lived_in_countries_traveled_through
+    default: |
+      ${ showifdef("users[0].lived_in_countries_traveled_through") if i > 0 else '' }
+  - Did you ever return to your home country after living in another country, and before you entered the US?: users[i].returned_to_home_country
+    datatype: yesnoradio
+    show if: users[i].lived_in_countries_traveled_through
+  - During what dates did you live in your home country again? (include at least year and months): users[i].date_returned_to_home_country
+    datatype: area
+    show if: users[i].returned_to_home_country
+    default: |
+      ${ showifdef("users[0].date_returned_to_home_country") if i > 0 else '' }
   - Did you have immigration status in any of the countries you traveled through?: users[i].has_immigration_status_in_countries_traveled_through
     datatype: yesnoradio
   - What status do you have, if any, in any of the countries you traveled through?: users[i].immigration_status_in_countries_traveled_through

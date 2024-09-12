@@ -114,6 +114,7 @@ code: |
   for idx,user in enumerate(users):
     nav.set_section(f"users_{idx}_signpost_app")
     if user.application_is_approved:
+      user.is_first_TPS_application
       user.signpost
       if user.age_in_years() < 14:
         user.parent

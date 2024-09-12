@@ -1657,14 +1657,14 @@ attachment:
     # - "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     # - "attorneys1_bar_number": ${ preparer.attorneys1_bar_number }
     # - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
-    - "is_first_application": ${ users[i].is_first_application }
-    - "is_re_application": ${ users[i].is_re_application }
+    - "is_first_application": ${ users[i].is_first_TPS_application == 'First TPS Application' }
+    - "is_re_application": ${ not users[i].is_first_TPS_application == 'First TPS Application' }
     - "tps_application_country": ${ users[i].tps_application_country }
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
-    - "is_USCIS_re_application": ${ users[i].is_first_TPS_application == 'First TPS Application' }
-    - "is_judge_re_applicatioin": ${ not users[i].is_first_TPS_application == 'First TPS Application' }
+    - "is_USCIS_re_application": ${ users[i].who_granted_prior_TPS == 'USCIS' }
+    - "is_judge_re_applicatioin": ${ users[i].who_granted_prior_TPS == 'Immigration Judge/Board of Immigration Appeals' }
     - "users1_a_number": ${ users[i].a_number }
     - "users1_uscis_account_number": ${ users[i].uscis_account_number }
     - "users1_previous_names1_last": ${ users[i].aliases.item(0).last }

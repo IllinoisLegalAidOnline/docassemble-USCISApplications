@@ -1700,14 +1700,15 @@ attachment:
     - "users1_countries_of_citizenship_2": ${ users[i].countries_of_citizenship.item(1) }
     - "users1_countries_of_citizenship_3": ${ users[i].countries_of_citizenship.item(2) }
     - "users1_countries_of_citizenship_4": ${ users[i].countries_of_citizenship.item(3) }
-    - "users1_address_address": ${ users[i].address.address }
-    - "users1_address_is_apt": ${ users[i].address.address_type == 'apt'}
-    - "users1_address_is_suite": ${ users[i].address.address_type == 'suite'}
-    - "users1_address_is_floor": ${ users[i].address.address_type == 'floor'}
-    - "users1_address_unit": ${ users[i].address.unit }
-    - "users1_address_city": ${ users[i].address.city }
-    - "users1_address_state": ${ users[i].address.state }
-    - "users1_address_zip": ${ users[i].address.zip }
+    # Show physical address only when different from mailing address
+    - "users1_address_address": ${ users[i].address.address if not users[i].mailing_address == users[i].address else '' }
+    - "users1_address_is_apt": ${ users[i].address.address_type == 'apt' if not users[i].mailing_address == users[i].address else '' }
+    - "users1_address_is_suite": ${ users[i].address.address_type == 'suite' if not users[i].mailing_address == users[i].address else '' }
+    - "users1_address_is_floor": ${ users[i].address.address_type == 'floor' if not users[i].mailing_address == users[i].address else '' }    
+    - "users1_address_unit": ${ users[i].address.unit if not users[i].mailing_address == users[i].address else '' }
+    - "users1_address_city": ${ users[i].address.city if not users[i].mailing_address == users[i].address else '' }
+    - "users1_address_state": ${ users[i].address.state if not users[i].mailing_address == users[i].address else '' }
+    - "users1_address_zip": ${ users[i].address.zip if not users[i].mailing_address == users[i].address else '' }
     - "is_married": ${ users[i].marital_status == 'married' }
     - "is_unmarried": ${ users[i].marital_status == 'single, never married' }
     - "is_divorced": ${ users[i].marital_status == 'divorced' }

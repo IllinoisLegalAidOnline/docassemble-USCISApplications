@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
 
   #env:
   #    SECRET_VAR1: secret-var1-value
@@ -47,10 +47,10 @@ jobs:
         #### suffolkLITLab/ALKiln/action_for_github_server@v5
         uses: suffolkLITLab/ALKiln/action_for_github_server@v5
         with:
-          CONFIG_CONTENTS: "${{ secrets.CONFIG_CONTENTS }}"
+          # CONFIG_CONTENTS: "${{ secrets.CONFIG_CONTENTS }}"
+          SHOW_DOCKER_OUTPUT: "${{ github.event.inputs.show_docker_output }}"          
           #### Developer note: Set this to True to show docker logs and
-          #### allow ALKiln to create the docker logs output artifact.
-          SHOW_DOCKER_OUTPUT: "${{ github.event.inputs.show_docker_output }}"
+          #### allow ALKiln to create the docker logs output artifact.          
       - run: echo "ALKiln finished starting the isolated GitHub docassemble server"
         shell: bash
 

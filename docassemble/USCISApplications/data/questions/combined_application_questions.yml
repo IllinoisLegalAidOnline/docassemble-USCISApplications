@@ -639,9 +639,9 @@ fields:
 ---
 id: type of application
 question: |
-  Type of Application
+  First TPS application for ${users[i].name.full()}?
 fields:
-  - "Is this Applicant's first TPS application, or is Applicant re-registering/reapplying for TPS?": users[i].is_first_TPS_application
+  - "Is this your first TPS application, or are you applying to re-register your TPS?": users[i].is_first_TPS_application
     datatype: radio
     choices:
       - First TPS Application
@@ -651,7 +651,7 @@ fields:
   #   choices:
   #     - Venezuela
   #     - Haiti
-  - "Who Previously Granted the Applicant TPS?": users[i].who_granted_prior_TPS
+  - "Who previously granted your TPS?": users[i].who_granted_prior_TPS
     datatype: radio
     choices:
       - USCIS

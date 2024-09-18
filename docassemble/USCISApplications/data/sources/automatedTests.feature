@@ -36,8 +36,8 @@ Scenario: EAD only, 2 applicants
     | users[1].country_of_birth | Venezuela | users[0].country_of_birth |
     | users[1].birthdate | 11/11/1111 | |
     | users[1].last_country_of_residence | Haiti | users[0].last_country_of_residence |
-    | users[i].signature | | users[0].signature |
-    | users[i].signature | | users[1].signature |
+    | users[0].signature | | users[0].signature |
+    | users[1].signature | | users[1].signature |
     | application_kind | ead_only | | 
     
     | users[i].ead_required_documents['National ID'] | True | |
@@ -155,9 +155,9 @@ Scenario: EAD, 3 applicants, some are screened
     | users[2].country_of_birth | Bahamas | users[2].country_of_birth |
     | users[2].birthdate | 11/11/1111 | |
     | users[2].last_country_of_residence | Haiti | users[2].last_country_of_residence |
-    | users[i].signature | | users[0].signature |
-    | users[i].signature | | users[1].signature |
-    | users[i].signature | | users[2].signature |
+    | users[0].signature | | users[0].signature |
+    | users[1].signature | | users[1].signature |
+    | users[2].signature | | users[2].signature |
     | application_kind | ead_only | | 
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
@@ -228,7 +228,7 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].country_of_birth | Bahamas | users[0].country_of_birth |
     | users[0].birthdate | 11/11/1111 | |
     | users[0].last_country_of_residence | United States | users[0].last_country_of_residence |
-    | users[i].signature | | users[0].signature |
+    | users[0].signature | | users[0].signature |
     
     | application_kind | ead_only | | 
     | users[0].ead_required_documents['National ID'] | True | |
@@ -304,8 +304,8 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[1].country_of_birth | Haiti | users[1].country_of_birth |
     | users[1].birthdate | 11/11/1111 | |
     | users[1].last_country_of_residence | Haiti | users[1].last_country_of_residence |
-    | users[i].signature | | users[0].signature |
-    | users[i].signature | | users[1].signature |
+    | users[0].signature | | users[0].signature |
+    | users[1].signature | | users[1].signature |
     | application_kind | ead_and_tps | | 
     | users[i].proof_of_birthplace['Birth certificate'] | True | |
     | users[i].method_of_entry | Presented at a port of entry | | 

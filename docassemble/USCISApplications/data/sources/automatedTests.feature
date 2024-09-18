@@ -258,11 +258,11 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].marital_status | married | | 
     | users[0].marriage_date | 11/11/1111 | |
     | users[0].alternate_birthdates.there_are_any | False | | 
-    | users[0].address.address | Newbury Street | |
-    | users[0].address.address_type | apt | |
-    | users[0].address.city | Boston | |
-    | users[0].address.state | MA | | 
-    | users[0].address.zip | 02135 | | 
+    | users[i].address.address | Newbury Street | users[0].address.address |
+    | users[i].address.address_type | apt | users[0].address.address_type |
+    | users[i].address.city | Boston | users[0].address.city |
+    | users[i].address.state | MA | users[0].address.state | 
+    | users[i].address.zip | 02135 | users[0].address.zip | 
     | users[0].countries_of_residence.there_are_any  | False | |
     | users[0].has_passport | True | |
     | users[0].date_started_us_residence | 11/11/1111 | |

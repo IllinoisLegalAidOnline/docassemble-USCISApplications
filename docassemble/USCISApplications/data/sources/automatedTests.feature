@@ -50,8 +50,12 @@ Scenario: EAD only, 2 applicants
     | users[i].in_removal_proceedings | False| | 
     | users[i].ever_ordered_removed | True | |
     | users[i].ever_arrested | False | |
-    | supervisor_overall_approval_status | approved | | 
+    | supervisor_overall_approval_status | approved | |
     | supervisor_name | Supervisor | |
+    | users[0].addenda['ead_interim_parole'] | True | |
+    | users[1].addenda['ead_interim_parole'] | True | |
+    | users[i].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
+    | users[i].is_first_TPS_application | First TPS Application | users[1].is_first_TPS_application |
     | users[i].user_reads_english | False | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -61,6 +65,7 @@ Scenario: EAD only, 2 applicants
     | users[i].hair_color | brown | |
     | users[i].eye_color | hazel | |
     | users[i].marital_status | married | | 
+    | users[i].marriage_date | 11/11/1111 | |
     | users[i].alternate_birthdates.there_are_any | False | | 
     | users[0].address.address | Newbury Street | |
     | users[0].address.address_type | apt | |
@@ -168,6 +173,12 @@ Scenario: EAD, 3 applicants, some are screened
     | approved_applications['users[0]']| True | supervisor_overall_approval_status | 
     | approved_applications['users[1]'] | True | supervisor_overall_approval_status | 
     | supervisor_name | Supervisor | |
+    | users[0].addenda['ead_interim_parole'] | True | | 
+    | users[1].addenda['ead_interim_parole'] | True | | 
+    | users[2].addenda['ead_interim_parole'] | True | | 
+    | users[i].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
+    | users[i].is_first_TPS_application | First TPS Application | users[1].is_first_TPS_application |
+    | users[i].is_first_TPS_application | First TPS Application | users[2].is_first_TPS_application |    
     | users[i].user_reads_english | True | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -177,6 +188,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].hair_color | brown | |
     | users[i].eye_color | hazel | |
     | users[i].marital_status | married | | 
+    | users[i].marriage_date | 11/11/1111 | |
     | users[i].alternate_birthdates.there_are_any | False | | 
     | users[0].address.address | Newbury Street | |
     | users[0].address.address_type | apt | |
@@ -219,47 +231,49 @@ Scenario: EAD, 1 applicant, some are screened
     | users[i].signature | | users[0].signature |
     
     | application_kind | ead_only | | 
-    | users[i].ead_required_documents['National ID'] | True | |
-    | users[i].has_additional_citizenship | False | | 
-    | users[i].number_children_applying | 0 | | 
-    | users[i].applied_for_other_immigration_benefit | False | |
-    | users[i].date_of_last_entry | 11/11/1111 | | 
-    | users[i].proof_of_parole | area | |
-    | users[i].proof_of_parole_valid_for_90_days | True | |
-    | users[i].in_removal_proceedings | False| | 
-    | users[i].ever_ordered_removed | False | |
-    | users[i].ever_arrested | False | |
+    | users[0].ead_required_documents['National ID'] | True | |
+    | users[0].has_additional_citizenship | False | | 
+    | users[0].number_children_applying | 0 | | 
+    | users[0].applied_for_other_immigration_benefit | False | |
+    | users[0].date_of_last_entry | 11/11/1111 | | 
+    | users[0].proof_of_parole | area | |
+    | users[0].proof_of_parole_valid_for_90_days | True | |
+    | users[0].in_removal_proceedings | False| | 
+    | users[0].ever_ordered_removed | False | |
+    | users[0].ever_arrested | False | |
     | supervisor_overall_approval_status | approved | | 
     | approved_applications['users[0]']| True | supervisor_overall_approval_status | 
-    | approved_applications['users[1]'] | True | supervisor_overall_approval_status | 
     | supervisor_name | Supervisor | |
-    | users[i].user_reads_english | True | |
-    | users[i].sex | male | | 
-    | users[i].ethnicity | hispanic | |
-    | users[i].race['white'] | True | | 
-    | users[i].height_cm | 150 | | 
-    | users[i].weight_kg | 150 | |
-    | users[i].hair_color | brown | |
-    | users[i].eye_color | hazel | |
-    | users[i].marital_status | married | | 
-    | users[i].alternate_birthdates.there_are_any | False | | 
+    | users[0].addenda['ead_interim_parole'] | True | | 
+    | users[0].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
+    | users[0].user_reads_english | True | |
+    | users[0].sex | male | | 
+    | users[0].ethnicity | hispanic | |
+    | users[0].race['white'] | True | | 
+    | users[0].height_cm | 150 | | 
+    | users[0].weight_kg | 150 | |
+    | users[0].hair_color | brown | |
+    | users[0].eye_color | hazel | |
+    | users[0].marital_status | married | | 
+    | users[0].marriage_date | 11/11/1111 | |
+    | users[0].alternate_birthdates.there_are_any | False | | 
     | users[0].address.address | Newbury Street | |
     | users[0].address.address_type | apt | |
     | users[0].address.city | Boston | |
     | users[0].address.state | MA | | 
     | users[0].address.zip | 02135 | | 
-    | users[i].countries_of_residence.there_are_any  | False | |
-    | users[i].has_passport | True | |
-    | users[i].date_started_us_residence | 11/11/1111 | |
-    | users[i].state_of_entry | MA | | 
-    | users[i].immigration_status_last_entry | Parolee | | 
-    | users[i].current_immigration_status | Visitor | |
-    | users[i].father_first_name | FatherName | |
-    | users[i].father_last_name | Last | |
-    | users[i].mother_first_name | MotherName | | 
-    | users[i].mother_last_name | Last | | 
-    | users[i].previously_filed_I765 | True | |
-    | users[i].has_ssn | False | |
+    | users[0].countries_of_residence.there_are_any  | False | |
+    | users[0].has_passport | True | |
+    | users[0].date_started_us_residence | 11/11/1111 | |
+    | users[0].state_of_entry | MA | | 
+    | users[0].immigration_status_last_entry | Parolee | | 
+    | users[0].current_immigration_status | Visitor | |
+    | users[0].father_first_name | FatherName | |
+    | users[0].father_last_name | Last | |
+    | users[0].mother_first_name | MotherName | | 
+    | users[0].mother_last_name | Last | | 
+    | users[0].previously_filed_I765 | True | |
+    | users[0].has_ssn | False | |
     
     
     
@@ -294,7 +308,6 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].signature | | users[1].signature |
     | application_kind | ead_and_tps | | 
     | users[i].proof_of_birthplace['Birth certificate'] | True | |
-    | users[i].proof_of_birthplace['Birth certificate'| True | | 
     | users[i].method_of_entry | Presented at a port of entry | | 
     | users[i].parents_from_venezuela | False | | 
     | users[i].one_parent_from_venezuela | False | |
@@ -338,6 +351,8 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | approved_applications['users[0]']| True | supervisor_overall_approval_status | 
     | approved_applications['users[1]'] | True | supervisor_overall_approval_status | 
     | supervisor_name | Supervisor | |
+    | users[i].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
+    | users[i].is_first_TPS_application | First TPS Application | users[1].is_first_TPS_application |
     | users[i].user_reads_english | True | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -347,6 +362,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].hair_color | brown | |
     | users[i].eye_color | hazel | |
     | users[i].marital_status | married | | 
+    | users[i].marriage_date | 11/11/1111 | |
     | users[i].alternate_birthdates.there_are_any | False | | 
     | users[0].address.address | Newbury Street | |
     | users[0].address.address_type | apt | |
@@ -369,6 +385,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].date_entered_first_country_year | 1111 | | 
     | users[i].date_left_last_country_month | 11 | | 
     | users[i].date_left_last_country_year | 1111 | |
+    | users[i].lived_in_countries_traveled_through | False | |
     | users[i].has_immigration_status_in_countries_traveled_through | False | | 
     | users[i].other_country_immigration_status_offered | False | | 
     | users[i].q8a | False | |

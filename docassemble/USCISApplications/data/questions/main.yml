@@ -3,7 +3,7 @@ include:
   - docassemble.ILAO:ilao-interview-framework.yml
   - limited_scope_questions.yml
   - screeners.yml
-  - aiw.yml
+  #- aiw.yml
   - combined_application_questions.yml
   - review_screen.yml
 ---
@@ -943,11 +943,11 @@ objects:
 objects:
   - users[i].tps_legal_screener: ALDocument.using(title=f"{users[i]} - TPS Legal Screener", filename=space_to_underscore(f"{users[i]} - TPS Legal Screener"), has_addendum=False)
 ---
-objects:
-  - users[i].applicant_intake_worksheet: ALDocument.using(title=f"{users[i]} - Applicant Intake Worksheet", filename=space_to_underscore(f"{users[i]} - Applicant Intake Worksheet"), has_addendum=False)
----
-code: |
-  users[i].applicant_intake_worksheet.enabled = users[i].application_is_approved
+# objects:
+#   - users[i].applicant_intake_worksheet: ALDocument.using(title=f"{users[i]} - Applicant Intake Worksheet", filename=space_to_underscore(f"{users[i]} - Applicant Intake Worksheet"), has_addendum=False)
+# ---
+# code: |
+#   users[i].applicant_intake_worksheet.enabled = users[i].application_is_approved
 ---
 objects:
   - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
@@ -972,7 +972,6 @@ objects:
         users[i].ead_legal_screener,
         users[i].tps_legal_screener,
         users[i].limited_scope_retainer,
-        users[i].applicant_intake_worksheet,
         users[i].i_821_attachment,
         users[i].military_service_addendum,
         users[i].transit_through_ca_addendum,

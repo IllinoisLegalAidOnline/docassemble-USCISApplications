@@ -68,16 +68,11 @@ Scenario: EAD only, 2 applicants
     | users[i].marital_status | married | | 
     | users[i].marriage_date | 11/11/1111 | |
     | users[i].alternate_birthdates.there_are_any | False | | 
-    | users[i].address.address | Newbury Street | users[0].address.address |
-    | users[i].address.address_type | apt | users[0].address.address_type |
-    | users[i].address.city | Boston | users[0].address.city |
-    | users[i].address.state | MA | users[0].address.state | 
-    | users[i].address.zip | 02135 | users[0].address.zip | 
-    | users[i].address.address | Newbury Street | users[1].address.address |
-    | users[i].address.address_type | apt | users[1].address.address_type |
-    | users[i].address.city | Boston | users[1].address.city |
-    | users[i].address.state | MA | users[1].address.state | 
-    | users[i].address.zip | 02135 | users[1].address.zip | 
+    | users[0].address.address | Newbury Street | |
+    | users[0].address.address_type | apt | |
+    | users[0].address.city | Boston | |
+    | users[0].address.state | MA | | 
+    | users[0].address.zip | 02135 | | 
     | users[i].countries_of_residence.there_are_any  | False | |
     | users[i].has_passport | True | |
     | users[i].date_started_us_residence | 11/11/1111 | |
@@ -196,21 +191,11 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].marital_status | married | | 
     | users[i].marriage_date | 11/11/1111 | |
     | users[i].alternate_birthdates.there_are_any | False | | 
-    | users[i].address.address | Newbury Street | users[0].address.address |
-    | users[i].address.address_type | apt | users[0].address.address_type |
-    | users[i].address.city | Boston | users[0].address.city |
-    | users[i].address.state | MA | users[0].address.state | 
-    | users[i].address.zip | 02135 | users[0].address.zip | 
-    | users[i].address.address | Newbury Street | users[1].address.address |
-    | users[i].address.address_type | apt | users[1].address.address_type |
-    | users[i].address.city | Boston | users[1].address.city |
-    | users[i].address.state | MA | users[1].address.state | 
-    | users[i].address.zip | 02135 | users[1].address.zip | 
-    | users[i].address.address | Newbury Street | users[2].address.address |
-    | users[i].address.address_type | apt | users[2].address.address_type |
-    | users[i].address.city | Boston | users[2].address.city |
-    | users[i].address.state | MA | users[2].address.state | 
-    | users[i].address.zip | 02135 | users[2].address.zip | 
+    | users[0].address.address | Newbury Street | |
+    | users[0].address.address_type | apt | |
+    | users[0].address.city | Boston | |
+    | users[0].address.state | MA | | 
+    | users[0].address.zip | 02135 | | 
     | users[i].countries_of_residence.there_are_any  | False | |
     | users[i].has_passport | True | |
     | users[i].date_started_us_residence | 11/11/1111 | |
@@ -273,11 +258,11 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].marital_status | married | | 
     | users[0].marriage_date | 11/11/1111 | |
     | users[0].alternate_birthdates.there_are_any | False | | 
-    | users[i].address.address | Newbury Street | users[0].address.address |
-    | users[i].address.address_type | apt | users[0].address.address_type |
-    | users[i].address.city | Boston | users[0].address.city |
-    | users[i].address.state | MA | users[0].address.state | 
-    | users[i].address.zip | 02135 | users[0].address.zip |
+    | users[0].address.address | Newbury Street | |
+    | users[0].address.address_type | apt | |
+    | users[0].address.city | Boston | |
+    | users[0].address.state | MA | | 
+    | users[0].address.zip | 02135 | | 
     | users[0].countries_of_residence.there_are_any  | False | |
     | users[0].has_passport | True | |
     | users[0].date_started_us_residence | 11/11/1111 | |
@@ -380,16 +365,11 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].marital_status | married | | 
     | users[i].marriage_date | 11/11/1111 | |
     | users[i].alternate_birthdates.there_are_any | False | | 
-    | users[i].address.address | Newbury Street | users[0].address.address |
-    | users[i].address.address_type | apt | users[0].address.address_type |
-    | users[i].address.city | Boston | users[0].address.city |
-    | users[i].address.state | MA | users[0].address.state | 
-    | users[i].address.zip | 02135 | users[0].address.zip | 
-    | users[i].address.address | Newbury Street | users[1].address.address |
-    | users[i].address.address_type | apt | users[1].address.address_type |
-    | users[i].address.city | Boston | users[1].address.city |
-    | users[i].address.state | MA | users[1].address.state | 
-    | users[i].address.zip | 02135 | users[1].address.zip | 
+    | users[0].address.address | Newbury Street | |
+    | users[0].address.address_type | apt | |
+    | users[0].address.city | Boston | |
+    | users[0].address.state | MA | | 
+    | users[0].address.zip | 02135 | | 
     | users[i].countries_of_residence.there_are_any  | False | |
     | users[i].has_passport | True | |
     | users[i].date_started_us_residence | 11/11/1111 | |

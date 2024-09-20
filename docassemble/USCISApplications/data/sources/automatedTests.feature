@@ -55,8 +55,6 @@ Scenario: EAD only, 2 applicants
     | supervisor_name | Supervisor | |
     | users[0].addenda['ead_interim_parole'] | True | |
     | users[1].addenda['ead_interim_parole'] | True | |
-    | users[i].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
-    | users[i].is_first_TPS_application | First TPS Application | users[1].is_first_TPS_application |
     | users[i].user_reads_english | False | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -177,9 +175,6 @@ Scenario: EAD, 3 applicants, some are screened
     | users[0].addenda['ead_interim_parole'] | True | | 
     | users[1].addenda['ead_interim_parole'] | True | | 
     | users[2].addenda['ead_interim_parole'] | True | | 
-    | users[i].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
-    | users[i].is_first_TPS_application | First TPS Application | users[1].is_first_TPS_application |
-    | users[i].is_first_TPS_application | First TPS Application | users[2].is_first_TPS_application |    
     | users[i].user_reads_english | True | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -246,7 +241,6 @@ Scenario: EAD, 1 applicant, some are screened
     | approved_applications['users[0]']| True | supervisor_overall_approval_status | 
     | supervisor_name | Supervisor | |
     | users[0].addenda['ead_interim_parole'] | True | | 
-    | users[0].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
     | users[0].user_reads_english | True | |
     | users[0].sex | male | | 
     | users[0].ethnicity | hispanic | |
@@ -352,8 +346,6 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | approved_applications['users[0]']| True | supervisor_overall_approval_status | 
     | approved_applications['users[1]'] | True | supervisor_overall_approval_status | 
     | supervisor_name | Supervisor | |
-    | users[i].is_first_TPS_application | First TPS Application | users[0].is_first_TPS_application |
-    | users[i].is_first_TPS_application | First TPS Application | users[1].is_first_TPS_application |
     | users[i].user_reads_english | True | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |

@@ -638,8 +638,8 @@ fields:
   - "Is this your first TPS application, or are you applying to re-register your TPS?": users[i].is_first_TPS_application
     datatype: radio
     choices:
-      - First TPS Application: first_tps
-      - Re-registering for TPS: re_applying_tps
+      - First TPS Application
+      - Re-registering for TPS
   # - "TPS Application Country(ies)": users[i].tps_application_country
   #   datatype: checkboxes
   #   choices:

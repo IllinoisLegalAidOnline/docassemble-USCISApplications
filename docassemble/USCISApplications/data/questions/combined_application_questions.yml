@@ -32,7 +32,7 @@ fields:
 code: |
   users[i].alternate_birthdates.there_is_another = False
 ---
-id: your address
+id: your address first
 question: |
   ${ users[0] }'s address
 subquestion: |
@@ -55,16 +55,10 @@ fields:
   - ZIP: users[0].address.zip
   - Daytime Phone Number (optional): users[0].phone_number
     required: false
-    default: |
-      ${ showifdef("users[i].parent.phone_number") if users[i].age_in_years() < 14 else '' }
   - Mobile Telephone Number (optional): users[0].mobile_number
     required: false
-    default: |
-      ${ showifdef("users[i].parent.mobile_number") if users[i].age_in_years() < 14 else '' }
   - Email address (optional): users[0].email
     required: false
-    default: |
-      ${ showifdef("users[i].parent.email") if users[i].age_in_years() < 14 else '' }
 ---
 code: |
   address_choices = []

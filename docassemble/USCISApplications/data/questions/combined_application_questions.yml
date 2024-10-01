@@ -722,12 +722,12 @@ fields:
     datatype: checkboxes
     choices:
       - White: white
+      - Asian: asian
       - Black or African American: black
       - American Indian or Alaska Native: native_american
-      - Asian: asian
       - Native Hawaiian or Other Pacific Islander: pacific_islander
-      - Other or unknown: other
     maxlength: 1
+    required: False
   - "Height (centimeters)": users[i].height_cm
     datatype: integer
   - Weight (kilograms): users[i].weight_kg
@@ -743,10 +743,6 @@ fields:
       - Red: red
       - Sandy: sandy
       - White: white
-      - Blue: blue
-      - Orange: orange
-      - Pink: pink
-      - Purple: purple
       - Unknown/Other: other
   - "Eye Color (choose one)": users[i].eye_color
     datatype: radio
@@ -759,7 +755,6 @@ fields:
       - Hazel: hazel
       - Maroon: maroon
       - Pink: pink
-      - Multicolor: multicolor
       - Unknown/Other: other
   - Marital Status: users[i].marital_status
     datatype: radio

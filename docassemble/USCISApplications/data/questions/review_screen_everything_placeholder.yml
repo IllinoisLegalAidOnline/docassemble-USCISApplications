@@ -902,6 +902,8 @@ columns:
       row_item.tps_application_country if hasattr(row_item, 'tps_application_country') else ''
   - What documents do you have proving your country of birth?: |
       row_item.proof_of_birthplace if hasattr(row_item, 'proof_of_birthplace') else ''
+  - Are one or both of your parents Haitian?: |
+      row_item.parents_from_haiti if hasattr(row_item, 'parents_from_haiti') else ''
   - Are one or both of your parents Venezuelan nationals?: |
       row_item.parents_from_venezuela if hasattr(row_item, 'parents_from_venezuela') else ''
   - Do you have proof of your parents' birthplace?: |
@@ -1459,6 +1461,8 @@ edit:
     tps_application_country
   - |
     proof_of_birthplace
+  - |
+    parents_from_haiti
   - |
     parents_from_venezuela
   - |

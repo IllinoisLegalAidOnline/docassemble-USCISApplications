@@ -926,6 +926,9 @@ objects:
   - users[i].transit_through_ca_addendum: ALDocument.using(title=f"{users[i]} - Transit Through Central America Addendum", filename=space_to_underscore(f"{users[i]} - Transit Through Central America Addendum"), has_addendum=False)
 ---
 objects:
+  - users[i].child_haitian_nationality_addendum: ALDocument.using(title=f"{users[i]} - Child of Venezuelan Nationals Addendum", filename=space_to_underscore(f"{users[i]} - Child of Haitian Nationality Addendum"), has_addendum=False)
+---
+objects:
   - users[i].child_venezuelan_nationals_addendum: ALDocument.using(title=f"{users[i]} - Child of Venezuelan Nationals Addendum", filename=space_to_underscore(f"{users[i]} - Child of Venezuelan Nationals Addendum"), has_addendum=False)
 ---
 objects:
@@ -975,6 +978,7 @@ objects:
         users[i].i_821_attachment,
         users[i].military_service_addendum,
         users[i].transit_through_ca_addendum,
+        users[i].child_haitian_nationality_addendum,
         users[i].child_venezuelan_nationals_addendum,
         users[i].smuggling_addendum,
         users[i].continuous_residence_addendum,
@@ -997,6 +1001,9 @@ code: |
 ---
 code: |
   users[i].transit_through_ca_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("transit_through_ca"))
+---
+code: |
+  users[i].child_haitian_nationality_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("child_haitian_nationality"))
 ---
 code: |
   users[i].child_venezuelan_nationals_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("child_venezuelan_nationals"))
@@ -1028,6 +1035,13 @@ attachment:
   name: ${ users[i] } - Transit Through Central America Addendum
   filename: ${ space_to_underscore(f"{users[i]} - Transit Through Central America Addendum") }
   docx template file: TPS_addendum_transit.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].child_haitian_nationality_addendum[j]
+  name: ${ users[i] } - Child of Haitian Nationality Addendum
+  filename: ${ space_to_underscore(f"{users[i]} - Child of Haitian Nationality Addendum") }
+  docx template file: tps_addendum_child_haitian_nationality.docx
   skip undefined: True
 ---
 attachment:

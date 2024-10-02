@@ -710,7 +710,6 @@ fields:
     choices:
       - Male: male
       - Female: female
-      - Nonbinary (will be checked only on AIW): nonbinary
   - Ethnicity: users[i].ethnicity
     datatype: radio
     choices:

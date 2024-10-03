@@ -304,7 +304,7 @@ fields:
     datatype: yesnoradio
     show if:
       code: |
-        not "venezuela" in users[i].country_of_birth.lower()
+        "venezuela" in users[i].country_of_birth.lower() or "haiti" in users[i].country_of_birth.lower()
     js show if: |
       val("users[i].parents_from_venezuela") || val("users[i].one_parent_from_venezuela") ||
       val("users[i].parents_from_haiti") || val("users[i].one_parent_from_haiti")

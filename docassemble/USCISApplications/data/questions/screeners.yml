@@ -49,6 +49,14 @@ fields:
     datatype: integer
     default: |
       ${ 0 if users[i].age_in_years() < 9 else users[0].number_children_applying if i > 0 else '' }
+  - What is your eligibility category?: users[i].eligibility_category
+    choices:
+      - Parole: ead_parole
+      - TPS: ead_tps
+      - Asylum: ead_asylum
+      - Order of Supervision: ead_supervision
+    default:
+      ${ showifdef("users[0].eligibility_category") if i > 0 else '' }
   - Have you applied for any other immigration benefit? (i.e. TPS or asylum)?: users[i].applied_for_other_immigration_benefit
     datatype: yesnoradio
     default: |
@@ -75,10 +83,16 @@ fields:
   - "What is the proof of parole? Ex: I-94, parole letter, Interim Notice of Parole": users[i].proof_of_parole
     datatype: area
     rows: 2
+    show if:
+      variable: users[i].eligibility_category
+      is: ead_parole
     default: |
       ${ users[0].proof_of_parole if i > 0 else '' }
   - Is ${ users[i] }'s proof of parole valid for at least the next 90 days?: users[i].proof_of_parole_valid_for_90_days
     datatype: yesnoradio
+    show if:
+      variable: users[i].eligibility_category
+      is: ead_parole
     default: |
       ${ showifdef("users[0].proof_of_parole_valid_for_90_days") if i > 0 else '' }
   - "Are you in removal proceedings? (Review EOIR list on your table for applicant’s court hearing info, if applicable. If applicant is NOT listed, look up their EOIR case status using their A#: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/))": users[i].in_removal_proceedings
@@ -96,6 +110,11 @@ fields:
     datatype: yesnoradio
   - Have you ever been arrested, cited, stopped, detained, or placed in handcuffs by the police?: users[i].ever_arrested
     datatype: yesnoradio
+  - Have you ever been convicted of any crime?: users[i].ever_convicted
+    datatype: yesnoradio
+    show if:
+      variable: users[i].eligibility_category
+      is: ead_asylum
   - List when/where/outcome of EVERY arrest, including those in US and outside of US (review certified dispositions & applicant workbook with legal supervisor): users[i].arrest_details
     datatype: area
     show if: users[i].ever_arrested
@@ -138,11 +157,13 @@ subquestion: |
     <li>Receipt date: ${ user.applied_receipt_date }</li>
     <li>Any other important information to note: ${ user.applied_other_information }</li>
     % endif
+    % if user.eligibility_category == "ead_parole":
     <li>What is the proof of parole? Ex: I-94, parole letter, Interim Notice of Parole: ${ user.proof_of_parole }</li>
     % if not user.proof_of_parole_valid_for_90_days:
     <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user }'s proof of parole is not valid for at least 90 days</li>
     % else:
     <li>Is ${ user } proof of parole valid for at least the next 90 days?: ${ 'Yes' if user.proof_of_parole_valid_for_90_days else 'No' }</li>
+    % endif
     % endif
     <li>Are you in removal proceedings right now?: ${ 'Yes' if user.in_removal_proceedings else 'No' }</li>
     % if user.in_removal_proceedings and user.ever_ordered_removed:
@@ -157,6 +178,9 @@ subquestion: |
     % else:
     <li>Have you ever been arrested, cited, stopped, detained, placed in handcuffs by the police?: ${ 'Yes' if user.ever_arrested else 'No' }</li>
     % endif
+    % if user.eligibility_category == "ead_asylum":
+    <li>Have you ever been convicted of a crime?: ${ 'Yes' if user.ever_convicted else 'No' }</li>
+    % endif 
   </ul>
           <a href="${ url_action(user.attr_name("ead_screening_questions")) }"><i class="fas fa-pencil"></i>Edit</a>
         </div>

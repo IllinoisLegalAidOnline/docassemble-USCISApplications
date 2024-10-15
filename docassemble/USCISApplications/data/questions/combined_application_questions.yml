@@ -2158,12 +2158,13 @@ attachment:
   filename: I-765
   variable name: users[i].i_765_attachment[j]
   skip undefined: True
-  pdf template file: I-765_flattened_MN_updated.pdf
+  pdf template file: i-765_flattened_MN_updated_082824.pdf
   editable: False
   fields:
     # - "US Citizenship and Immigration Services": ${ US_Citizenship_and_Immigration_Services }
     #- "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     #- "attorney_online_account_number": ${ preparer.attorney_online_account_number }
+    # Part 1
     - "application_reason_employment": 'Yes'
     - "application_reason_replacement": ''
     - "application_reason_renewal": ''
@@ -2217,7 +2218,8 @@ attachment:
     - "mother_name_first": ${ users[i].mother_first_name }
     - "citizen_country_1": ${ users[i].countries_of_citizenship.item(0) }
     - "citizen_country_2": ${ users[i].countries_of_citizenship.item(1) }
-    - "previously_filed_i765": ${ users[i].previously_filed_I765 } #TODO: check
+    - "previously_filed_i765": ${ users[i].previously_filed_I765 }
+    # Part 2 continued
     - "city_of_birth": ${ users[i].city_of_birth }
     - "state_of_birth": ${ users[i].state_of_birth }
     - "country_of_birth": ${ users[i].country_of_birth }
@@ -2239,16 +2241,39 @@ attachment:
     # Depends on whether TPS or EAD only
     - "Q27_1": |
         % if application_kind == "ead_and_tps":
-        a
+        A
         % else:
-        c
+          % if users[i].eligibility_category == "ead_tps":
+          A
+          % else:
+          C
+          % endif
         % endif
     - "Q27_2": |
         % if application_kind == "ead_and_tps":
         12
         % else:
-        11
+          % if users[i].eligibility_category == "ead_tps":
+          12
+          % elif users[i].eligibility_category == "ead_parole":
+          11
+          % elif users[i].eligibility_category == "ead_asylum":
+          08
+          % elif users[i].eligibility_category == "ead_supervision":
+          18
+          % else:
+          11
+          % endif
         % endif
+    - "eligibility_category_c8_yes": |
+        % if users[i].eligibility_category == "ead_asylum":
+        ${ users[i].ever_convicted } 
+        % endif
+    - "eligibility_category_c8_no": |
+        % if users[i].eligibility_category == "ead_asylum":
+        ${ not users[i].ever_convicted } 
+        % endif
+    # Part 3     
     - "user_reads_english": ${ users[i].user_reads_english }
     - "user_used_interpreter": ${ users[i].user_used_interpreter }
     - "interpreter_spoke_language": ${ interpreter.language }
@@ -2264,6 +2289,14 @@ attachment:
     - "interpreter_name_last": ${ interpreter.name.last }
     - "interpreter_name_first": ${ interpreter.name.first }
     - "interpreter_organization": ${ interpreter.organization }
+    # Part 4
+    - "interpreter_mailing_address_address": '77 W Jackson Blvd'
+    - "interpreter_mailing_address_unit": ''
+    - "interpreter_mailing_address_city": 'Chicago'
+    - "interpreter_mailing_address_state": 'IL'
+    - "interpreter_mailing_address_zip": '60604'
+    - "interpreter_mailing_address_country": 'USA'
+
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_is_attorney_yes": ${ preparer_is_attorney }
@@ -2272,19 +2305,24 @@ attachment:
     - "preparer_limited_rep": ${ preparer_is_attorney }
 #   # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
 #   # - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
-    - "interpreter_mailing_address_address": '77 W Jackson Blvd'
-    - "interpreter_mailing_address_unit": ''
-    - "interpreter_mailing_address_city": 'Chicago'
-    - "interpreter_mailing_address_state": 'IL'
-    - "interpreter_mailing_address_zip": '60604'
-    - "interpreter_mailing_address_country": 'USA'
+    - "preparer_mailing_address_address": '77 W Jackson Blvd'
+    - "preparer_mailing_address_unit": ''
+    - "preparer_mailing_address_city": 'Chicago'
+    - "preparer_mailing_address_state": 'IL'
+    - "preparer_mailing_address_zip": '60604'
+    - "preparer_mailing_address_country": 'USA'
 #   # - "preparer_organization": ${ preparer.organization }
 #   # - "interpreter_phone_number": ${ interpreter.phone_number }
 #   # - "interpreter_mobile_number": ${ interpreter.mobile_number }
 #   # - "interpreter_email": ${ interpreter.email }
 #   # - "preparer_phone_number": ${ preparer.phone_number }
 #   # - "preparer_mobile_number": ${ preparer.mobile_number }
-#   # - "preparer_email": ${ preparer.email }
+#   # - "preparer_email": ${ preparer.email } 
+    # Part 6
+    - "additional_name_last": ${ users[i].name.last }
+    - "additional_name_first": ${ users[i].name.first }
+    - "additional_name_middle": ${ users[i].name.middle }
+    - "A_2": ${ users[i].a_number }
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }
@@ -2293,7 +2331,7 @@ attachment:
     - "Middle Name_5": ${ users[i].name.middle }
     - "Page Number_4": ${ Page_Number_4 }
     - "Part Number_4": ${ Part_Number_4 }
-    - "Item Number_4": ${ Item_Number_4 }
+    - "Item Number_4": ${ Item_Number_4 }   
     - "A_2": ${ users[i].a_number }
     - "Page Number": ${ Page_Number }
     - "Part Number": ${ Part_Number }

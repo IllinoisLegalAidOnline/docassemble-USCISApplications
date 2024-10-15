@@ -502,8 +502,8 @@ field: application_kind
 buttons:
   - TPS and EAD: ead_and_tps
     image: shield-halved
-  - EAD via parole only: ead_only
-    image: briefcase
+  - EAD only: ead_only
+    image: briefcase  
 ---
 id: explain_add_explanations
 question: |

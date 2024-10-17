@@ -50,6 +50,7 @@ fields:
     default: |
       ${ 0 if users[i].age_in_years() < 9 else users[0].number_children_applying if i > 0 else '' }
   - What is your eligibility category?: users[i].eligibility_category
+    datatype: radio
     choices:
       - Parole: ead_parole
       - TPS: ead_tps
@@ -87,7 +88,7 @@ fields:
       variable: users[i].eligibility_category
       is: ead_parole
     default: |
-      ${ users[0].proof_of_parole if i > 0 else '' }
+      ${ showifdef("users[0].proof_of_parole") if i > 0 else '' }
   - Is ${ users[i] }'s proof of parole valid for at least the next 90 days?: users[i].proof_of_parole_valid_for_90_days
     datatype: yesnoradio
     show if:
@@ -104,6 +105,13 @@ fields:
     datatype: ThreePartsDate
     alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].in_removal_proceedings
+  - "Do you have a copy of the order of supervision? Ex: Form I-220B": users[i].order_of_supervision
+    datatype: yesnoradio
+    show if:
+      variable: users[i].eligibility_category
+      is: ead_supervision
+    default: |
+      ${ showifdef("users[0].order_of_supervision") if i > 0 else '' }
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
   - Have you ever been issued a Final Order of Removal?: users[i].ever_ordered_removed
@@ -166,6 +174,9 @@ subquestion: |
     % endif
     % endif
     <li>Are you in removal proceedings right now?: ${ 'Yes' if user.in_removal_proceedings else 'No' }</li>
+    % if user.eligibility_category == "ead_supervision":
+    <li>Do you have a copy of the order of supervision?: ${ 'Yes' if user.order_of_supervision else 'No' }</li>
+    % endif
     % if user.in_removal_proceedings and user.ever_ordered_removed:
     <li style="background-color: #ffff00; color: #000;"><i class="fas fa-exclamation-triangle"></i>${ user } has been ordered removed</li>
     % else:
@@ -226,6 +237,7 @@ fields:
           "datatype": "checkboxes",
           "choices": [
             {"EAD interim parole": "ead_interim_parole"},
+            {"EAD order of supervision": "ead_order_of_supervision"},
           ],
         }
         for user in users

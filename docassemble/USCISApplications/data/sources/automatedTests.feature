@@ -40,10 +40,11 @@ Scenario: EAD only, 2 applicants
     | users[1].signature | | users[1].signature |
     | application_kind | ead_only | | 
     
-    | users[i].ead_required_documents['National ID'] | True | users[0].ead_required_documents |
-    | users[i].ead_required_documents['National ID'] | True | users[1].ead_required_documents |
+    | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 2 | | 
+    | users[0].eligibility_category | ead_parole | users[0].eligibility_category | 
+    | users[1].eligibility_category | ead_parole | users[1].eligibility_category | 
     | users[i].applied_for_other_immigration_benefit | False | |
     | users[i].date_of_last_entry | 11/11/1111 | | 
     | users[i].proof_of_parole | area | |
@@ -162,6 +163,9 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 0 | | 
+    | users[0].eligibility_category | ead_parole | users[0].eligibility_category | 
+    | users[1].eligibility_category | ead_parole | users[1].eligibility_category | 
+    | users[2].eligibility_category | ead_parole | users[2].eligibility_category | 
     | users[i].applied_for_other_immigration_benefit | False | |
     | users[i].date_of_last_entry | 11/11/1111 | | 
     | users[i].proof_of_parole | area | |
@@ -232,13 +236,13 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].ead_required_documents['National ID'] | True | |
     | users[0].has_additional_citizenship | False | | 
     | users[0].number_children_applying | 0 | | 
+    | users[0].eligibility_category | ead_asylum | users[0].eligibility_category | 
     | users[0].applied_for_other_immigration_benefit | False | |
     | users[0].date_of_last_entry | 11/11/1111 | | 
-    | users[0].proof_of_parole | area | |
-    | users[0].proof_of_parole_valid_for_90_days | True | |
     | users[0].in_removal_proceedings | False| | 
     | users[0].ever_ordered_removed | False | |
     | users[0].ever_arrested | False | |
+    | users[0].ever_convicted | False | |
     | supervisor_overall_approval_status | approved | | 
     | approved_applications['users[0]']| True | supervisor_overall_approval_status | 
     | supervisor_name | Supervisor | |

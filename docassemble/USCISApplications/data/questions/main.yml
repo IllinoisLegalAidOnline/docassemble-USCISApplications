@@ -945,7 +945,7 @@ objects:
   - users[i].ead_asylum_checklist: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Application Checklist for Category C08"), has_addendum=False)
 ---
 objects:
-  - users[i].ead_addendum_osup: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Order of Supervision Addendum"), has_addendum=False)
+  - users[i].ead_order_of_supervision_addendum: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Order of Supervision Addendum"), has_addendum=False)
 ---
 objects:
   - users[i].ead_legal_screener: ALDocument.using(title=f"{users[i]} - EAD Legal Screener", filename=space_to_underscore(f"{users[i]} - EAD Legal Screener"), has_addendum=False)
@@ -1033,7 +1033,7 @@ code: |
   users[i].ead_interim_parole_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only") and users[i].addenda["ead_interim_parole"]
 ---
 code: |
-  users[i].ead_addendum_osup.enabled = users[i].application_is_approved and (application_kind == "ead_only") and users[i].addenda["ead_order_of_supervision"]
+  users[i].ead_order_of_supervision_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only") and users[i].addenda["ead_order_of_supervision"]
 ---
 code: |
   users[i].ead_asylum_checklist.enabled = users[i].application_is_approved and (application_kind == "ead_only") and (users[i].eligibility_category == "ead_asylum")
@@ -1095,7 +1095,7 @@ attachment:
   skip undefined: True
 ---
 attachment:
-  variable name: users[i].ead_addendum_osup[j]
+  variable name: users[i].ead_order_of_supervision_addendum[j]
   name: ${ users[i] } - EAD Order of Supervision Addendum
   filename: ${ space_to_underscore(f"{users[i]} - EAD Order of Supervision Addendum") }
   docx template file: EAD_addendum_osup.docx

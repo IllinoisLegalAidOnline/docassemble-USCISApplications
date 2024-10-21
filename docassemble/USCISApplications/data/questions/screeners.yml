@@ -112,6 +112,14 @@ fields:
       is: ead_supervision
     default: |
       ${ showifdef("users[0].order_of_supervision") if i > 0 else '' }
+  - Do you have copies of supporting documents for work authorization?: users[i].osup_documents
+    datatype: checkboxes
+    choices:
+      - Birth certificates/ID documents for my children
+      - Marriage license
+      - Shelter letter / letter from city
+      - Country conditions
+    show if: users[i].order_of_supervision
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
   - Have you ever been issued a Final Order of Removal?: users[i].ever_ordered_removed
@@ -237,7 +245,6 @@ fields:
           "datatype": "checkboxes",
           "choices": [
             {"EAD interim parole": "ead_interim_parole"},
-            {"EAD order of supervision": "ead_order_of_supervision"},
           ],
         }
         for user in users

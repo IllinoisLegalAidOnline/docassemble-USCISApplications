@@ -1033,10 +1033,10 @@ code: |
   users[i].ead_interim_parole_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only") and users[i].addenda["ead_interim_parole"]
 ---
 code: |
-  users[i].ead_order_of_supervision_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only") and users[i].addenda["ead_order_of_supervision"]
+  users[i].ead_order_of_supervision_addendum.enabled = users[i].application_is_approved and (application_kind == "ead_only")  and (users[i].eligibility_category == "ead_supervision")
 ---
 code: |
-  users[i].ead_asylum_checklist.enabled = users[i].application_is_approved and (application_kind == "ead_only") and (users[i].eligibility_category == "ead_asylum")
+  users[i].ead_asylum_checklist.enabled = users[i].application_is_approved and (application_kind == "ead_only")  and (users[i].eligibility_category == "ead_asylum")
 ---
 attachment:
   variable name: users[i].military_service_addendum[j]

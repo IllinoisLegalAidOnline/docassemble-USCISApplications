@@ -505,6 +505,10 @@ fields:
     datatype: ThreePartsDate
     alMax: ${ today().format("yyyy-MM-dd") }
     show if: users[i].in_removal_proceedings
+  - "Do you have an order of supervision? Ex: Form I-220B": users[i].order_of_supervision
+    datatype: yesnoradio
+    default: |
+      ${ showifdef("users[0].order_of_supervision") if i > 0 else '' }
   - Location of proceedings: users[i].location_removal_proceedings
     show if: users[i].in_removal_proceedings
   - Have you ever been issued a Final Order of Removal?: users[i].ever_ordered_removed

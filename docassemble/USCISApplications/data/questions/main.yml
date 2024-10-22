@@ -945,7 +945,7 @@ objects:
   - users[i].ead_asylum_checklist: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Application Checklist for Category C08"), has_addendum=False)
 ---
 objects:
-  - users[i].ead_order_of_supervision_addendum: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Order of Supervision Addendum"), has_addendum=False)
+  - users[i].ead_order_of_supervision_addendum: ALDocument.using(title=f"{users[i]} - EAD Order of Supervision Addendum", filename=space_to_underscore(f"{users[i]} - EAD Order of Supervision Addendum"), has_addendum=False)
 ---
 objects:
   - users[i].ead_legal_screener: ALDocument.using(title=f"{users[i]} - EAD Legal Screener", filename=space_to_underscore(f"{users[i]} - EAD Legal Screener"), has_addendum=False)

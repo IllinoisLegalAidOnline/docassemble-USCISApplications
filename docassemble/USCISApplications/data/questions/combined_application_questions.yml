@@ -2066,6 +2066,24 @@ attachment:
     # - "interpreter_phone_number": ${ interpreter.phone_number }
     # - "interpreter_mobile_number": ${ interpreter.mobile_number }
     # - "interpreter_email": ${ interpreter.email }
+    - "interpreter_mailing_address_address": |
+        % if interpreter.address.address:
+        ${ interpreter.address.address }
+        % endif
+    - "interpreter_mailing_address_unit": ''
+    - "interpreter_mailing_address_city": |
+        % if interpreter.address.city:
+        ${ interpreter.address.city }
+        % endif
+    - "interpreter_mailing_address_state": |
+        % if interpreter.address.state:
+        ${ interpreter.address.state }
+        % endif
+    - "interpreter_mailing_address_zip":  |
+        % if interpreter.address.zip:
+        ${ interpreter.address.zip }
+        % endif
+    - "interpreter_mailing_address_country": 'USA'
     - "interpreted_into_language": ${ interpreter.language }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
@@ -2080,6 +2098,24 @@ attachment:
     - "preparer_phone_number": ""
     - "preparer_mobile_number": ""
     - "preparer_email": ""
+    - "preparer_mailing_address_address": |
+        % if preparer.address.address:
+        ${ preparer.address.address }
+        % endif
+    - "preparer_mailing_address_unit": ''
+    - "preparer_mailing_address_city": |
+        % if preparer.address.city:
+        ${ preparer.address.city }
+        % endif
+    - "preparer_mailing_address_state": |
+        % if preparer.address.state:
+        ${ preparer.address.state }
+        % endif
+    - "preparer_mailing_address_zip": |
+        % if preparer.address.zip:
+        ${ preparer.address.zip }
+        % endif
+    - "preparer_mailing_address_country": 'USA'
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }
@@ -2272,11 +2308,23 @@ attachment:
     - "preparer_limited_rep": ${ preparer_is_attorney }
 #   # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
 #   # - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
-    - "interpreter_mailing_address_address": '77 W Jackson Blvd'
+    - "interpreter_mailing_address_address": |
+        % if interpreter.address.address:
+        ${ interpreter.address.address }
+        % endif
     - "interpreter_mailing_address_unit": ''
-    - "interpreter_mailing_address_city": 'Chicago'
-    - "interpreter_mailing_address_state": 'IL'
-    - "interpreter_mailing_address_zip": '60604'
+    - "interpreter_mailing_address_city": |
+        % if interpreter.address.city:
+        ${ interpreter.address.city }
+        % endif
+    - "interpreter_mailing_address_state": |
+        % if interpreter.address.state:
+        ${ interpreter.address.state }
+        % endif
+    - "interpreter_mailing_address_zip":  |
+        % if interpreter.address.zip:
+        ${ interpreter.address.zip }
+        % endif
     - "interpreter_mailing_address_country": 'USA'
 #   # - "preparer_organization": ${ preparer.organization }
 #   # - "interpreter_phone_number": ${ interpreter.phone_number }
@@ -2285,6 +2333,24 @@ attachment:
 #   # - "preparer_phone_number": ${ preparer.phone_number }
 #   # - "preparer_mobile_number": ${ preparer.mobile_number }
 #   # - "preparer_email": ${ preparer.email }
+    - "preparer_mailing_address_address": |
+        % if preparer.address.address:
+        ${ preparer.address.address }
+        % endif
+    - "preparer_mailing_address_unit": ''
+    - "preparer_mailing_address_city": |
+        % if preparer.address.city:
+        ${ preparer.address.city }
+        % endif
+    - "preparer_mailing_address_state": |
+        % if preparer.address.state:
+        ${ preparer.address.state }
+        % endif
+    - "preparer_mailing_address_zip": |
+        % if preparer.address.zip:
+        ${ preparer.address.zip }
+        % endif
+    - "preparer_mailing_address_country": 'USA'
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }

@@ -229,6 +229,11 @@ fields:
     show if: interpreter_present    
   - code: |
       interpreter.name_fields(person_or_business="person", show_if="interpreter_present", show_suffix=False)
+  - note: |
+      <h2 class="h4">Interpreter's Address</h2>
+    show if: interpreter_present
+  - code: |
+      interpreter.address_fields(default_state="IL", show_if="interpreter_present")
 ---
 id: welcome
 question: |
@@ -295,10 +300,17 @@ fields:
       - preparer.name.first
       - preparer.name.middle
       - preparer.name.last
+      - preparer.address.address
+      - preparer.address.unit
+      - preparer.address.city
+      - preparer.address.state
+      - preparer.address.zip
     choices: |
       [signed_in_user, interpreter] if user_logged_in() and interpreter_present else [signed_in_user] if user_logged_in() else [interpreter] if interpreter_present else []
   - code: |
       preparer.name_fields(person_or_business="person", show_suffix=False,)
+  - code: |
+      preparer.address_fields(default_state="IL")
   - Is the preparer an attorney or accredited representative?: preparer_is_attorney
     datatype: yesnoradio
 ---

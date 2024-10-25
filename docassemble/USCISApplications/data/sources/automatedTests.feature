@@ -231,6 +231,10 @@ Scenario: EAD, 3 applicants, some are screened
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
+    | preparer.address.address | 77 W Jackson Blvd | |
+    | preparer.address.city | Chicago | |
+    | preparer.address.state | IL | | 
+    | preparer.address.zip | 60604 | | 
     | preparer_is_attorney | False | |
     | users.target_number | 3 | | 
     | users[0].name.first | Family | |

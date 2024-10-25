@@ -18,6 +18,10 @@ Scenario: EAD only, 2 applicants
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
+    | preparer.address.address | 77 W Jackson Blvd | |
+    | preparer.address.city | Chicago | |
+    | preparer.address.state | IL | | 
+    | preparer.address.zip | 60604 | | 
     | preparer_is_attorney | False | |
     | users.target_number | 2 | | 
     | users[0].name.first | User | |
@@ -131,6 +135,10 @@ Scenario: EAD, 3 applicants, some are screened
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
+    | preparer.address.address | 77 W Jackson Blvd | |
+    | preparer.address.city | Chicago | |
+    | preparer.address.state | IL | | 
+    | preparer.address.zip | 60604 | | 
     | preparer_is_attorney | False | |
     | users.target_number | 3 | | 
     | users[0].name.first | Family | |
@@ -318,6 +326,10 @@ Scenario: EAD, 1 applicant, some are screened
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
+    | preparer.address.address | 77 W Jackson Blvd | |
+    | preparer.address.city | Chicago | |
+    | preparer.address.state | IL | | 
+    | preparer.address.zip | 60604 | | 
     | preparer_is_attorney | False | |
     | users.target_number | 1 | | 
     | users[0].name.first | Family | |
@@ -387,6 +399,10 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
+    | preparer.address.address | 77 W Jackson Blvd | |
+    | preparer.address.city | Chicago | |
+    | preparer.address.state | IL | | 
+    | preparer.address.zip | 60604 | | 
     | preparer_is_attorney | False | |
     | users.target_number | 1 | | 
     | users[0].name.first | Family | |

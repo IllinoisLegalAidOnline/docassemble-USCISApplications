@@ -2058,15 +2058,45 @@ attachment:
     - "user_used_preparer": True
     - "preparer_name_applicant_statement": ${ preparer }
     - "users1_phone_number": ${ users[i].phone_number }
-    - "interpreter_name_last": ${ interpreter.name.last }
+    - "interpreter_name_last": |
+        % if interpreter_present:
+        ${ interpreter.name.last }
+        % endif
     - "users1_mobile_number": ${ users[i].mobile_number }
-    - "interpreter_name_first": ${ interpreter.name.first }
+    - "interpreter_name_first": |
+        % if interpreter_present:
+        ${ interpreter.name.first }
+        % endif
     - "users1_email": ${ users[i].email }
     # - "interpreter_organization": ${ interpreter.organization }
     # - "interpreter_phone_number": ${ interpreter.phone_number }
     # - "interpreter_mobile_number": ${ interpreter.mobile_number }
     # - "interpreter_email": ${ interpreter.email }
-    - "interpreted_into_language": ${ interpreter.language }
+    - "interpreter_mailing_address_address": |
+        % if interpreter_present:
+        ${ interpreter.address.address }
+        % endif
+    - "interpreter_mailing_address_unit": |
+        % if interpreter_present:
+        ${ interpreter.address.unit }
+        % endif
+    - "interpreter_mailing_address_city": |
+        % if interpreter_present:
+        ${ interpreter.address.city }
+        % endif
+    - "interpreter_mailing_address_state": |
+        % if interpreter_present:
+        ${ interpreter.address.state }
+        % endif
+    - "interpreter_mailing_address_zip":  |
+        % if interpreter_present:
+        ${ interpreter.address.zip }
+        % endif
+    - "interpreter_mailing_address_country": ${ 'USA' if interpreter_present else '' }
+    - "interpreted_into_language": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif 
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
@@ -2080,6 +2110,27 @@ attachment:
     - "preparer_phone_number": ""
     - "preparer_mobile_number": ""
     - "preparer_email": ""
+    - "preparer_mailing_address_address": |
+        % if preparer.address.address:
+        ${ preparer.address.address }
+        % endif
+    - "preparer_mailing_address_unit": |
+        % if preparer.address.unit:
+        ${ preparer.address.unit }
+        % endif
+    - "preparer_mailing_address_city": |
+        % if preparer.address.city:
+        ${ preparer.address.city }
+        % endif
+    - "preparer_mailing_address_state": |
+        % if preparer.address.state:
+        ${ preparer.address.state }
+        % endif
+    - "preparer_mailing_address_zip": |
+        % if preparer.address.zip:
+        ${ preparer.address.zip }
+        % endif
+    - "preparer_mailing_address_country": 'USA'
     - "Page Number_3": ${ Page_Number_3 }
     - "Part Number_3": ${ Part_Number_3 }
     - "Item Number_3": ${ Item_Number_3 }
@@ -2276,8 +2327,14 @@ attachment:
     # Part 3     
     - "user_reads_english": ${ users[i].user_reads_english }
     - "user_used_interpreter": ${ users[i].user_used_interpreter }
-    - "interpreter_spoke_language": ${ interpreter.language }
-    - "interpreter_spoke_language__1": ${ interpreter.language }
+    - "interpreter_spoke_language": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif
+    - "interpreter_spoke_language__1": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif
     - "user_used_preparer": True
     - "preparer_name": ${ preparer.name.full() }
     - "users1_phone_number": ${ users[i].phone_number}
@@ -2286,17 +2343,40 @@ attachment:
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
  #   - "is_abc_salvadoran_guatemalan_national": ${ users[i].country_of birth == "Guatemala" or users[i].country_of birth == "El Salvador" or xxxxxxxxx##### }
-    - "interpreter_name_last": ${ interpreter.name.last }
-    - "interpreter_name_first": ${ interpreter.name.first }
-    - "interpreter_organization": ${ interpreter.organization }
+    - "interpreter_name_last": |
+        % if interpreter_present:
+        ${ interpreter.name.last }
+        % endif
+    - "interpreter_name_first": |
+        % if interpreter_present:
+        ${ interpreter.name.first }
+        % endif
+    - "interpreter_organization": |
+        % if interpreter_present:
+        ${ interpreter.organization }
+        % endif
     # Part 4
-    - "interpreter_mailing_address_address": '77 W Jackson Blvd'
-    - "interpreter_mailing_address_unit": ''
-    - "interpreter_mailing_address_city": 'Chicago'
-    - "interpreter_mailing_address_state": 'IL'
-    - "interpreter_mailing_address_zip": '60604'
-    - "interpreter_mailing_address_country": 'USA'
-
+    - "interpreter_mailing_address_address": |
+        % if interpreter_present:
+        ${ interpreter.address.address }
+        % endif
+    - "interpreter_mailing_address_unit": |
+        % if interpreter_present:
+        ${ interpreter.address.unit }
+        % endif
+    - "interpreter_mailing_address_city": |
+        % if interpreter_present:
+        ${ interpreter.address.city }
+        % endif
+    - "interpreter_mailing_address_state": |
+        % if interpreter_present:
+        ${ interpreter.address.state }
+        % endif
+    - "interpreter_mailing_address_zip":  |
+        % if interpreter_present:
+        ${ interpreter.address.zip }
+        % endif
+    - "interpreter_mailing_address_country": ${ 'USA' if interpreter_present else '' }
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_is_attorney_yes": ${ preparer_is_attorney }
@@ -2305,11 +2385,26 @@ attachment:
     - "preparer_limited_rep": ${ preparer_is_attorney }
 #   # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
 #   # - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
-    - "preparer_mailing_address_address": '77 W Jackson Blvd'
-    - "preparer_mailing_address_unit": ''
-    - "preparer_mailing_address_city": 'Chicago'
-    - "preparer_mailing_address_state": 'IL'
-    - "preparer_mailing_address_zip": '60604'
+    - "preparer_mailing_address_address": |
+        % if preparer.address.address:
+        ${ preparer.address.address }
+        % endif
+    - "preparer_mailing_address_unit": |
+        % if preparer.address.unit:
+        ${ preparer.address.unit }
+        % endif
+    - "preparer_mailing_address_city": |
+        % if preparer.address.city:
+        ${ preparer.address.city }
+        % endif
+    - "preparer_mailing_address_state": |
+        % if preparer.address.state:
+        ${ preparer.address.state }
+        % endif
+    - "preparer_mailing_address_zip": |
+        % if preparer.address.zip:
+        ${ preparer.address.zip }
+        % endif
     - "preparer_mailing_address_country": 'USA'
 #   # - "preparer_organization": ${ preparer.organization }
 #   # - "interpreter_phone_number": ${ interpreter.phone_number }

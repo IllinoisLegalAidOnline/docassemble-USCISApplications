@@ -2092,10 +2092,7 @@ attachment:
         % if interpreter_present:
         ${ interpreter.address.zip }
         % endif
-    - "interpreter_mailing_address_country":
-        % if interpreter_present:
-        'USA'
-        % endif
+    - "interpreter_mailing_address_country": ${ 'USA' if interpreter_present else '' }
     - "interpreted_into_language": |
         % if interpreter_present:
         ${ interpreter.language }
@@ -2361,10 +2358,7 @@ attachment:
         % if interpreter_present:
         ${ interpreter.address.zip }
         % endif
-    - "interpreter_mailing_address_country":
-        % if interpreter_present:
-        'USA'
-        % endif
+    - "interpreter_mailing_address_country": ${ 'USA' if interpreter_present else '' }
 #   # - "preparer_organization": ${ preparer.organization }
 #   # - "interpreter_phone_number": ${ interpreter.phone_number }
 #   # - "interpreter_mobile_number": ${ interpreter.mobile_number }

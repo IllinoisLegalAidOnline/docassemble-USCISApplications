@@ -74,6 +74,7 @@ code: |
     interpreter.name.first
   preparer.name.first
   preparer_is_attorney
+  preparer.address.address
   users.gather()
   review_initial_user_list
   nav.set_section("section_retainer")
@@ -229,6 +230,24 @@ fields:
     show if: interpreter_present    
   - code: |
       interpreter.name_fields(person_or_business="person", show_if="interpreter_present", show_suffix=False)
+  - note: |
+      <h2 class="h4">Interpreter's Address</h2>
+    show if: interpreter_present
+  - Street address: interpreter.address.address
+    address autocomplete: True
+    show if: interpreter_present
+  - Suite/Unit number: interpreter.address.unit
+    required: False
+    show if: interpreter_present
+  - City: interpreter.address.city
+    show if: interpreter_present
+  - State: interpreter.address.state
+    code: |
+      states_list()
+    default: IL  
+    show if: interpreter_present
+  - Zip code: interpreter.address.zip
+    show if: interpreter_present
 ---
 id: welcome
 question: |
@@ -288,7 +307,7 @@ id: preparer name interpreter present
 question: |
   Who is the volunteer/preparer assisting the applicant(s) with this application?
 fields:
-  - Someone already named: preparer
+  - Preparer is: preparer
     datatype: object_radio
     none of the above: Someone else
     disable others:
@@ -297,10 +316,30 @@ fields:
       - preparer.name.last
     choices: |
       [signed_in_user, interpreter] if user_logged_in() and interpreter_present else [signed_in_user] if user_logged_in() else [interpreter] if interpreter_present else []
+  - note: |
+      <h2 class="h4">Preparer's Name</h2>      
   - code: |
       preparer.name_fields(person_or_business="person", show_suffix=False,)
   - Is the preparer an attorney or accredited representative?: preparer_is_attorney
     datatype: yesnoradio
+---
+id: preparer address
+sets:
+  - preparer.address.address
+  - signed_in_user.address.address
+question: |
+  What do you want to put on the forms for the Preparer's mailing address?
+fields:
+  - Street address: preparer.address.address
+    address autocomplete: True
+  - Suite/Unit number: preparer.address.unit
+    required: False
+  - City: preparer.address.city
+  - State: preparer.address.state
+    code: |
+      states_list()
+    default: IL  
+  - Zip code: preparer.address.zip
 ---
 id: people
 question: |

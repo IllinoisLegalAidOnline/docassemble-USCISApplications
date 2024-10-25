@@ -2058,36 +2058,48 @@ attachment:
     - "user_used_preparer": True
     - "preparer_name_applicant_statement": ${ preparer }
     - "users1_phone_number": ${ users[i].phone_number }
-    - "interpreter_name_last": ${ interpreter.name.last }
+    - "interpreter_name_last": |
+        % if interpreter_present:
+        ${ interpreter.name.last }
+        % endif
     - "users1_mobile_number": ${ users[i].mobile_number }
-    - "interpreter_name_first": ${ interpreter.name.first }
+    - "interpreter_name_first": |
+        % if interpreter_present:
+        ${ interpreter.name.first }
+        % endif
     - "users1_email": ${ users[i].email }
     # - "interpreter_organization": ${ interpreter.organization }
     # - "interpreter_phone_number": ${ interpreter.phone_number }
     # - "interpreter_mobile_number": ${ interpreter.mobile_number }
     # - "interpreter_email": ${ interpreter.email }
     - "interpreter_mailing_address_address": |
-        % if interpreter.address.address:
+        % if interpreter_present:
         ${ interpreter.address.address }
         % endif
     - "interpreter_mailing_address_unit": |
-        % if interpreter.address.unit:
+        % if interpreter_present:
         ${ interpreter.address.unit }
         % endif
     - "interpreter_mailing_address_city": |
-        % if interpreter.address.city:
+        % if interpreter_present:
         ${ interpreter.address.city }
         % endif
     - "interpreter_mailing_address_state": |
-        % if interpreter.address.state:
+        % if interpreter_present:
         ${ interpreter.address.state }
         % endif
     - "interpreter_mailing_address_zip":  |
-        % if interpreter.address.zip:
+        % if interpreter_present:
         ${ interpreter.address.zip }
         % endif
-    - "interpreter_mailing_address_country": 'USA'
-    - "interpreted_into_language": ${ interpreter.language }
+    - "interpreter_mailing_address_country":
+        % if interpreter_present:
+        'USA'
+        % endif
+    - "interpreted_into_language": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif 
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__1": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
@@ -2293,8 +2305,14 @@ attachment:
         % endif
     - "user_reads_english": ${ users[i].user_reads_english }
     - "user_used_interpreter": ${ users[i].user_used_interpreter }
-    - "interpreter_spoke_language": ${ interpreter.language }
-    - "interpreter_spoke_language__1": ${ interpreter.language }
+    - "interpreter_spoke_language": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif
+    - "interpreter_spoke_language__1": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif
     - "user_used_preparer": True
     - "preparer_name": ${ preparer.name.full() }
     - "users1_phone_number": ${ users[i].phone_number}
@@ -2303,9 +2321,18 @@ attachment:
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
  #   - "is_abc_salvadoran_guatemalan_national": ${ users[i].country_of birth == "Guatemala" or users[i].country_of birth == "El Salvador" or xxxxxxxxx##### }
-    - "interpreter_name_last": ${ interpreter.name.last }
-    - "interpreter_name_first": ${ interpreter.name.first }
-    - "interpreter_organization": ${ interpreter.organization }
+    - "interpreter_name_last": |
+        % if interpreter_present:
+        ${ interpreter.name.last }
+        % endif
+    - "interpreter_name_first": |
+        % if interpreter_present:
+        ${ interpreter.name.first }
+        % endif
+    - "interpreter_organization": |
+        % if interpreter_present:
+        ${ interpreter.organization }
+        % endif
     - "preparer_name_first": ${ preparer.name.first }
     - "preparer_name_last": ${ preparer.name.last }
     - "preparer_is_attorney_yes": ${ preparer_is_attorney }
@@ -2315,26 +2342,29 @@ attachment:
 #   # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
 #   # - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
     - "interpreter_mailing_address_address": |
-        % if interpreter.address.address:
+        % if interpreter_present:
         ${ interpreter.address.address }
         % endif
     - "interpreter_mailing_address_unit": |
-        % if interpreter.address.unit:
+        % if interpreter_present:
         ${ interpreter.address.unit }
         % endif
     - "interpreter_mailing_address_city": |
-        % if interpreter.address.city:
+        % if interpreter_present:
         ${ interpreter.address.city }
         % endif
     - "interpreter_mailing_address_state": |
-        % if interpreter.address.state:
+        % if interpreter_present:
         ${ interpreter.address.state }
         % endif
     - "interpreter_mailing_address_zip":  |
-        % if interpreter.address.zip:
+        % if interpreter_present:
         ${ interpreter.address.zip }
         % endif
-    - "interpreter_mailing_address_country": 'USA'
+    - "interpreter_mailing_address_country":
+        % if interpreter_present:
+        'USA'
+        % endif
 #   # - "preparer_organization": ${ preparer.organization }
 #   # - "interpreter_phone_number": ${ interpreter.phone_number }
 #   # - "interpreter_mobile_number": ${ interpreter.mobile_number }

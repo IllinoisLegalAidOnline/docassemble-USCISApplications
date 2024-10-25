@@ -233,8 +233,21 @@ fields:
   - note: |
       <h2 class="h4">Interpreter's Address</h2>
     show if: interpreter_present
-  - code: |
-      interpreter.address_fields(default_state="IL", show_if="interpreter_present")
+  - Street address: interpreter.address.address
+    address autocomplete: True
+    show if: interpreter_present
+  - Suite/Unit number: interpreter.address.unit
+    required: False
+    show if: interpreter_present
+  - City: interpreter.address.city
+    show if: interpreter_present
+  - State: interpreter.address.state
+    code: |
+      states_list()
+    default: IL  
+    show if: interpreter_present
+  - Zip code: interpreter.address.zip
+    show if: interpreter_present
 ---
 id: welcome
 question: |
@@ -313,30 +326,20 @@ fields:
 id: preparer address
 sets:
   - preparer.address.address
-  - preparer.address.city
-  - preparer.address.state
-  - preparer.address.zip
+  - signed_in_user.address.address
 question: |
-  What address is the volunteer/preparer assisting the applicant(s) with this application?
+  What do you want to put on the forms for the Preparer's mailing address?
 fields:
-  - Preparer address is: preparer.address
-    datatype: object_radio
-    choices:
-      - interpreter.address if defined("interpreter.address") else None
-    object labeler: |
-      lambda y: y.on_one_line()
-    none of the above: |
-      Somewhere else
-    disable others: 
-      - preparer.address.address
-      - preparer.address.unit
-      - preparer.address.city
-      - preparer.address.state
-      - preparer.address.zip
-  - note: |
-      <h2 class="h4">Preparer's Address</h2>
-  - code: |
-      preparer.address_fields(default_state="IL")
+  - Street address: preparer.address.address
+    address autocomplete: True
+  - Suite/Unit number: preparer.address.unit
+    required: False
+  - City: preparer.address.city
+  - State: preparer.address.state
+    code: |
+      states_list()
+    default: IL  
+  - Zip code: preparer.address.zip
 ---
 id: people
 question: |

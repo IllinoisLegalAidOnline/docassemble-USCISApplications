@@ -125,6 +125,9 @@ Scenario: EAD only, 2 applicants
     | users[i].weapons_trained_in | area | |
     | users[i].used_weapon_against_another_person | False | |
     | users[i].acted_as_terrorist | False | |
+  And the maximum seconds for each Step in this Scenario is 61
+  And I wait 60 seconds
+  Then the question id should be "get_docs_screen"
 
 @2
 Scenario: EAD, 3 applicants, some are screened
@@ -219,6 +222,9 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+  And the maximum seconds for each Step in this Scenario is 61
+  And I wait 60 seconds
+  Then the question id should be "get_docs_screen"
     
 
 
@@ -319,6 +325,9 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+  And the maximum seconds for each Step in this Scenario is 61
+  And I wait 60 seconds
+  Then the question id should be "get_docs_screen"
     
 
 @4
@@ -391,6 +400,9 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].mother_last_name | Last | | 
     | users[0].previously_filed_I765 | True | |
     | users[0].has_ssn | False | |
+  And the maximum seconds for each Step in this Scenario is 61
+  And I wait 60 seconds
+  Then the question id should be "get_docs_screen"
     
     
     
@@ -595,6 +607,9 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].q26_explanation | area | |
     | users[i].q28_explanation | area | |
     | users[i].q36_explanation | area | |
+  And the maximum seconds for each Step in this Scenario is 61
+  And I wait 60 seconds
+  Then the question id should be "get_docs_screen"
     
 
     

@@ -43,7 +43,7 @@ Scenario: EAD only, 2 applicants
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
     | application_kind | ead_only | | 
-    
+    | change_kind | no | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 2 | | 
@@ -169,6 +169,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[1].signature | | users[1].signature |
     | users[2].signature | | users[2].signature |
     | application_kind | ead_only | | 
+    | change_kind | no | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 0 | | 
@@ -265,6 +266,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[1].signature | | users[1].signature |
     | users[2].signature | | users[2].signature |
     | application_kind | ead_only | | 
+    | change_kind | no | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 0 | | 
@@ -345,8 +347,8 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].birthdate | 11/11/1111 | |
     | users[0].last_country_of_residence | United States | users[0].last_country_of_residence |
     | users[0].signature | | users[0].signature |
-    
     | application_kind | ead_only | | 
+    | change_kind | no | |
     | users[0].ead_required_documents['National ID'] | True | |
     | users[0].has_additional_citizenship | False | | 
     | users[0].number_children_applying | 0 | | 

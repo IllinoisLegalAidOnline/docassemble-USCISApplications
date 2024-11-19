@@ -121,7 +121,8 @@ code: |
       if user.age_in_years() < 14:
         user.parent
       user.user_reads_english
-      user.sex
+      if application_kind == "ead_and_tps":
+        user.sex
       user.alternate_birthdates.gather()
       user.address.address
       user.mailing_address.address

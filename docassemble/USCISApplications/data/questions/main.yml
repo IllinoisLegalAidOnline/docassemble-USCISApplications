@@ -70,6 +70,7 @@ mandatory: True
 code: |
   set_initial_sections
   intro_main
+  region
   if interpreter_present:
     interpreter.name.first
   preparer.name.first
@@ -270,6 +271,18 @@ subquestion: |
   5. Download and print your work. You will get a separate
       set of documents for each person in the family group.
 continue button field: intro_main
+---
+id: workshop region
+question: |
+  Which region is this workshop
+fields: 
+  - Region: region
+    datatype: radio
+    choices:
+      - Chicago
+      - Northern Illinois
+      - Western Suburbs
+      - Central & Downstate Illinois
 ---
 id: signpost for main application questions
 continue button field: users[i].signpost

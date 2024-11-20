@@ -38,7 +38,7 @@ fields:
     datatype: radio 
     choices:
       - "I am an attorney eligible to practice law.": lawyer
-      - "I am a representative accredited to appear.": representative
+      - "I am a representative accredited to appear.": accredited
       - "I am a law student or law graduate.": student
       - "I am a reputable individual.": individual
       - "I am an accredited foreign government official.": official
@@ -85,7 +85,7 @@ question: |
 subquestion: |
   This is not your current, physical or mailing address.
 fields:
-  - How long have you been living in Illinois?: removal.date
+  - When did you move to Illinois?: removal.date
     datatype: ThreePartsDate
     alMax: ${ today() }
   - Street address: removal.address.address

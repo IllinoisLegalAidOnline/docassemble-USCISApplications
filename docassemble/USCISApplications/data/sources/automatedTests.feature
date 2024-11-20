@@ -430,6 +430,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
     | application_kind | ead_and_tps | | 
+    | change_kind | no | |
     | users[i].proof_of_birthplace['Birth certificate'] | True | |
     | users[i].method_of_entry | Presented at a port of entry | | 
     | users[i].parents_from_venezuela | False | | 

@@ -71,6 +71,7 @@ mandatory: True
 code: |
   set_initial_sections
   intro_main
+  region
   if interpreter_present:
     interpreter.name.first
   preparer.name.first
@@ -123,7 +124,8 @@ code: |
       if user.age_in_years() < 14:
         user.parent
       user.user_reads_english
-      user.sex
+      if application_kind == "ead_and_tps":
+        user.sex
       user.alternate_birthdates.gather()
       user.address.address
       user.mailing_address.address
@@ -170,6 +172,7 @@ code: |
           "application_kind": application_kind,
           "zip": showifdef("users[0].address.zip"),
           "reached_interview_end": True,
+          "region": showifdef("region"),
       },
   )
   children_for_retainer
@@ -285,6 +288,18 @@ subquestion: |
   5. Download and print your work. You will get a separate
       set of documents for each person in the family group.
 continue button field: intro_main
+---
+id: workshop region
+question: |
+  Which region is this workshop?
+fields: 
+  - Region: region
+    datatype: radio
+    choices:
+      - Chicago
+      - Northern Illinois
+      - Western Suburbs
+      - Central & Downstate Illinois
 ---
 id: signpost for main application questions
 continue button field: users[i].signpost

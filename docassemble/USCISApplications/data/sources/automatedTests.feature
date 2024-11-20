@@ -15,6 +15,7 @@ Scenario: EAD only, 2 applicants
   And the maximum seconds for each Step in this Scenario is 20
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -90,6 +91,7 @@ Scenario: EAD only, 2 applicants
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
     | users[i].proof_of_birthplace['Birth certificate'] | True | |
     | users[i].parents_from_venezuela | False | | 
     | users[i].one_parent_from_venezuela | False | |
@@ -132,6 +134,7 @@ Scenario: EAD, 3 applicants, some are screened
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -220,7 +223,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
-    
+    | users[i].issue_social | False | |    
 
 
 @3
@@ -229,6 +232,7 @@ Scenario: EAD, 3 applicants, some are screened
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -321,6 +325,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
     
 
 @4
@@ -329,6 +334,7 @@ Scenario: EAD, 1 applicant, some are screened
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -392,8 +398,8 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].mother_first_name | MotherName | | 
     | users[0].mother_last_name | Last | | 
     | users[0].previously_filed_I765 | True | |
-    | users[0].has_ssn | False | |
-    
+    | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
     
     
 @5
@@ -402,6 +408,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -507,6 +514,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
     | users[i].date_entered_first_country_month | 11 | | 
     | users[i].date_entered_first_country_year | 1111 | | 
     | users[i].date_left_last_country_month | 11 | | 

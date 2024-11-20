@@ -85,7 +85,7 @@ question: |
 subquestion: |
   This is not your current, physical or mailing address.
 fields:
-  - What date did you move from this address?: removal.date
+  - How long have you been living in Illinois?: removal.date
     datatype: ThreePartsDate
     alMax: ${ today() }
   - Street address: removal.address.address
@@ -210,9 +210,9 @@ attachment:
     - "practitioner_address_state": ${ representative.address.state }
     - "practitioner_address_zip": ${ representative.address.zip }
     - "practitioner_firm": ${ representative.firm }
-    - "practitioner_fax": ${ representative.phone_number }
+    - "practitioner_fax": ${ phone_number_formatted(representative.phone_number) }
     - "practitioner_email": ${ representative.email }
-    - "practitioner_phone": ${ representative.fax_number }
+    - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
     - "users1_full_name": ${ users[i].name.full(middle="full") }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
@@ -242,26 +242,26 @@ attachment:
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
-    - "users1_address_line1_former": ${ removal.address.line_one() }
-    - "users1_address_line1_current": ${ users[i].mailing_address.line_one() }
+    - "users1_address_line1_former": ${ removal.address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ users[i].mailing_address.line_one(bare=True) }
     - "users1_address_line2_former": ${ removal.address.line_two() }
     - "users1_address_line2_current": ${ users[i].mailing_address.line_two() }
-    - "users1_phone_former": ${ removal.phone_number }
-    - "users1_phone_current": ${ users[i].phone_number}
+    - "users1_phone_former": ${ phone_number_formatted(removal.phone_number) }
+    - "users1_phone_current": ${ phone_number_formatted(users[i].phone_number) }
     - "users1_email_former": ${ removal.email }
     - "users1_email_current": ${ users[i].email }
 
     # Proof of service
     - "pos_name": ${ users[i].name.full() }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
-    - "dhs_address_line1": ${ dhs.address.line_one() }
+    - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
     - "dhs_address_line2": ${ dhs.address.line_two() }
     - "pos_type": by mail service
     - "no_service": False
 
     # Service instructions
     - "service_name_line": ${ users[i].name.full() }
-    - "service_address_line_1": ${ users[i].mailing_address.line_one() }
+    - "service_address_line_1": ${ users[i].mailing_address.line_one(bare=True) }
     - "service_address_line_2": ${ users[i].mailing_address.line_two() }
     - "service_address_line_3": ''
     - "court_address": |

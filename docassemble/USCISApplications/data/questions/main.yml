@@ -204,7 +204,7 @@ code: |
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-1:]
+    sections.extend(default_sections[-2:]
     )
     nav.set_sections(sections)
   update_sections = True
@@ -565,7 +565,7 @@ id: change of venue address
 question: |
   Change of venue or address
 fields: 
-  - Change of: change_kind
+  - This family needs to change: change_kind
     datatype: radio
     choices:
       - Venue and address: cov_and_coa

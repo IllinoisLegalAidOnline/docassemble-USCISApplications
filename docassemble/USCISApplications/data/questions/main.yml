@@ -563,14 +563,14 @@ buttons:
 ---
 id: change of venue address
 question: |
-  Does this family need to change venue and/or address?
+  Change of venue or address
 fields: 
   - Change of: change_kind
     datatype: radio
     choices:
-      - venue and address: cov_and_coa
-      - address only: coa_only
-      - Not at this time: no
+      - Venue and address: cov_and_coa
+      - Address only: coa_only
+      - Neither at this time: no
 ---
 id: explain_add_explanations
 question: |

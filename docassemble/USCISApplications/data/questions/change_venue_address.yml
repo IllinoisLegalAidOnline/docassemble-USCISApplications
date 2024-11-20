@@ -18,29 +18,31 @@ sets:
   - immigration_judge.name.suffix
 id: immigration judge
 question: |
-  Immigration court information:
+  Immigration court information
 subquestion: |
   Please provide the name of the judge and hearing date:
 fields:
   - code: |
       immigration_judge.name_fields()
-  - Hearing date: hearing_datetime 
+  - Next hearing date: hearing_datetime 
     datatype: ThreePartsDate
     alMin: ${ today().format("yyyy-MM-dd") }
 ---
 id: attorney or representative type
 question: |
-  Attorney or Representative (please check one of the following): 
+  Attorney or representative 
+subquestion: |
+  Check the option that best describes you.
 fields:
   - no label: representative.type
     datatype: radio 
     choices:
-      - "I am an attorney eligible to practice law": lawyer
-      - "I am a representative accredited to appear": representative
-      - "I am a law student or law graduate": student
-      - "I am a reputable individual": individual
-      - "I am an accredited foreign government official": official
-      - "I am a person who was authorized to practice": practitioner
+      - "I am an attorney eligible to practice law.": lawyer
+      - "I am a representative accredited to appear.": representative
+      - "I am a law student or law graduate.": student
+      - "I am a reputable individual.": individual
+      - "I am an accredited foreign government official.": official
+      - "I am a person who was authorized to practice.": practitioner
 ---
 id: attorney or representative information 
 sets:
@@ -58,8 +60,15 @@ fields:
   - Name of firm/organization: representative.firm
   - code: |
       representative.name_fields()
-  - code: |
-      representative.address_fields()
+  - Street address: representative.address.address
+    address autocomplete: True
+  - Address line 2: representative.address.unit
+    required: False
+  - City: representative.address.city
+  - State: representative.address.state
+    code: |
+      states_list()
+  - ZIP code: representative.address.zip
   - Phone number: representative.phone_number
     datatype: al_international_phone
     required: False
@@ -72,7 +81,7 @@ fields:
 ---
 id: your previous address change
 question: |
-  What is the former address you need changed? 
+  Former address
 subquestion: |
   This is not your current, physical or mailing address.
 fields:
@@ -110,10 +119,17 @@ sets:
   - dhs.address.state
   - dhs.address.zip
 question: |
-  DHS (Immigration and Customs Enforcement - ICE) address
+  Immigration and Customs Enforcement (ICE) address
 fields: 
-  - code: |
-      dhs.address.address_fields()
+  - Street address: dhs.address.address
+    address autocomplete: True
+  - Address line 2: dhs.address.unit
+    required: False
+  - City: dhs.address.city
+  - State: dhs.address.state
+    code: |
+      states_list()
+  - ZIP code: dhs.address.zip
 ---
 objects:
   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)
@@ -240,6 +256,7 @@ attachment:
     - "pos_date": ${ today().format('MM/dd/yyyy') }
     - "dhs_address_line1": ${ dhs.address.line_one() }
     - "dhs_address_line2": ${ dhs.address.line_two() }
+    - "pos_type": by mail service
     - "no_service": False
 
     # Service instructions

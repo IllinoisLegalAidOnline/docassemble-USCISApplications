@@ -291,7 +291,7 @@ continue button field: intro_main
 ---
 id: workshop region
 question: |
-  Which region is this workshop
+  Which region is this workshop?
 fields: 
   - Region: region
     datatype: radio

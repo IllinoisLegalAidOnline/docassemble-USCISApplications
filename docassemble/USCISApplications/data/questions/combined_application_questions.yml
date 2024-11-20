@@ -857,7 +857,7 @@ fields:
       - Visitor
       - Student
       - No Status
-      - Other: other
+      - Other current immigration status (not listed above): other
     default: |
       ${ showifdef("users[0].current_immigration_status") if i > 0 else "" }
   - Enter current immigration status: users[i].other_immigration_status
@@ -933,7 +933,7 @@ question: |
 fields:
   - Have you previously filed Form I-765?: users[i].previously_filed_I765
     datatype: yesnoradio
-  - "Has the Social Security Administration ever officially issued a card to you?": users[i].has_ssn
+  - "Has the Social Security Administration (SSA) ever officially issued a card to you?": users[i].has_ssn
     datatype: yesnoradio
   - "U.S. Social Security Number (without -)": users[i].ssn
     maxlength: 9

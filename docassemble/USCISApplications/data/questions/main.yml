@@ -157,6 +157,7 @@ code: |
           "application_kind": application_kind,
           "zip": showifdef("users[0].address.zip"),
           "reached_interview_end": True,
+          "region": showifdef("region"),
       },
   )
   children_for_retainer

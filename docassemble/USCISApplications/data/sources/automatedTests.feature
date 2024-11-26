@@ -15,6 +15,7 @@ Scenario: EAD only, 2 applicants
   And the maximum seconds for each Step in this Scenario is 20
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -43,7 +44,7 @@ Scenario: EAD only, 2 applicants
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
     | application_kind | ead_only | | 
-    
+    | change_kind | no | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 2 | | 
@@ -90,6 +91,7 @@ Scenario: EAD only, 2 applicants
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
     | users[i].proof_of_birthplace['Birth certificate'] | True | |
     | users[i].parents_from_venezuela | False | | 
     | users[i].one_parent_from_venezuela | False | |
@@ -135,6 +137,7 @@ Scenario: EAD, 3 applicants, some are screened
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -172,6 +175,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[1].signature | | users[1].signature |
     | users[2].signature | | users[2].signature |
     | application_kind | ead_only | | 
+    | change_kind | no | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 0 | | 
@@ -222,10 +226,10 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
   And the maximum seconds for each Step in this Scenario is 61
   And I wait 60 seconds
   Then the question id should be "get_docs_screen"
-    
 
 
 @3
@@ -234,6 +238,7 @@ Scenario: EAD, 3 applicants, some are screened
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -271,6 +276,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[1].signature | | users[1].signature |
     | users[2].signature | | users[2].signature |
     | application_kind | ead_only | | 
+    | change_kind | no | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 0 | | 
@@ -325,6 +331,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
   And the maximum seconds for each Step in this Scenario is 61
   And I wait 60 seconds
   Then the question id should be "get_docs_screen"
@@ -336,6 +343,7 @@ Scenario: EAD, 1 applicant, some are screened
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -354,8 +362,8 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].birthdate | 11/11/1111 | |
     | users[0].last_country_of_residence | United States | users[0].last_country_of_residence |
     | users[0].signature | | users[0].signature |
-    
     | application_kind | ead_only | | 
+    | change_kind | no | |
     | users[0].ead_required_documents['National ID'] | True | |
     | users[0].has_additional_citizenship | False | | 
     | users[0].number_children_applying | 0 | | 
@@ -400,10 +408,11 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].mother_last_name | Last | | 
     | users[0].previously_filed_I765 | True | |
     | users[0].has_ssn | False | |
+    | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
   And the maximum seconds for each Step in this Scenario is 61
   And I wait 60 seconds
   Then the question id should be "get_docs_screen"
-    
     
     
 @5
@@ -412,6 +421,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
   And the maximum seconds for each Step in this Scenario is 30
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
+    | region | Chicago | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -440,6 +450,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
     | application_kind | ead_and_tps | | 
+    | change_kind | no | |
     | users[i].proof_of_birthplace['Birth certificate'] | True | |
     | users[i].method_of_entry | Presented at a port of entry | | 
     | users[i].parents_from_venezuela | False | | 
@@ -516,6 +527,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].mother_last_name | Last | | 
     | users[i].previously_filed_I765 | True | |
     | users[i].has_ssn | False | |
+    | users[i].issue_social | False | |
     | users[i].date_entered_first_country_month | 11 | | 
     | users[i].date_entered_first_country_year | 1111 | | 
     | users[i].date_left_last_country_month | 11 | | 

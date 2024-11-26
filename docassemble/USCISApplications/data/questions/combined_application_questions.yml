@@ -857,8 +857,14 @@ fields:
       - Visitor
       - Student
       - No Status
+      - Other current immigration status (not listed above): other
     default: |
       ${ showifdef("users[0].current_immigration_status") if i > 0 else "" }
+  - Enter current immigration status: users[i].other_immigration_status
+    maxlength: 27
+    show if: 
+      variable: users[i].current_immigration_status
+      is: "other"
 ---
 objects:
   - users[i].kind_of_immigration_proceedings: DADict.using(auto_gather=False, gathered=True)
@@ -927,12 +933,23 @@ question: |
 fields:
   - Have you previously filed Form I-765?: users[i].previously_filed_I765
     datatype: yesnoradio
-  - "Has the Social Security Administration ever officially issued a card to you?": users[i].has_ssn
+  - "Has the Social Security Administration (SSA) ever officially issued a card to you?": users[i].has_ssn
     datatype: yesnoradio
   - "U.S. Social Security Number (without -)": users[i].ssn
     maxlength: 9
     minlength: 9
     show if: users[i].has_ssn
+  - "Do you want the SSA to issue you a Social Security card?": users[i].issue_social
+    datatype: yesnoradio
+    show if:
+      variable: users[i].has_ssn
+      is: False
+  - note: |
+      **Consent for Disclosure:** I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card.
+    show if: users[i].issue_social      
+  - Do you conscent to the above terms?: users[i].ssa_consent
+    datatype: yesnoradio
+    show if: users[i].issue_social
 ---
 id: father and mother birth name
 question: |
@@ -1707,7 +1724,12 @@ attachment:
     - "marital_status_other_explanation": ${ users[i].marital_status_other }
     - "marriage_date": ${ users[i].marriage_date.format('MM/dd/yyyy') }
     # - "marriage_date__2": ${ users[i].marriage_date.format('MM/dd/yyyy') }
-    - "current_immigration_status": ${ users[i].current_immigration_status }
+    - "current_immigration_status": |
+        % if users[i].current_immigration_status == "other":
+        ${ users[i].other_immigration_status }
+        % else:
+        ${ users[i].current_immigration_status }
+        % endif
     - "users1_has_been_in_immigration_proceedings_yes": ${ users[i].has_been_in_immigration_proceedings }
     - "users1_has_been_in_immigration_proceedings_no": ${ not users[i].has_been_in_immigration_proceedings }
     - "date_of_last_entry": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
@@ -2236,7 +2258,22 @@ attachment:
         % if users[i].has_ssn:
         ${ users[i].ssn }
         % endif
-    # - "users1_wants_ssn": Yes # Pre-checked on form
+    - "issue_social_yes": |
+        % if not users[i].has_ssn:
+        ${ users[i].issue_social }
+        % endif
+    - "issue_social_no": |
+        % if not users[i].has_ssn:
+        ${ not users[i].issue_social }
+        % endif
+    - "ssa_consent_yes": |
+        % if not users[i].has_ssn:
+        ${ users[i].ssa_consent }
+        % endif
+    - "ssa_consent_no": |
+        % if not users[i].has_ssn:
+        ${ not users[i].ssa_consent }
+        % endif
     - "users1_mailing_address_is_apt": ${ users[i].mailing_address.address_type == 'apt' }
     - "users1_mailing_address_is_suite": ${ users[i].mailing_address.address_type == 'suite' }
     - "users1_mailing_address_is_floor": ${ users[i].mailing_address.address_type == 'floor' }
@@ -2286,7 +2323,12 @@ attachment:
     - "date_of_last_arrival": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
     - "place_of_last_arrival": ${ users[i].city_of_entry }${ ', ' if showifdef('users[i].city_of_entry') else '' }${ users[i].state_of_entry }
     - "immigration_status_at_last_arrival": ${ users[i].immigration_status_last_entry }
-    - "current_immigration_status": ${ users[i].current_immigration_status }
+    - "current_immigration_status": |
+        % if users[i].current_immigration_status == "other":
+        ${ users[i].other_immigration_status }
+        % else:
+        ${ users[i].current_immigration_status }
+        % endif
     - "sevis_number": ${ users[i].sevis_number }
     # EAD Eligibility category
     # Depends on whether TPS or EAD only

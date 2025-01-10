@@ -160,8 +160,8 @@ code: |
       removal.address.address
     else:
       immigration_judge.name.first
-      representative.type
-      representative.name.first
+      # representative.type
+      # representative.name.first
       removal.address.address
       dhs.address.address
 
@@ -325,6 +325,7 @@ subquestion: |
 ---
 objects:
   - signed_in_user: ALIndividual
+  - workshop: ALAddress
 ---
 code: |
   if user_logged_in():
@@ -355,6 +356,19 @@ fields:
   - Is the preparer an attorney or accredited representative?: preparer_is_attorney
     datatype: yesnoradio
 ---
+code: |
+  default_choices = []
+  default_choices.clear()
+  workshop.address = ALAddress()
+  workshop.address.address = "1545 W. 18th St"
+  workshop.address.unit = ""
+  workshop.address.city = "Chicago"
+  workshop.address.state = "IL"
+  workshop.address.zip = "60608"
+  default_choices.append(workshop.address)
+---
+reconsider:
+  - default_choices
 id: preparer address
 sets:
   - preparer.address.address
@@ -362,6 +376,21 @@ sets:
 question: |
   What do you want to put on the forms for the Preparer's mailing address?
 fields:
+  - Preparer's address: preparer.address
+    datatype: object_radio
+    choices:
+      - default_choices
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others:
+      - preparer.address.address
+      - preparer.address.unit
+      - preparer.address.city
+      - preparer.address.state
+      - preparer.address.zip
+    default: workshop.address
   - Street address: preparer.address.address
     address autocomplete: True
   - Suite/Unit number: preparer.address.unit
@@ -370,7 +399,7 @@ fields:
   - State: preparer.address.state
     code: |
       states_list()
-    default: IL  
+    default: IL
   - Zip code: preparer.address.zip
 ---
 id: people

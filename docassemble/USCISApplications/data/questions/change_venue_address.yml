@@ -28,57 +28,57 @@ fields:
     datatype: ThreePartsDate
     alMin: ${ today().format("yyyy-MM-dd") }
 ---
-id: attorney or representative type
-question: |
-  Attorney or representative 
-subquestion: |
-  Check the option that best describes you.
-fields:
-  - no label: representative.type
-    datatype: radio 
-    choices:
-      - "I am an attorney eligible to practice law.": lawyer
-      - "I am a representative accredited to appear.": accredited
-      - "I am a law student or law graduate.": student
-      - "I am a reputable individual.": individual
-      - "I am an accredited foreign government official.": official
-      - "I am a person who was authorized to practice.": practitioner
+# id: attorney or representative type
+# question: |
+#   Attorney or representative 
+# subquestion: |
+#   Check the option that best describes you.
+# fields:
+#   - no label: representative.type
+#     datatype: radio 
+#     choices:
+#       - "I am an attorney eligible to practice law.": lawyer
+#       - "I am a representative accredited to appear.": accredited
+#       - "I am a law student or law graduate.": student
+#       - "I am a reputable individual.": individual
+#       - "I am an accredited foreign government official.": official
+#       - "I am a person who was authorized to practice.": practitioner
 ---
-id: attorney or representative information 
-sets:
-  - representative.name.first
-  - representative.name.last
-  - representative.name.middle
-  - representative.name.suffix
-  - representative.address.address
-  - representative.address.city
-  - representative.address.state
-  - representative.address.zip
-question: |
-  Attorney or Representative contact information
-fields: 
-  - Name of firm/organization: representative.firm
-  - code: |
-      representative.name_fields()
-  - Street address: representative.address.address
-    address autocomplete: True
-  - Address line 2: representative.address.unit
-    required: False
-  - City: representative.address.city
-  - State: representative.address.state
-    code: |
-      states_list()
-  - ZIP code: representative.address.zip
-  - Phone number: representative.phone_number
-    datatype: al_international_phone
-    required: False
-  - FAX number: representative.fax_number
-    datatype: al_international_phone
-    required: False
-  - Email address: representative.email    
-    datatype: email
-    required: False
----
+# id: attorney or representative information 
+# sets:
+#   - representative.name.first
+#   - representative.name.last
+#   - representative.name.middle
+#   - representative.name.suffix
+#   - representative.address.address
+#   - representative.address.city
+#   - representative.address.state
+#   - representative.address.zip
+# question: |
+#   Attorney or Representative contact information
+# fields: 
+#   - Name of firm/organization: representative.firm
+#   - code: |
+#       representative.name_fields()
+#   - Street address: representative.address.address
+#     address autocomplete: True
+#   - Address line 2: representative.address.unit
+#     required: False
+#   - City: representative.address.city
+#   - State: representative.address.state
+#     code: |
+#       states_list()
+#   - ZIP code: representative.address.zip
+#   - Phone number: representative.phone_number
+#     datatype: al_international_phone
+#     required: False
+#   - FAX number: representative.fax_number
+#     datatype: al_international_phone
+#     required: False
+#   - Email address: representative.email    
+#     datatype: email
+#     required: False
+# ---
 id: your previous address change
 question: |
   Former address
@@ -195,24 +195,24 @@ attachment:
     - "preceeding_other": False
     - "proceeding_other_type": ''
 
-    - "representative_attorney": ${ representative.type == "lawyer" }
-    - "representative_accredited": ${ representative.type == "accredited" }
-    - "representative_law_student": ${ representative.type == "student" }
-    - "representative_reputable_individual": ${ representative.type == "individual" }
-    - "representative_accredited_foreign_official": ${ representative.type == "official" }
-    - "representative_practitioner": ${ representative.type == "practitioner" }
+    # - "representative_attorney": ${ representative.type == "lawyer" }
+    # - "representative_accredited": ${ representative.type == "accredited" }
+    # - "representative_law_student": ${ representative.type == "student" }
+    # - "representative_reputable_individual": ${ representative.type == "individual" }
+    # - "representative_accredited_foreign_official": ${ representative.type == "official" }
+    # - "representative_practitioner": ${ representative.type == "practitioner" }
     # Attorney information
-    - "practitioner_name_first": ${ representative.name.first }
-    - "practitioner_name_middle": ${ representative.name.middle[:1] }
-    - "practitioner_name_last": ${ representative.name.last }
-    - "practitioner_address_address": ${ representative.address.address }
-    - "practitioner_address_city": ${ representative.address.city }
-    - "practitioner_address_state": ${ representative.address.state }
-    - "practitioner_address_zip": ${ representative.address.zip }
-    - "practitioner_firm": ${ representative.firm }
-    - "practitioner_fax": ${ phone_number_formatted(representative.phone_number) }
-    - "practitioner_email": ${ representative.email }
-    - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
+    # - "practitioner_name_first": ${ representative.name.first }
+    # - "practitioner_name_middle": ${ representative.name.middle[:1] }
+    # - "practitioner_name_last": ${ representative.name.last }
+    # - "practitioner_address_address": ${ representative.address.address }
+    # - "practitioner_address_city": ${ representative.address.city }
+    # - "practitioner_address_state": ${ representative.address.state }
+    # - "practitioner_address_zip": ${ representative.address.zip }
+    # - "practitioner_firm": ${ representative.firm }
+    # - "practitioner_fax": ${ phone_number_formatted(representative.phone_number) }
+    # - "practitioner_email": ${ representative.email }
+    # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
     - "users1_full_name": ${ users[i].name.full(middle="full") }
     - "pos_date": ${ today().format('MM/dd/yyyy') }

@@ -160,8 +160,8 @@ code: |
       removal.address.address
     else:
       immigration_judge.name.first
-      representative.type
-      representative.name.first
+      # representative.type
+      # representative.name.first
       removal.address.address
       dhs.address.address
 

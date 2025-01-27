@@ -631,7 +631,7 @@ subquestion: |
 fields:
   - Additional passport or travel document number: users[i].travel_documents[j]
 ---
-id: type of application
+id: type of application TPS
 question: |
   First TPS application for ${users[i].name.full()}?
 fields:
@@ -653,6 +653,17 @@ fields:
     show if: 
       variable: users[i].is_first_TPS_application
       is: Re-registering for TPS
+---
+id: reason for applying EAD
+question: |
+  First EAD application for ${users[i].name.full()}?
+fields:
+  - "Is this your first EAD application, or are you applying to re-register or renew your EAD?": users[i].is_first_EAD_application
+    datatype: radio
+    choices:
+      - Initial permission to accept employment.: initial
+      - Replacement of lost, stolen, or damaged EAD, or correction of my EAD.: replacement
+      - Renewal of my permission to accept employment.: renewal
 ---
 id: alternate birthdates there are any
 question: |
@@ -703,7 +714,11 @@ fields:
 ############## Physical Characteristics and Marital Status ##############
 id: ethnicity and physical characteristics
 question: |
+  % if application_kind == "ead_and_tps":
   ${ users[i] }'s Ethnicity & Physical Characteristics
+  % else:
+  ${ users[i] }'s Gender & Marriage Status
+  % endif
 fields:
   - Gender: users[i].sex
     datatype: radio
@@ -717,6 +732,9 @@ fields:
       - Not Hispanic or Latino: not_hispanic
     default: |
       ${ showifdef("users[0].ethnicity") if i > 0 else ""}
+    show if:
+      variable: application_kind 
+      is: "ead_and_tps"
   - "Race (choose 1)": users[i].race
     datatype: checkboxes
     choices:
@@ -755,6 +773,38 @@ fields:
       - Maroon: maroon
       - Pink: pink
       - Unknown/Other: other
+  - Marital Status: users[i].marital_status
+    datatype: radio
+    choices: 
+      - Single, never married: single, never married
+      - Married: married
+      - Divorced: divorced
+      - Widowed: widowed
+      - Separated: separated
+      - Marriage annulled: marriage annulled
+      - Other: other
+  - 'Explain "other" marital status': users[i].marital_status_other
+    maxlength: 27
+    show if: 
+      variable: users[i].marital_status
+      is: "other"
+  - "Marriage Date": users[i].marriage_date
+    datatype: date
+    max: ${ today().format("yyyy-MM-dd") }
+    show if:
+      variable: users[i].marital_status
+      is: 'married'
+---
+# EAD form questions
+id: gender and marriage status
+question: |
+  ${ users[i] }'s Gender & Marriage Status
+fields:
+  - Gender: users[i].sex
+    datatype: radio
+    choices:
+      - Male: male
+      - Female: female
   - Marital Status: users[i].marital_status
     datatype: radio
     choices: 
@@ -848,8 +898,14 @@ fields:
       - Visitor
       - Student
       - No Status
+      - Other immigration status (not listed above): other
     default: |
       ${ showifdef("users[0].immigration_status_last_entry") if i > 0 else "" }
+  - Enter current immigration status: users[i].other_immigration_status_last_entry
+    maxlength: 27
+    show if: 
+      variable: users[i].immigration_status_last_entry
+      is: "other"
   - "Current Immigration Status or Lack of Status": users[i].current_immigration_status # very badly worded question
     datatype: radio
     choices:
@@ -2238,9 +2294,9 @@ attachment:
     #- "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     #- "attorney_online_account_number": ${ preparer.attorney_online_account_number }
     # Part 1
-    - "application_reason_employment": 'Yes'
-    - "application_reason_replacement": ''
-    - "application_reason_renewal": ''
+    - "application_reason_employment": ${ users[i].is_first_EAD_application == 'initial' }
+    - "application_reason_replacement": ${ users[i].is_first_EAD_application == 'replacement' }
+    - "application_reason_renewal": ${ users[i].is_first_EAD_application == 'renewal' }
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
@@ -2322,7 +2378,12 @@ attachment:
     - "passport_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
     - "date_of_last_arrival": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
     - "place_of_last_arrival": ${ users[i].city_of_entry }${ ', ' if showifdef('users[i].city_of_entry') else '' }${ users[i].state_of_entry }
-    - "immigration_status_at_last_arrival": ${ users[i].immigration_status_last_entry }
+    - "immigration_status_at_last_arrival": |
+        % if users[i].immigration_status_last_entry == "other":
+        ${ users[i].other_immigration_status_last_entry }
+        else:
+        ${ users[i].immigration_status_last_entry }
+        % endif
     - "current_immigration_status": |
         % if users[i].current_immigration_status == "other":
         ${ users[i].other_immigration_status }

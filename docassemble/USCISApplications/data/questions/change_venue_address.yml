@@ -1,6 +1,7 @@
----
+
 objects:
-  - immigration_judge: ALIndividual
+  - users[i].immigration_judge: ALIndividual
+  - removal: ALIndividual
   - removal: ALIndividual
   - removal.address: ALAddress 
   - representative: ALIndividual
@@ -11,20 +12,51 @@ continue button field: cov_intro
 question: |
   Change of venue
 ---
+id: immigration judge first
+question: |
+  Immigration court information
+subquestion: |
+  Please provide the name of the judge for ${ users[0] }'s case and hearing date:
+fields:
+  - First name: users[0].immigration_judge.name.first
+  - Middle name: users[0].immigration_judge.name.middle
+    required: False
+  - Last name: users[0].immigration_judge.name.last
+  - Next hearing date: users[0].hearing_datetime 
+    datatype: ThreePartsDate
+    alMin: ${ today().format("yyyy-MM-dd") }
+---
+code: |
+  judge_choices = []
+  judge_choices.clear()
+  for user in users.complete_elements():
+    if hasattr(user.immigration_judge, 'name') and user.immigration_judge.name.full():
+      judge_choices.append(user.immigration_judge.name.full())
+---
+reconsider:
+  - judge_choices
 sets:
-  - immigration_judge.name.first
-  - immigration_judge.name.last
-  - immigration_judge.name.middle
-  - immigration_judge.name.suffix
+  - users[i].immigration_judge.name.first
+  - users[i].immigration_judge.name.last
+  - users[i].immigration_judge.name.middle
 id: immigration judge
 question: |
   Immigration court information
 subquestion: |
-  Please provide the name of the judge and hearing date:
+  Please provide the name of the judge for ${ users[i] }'s case and hearing date:
 fields:
+  - Immigration judge: users[i].immigration_judge.name
+    datatype: object_radio
+    choices:
+      - judge_choices
+    none of the above: Enter a different judge
+    disable others:
+      - users[i].immigration_judge.name.first
+      - users[i].immigration_judge.name.middle
+      - users[i].immigration_judge.name.last
   - code: |
-      immigration_judge.name_fields()
-  - Next hearing date: hearing_datetime 
+      users[i].immigration_judge.name_fields(person_or_business="person", show_suffix=False)
+  - Next hearing date: users[i].hearing_datetime 
     datatype: ThreePartsDate
     alMin: ${ today().format("yyyy-MM-dd") }
 ---
@@ -130,6 +162,21 @@ fields:
     code: |
       states_list()
   - ZIP code: dhs.address.zip
+  - note: |
+      If the address of the OPLA is not the same city and state as the court:
+  - Court city and state are the same as OPLA: dhs.same_city_state
+    datatype: yesnoradio
+  - Court city: dhs.court_city
+    required: False
+    show if: 
+      variable: dhs.same_city_state 
+      is: False
+  - Court state: dhs.court_state
+    code: |
+      states_list()
+    show if: 
+      variable: dhs.same_city_state 
+      is: False
 ---
 objects:
   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)

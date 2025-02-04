@@ -896,7 +896,7 @@ fields:
       - Other immigration status (not listed above): other
     default: |
       ${ showifdef("users[0].immigration_status_last_entry") if i > 0 else "" }
-  - Enter current immigration status: users[i].other_immigration_status_last_entry
+  - Enter immigration status when last entered U.S.: users[i].other_immigration_status_last_entry
     maxlength: 27
     show if: 
       variable: users[i].immigration_status_last_entry
@@ -2985,7 +2985,7 @@ attachment:
     - "benefit_received5": |
         % if users[i].fee_waiver_bases['benefits']:
           % if users[i].means_benefits.number_gathered() >= 5:
-          ${ users[i].means_benefits[4].recipient }
+            ${ users[i].means_benefits[4].recipient }
           % endif
         % endif
     - "benefit_relationship5": |
@@ -3057,7 +3057,7 @@ attachment:
     - "benefit_received7": |
         % if users[i].fee_waiver_bases['benefits']:
           % if users[i].means_benefits.number_gathered() >= 7:
-          ${ users[i].means_benefits[6].recipient }
+            ${ users[i].means_benefits[6].recipient }
           % endif
         % endif
     - "benefit_relationship7": |
@@ -3093,7 +3093,7 @@ attachment:
     - "benefit_received8": |
         % if users[i].fee_waiver_bases['benefits']:
           % if users[i].means_benefits.number_gathered() >= 8:
-          ${ users[i].means_benefits[7].recipient }
+            ${ users[i].means_benefits[7].recipient }
           % endif
         % endif
     - "benefit_relationship8": |
@@ -3146,9 +3146,9 @@ attachment:
     - "household_size": ${ users[i].household_size }
     - "household_earning": ${ users[i].household_income }
     - "head_of_household_name": ${ users[i].head_of_household }
-    - "individual_agi": ${ '$'thousands(users[i].annual_household_income, show_decimals=True) }
-    - "family_agi": ${ '$'thousands(users[i].annual_family_income, show_decimals=True) }
-    - "total_agi": ${ '$'thousands(users[i].annual_household_income + users[i].annual_family_income, show_decimals=True) }
+    - "individual_agi": ${ '$' + thousands(users[i].annual_household_income, show_decimals=True) }
+    - "family_agi": ${ '$' + thousands(users[i].annual_family_income, show_decimals=True) }
+    - "total_agi": ${ '$' + thousands(users[i].annual_household_income + users[i].annual_family_income, show_decimals=True) }
     - "federal_tax_changes": ${ users[i].tax_changed }
     - "explanation": |
         % if users[i].tax_changed:

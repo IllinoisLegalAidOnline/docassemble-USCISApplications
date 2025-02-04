@@ -163,20 +163,16 @@ fields:
       states_list()
   - ZIP code: dhs.address.zip
   - note: |
-      If the address of the OPLA is not the same city and state as the court:
-  - Court city and state are the same as OPLA: dhs.same_city_state
+      Is the OPLA location in a different city and state as the court?:
+  - no label: dhs.different_court_location
     datatype: yesnoradio
   - Court city: dhs.court_city
     required: False
-    show if: 
-      variable: dhs.same_city_state 
-      is: False
+    show if: dhs.different_court_location 
   - Court state: dhs.court_state
     code: |
       states_list()
-    show if: 
-      variable: dhs.same_city_state 
-      is: False
+    show if: dhs.different_court_location 
 ---
 objects:
   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)

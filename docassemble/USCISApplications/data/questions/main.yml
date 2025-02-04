@@ -151,6 +151,22 @@ code: |
       user.signpost
       user.check_work
 
+  nav.set_section("section_fees")
+  for idx,user in enumerate(users):
+    if user.application_is_approved:
+      if user.fee_waiver_needed:
+        user.fee_waiver_bases
+        if user.fee_waiver_bases['benefits']:
+          user.means_benefits.gather()
+        if user.fee_waiver_bases['guidelines']:
+          user.employment_status
+          user.annual_household_income
+        if user.fee_waiver_bases['hardship']:
+          user.hardship_details
+          if user.has_assets:
+            user.assets.gather()
+          user.monthly_expenses
+
   if application_kind == "ead_and_tps" and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
     for user in users:
       if user.application_is_approved:
@@ -204,6 +220,7 @@ data:
   - section_screener: Verify eligibility
   - section_application: Application
   #- review_USCIS_Applications: Review 
+  - section_fees: Fee Waiver
   - section_covcoa: Change of Venue/Address
   - section_download: Download and print
 ---
@@ -1078,7 +1095,7 @@ objects:
 # ---
 # code: |
 #   users[i].applicant_intake_worksheet.enabled = users[i].application_is_approved
-# ---
+# --- 
 # objects:
 #   - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
 # ---
@@ -1088,12 +1105,6 @@ objects:
 ---
 # code: |
 #   users[i].fee_waiver_ead.enabled = users[i].application_is_approved and application_kind == "ead_only"
----
-objects:
-  - users[i].fee_waiver: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
----
-code: |
-  users[i].fee_waiver.enabled = users[i].application_is_approved
 ---
 # objects:
 #   - users[i].fee_waiver_tps: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
@@ -1290,141 +1301,6 @@ attachment:
 #   filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
 #   docx template file: Fee_Waiver_Cover_Letter_EAD.docx
 #   skip undefined: True
----
-attachment:
-  variable name: users[i].fee_waiver[j]
-  name: ${ users[i] } - Fee Waiver Request
-  filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
-  pdf template file: I-912.pdf
-  skip undefined: True
-  editable: False
-  fields:
-    - "current_immigration_status": |
-        % if users[i].current_immigration_status == "other":
-        ${ users[i].other_immigration_status }
-        % else:
-        ${ users[i].current_immigration_status }
-        % endif 
-    - "users1_name_last": ${ users[i].name.last }
-    - "users1_name_first": ${ users[i].name.first }
-    - "users1_name_middle": ${ users[i].name.middle }
-    - "users1_previous_names1_last": ${ users[i].aliases.item(0).last }
-    - "users1_previous_names1_first": ${ users[i].aliases.item(0).first }
-    - "users1_previous_names1_middle": ${ users[i].aliases.item(0).middle }
-    - "users1_previous_names2_last": ${ users[i].aliases.item(1).last }
-    - "users1_previous_names2_first": ${ users[i].aliases.item(1).first }
-    - "users1_previous_names2_middle": ${ users[i].aliases.item(1).middle }
-    - "users1_a_number": ${ users[i].a_number }
-    - "users1_uscis_account_number": ${ users[i].uscis_account_number }
-    - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
-    - "users1_ssn": |
-        % if users[i].has_ssn:
-        ${ users[i].ssn }
-        % endif
-    - "is_married": ${ users[i].marital_status == 'married' }
-    - "is_unmarried": ${ users[i].marital_status == 'single, never married' }
-    - "is_divorced": ${ users[i].marital_status == 'divorced' }
-    - "is_widowed": ${ users[i].marital_status == 'widowed' }
-    - "is_separated": ${ users[i].marital_status == 'separated' }
-    - "is_annulled": ${ users[i].marital_status == 'marriage annulled' }
-    - "is_other_marital_status": ${ users[i].marital_status == 'other' }
-    - "marital_status_other_explanation": ${ users[i].marital_status_other }
-    - "users1_name": ${ users[i].name.full(middle="full") }
-    - "forms_filed": |
-        % if application_kind == "ead_only":
-        I-765
-        % else:
-        I-821 & I-765
-        % endif
-    # Part 7
-    - "user_reads_english": ${ users[i].user_reads_english }
-    - "user_used_interpreter": ${ users[i].user_used_interpreter }
-    - "interpreter_spoke_language": |
-        % if interpreter_present:
-        ${ interpreter.language }
-        % endif
-    - "interpreter_spoke_language__1": |
-        % if interpreter_present:
-        ${ interpreter.language }
-        % endif
-    - "user_used_preparer": True
-    - "preparer_name_applicant_statement": ${ preparer }
-    - "users1_phone_number": ${ users[i].phone_number}
-    - "users1_mobile_number": ${ users[i].mobile_number }
-    - "users1_email": ${ users[i].email }
-    - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
-    # Part 8
-    - "interpreter_name_last": |
-        % if interpreter_present:
-        ${ interpreter.name.last }
-        % endif
-    - "interpreter_name_first": |
-        % if interpreter_present:
-        ${ interpreter.name.first }
-        % endif
-    - "interpreter_organization": |
-        % if interpreter_present:
-        ${ interpreter.organization }
-        % endif
-    - "interpreter_mailing_address_address": |
-        % if interpreter_present:
-        ${ interpreter.address.address }
-        % endif
-    - "interpreter_mailing_address_unit": |
-        % if interpreter_present:
-        ${ interpreter.address.unit }
-        % endif
-    - "interpreter_mailing_address_city": |
-        % if interpreter_present:
-        ${ interpreter.address.city }
-        % endif
-    - "interpreter_mailing_address_state": |
-        % if interpreter_present:
-        ${ interpreter.address.state }
-        % endif
-    - "interpreter_mailing_address_zip":  |
-        % if interpreter_present:
-        ${ interpreter.address.zip }
-        % endif
-    - "interpreter_mailing_address_country": ${ 'USA' if interpreter_present else '' }
-    - "interpreted_into_language": |
-        % if interpreter_present:
-        ${ interpreter.language }
-        % endif 
-    - "signature_date__1": |
-        % if interpreter_present: 
-        ${ signature_date.format('MM/dd/yyyy') }
-        % endif
-    # Part 9
-    - "preparer_name_first": ${ preparer.name.first }
-    - "preparer_name_last": ${ preparer.name.last }
-    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
-    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
-    - "preparer_full_rep": No
-    - "preparer_limited_rep": ${ preparer_is_attorney }
-    - "preparer_mailing_address_address": |
-        % if preparer.address.address:
-        ${ preparer.address.address }
-        % endif
-    - "preparer_mailing_address_unit": |
-        % if preparer.address.unit:
-        ${ preparer.address.unit }
-        % endif
-    - "preparer_mailing_address_city": |
-        % if preparer.address.city:
-        ${ preparer.address.city }
-        % endif
-    - "preparer_mailing_address_state": |
-        % if preparer.address.state:
-        ${ preparer.address.state }
-        % endif
-    - "preparer_mailing_address_zip": |
-        % if preparer.address.zip:
-        ${ preparer.address.zip }
-        % endif
-    - "preparer_mailing_address_country": 'USA'
-    - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
-
 ---
 code: |
   def uscis_countries_list():

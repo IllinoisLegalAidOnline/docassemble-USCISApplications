@@ -231,8 +231,7 @@ attachment:
     - "type_other": False
     # "Motion to Change Venue from [old City, State] to [new City, State]."
     - "type_other_description": |
-        Motion to Change Venue from ${ users[i].previous.address.city }, ${ users[i].previous.address.state }
-        to ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
+        Motion to Change Venue
     # Proceeding type always left blank
     - "preceeding_bond": False
     - "preceeding_other": False

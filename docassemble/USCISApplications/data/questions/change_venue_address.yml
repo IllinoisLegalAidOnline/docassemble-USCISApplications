@@ -12,50 +12,16 @@ continue button field: cov_intro
 question: |
   Change of venue
 ---
-id: immigration judge first
+id: immigration judge
 question: |
   Immigration court information for ${ users[i] }
 subquestion: |
   Enter the name of the Immigration Judge and the next hearing date.
 fields:
-  - First name: users[0].immigration_judge.name.first
-  - Middle name: users[0].immigration_judge.name.middle
+  - First name: users[i].immigration_judge.name.first
+  - Middle name: users[i].immigration_judge.name.middle
     required: False
-  - Last name: users[0].immigration_judge.name.last
-  - Next hearing date: users[0].hearing_datetime 
-    datatype: ThreePartsDate
-    alMin: ${ today().format("yyyy-MM-dd") }
----
-code: |
-  judge_choices = []
-  judge_choices.clear()
-  for user in users.complete_elements():
-    if hasattr(user.immigration_judge, 'name') and user.immigration_judge.name.full():
-      judge_choices.append(user.immigration_judge.name.full())
----
-reconsider:
-  - judge_choices
-sets:
-  - users[i].immigration_judge.name.first
-  - users[i].immigration_judge.name.last
-  - users[i].immigration_judge.name.middle
-id: immigration judge
-question: |
-  Immigration court information
-subquestion: |
-  Immigration court information for ${ users[i] }
-fields:
-  - Immigration judge: users[i].immigration_judge.name
-    datatype: object_radio
-    choices:
-      - judge_choices
-    none of the above: Enter a different judge
-    disable others:
-      - users[i].immigration_judge.name.first
-      - users[i].immigration_judge.name.middle
-      - users[i].immigration_judge.name.last
-  - code: |
-      users[i].immigration_judge.name_fields(person_or_business="person", show_suffix=False)
+  - Last name: users[i].immigration_judge.name.last
   - Next hearing date: users[i].hearing_datetime 
     datatype: ThreePartsDate
     alMin: ${ today().format("yyyy-MM-dd") }

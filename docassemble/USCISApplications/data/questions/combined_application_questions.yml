@@ -965,7 +965,7 @@ fields:
     max: ${ today().format("yyyy-MM-dd") }
     show if: users[i].has_been_in_immigration_proceedings
     default: |
-      ${ showifdef("users[0].date_removal_proceedings_began") if i > 0 and showifdef("users[0].date_removal_proceedings_began") else "" }
+      ${ showifdef("users[0].proceedings_start_date") if i > 0 and showifdef("users[0].proceedings_start_date") else showifdef("users[0].date_removal_proceedings_began") }
   - "Proceedings are ongoing/pending today": users[i].proceedings_continuing_to_present
     datatype: yesnowide
     show if: users[i].has_been_in_immigration_proceedings
@@ -978,7 +978,7 @@ fields:
       val("users[i].has_been_in_immigration_proceedings") && !val("users[i].proceedings_continuing_to_present")
     required: False
     default: |
-      ${ showifdef("users[0].proceedings_end_date") if i > 0 else "" }  
+      ${ showifdef("users[0].proceedings_end_date") if i > 0 and showifdef("users[0].proceedings_end_date") else "" }  
 ---
 id: I-765 specific questions
 question: |
@@ -2851,7 +2851,7 @@ attachment:
         % else:
         ${ users[i].current_immigration_status }
         % endif 
-    - "parent_guardian": ${ users[i].parent }
+    - "parent_guardian": ${ users[i].age_in_years() <= 14 }
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }

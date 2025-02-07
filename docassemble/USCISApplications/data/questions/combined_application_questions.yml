@@ -971,15 +971,7 @@ fields:
     max: ${ today().format("yyyy-MM-dd") }
     show if: users[i].has_been_in_immigration_proceedings
     default: |
-      % if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings"):
-      ${ showifdef("users[0].proceedings_start_date")  }
-      % else:
-        % if i == 0 and showifdef("users[0].date_removal_proceedings_began"):
-        ${ showifdef("users[0].date_removal_proceedings_began") }
-        % else:
-        ""
-        % endif
-      % endif
+      ${ showifdef("users[0].proceedings_start_date") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
   - "Proceedings are ongoing/pending today": users[i].proceedings_continuing_to_present
     datatype: yesnowide
     show if: users[i].has_been_in_immigration_proceedings

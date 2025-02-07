@@ -87,6 +87,7 @@ Scenario: EAD only, 2 applicants
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 
@@ -224,6 +225,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 
@@ -331,6 +333,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 
@@ -410,7 +413,8 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].state_of_entry | MA | | 
     | users[0].immigration_status_last_entry | Parolee | | 
     | users[0].current_immigration_status | Visitor | |
-    | users[0].father_first_name | FatherName | |
+    | users[i].has_been_in_immigration_proceedings | False | |
+    | users[i].father_first_name | FatherName | |
     | users[0].father_last_name | Last | |
     | users[0].mother_first_name | MotherName | | 
     | users[0].mother_last_name | Last | | 
@@ -531,6 +535,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 

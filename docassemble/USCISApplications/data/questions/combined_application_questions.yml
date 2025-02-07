@@ -1779,8 +1779,8 @@ fields:
     datatype: currency
     default: ${ showifdef("users[0].annual_household_income") if i > 0 else ''}
   - note: |
-      Provide the annual adjusted gross income of all family members counted as part of your household.   
-      (Do not include your annual adjusted gross income.) 
+      Provide the annual adjusted gross income of all other family members counted 
+      as part of your household. **Do not include your annual adjusted gross income.** 
   - "What is the annual adjusted gross income of your other family members?": users[i].annual_family_income
     datatype: currency
     default: ${ showifdef("users[0].annual_family_income") if i > 0 else ''}
@@ -1839,8 +1839,8 @@ fields:
 table: assets_table
 rows: users[i].assets
 columns:
-  - Asset type: row_item.type
-  - Account value: currency(row_item.value)
+  - Type of Asset: row_item.type
+  - Value: currency(row_item.value)
 ---
 id: asset details
 question: |
@@ -1850,8 +1850,8 @@ subquestion: |
 
   The Request for Fee Waiver form has room for up to 3 assets.
 fields:
-  - Asset type: users[i].assets[j].type
-  - Account value: users[i].assets[j].value
+  - Type of Asset: users[i].assets[j].type
+  - Value: users[i].assets[j].value
     datatype: currency
     min: 0
 ---
@@ -2850,7 +2850,7 @@ attachment:
         % else:
         ${ users[i].current_immigration_status }
         % endif 
-    - "parent_guardian": ${ users[i].parents }
+    - "parent_guardian": ${ users[i].parent }
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }

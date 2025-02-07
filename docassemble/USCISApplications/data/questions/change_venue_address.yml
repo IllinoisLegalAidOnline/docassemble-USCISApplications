@@ -14,9 +14,9 @@ question: |
 ---
 id: immigration judge first
 question: |
-  Immigration court information
+  Immigration court information for ${ users[i] }
 subquestion: |
-  Please provide the name of the judge for ${ users[0] }'s case and hearing date:
+  Enter the name of the Immigration Judge and the next hearing date.
 fields:
   - First name: users[0].immigration_judge.name.first
   - Middle name: users[0].immigration_judge.name.middle
@@ -284,13 +284,13 @@ attachment:
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
-    - "users1_address_line1_former": ${ users[i].pervious.address.line_one(bare=True) }
+    - "users1_address_line1_former": ${ users[i].previous.address.line_one(bare=True) }
     - "users1_address_line1_current": ${ users[i].mailing_address.line_one(bare=True) }
-    - "users1_address_line2_former": ${ users[i].pervious.address.line_two() }
+    - "users1_address_line2_former": ${ users[i].previous.address.line_two() }
     - "users1_address_line2_current": ${ users[i].mailing_address.line_two() }
-    - "users1_phone_former": ${ phone_number_formatted(users[i].pervious.phone_number) }
+    - "users1_phone_former": ${ phone_number_formatted(users[i].previous.phone_number) }
     - "users1_phone_current": ${ phone_number_formatted(users[i].phone_number) }
-    - "users1_email_former": ${ users[i].pervious.email }
+    - "users1_email_former": ${ users[i].previous.email }
     - "users1_email_current": ${ users[i].email }
 
     # Proof of service

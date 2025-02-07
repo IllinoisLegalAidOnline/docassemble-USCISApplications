@@ -81,7 +81,6 @@ sets:
   - users[i].address.zip
   - users[i].address.unit
   - users[i].address.state
-  - users[i].address.country
 question: |
   ${ users[i] }'s address
 subquestion: |
@@ -174,8 +173,6 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ${ users[0].address.zip_label }: users[0].mailing_address.zip
     required: False      
-  - ${ users[0].address.country_label }: users[0].mailing_address.country
-    code: uscis_countries_list()
 ---
 id: your mailing address
 question: |
@@ -214,9 +211,6 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ${ users[i].address.zip_label}: users[i].mailing_address.zip
     required: False      
-  - ${ users[i].address.country_label}: users[i].mailing_address.country
-    code: countries_list()
-    default: ${ AL_DEFAULT_COUNTRY }
 ---
 ################## AD Code Blurbs ###################
 code: |
@@ -971,7 +965,7 @@ fields:
     max: ${ today().format("yyyy-MM-dd") }
     show if: users[i].has_been_in_immigration_proceedings
     default: |
-      ${ showifdef("users[0].proceedings_start_date") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+      ${ showifdef("users[0].date_removal_proceedings_began") if i > 0 and showifdef("users[0].date_removal_proceedings_began") else "" }
   - "Proceedings are ongoing/pending today": users[i].proceedings_continuing_to_present
     datatype: yesnowide
     show if: users[i].has_been_in_immigration_proceedings
@@ -1006,7 +1000,7 @@ fields:
   - note: |
       **Consent for Disclosure:** I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card.
     show if: users[i].issue_social      
-  - Do you conscent to the above terms?: users[i].ssa_consent
+  - Do you consent to the above terms?: users[i].ssa_consent
     datatype: yesnoradio
     show if: users[i].issue_social
 ---

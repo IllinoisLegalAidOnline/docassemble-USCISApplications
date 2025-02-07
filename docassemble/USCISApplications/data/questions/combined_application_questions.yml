@@ -1640,9 +1640,9 @@ fields:
     datatype: checkboxes
     label above field: True
     choices:
-      - My household receives a means-tested benefit.: benefits
-      - My household income is at or below 150% of the Federal Poverty Guidelines.: guidelines
-      - I have a financial hardship.: hardship
+      - My household receives a means-tested benefit: benefits
+      - My household income is at or below 150% of the Federal Poverty Guidelines: guidelines
+      - I have a financial hardship: hardship
     default: ${ showifdef("users[0].fee_waiver_bases") if i > 0 else ''}
     none of the above: False
 ---
@@ -1707,7 +1707,7 @@ validation code: |
 ---
 template: benefits_examples
 subject: |
-  **Examples of means-tested benefits.**
+  **Examples of means-tested benefits**
 content: |  
   * **Medicaid** - Health insurance for low-income individuals and families.
 
@@ -1735,9 +1735,9 @@ fields:
   - "What is your current employment status?": users[i].employment_status
     datatype: radio
     choices:
-      - Employed (full-time, part-time, seasonal, self-employed).: employed
-      - Unemployed or Not Employed.: unemployed
-      - Retired.: retired
+      - Employed (full-time, part-time, seasonal, self-employed): employed
+      - Unemployed or Not Employed: unemployed
+      - Retired: retired
       - Other (Explain): other
     default: ${ showifdef("users[0].employment_status") if i > 0 else ''}
   - "Please explain your other employment?": users[i].employment_status_other
@@ -1789,7 +1789,7 @@ fields:
   - note: |
       Provide the annual adjusted gross income of all family members counted as part of your household.   
       (Do not include your annual adjusted gross income.) 
-  - "What is the annual adjusted gross income of all family members?": users[i].annual_family_income
+  - "What is the annual adjusted gross income of your other family members?": users[i].annual_family_income
     datatype: currency
     default: ${ showifdef("users[0].annual_family_income") if i > 0 else ''}
   - note: |
@@ -1829,7 +1829,7 @@ question: |
   Assets for ${ users[i] }
 subquestion: |
   Do you have cash or assets that you can quickly convert to cash? For example, bank
-  accounts, stocks, or bonds. (Do not include retirement accounts)
+  accounts, stocks, or bonds (do not include retirement accounts).
 fields:
   - no label: users[i].has_assets
     datatype: yesnoradio
@@ -1848,18 +1848,18 @@ table: assets_table
 rows: users[i].assets
 columns:
   - Asset type: row_item.type
-  - Balance: currency(row_item.value)
+  - Account value: currency(row_item.value)
 ---
 id: asset details
 question: |
   What is the ${ordinal(j)} asset for ${ users[i] }?
 subquestion: |
-  Details for the kind of asset/account this is as well as the cash value.
+  Enter the kind of asset and its cash value.
 
   The request for fee waiver form has room for up to 3 assets.
 fields:
   - Asset type: users[i].assets[j].type
-  - Account balance: users[i].assets[j].value
+  - Account value: users[i].assets[j].value
     datatype: currency
     min: 0
 ---
@@ -1897,7 +1897,6 @@ fields:
     none of the above: False
   - Other monthly expenses: users[i].other_expenses
     maxlength: 100
-    label above field: True
     show if:
       variable: users[i].expense_list['other']
       is: True

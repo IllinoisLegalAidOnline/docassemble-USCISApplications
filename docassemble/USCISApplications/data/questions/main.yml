@@ -177,16 +177,13 @@ code: |
   # COV and COA
   if change_kind != "no":
     nav.set_section("section_covcoa")
-    if change_kind == "coa_only":
-      removal.address.address
-    else:
-      for idx,user in enumerate(users):
-        if user.application_is_approved:
-            user.immigration_judge.name.first
-      # representative.type
-      # representative.name.first
-      removal.address.address
-      dhs.address.address
+    for idx,user in enumerate(users):
+      if change_kind == "coa_only":
+        user.previous.date
+      else:
+        user.immigration_judge.name.first
+        user.previous.date
+        user.dhs.address.address
 
   nav.set_section("section_download")
   store_variables_snapshot(
@@ -220,18 +217,18 @@ data:
   - section_screener: Verify eligibility
   - section_application: Application
   #- review_USCIS_Applications: Review 
-  - section_fees: Fee Waiver
+  - section_fees: Fee Waiver (optional)
   - section_covcoa: Change of Venue/Address
   - section_download: Download and print
 ---
 code: |
   if len(users) > 1:
-    sections = default_sections[:-3]
+    sections = default_sections[:-4]
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-2:]
+    sections.extend(default_sections[-3:]
     )
     nav.set_sections(sections)
   update_sections = True
@@ -1128,8 +1125,8 @@ objects:
         users[i].smuggling_addendum,
         users[i].continuous_residence_addendum,
         users[i].tps_yes_answer_addendum,
-        users[i].fee_waiver,
         users[i].i_765_attachment,
+        users[i].i_912_fee_waiver,
         users[i].ead_interim_parole_addendum,
         users[i].ead_order_of_supervision_addendum,
         users[i].ead_asylum_checklist,

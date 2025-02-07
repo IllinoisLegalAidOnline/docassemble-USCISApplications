@@ -54,6 +54,9 @@ fields:
   - City or Town: users[0].address.city
   - State: users[0].address.state
     required: False
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
   - ZIP: users[0].address.zip
   - Daytime Phone Number (optional): users[0].phone_number
     required: false
@@ -78,7 +81,6 @@ sets:
   - users[i].address.zip
   - users[i].address.unit
   - users[i].address.state
-  - users[i].address.country
 question: |
   ${ users[i] }'s address
 subquestion: |
@@ -98,7 +100,6 @@ fields:
       - users[i].address.zip
       - users[i].address.unit
       - users[i].address.state
-      - users[i].address.country
       - users[i].address.address_type
     default: |
       users[0].address if i > 0 else None
@@ -119,6 +120,9 @@ fields:
     # default: ${ showifdef("users[0].address.city ") }
   - State: users[i].address.state
     required: False
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
     # default: ${ showifdef("users[0].address.state ") }
   - ZIP: users[i].address.zip
     # default: ${ showifdef("users[0].address.zip ") }
@@ -169,8 +173,6 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ${ users[0].address.zip_label }: users[0].mailing_address.zip
     required: False      
-  - ${ users[0].address.country_label }: users[0].mailing_address.country
-    code: uscis_countries_list()
 ---
 id: your mailing address
 question: |
@@ -209,9 +211,6 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ${ users[i].address.zip_label}: users[i].mailing_address.zip
     required: False      
-  - ${ users[i].address.country_label}: users[i].mailing_address.country
-    code: countries_list()
-    default: ${ AL_DEFAULT_COUNTRY }
 
 ---
 ################## AD Code Blurbs ###################
@@ -901,6 +900,8 @@ fields:
     show if: 
       variable: users[i].immigration_status_last_entry
       is: "other"
+    default: |
+      ${ showifdef("users[0].immigration_status_last_entry") if i > 0 else "" }
   - "Current Immigration Status or Lack of Status": users[i].current_immigration_status # very badly worded question
     datatype: radio
     choices:
@@ -916,6 +917,8 @@ fields:
     show if: 
       variable: users[i].current_immigration_status
       is: "other"
+    default: |
+      ${ showifdef("users[0].current_immigration_status") if i > 0 else "" }
 ---
 objects:
   - users[i].kind_of_immigration_proceedings: DADict.using(auto_gather=False, gathered=True)
@@ -963,7 +966,15 @@ fields:
     max: ${ today().format("yyyy-MM-dd") }
     show if: users[i].has_been_in_immigration_proceedings
     default: |
-      ${ showifdef("users[0].proceedings_start_date") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+      % if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings"):
+      ${ showifdef("users[0].proceedings_start_date")  }
+      % else:
+        % if i == 0 and showifdef("users[0].date_removal_proceedings_began"):
+        ${ showifdef("users[0].date_removal_proceedings_began") }
+        % else:
+        ""
+        % endif
+      % endif
   - "Proceedings are ongoing/pending today": users[i].proceedings_continuing_to_present
     datatype: yesnowide
     show if: users[i].has_been_in_immigration_proceedings
@@ -1604,7 +1615,7 @@ fields:
 ############################ FEE WAIVER ############################
 id: fee waiver needed
 question: |
-  Does ${ users[i] } require a fee waiver?
+  Does ${ users[i] }'s application need a fee waiver?
 subquestion: |
   You may be eligible for a fee waiver if you meet eligibility criteria.
 fields:
@@ -1614,9 +1625,9 @@ fields:
     grid: 6
     label above field: True
 ---
-id: basis for your Request
+id: basis for your request
 question: |
-  Basis for Your Request for ${ users[i] }
+  Basis for ${ users[i] }'s fee waiver request
 subquestion: |
   Select at least one basis or more for which you may qualify and provide 
   supporting documentation for any basis you select.  You only need to qualify
@@ -1637,11 +1648,13 @@ fields:
 ---
 id: means tested benefits
 question: |
-  Means-Tested Benefit Recipients for ${ users[i] }
+  ${ users[i] }'s means-tested benefits
 subquestion: |
   So far, you have indicated that you receive a means-tested benefit.
 
   ${ means_tested_table } 
+
+  Your request for a fee waiver has room for up to 8 means-tested benefits.
 fields:
   - Do you want to add another?: users[i].means_benefits.there_is_another
     datatype: yesnoradio
@@ -1664,9 +1677,15 @@ code: |
   if users[i].means_benefits.number_gathered() == 8:
     users[i].means_benefits.there_is_another = False
 ---
-id: add recipient
+id: add benefit
 question: |
-  Add means-tested benefit recipient for ${ users[i] }
+  ${ users[i] }'s ${ ordinal(j) } means-tested benefit
+subquestion: |
+  A **means-tested benefit** is a type of government assistance given to individuals
+  or households who have limited income and resources. Eligibility for these 
+  benefits depends on financial need to qualify.
+  
+  ${ collapse_template(benefits_examples) }  
 fields:
   - "Full Name of Person Receiving the Benefit": users[i].means_benefits[j].recipient
     maxlength: 20
@@ -1682,6 +1701,32 @@ fields:
   - "Date Benefit Expires (or must be renewed)": users[i].means_benefits[j].expiration_date
     datatype: ThreePartsDate
     alMin: today
+validation code: |
+  if users[i].means_benefits[j].awarded_date == users[i].means_benefits[j].expiration_date:
+    validation_error("Benefit cannot be awarded and expire on the same date.")
+---
+template: benefits_examples
+subject: |
+  **Examples of means-tested benefits.**
+content: |  
+  * **Medicaid** - Health insurance for low-income individuals and families.
+
+  * **Supplemental Security Income (SSI)** - Financial assistance for elderly,
+  blind, or disabled individuals with low income.
+
+  * **Supplemental Nutrition Assistance Program (SNAP)** - Formerly food stamps for
+  assistance with buying groceries.
+
+  * **Temporary Assistance for Needy Families (TANF)** - Cash assistance for 
+  families with children in financial need.
+
+  * **Housing Assistance (Section 8, Public Housing, etc.)** - Help with rent or
+  housing costs.
+
+  * **Women, Infants, and Children (WIC) Program** - Nutrition support for 
+  low-income pregnant women, new mothers, and young children.
+
+  * **Low-Income Home Energy Assistance Program (LIHEAP)** - Help with utility bills.
 ---
 id: employment status
 question: |
@@ -1715,16 +1760,20 @@ fields:
     show if:
       variable: users[i].employment_status
       is: "unemployed"
-  - "What is your total household size?": users[i].household_size
+  - "How many people are in your household?": users[i].household_size
     datatype: integer
     min: 1
     default: ${ showifdef("users[0].household_size") if i > 0 else ''}
-  - "What is the total number of household members earning income including yourself?": users[i].household_income
+  - "How many household members are earning income including yourself?": users[i].household_income
     datatype: integer
     min: 1
     default: ${ showifdef("users[0].household_income") if i > 0 else ''}
-  - "Name of head of household (if not you)?": users[i].head_of_household
+  - "Is anyone else the head of household (if not you)?": users[i].ask_household
+    datatype: yesnoradio
+    default: ${ showifdef("users[0].ask_household") if i > 0 else ''} 
+  - "Name of head of household?": users[i].head_of_household
     maxlength: 20
+    show if: users[i].ask_household
     default: ${ showifdef("users[0].head_of_household") if i > 0 else ''} 
 ---
 id: household income
@@ -1754,8 +1803,9 @@ fields:
   - note: |
       You may also use this space to provide any additional information including documentation about your
       circumstances that you would like USCIS to consider.
-  - "Please provide an explanation below.": users[i].tax_changes_explained
+  - "Please explain change in circumstances since last Federal tax filing or other relevant information.": users[i].tax_changes_explained
     datatype: area
+    maxlength: 1200
     label above field: True
     show if: users[i].tax_changed
 ---
@@ -1771,6 +1821,7 @@ subquestion:
 fields:
   - no label: users[i].hardship_details
     datatype: area
+    maxlength: 1000
     label above field: True
 ---
 id: any assets
@@ -1801,7 +1852,11 @@ columns:
 ---
 id: asset details
 question: |
-  Details for the ${ordinal(i)} asset/account and value that ${ users[i] } has available.
+  What is the ${ordinal(j)} asset for ${ users[i] }?
+subquestion: |
+  Details for the kind of asset/account this is as well as the cash value.
+
+  The request for fee waiver form has room for up to 3 assets.
 fields:
   - Asset type: users[i].assets[j].type
   - Account balance: users[i].assets[j].value
@@ -1841,7 +1896,6 @@ fields:
     label above field: True
     none of the above: False
   - Other monthly expenses: users[i].other_expenses
-    datatype: area
     maxlength: 100
     label above field: True
     show if:
@@ -1942,10 +1996,10 @@ code: |
   users[i].tps_yes_answer_addendum.enabled = users[i].application_is_approved and application_kind == "ead_and_tps" and any([users[i].q8a, users[i].q8b, users[i].q8c, users[i].q9a, users[i].q9b, users[i].q9c, users[i].q10a, users[i].q10b, users[i].q10c, users[i].q11, users[i].q12a, users[i].q12b, users[i].q12c, users[i].q12d, users[i].q12e, users[i].q13a, users[i].q13b, users[i].q13c, users[i].q13d, users[i].q14a, users[i].q14b, users[i].q14c, users[i].q14d, users[i].q15a, users[i].q15b, users[i].q15c, users[i].q16, users[i].q17, users[i].q18a, users[i].q18b, users[i].q18c, users[i].q19, users[i].q20a, users[i].q20b, users[i].q20c, users[i].q20d, users[i].q20e, users[i].q21, users[i].q22, users[i].q23a, users[i].q23b, users[i].q23c, users[i].q24, users[i].q25, users[i].q26, users[i].q27, users[i].q28, users[i].q29, users[i].q30a, users[i].q30b, users[i].q30c, users[i].q30d, users[i].q30e, users[i].q31a, users[i].q31b, users[i].q32, users[i].q33, users[i].q34, users[i].q35, users[i].q36, users[i].q37a, users[i].q37b, users[i].q38a, users[i].q38b, users[i].q38c, users[i].q38d, users[i].q38e, users[i].q39a, users[i].q39b, users[i].q40, users[i].q41])
 ---
 objects:
-  - users[i].fee_waiver: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
+  - users[i].i_912_fee_waiver: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
 ---
 code: |
-  users[i].fee_waiver.enabled = users[i].application_is_approved and users[i].fee_waiver_needed
+  users[i].i_912_fee_waiver.enabled = users[i].application_is_approved and users[i].fee_waiver_needed
 ---
 attachment:
   name: TPS_yes_answer_addendum
@@ -2628,7 +2682,7 @@ attachment:
     - "immigration_status_at_last_arrival": |
         % if users[i].immigration_status_last_entry == "other":
         ${ users[i].other_immigration_status_last_entry }
-        else:
+        % else:
         ${ users[i].immigration_status_last_entry }
         % endif
     - "current_immigration_status": |
@@ -2789,7 +2843,7 @@ attachment:
     - "Item Number_2": ${ Item_Number_2 }
 ---
 attachment:
-  variable name: users[i].fee_waiver[j]
+  variable name: users[i].i_912_fee_waiver[j]
   name: ${ users[i] } - Fee Waiver Request
   filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
   pdf template file: I-912.pdf
@@ -2805,6 +2859,7 @@ attachment:
         % else:
         ${ users[i].current_immigration_status }
         % endif 
+    - "parent_guardian": ${ users[i].parents }
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
@@ -3132,13 +3187,10 @@ attachment:
     - "is_retired": ${ users[i].employment_status == "retired" }
     - "is_other_employment": ${ users[i].employment_status == "other" }
     - "other_employment_explanation": |
-        % if users[i].employment_status == "other":
+        % if users[i].employment_status == "unemployed":
           ${ users[i].employment_status_other }
         % endif
-    - "recent_unemployed": |
-        % if users[i].employment_status == "unemployed":
-          ${ users[i].unemployed_receiving_benefits }
-        % endif
+    - "unemployment_benefits": ${ users[i].unemployed_receiving_benefits }
     - "unemployment_date": |
         % if users[i].employment_status == "unemployed":
           ${ users[i].unemployed_date.format('MM/dd/yyyy') }
@@ -3146,9 +3198,9 @@ attachment:
     - "household_size": ${ users[i].household_size }
     - "household_earning": ${ users[i].household_income }
     - "head_of_household_name": ${ users[i].head_of_household }
-    - "individual_agi": ${ '$' + thousands(users[i].annual_household_income, show_decimals=True) }
-    - "family_agi": ${ '$' + thousands(users[i].annual_family_income, show_decimals=True) }
-    - "total_agi": ${ '$' + thousands(users[i].annual_household_income + users[i].annual_family_income, show_decimals=True) }
+    - "individual_agi": ${ thousands(users[i].annual_household_income, show_decimals=True) }
+    - "family_agi": ${ thousands(users[i].annual_family_income, show_decimals=True) }
+    - "total_agi": ${ thousands(users[i].annual_household_income + users[i].annual_family_income, show_decimals=True) }
     - "federal_tax_changes": ${ users[i].tax_changed }
     - "explanation": |
         % if users[i].tax_changed:
@@ -3169,7 +3221,7 @@ attachment:
     - "asset_value_1": |
         % if users[i].fee_waiver_bases['hardship']:
           % if users[i].assets.number_gathered() >= 1:
-            ${ thousands(users[i].assets[0].value, show_decimals=True) }
+            ${ '$' + thousands(users[i].assets[0].value, show_decimals=True) }
           % endif
         % endif
     - "asset_type_2": |
@@ -3181,7 +3233,7 @@ attachment:
     - "asset_value_2": |
         % if users[i].fee_waiver_bases['hardship']:
           % if users[i].assets.number_gathered() >= 2:
-            ${ thousands(users[i].assets[1].value, show_decimals=True) }
+            ${ '$' + thousands(users[i].assets[1].value, show_decimals=True) }
           % endif
         % endif
     - "asset_type_3": |
@@ -3193,13 +3245,13 @@ attachment:
     - "asset_value_3": |
         % if users[i].fee_waiver_bases['hardship']:
           % if users[i].assets.number_gathered() == 3:
-            ${ thousands(users[i].assets[2].value, show_decimals=True) }
+            ${ '$' + thousands(users[i].assets[2].value, show_decimals=True) }
           % endif
         % endif
     - "total_value_assets": |
         % if users[i].fee_waiver_bases['hardship']:
           % if users[i].assets.number_gathered() > 0:
-            ${ thousands(sum_if_defined(
+            ${ '$' + thousands(sum_if_defined(
                   'users[i].assets[0].value',
                   'users[i].assets[1].value',
                   'users[i].assets[2].value'

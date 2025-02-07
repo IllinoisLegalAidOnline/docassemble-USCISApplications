@@ -1,11 +1,11 @@
 
 objects:
   - users[i].immigration_judge: ALIndividual
-  - removal: ALIndividual
-  - removal: ALIndividual
-  - removal.address: ALAddress 
-  - representative: ALIndividual
-  - dhs: ALIndividual
+  - users[i].previous: ALIndividual
+  - users[i].previous.address: ALAddress 
+  #- representative: ALIndividual
+  - users[i].dhs: ALIndividual
+  - users[i].dhs.address: ALAddress
 ---
 id: change of venue
 continue button field: cov_intro
@@ -43,7 +43,7 @@ id: immigration judge
 question: |
   Immigration court information
 subquestion: |
-  Please provide the name of the judge for ${ users[i] }'s case and hearing date:
+  Immigration court information for ${ users[i] }
 fields:
   - Immigration judge: users[i].immigration_judge.name
     datatype: object_radio
@@ -113,66 +113,66 @@ fields:
 # ---
 id: your previous address change
 question: |
-  Former address
+  ${ users[i] }'s former address
 subquestion: |
   This is not your current, physical or mailing address.
 fields:
-  - When did you move to Illinois?: removal.date
+  - When did you move to Illinois?: users[i].previous.date
     datatype: ThreePartsDate
     alMax: ${ today() }
-  - Street address: removal.address.address
+  - Previous street address: users[i].previous.address.address
     address autocomplete: True
-  - Address is a: removal.address.address_type
+  - Previous address was a: users[i].previous.address.address_type
     datatype: radio
     choices:
       - Apartment: apt
       - Suite: suite
       - Floor: floor
       - Other (including house): other
-  - Apartment/Suite/Floor number: removal.address.unit
+  - Previous apartment/suite/floor number: users[i].previous.address.unit
     required: False
-  - City: removal.address.city
-  - State: removal.address.state
+  - Previous city: users[i].previous.address.city
+  - Previous state: users[i].previous.address.state
     code: |
       states_list()
-  - Zip code: removal.address.zip
+  - Previous ZIP: users[i].previous.address.zip
     required: False      
-  - Previous phone number (optional): removal.phone_number
+  - Previous phone number (optional): users[i].previous.phone_number
     datatype: al_international_phone
     required: False
-  - Previous email address (optional): removal.email    
+  - Previous email address (optional): users[i].previous.email    
     datatype: email
     required: False
 ---
 id: dhs information 
 sets:
-  - dhs.address.address
-  - dhs.address.city
-  - dhs.address.state
-  - dhs.address.zip
+  - users[i].dhs.address.address
+  - users[i].dhs.address.city
+  - users[i].dhs.address.state
+  - users[i].dhs.address.zip
 question: |
   Office of the Principal Legal Advisor (OPLA) address
 fields: 
-  - Street address: dhs.address.address
+  - Street address: users[i].dhs.address.address
     address autocomplete: True
-  - Address line 2: dhs.address.unit
+  - Address line 2: users[i].dhs.address.unit
     required: False
-  - City: dhs.address.city
-  - State: dhs.address.state
+  - City: users[i].dhs.address.city
+  - State: users[i].dhs.address.state
     code: |
       states_list()
-  - ZIP code: dhs.address.zip
+  - ZIP code: users[i].dhs.address.zip
   - note: |
       Is the OPLA location in a different city and state as the court?:
-  - no label: dhs.different_court_location
+  - no label: users[i].dhs.different_court_location
     datatype: yesnoradio
-  - Court city: dhs.court_city
+  - Court city: users[i].dhs.court_city
     required: False
-    show if: dhs.different_court_location 
-  - Court state: dhs.court_state
+    show if: users[i].dhs.different_court_location 
+  - Court state: users[i].dhs.court_state
     code: |
       states_list()
-    show if: dhs.different_court_location 
+    show if: users[i].dhs.different_court_location 
 ---
 objects:
   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)
@@ -231,7 +231,7 @@ attachment:
     - "type_other": False
     # "Motion to Change Venue from [old City, State] to [new City, State]."
     - "type_other_description": |
-        Motion to Change Venue from ${ removal.address.city }, ${ removal.address.state }
+        Motion to Change Venue from ${ users[i].previous.address.city }, ${ users[i].previous.address.state }
         to ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
     # Proceeding type always left blank
     - "preceeding_bond": False
@@ -259,7 +259,7 @@ attachment:
     # Page 2
     - "users1_full_name": ${ users[i].name.full(middle="full") }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
-    - "pos_dhs_address_full": ${ dhs.address.on_one_line(bare=True) }
+    - "pos_dhs_address_full": ${ users[i].dhs.address.on_one_line(bare=True) }
 
 ---
 ################### MOTION ####################
@@ -285,20 +285,20 @@ attachment:
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
-    - "users1_address_line1_former": ${ removal.address.line_one(bare=True) }
+    - "users1_address_line1_former": ${ users[i].pervious.address.line_one(bare=True) }
     - "users1_address_line1_current": ${ users[i].mailing_address.line_one(bare=True) }
-    - "users1_address_line2_former": ${ removal.address.line_two() }
+    - "users1_address_line2_former": ${ users[i].pervious.address.line_two() }
     - "users1_address_line2_current": ${ users[i].mailing_address.line_two() }
-    - "users1_phone_former": ${ phone_number_formatted(removal.phone_number) }
+    - "users1_phone_former": ${ phone_number_formatted(users[i].pervious.phone_number) }
     - "users1_phone_current": ${ phone_number_formatted(users[i].phone_number) }
-    - "users1_email_former": ${ removal.email }
+    - "users1_email_former": ${ users[i].pervious.email }
     - "users1_email_current": ${ users[i].email }
 
     # Proof of service
     - "pos_name": ${ users[i].name.full() }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
-    - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
-    - "dhs_address_line2": ${ dhs.address.line_two() }
+    - "dhs_address_line1": ${ users[i].dhs.address.line_one(bare=True) }
+    - "dhs_address_line2": ${ users[i].dhs.address.line_two() }
     - "pos_type": by mail service
     - "no_service": False
 
@@ -308,6 +308,6 @@ attachment:
     - "service_address_line_2": ${ users[i].mailing_address.line_two() }
     - "service_address_line_3": ''
     - "court_address": |
-        ${ dhs.address.line_one() }
-        ${ dhs.address.line_two() }
+        ${ users[i].dhs.address.line_one() }
+        ${ users[i].dhs.address.line_two() }
 ---

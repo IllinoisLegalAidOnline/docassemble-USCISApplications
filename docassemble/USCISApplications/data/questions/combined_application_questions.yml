@@ -900,7 +900,7 @@ fields:
       variable: users[i].immigration_status_last_entry
       is: "other"
     default: |
-      ${ showifdef("users[0].immigration_status_last_entry") if i > 0 else "" }
+      ${ showifdef("users[0].other_immigration_status_last_entry") if i > 0 else "" }
   - "Current Immigration Status or Lack of Status": users[i].current_immigration_status # very badly worded question
     datatype: radio
     choices:
@@ -917,7 +917,7 @@ fields:
       variable: users[i].current_immigration_status
       is: "other"
     default: |
-      ${ showifdef("users[0].current_immigration_status") if i > 0 else "" }
+      ${ showifdef("users[0].other_immigration_status") if i > 0 else "" }
 ---
 objects:
   - users[i].kind_of_immigration_proceedings: DADict.using(auto_gather=False, gathered=True)
@@ -1728,7 +1728,8 @@ fields:
     datatype: radio
     choices:
       - Employed (full-time, part-time, seasonal, self-employed): employed
-      - Unemployed or Not Employed: unemployed
+      - Unemployed: unemployed
+      - Not Employed: not_employed
       - Retired: retired
       - Other (Explain): other
     default: ${ showifdef("users[0].employment_status") if i > 0 else ''}
@@ -3174,18 +3175,15 @@ attachment:
         % endif
     # Part 5
     - "is_employed": ${ users[i].employment_status == "employed" }
-    - "is_unemployed": ${ users[i].employment_status == "unemployed" }
+    - "is_unemployed": ${ users[i].employment_status == "unemployed" or users[i].employment_status == "not_employed" }
     - "is_retired": ${ users[i].employment_status == "retired" }
     - "is_other_employment": ${ users[i].employment_status == "other" }
     - "other_employment_explanation": |
-        % if users[i].employment_status == "unemployed":
+        % if users[i].employment_status == "other":
           ${ users[i].employment_status_other }
         % endif
     - "unemployment_benefits": ${ users[i].unemployed_receiving_benefits }
-    - "unemployment_date": |
-        % if users[i].employment_status == "unemployed":
-          ${ users[i].unemployed_date.format('MM/dd/yyyy') }
-        % endif
+    - "unemployment_date": ${ users[i].unemployed_date.format('MM/dd/yyyy') }
     - "household_size": ${ users[i].household_size }
     - "household_earning": ${ users[i].household_income }
     - "head_of_household_name": ${ users[i].head_of_household }

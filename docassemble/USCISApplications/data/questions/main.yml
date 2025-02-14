@@ -1283,7 +1283,7 @@ attachment:
   variable name: users[i].limited_scope_retainer[j]
   name: ${ users[i] } - Limited Scope Retainer
   filename: ${ space_to_underscore(f"{users[i]} - Limited Scope Retainer") }
-  docx template file: Limited_Scope_Retainer.docx
+  docx template file: limited_scope_retainer_2025.docx
   skip undefined: True
 ---
 # attachment:

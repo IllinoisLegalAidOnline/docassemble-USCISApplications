@@ -26,6 +26,13 @@ fields:
     datatype: ThreePartsDate
     alMin: ${ today().format("yyyy-MM-dd") }
 ---
+id: notice to appear
+question: |
+  Have you received a Notice to Appear?
+fields:
+  - When was the letter dated?: users[i].notice_appear_date
+    datatype: ThreePartsDate
+---
 # id: attorney or representative type
 # question: |
 #   Attorney or representative 

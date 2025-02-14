@@ -183,6 +183,7 @@ code: |
       else:
         user.immigration_judge.name.first
         user.previous.date
+        user.notice_appear_date
         user.dhs.address.address
 
   nav.set_section("section_download")

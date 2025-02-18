@@ -1613,7 +1613,6 @@ fields:
   - no label: users[i].fee_waiver_needed
     datatype: yesnoradio
     default: ${ showifdef("users[0].fee_waiver_needed") if i > 0 else ''}
-    grid: 6
     label above field: True
 ---
 id: basis for your request

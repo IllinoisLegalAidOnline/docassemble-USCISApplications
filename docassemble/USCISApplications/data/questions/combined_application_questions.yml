@@ -1801,6 +1801,13 @@ fields:
     label above field: True
     show if: users[i].tax_changed
 ---
+id: homeless shelter
+question: |
+  Are you currently living in a city-run shelter?" 
+fields:
+  - no label: users[i].homeless_shelter
+    datatype: yesnoradio
+---
 id: financial hardship
 question: |
   Financial Hardship for ${ users[i] }
@@ -3198,7 +3205,11 @@ attachment:
     # Part 6
     - "hardship_details": |
         % if users[i].fee_waiver_bases['hardship']:
+          % if not users[i].homeless_shelter:
           ${ users[i].hardship_details }
+          % else:
+          I am currently homeless and residing in a city-run shelter. I respectfully request that USCIS waive the fee for my employment authorization due to my current financial hardship and homelessness.
+          % endif
         % endif
     - "asset_type_1": |
         % if users[i].fee_waiver_bases['hardship']:

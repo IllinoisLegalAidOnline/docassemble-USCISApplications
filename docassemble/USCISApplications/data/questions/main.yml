@@ -162,7 +162,8 @@ code: |
           user.employment_status
           user.annual_household_income
         if user.fee_waiver_bases['hardship']:
-          user.hardship_details
+          if not user.homeless_shelter:
+            user.hardship_details
           if user.has_assets:
             user.assets.gather()
           user.monthly_expenses

@@ -28,10 +28,16 @@ fields:
 ---
 id: notice to appear
 question: |
-  Have you received a Notice to Appear?
+  Notice to appear for ${ users[i] }
 fields:
   - When was the letter dated?: users[i].notice_appear_date
     datatype: ThreePartsDate
+---
+id: type of relief
+question: |
+  Relief ${ users[i] } is seeking
+fields:
+  - What form of relief will you be seeking?: users[i].type_of_relief
 ---
 # id: attorney or representative type
 # question: |

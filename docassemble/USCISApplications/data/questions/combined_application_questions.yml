@@ -3208,7 +3208,7 @@ attachment:
           % if not users[i].homeless_shelter:
           ${ users[i].hardship_details }
           % else:
-      I am currently homeless and residing in a city-run shelter. I respectfully request that USCIS waive the fee for my employment authorization due to my current financial hardship and homelessness.
+        I am currently homeless and residing in a city-run shelter. I respectfully request that USCIS waive the fee for my employment authorization due to my current financial hardship and homelessness.
           % endif
         % endif
     - "asset_type_1": |

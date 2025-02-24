@@ -28,9 +28,9 @@ fields:
 ---
 id: notice to appear
 question: |
-  Notice to appear for ${ users[i] }
+  Notice to Appear for ${ users[i] }
 fields:
-  - When was the letter dated?: users[i].notice_appear_date
+  - When was the Notice to Appear letter dated?: users[i].notice_appear_date
     datatype: ThreePartsDate
 ---
 id: type of relief
@@ -142,7 +142,7 @@ fields:
       states_list()
   - ZIP code: users[i].dhs.address.zip
   - note: |
-      Is the OPLA location in a different city and state as the court?:
+      Is the OPLA location in a **different city and state** than the court?:
   - no label: users[i].dhs.different_court_location
     datatype: yesnoradio
   - Court city: users[i].dhs.court_city

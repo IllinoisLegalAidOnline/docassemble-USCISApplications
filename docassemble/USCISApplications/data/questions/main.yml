@@ -185,6 +185,7 @@ code: |
         user.immigration_judge.name.first
         user.previous.date
         user.notice_appear_date
+        user.type_of_relief
         user.dhs.address.address
 
   nav.set_section("section_download")

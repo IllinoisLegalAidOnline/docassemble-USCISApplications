@@ -32,12 +32,14 @@ question: |
 fields:
   - When was the Notice to Appear letter dated?: users[i].notice_appear_date
     datatype: ThreePartsDate
+    alMax: ${ today().format("yyyy-MM-dd") }
 ---
 id: type of relief
 question: |
   Relief ${ users[i] } is seeking
 fields:
   - What form of relief will you be seeking?: users[i].type_of_relief
+    maxlength: 60
 ---
 # id: attorney or representative type
 # question: |

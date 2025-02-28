@@ -11,6 +11,8 @@ objects:
   #- users[i].travel_documents: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='number')
   - users[i].travel_documents: DAList.using(there_are_any=True, there_is_another=False)
   - users[i].alternate_birthdates: DAList
+  - users[i].means_benefits: DAList.using(object_type=Thing, complete_attribute='complete', there_are_any=True)
+  - users[i].assets: DAList.using(object_type=Thing, complete_attribute='complete', there_are_any=True)
   #- users[i].spouse: ALIndividual # need?
   #- users[i].spouse.prior_TPS: DAList.using(object_type=DAObject, there_is_another=False, complete_attribute='start_date') # need?
   #- users[i].former_spouses: ALPeopleList.using(ask_number=True) # need?
@@ -52,6 +54,9 @@ fields:
   - City or Town: users[0].address.city
   - State: users[0].address.state
     required: False
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
   - ZIP: users[0].address.zip
   - Daytime Phone Number (optional): users[0].phone_number
     required: false
@@ -76,7 +81,6 @@ sets:
   - users[i].address.zip
   - users[i].address.unit
   - users[i].address.state
-  - users[i].address.country
 question: |
   ${ users[i] }'s address
 subquestion: |
@@ -96,7 +100,6 @@ fields:
       - users[i].address.zip
       - users[i].address.unit
       - users[i].address.state
-      - users[i].address.country
       - users[i].address.address_type
     default: |
       users[0].address if i > 0 else None
@@ -117,6 +120,9 @@ fields:
     # default: ${ showifdef("users[0].address.city ") }
   - State: users[i].address.state
     required: False
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
     # default: ${ showifdef("users[0].address.state ") }
   - ZIP: users[i].address.zip
     # default: ${ showifdef("users[0].address.zip ") }
@@ -167,8 +173,6 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ${ users[0].address.zip_label }: users[0].mailing_address.zip
     required: False      
-  - ${ users[0].address.country_label }: users[0].mailing_address.country
-    code: uscis_countries_list()
 ---
 id: your mailing address
 question: |
@@ -207,10 +211,6 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ${ users[i].address.zip_label}: users[i].mailing_address.zip
     required: False      
-  - ${ users[i].address.country_label}: users[i].mailing_address.country
-    code: countries_list()
-    default: ${ AL_DEFAULT_COUNTRY }
-
 ---
 ################## AD Code Blurbs ###################
 code: |
@@ -631,7 +631,7 @@ subquestion: |
 fields:
   - Additional passport or travel document number: users[i].travel_documents[j]
 ---
-id: type of application
+id: type of application TPS
 question: |
   First TPS application for ${users[i].name.full()}?
 fields:
@@ -653,6 +653,17 @@ fields:
     show if: 
       variable: users[i].is_first_TPS_application
       is: Re-registering for TPS
+---
+id: reason for applying EAD
+question: |
+  First EAD application for ${users[i].name.full()}?
+fields:
+  - "Is this your first EAD application, or are you applying to re-register or renew your EAD?": users[i].is_first_EAD_application
+    datatype: radio
+    choices:
+      - Initial permission to accept employment.: initial
+      - Replacement of lost, stolen, or damaged EAD, or correction of my EAD.: replacement
+      - Renewal of my permission to accept employment.: renewal
 ---
 id: alternate birthdates there are any
 question: |
@@ -777,6 +788,38 @@ fields:
       variable: users[i].marital_status
       is: 'married'
 ---
+# EAD form questions
+id: gender and marriage status
+question: |
+  ${ users[i] }'s Gender & Marriage Status
+fields:
+  - Gender: users[i].sex
+    datatype: radio
+    choices:
+      - Male: male
+      - Female: female
+  - Marital Status: users[i].marital_status
+    datatype: radio
+    choices: 
+      - Single, never married: single, never married
+      - Married: married
+      - Divorced: divorced
+      - Widowed: widowed
+      - Separated: separated
+      - Marriage annulled: marriage annulled
+      - Other: other
+  - 'Explain "other" marital status': users[i].marital_status_other
+    maxlength: 27
+    show if: 
+      variable: users[i].marital_status
+      is: "other"
+  - "Marriage Date": users[i].marriage_date
+    datatype: date
+    max: ${ today().format("yyyy-MM-dd") }
+    show if:
+      variable: users[i].marital_status
+      is: 'married'
+---
 id: applicant info
 question: |
   Applicant Info
@@ -848,8 +891,16 @@ fields:
       - Visitor
       - Student
       - No Status
+      - Other immigration status (not listed above): other
     default: |
       ${ showifdef("users[0].immigration_status_last_entry") if i > 0 else "" }
+  - Enter immigration status when last entered U.S.: users[i].other_immigration_status_last_entry
+    maxlength: 27
+    show if: 
+      variable: users[i].immigration_status_last_entry
+      is: "other"
+    default: |
+      ${ showifdef("users[0].other_immigration_status_last_entry") if i > 0 else "" }
   - "Current Immigration Status or Lack of Status": users[i].current_immigration_status # very badly worded question
     datatype: radio
     choices:
@@ -865,6 +916,8 @@ fields:
     show if: 
       variable: users[i].current_immigration_status
       is: "other"
+    default: |
+      ${ showifdef("users[0].other_immigration_status") if i > 0 else "" }
 ---
 objects:
   - users[i].kind_of_immigration_proceedings: DADict.using(auto_gather=False, gathered=True)
@@ -912,7 +965,7 @@ fields:
     max: ${ today().format("yyyy-MM-dd") }
     show if: users[i].has_been_in_immigration_proceedings
     default: |
-      ${ showifdef("users[0].proceedings_start_date") if i > 0 and showifdef("users[0].has_been_in_immigration_proceedings") else "" }
+      ${ showifdef("users[0].proceedings_start_date") if i > 0 and showifdef("users[0].proceedings_start_date") else showifdef("users[0].date_removal_proceedings_began") }
   - "Proceedings are ongoing/pending today": users[i].proceedings_continuing_to_present
     datatype: yesnowide
     show if: users[i].has_been_in_immigration_proceedings
@@ -925,7 +978,7 @@ fields:
       val("users[i].has_been_in_immigration_proceedings") && !val("users[i].proceedings_continuing_to_present")
     required: False
     default: |
-      ${ showifdef("users[0].proceedings_end_date") if i > 0 else "" }  
+      ${ showifdef("users[0].proceedings_end_date") if i > 0 and showifdef("users[0].proceedings_end_date") else "" }  
 ---
 id: I-765 specific questions
 question: |
@@ -947,7 +1000,7 @@ fields:
   - note: |
       **Consent for Disclosure:** I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card.
     show if: users[i].issue_social      
-  - Do you conscent to the above terms?: users[i].ssa_consent
+  - Do you consent to the above terms?: users[i].ssa_consent
     datatype: yesnoradio
     show if: users[i].issue_social
 ---
@@ -1550,7 +1603,303 @@ fields:
       code: |
         interpreter_present
 ---
+############################ FEE WAIVER ############################
+id: fee waiver needed
+question: |
+  Does ${ users[i] }'s application need a fee waiver?
+subquestion: |
+  You may be eligible for a fee waiver if you meet eligibility criteria.
+fields:
+  - no label: users[i].fee_waiver_needed
+    datatype: yesnoradio
+    default: ${ showifdef("users[0].fee_waiver_needed") if i > 0 else ''}
+    label above field: True
+---
+id: basis for your request
+question: |
+  Basis for ${ users[i] }'s Request for Fee Waiver
+subquestion: |
+  Select at least one basis or more for which you may qualify and provide 
+  supporting documentation for any basis you select.  You only need to qualify
+  and provide documentation for one basis for U.S. Citizenship and Immigration
+  Services (USCIS) to grant your fee waiver. If you choose, you may select
+  more than one basis.  You must provide supporting documentation for each
+  basis you want considered.
+fields:
+  - no label: users[i].fee_waiver_bases
+    datatype: checkboxes
+    label above field: True
+    choices:
+      - My household receives a means-tested benefit: benefits
+      - My household income is at or below 150% of the Federal Poverty Guidelines: guidelines
+      - I have a financial hardship: hardship
+    default: ${ showifdef("users[0].fee_waiver_bases") if i > 0 else ''}
+    none of the above: False
+---
+id: means tested benefits
+question: |
+  ${ users[i] }'s means-tested benefits
+subquestion: |
+  So far, you have indicated that you receive a means-tested benefit.
 
+  ${ means_tested_table } 
+
+  Your request for a fee waiver has room for up to 8 means-tested benefits.
+fields:
+  - Do you want to add another?: users[i].means_benefits.there_is_another
+    datatype: yesnoradio
+---
+table: means_tested_table
+rows: users[i].means_benefits
+columns:
+  - Recipient: row_item.recipient
+  - Relationship: row_item.relationship
+  - Agency: row_item.agency
+  - Benefit Type: row_item.type
+  - Date Awarded: row_item.awarded_date
+  - Date Expires: row_item.expiration_date
+---
+code: |
+  users[i].means_benefits[j].recipient
+  users[i].means_benefits[j].complete = True
+---
+code: |
+  if users[i].means_benefits.number_gathered() == 8:
+    users[i].means_benefits.there_is_another = False
+---
+id: add benefit
+question: |
+  ${ users[i] }'s ${ ordinal(j) } means-tested benefit
+subquestion: |
+  A **means-tested benefit** is a type of government assistance given to individuals
+  or households who have limited income and resources. 
+  
+  Supporting documentation for each benefit listed must be attached to the Request for Fee Waiver.
+
+  ${ collapse_template(benefits_examples) }  
+fields:
+  - "Full Name of Person Receiving the Benefit": users[i].means_benefits[j].recipient
+    maxlength: 20
+  - "Relationship to You": users[i].means_benefits[j].relationship
+    maxlength: 12
+  - "Name of Agency Awarding Benefit": users[i].means_benefits[j].agency
+    maxlength: 15
+  - "Type of Benefit": users[i].means_benefits[j].type
+    maxlength: 10
+  - "Date Benefit was Awarded": users[i].means_benefits[j].awarded_date
+    datatype: ThreePartsDate
+    alMax: today
+  - "Date Benefit Expires (or must be renewed)": users[i].means_benefits[j].expiration_date
+    datatype: ThreePartsDate
+    alMin: today
+validation code: |
+  if users[i].means_benefits[j].awarded_date == users[i].means_benefits[j].expiration_date:
+    validation_error("Benefit cannot be awarded and expire on the same date.")
+---
+template: benefits_examples
+subject: |
+  **Examples of means-tested benefits**
+content: |  
+  * **Medicaid** - Health insurance for low-income individuals and families.
+
+  * **Supplemental Security Income (SSI)** - Financial assistance for elderly,
+  blind, or disabled individuals with low income.
+
+  * **Supplemental Nutrition Assistance Program (SNAP)** - Formerly food stamps for
+  assistance with buying groceries.
+
+  * **Temporary Assistance for Needy Families (TANF)** - Cash assistance for 
+  families with children in financial need.
+
+  * **Housing Assistance (Section 8, Public Housing, etc.)** - Help with rent or
+  housing costs.
+
+  * **Women, Infants, and Children (WIC) Program** - Nutrition support for 
+  low-income pregnant women, new mothers, and young children.
+
+  * **Low-Income Home Energy Assistance Program (LIHEAP)** - Help with utility bills.
+---
+id: employment status
+question: |
+  Employment Status for ${ users[i] }
+fields:
+  - "What is your current employment status?": users[i].employment_status
+    datatype: radio
+    choices:
+      - Employed (full-time, part-time, seasonal, self-employed): employed
+      - Unemployed: unemployed
+      - Not Employed: not_employed
+      - Retired: retired
+      - Other (Explain): other
+    default: ${ showifdef("users[0].employment_status") if i > 0 else ''}
+  - "Please explain your other employment?": users[i].employment_status_other
+    maxlength: 100
+    label above field: True
+    show if:
+      variable: users[i].employment_status
+      is: "other"
+    default: ${ showifdef("users[0].employment_status_other") if i > 0 else ''}
+  - "Are you currently receiving unemployment benefits?": users[i].unemployed_receiving_benefits
+    datatype: yesnoradio
+    default: ${ showifdef("users[0].unemployed_receiving_benefits") if i > 0 else ''}
+    show if:
+      variable: users[i].employment_status
+      is: "unemployed"
+  - "When did you become unemployed?": users[i].unemployed_date
+    datatype: ThreePartsDate
+    default: ${ showifdef("users[0].unemployed_date") if i > 0 else ''}
+    alMax: today
+    show if:
+      variable: users[i].employment_status
+      is: "unemployed"
+  - "How many people are in your household?": users[i].household_size
+    datatype: integer
+    min: 1
+    default: ${ showifdef("users[0].household_size") if i > 0 else ''}
+  - "How many household members are earning income including yourself?": users[i].household_income
+    datatype: integer
+    min: 1
+    default: ${ showifdef("users[0].household_income") if i > 0 else ''}
+  - "Is anyone else the head of household (if not you)?": users[i].ask_household
+    datatype: yesnoradio
+    default: ${ showifdef("users[0].ask_household") if i > 0 else ''} 
+  - "Name of head of household?": users[i].head_of_household
+    maxlength: 20
+    show if: users[i].ask_household
+    default: ${ showifdef("users[0].head_of_household") if i > 0 else ''} 
+---
+id: household income
+question: |
+  Annual Household Income for ${ users[i] }
+subquestion: |
+  Provide information about your adjusted gross income and the adjusted gross income of all family members
+  counted as part of your household. You must list all amounts in U.S. dollars.
+fields:
+  - "What is your annual adjusted gross income?": users[i].annual_household_income
+    datatype: currency
+    default: ${ showifdef("users[0].annual_household_income") if i > 0 else ''}
+  - note: |
+      Provide the annual adjusted gross income of all other family members counted 
+      as part of your household. **Do not include your annual adjusted gross income.** 
+  - "What is the annual adjusted gross income of your other family members?": users[i].annual_family_income
+    datatype: currency
+    default: ${ showifdef("users[0].annual_family_income") if i > 0 else ''}
+  - note: |
+      Has anything changed since the date you filed your Federal tax returns or 
+      is there any difference in your circumstances from the information on 
+      your petition?
+  - no label: users[i].tax_changed
+    datatype: yesnoradio
+    help: |
+       For example, your marital status, income, or number of dependents as related to documents provided.
+  - note: |
+      You may also use this space to provide any additional information including documentation about your
+      circumstances that you would like USCIS to consider.
+  - "Please explain change in circumstances since last Federal tax filing or other relevant information.": users[i].tax_changes_explained
+    datatype: area
+    maxlength: 1200
+    label above field: True
+    show if: users[i].tax_changed
+---
+id: homeless shelter
+question: |
+  Are you currently living in a city-run shelter?
+fields:
+  - no label: users[i].homeless_shelter
+    datatype: yesnoradio
+---
+id: financial hardship
+question: |
+  Financial Hardship for ${ users[i] }
+subquestion:
+  Please provide any additional information about your circumstances that you would like U.S. Citizenship
+  and Immigration Services (USCIS) to consider.  If you or any family members have a situation that has caused
+  you to incur expenses, debts, or loss of income, describe the situation in the box below. Specify the amounts
+  of the expenses, debts, and income losses in as much detail as possible. This may include homelessness, major
+  medical debt for yourself or a family member, and natural disasters declaration.
+fields:
+  - no label: users[i].hardship_details
+    datatype: area
+    maxlength: 1000
+    label above field: True
+---
+id: any assets
+question: |
+  Assets for ${ users[i] }
+subquestion: |
+  Do you have cash or assets that you can quickly convert to cash? For example, bank
+  accounts, stocks, or bonds (do not include retirement accounts).
+fields:
+  - no label: users[i].has_assets
+    datatype: yesnoradio
+---
+id: additional assets
+question: |
+  Assets for ${ users[i] }
+subquestion: |
+  So far you have told us about:
+  ${ assets_table }
+fields:
+  - Add another?: users[i].assets.there_is_another
+    datatype: yesnoradio
+---
+table: assets_table
+rows: users[i].assets
+columns:
+  - Type of Asset: row_item.type
+  - Value: currency(row_item.value)
+---
+id: asset details
+question: |
+  What is the ${ordinal(j)} asset for ${ users[i] }?
+subquestion: |
+  Enter the kind of asset and its cash value.
+
+  The Request for Fee Waiver form has room for up to 3 assets.
+fields:
+  - Type of Asset: users[i].assets[j].type
+  - Value: users[i].assets[j].value
+    datatype: currency
+    min: 0
+---
+code: |
+  users[i].assets[j].type
+  users[i].assets[j].complete = True 
+---
+code: |
+  if users[i].assets.number_gathered() == 3:
+    users[i].assets.there_is_another = False
+---
+id: total expenses and liabilities
+question: |
+  Total Monthly Expenses and Liabilities for ${ users[i] }
+fields: 
+  - "Provide the total monthly amount of your expenses and liabilities.": users[i].monthly_expenses
+    datatype: currency
+    min: 0
+    label above field: True
+  - "Select the types of expenses or liabilities you have each month.": users[i].expense_list
+    datatype: checkboxes
+    choices:
+      - Rent and/or Mortgage: house
+      - Food: food
+      - Utilities: utilities
+      - Child and/or Elder Care: care
+      - Insurance: insurance
+      - Loans and/or Credit Cards: debts
+      - Car Payment: transportation
+      - Commuting Costs: commute
+      - Medical Expenses: medical
+      - School Expenses: school
+      - Other: other
+    label above field: True
+    none of the above: False
+  - Other monthly expenses: users[i].other_expenses
+    maxlength: 100
+    show if:
+      variable: users[i].expense_list['other']
+      is: True
+---
 id: Addendum skip these
 question: |
   Addendum (skip these)
@@ -1643,6 +1992,12 @@ objects:
 ---
 code: |
   users[i].tps_yes_answer_addendum.enabled = users[i].application_is_approved and application_kind == "ead_and_tps" and any([users[i].q8a, users[i].q8b, users[i].q8c, users[i].q9a, users[i].q9b, users[i].q9c, users[i].q10a, users[i].q10b, users[i].q10c, users[i].q11, users[i].q12a, users[i].q12b, users[i].q12c, users[i].q12d, users[i].q12e, users[i].q13a, users[i].q13b, users[i].q13c, users[i].q13d, users[i].q14a, users[i].q14b, users[i].q14c, users[i].q14d, users[i].q15a, users[i].q15b, users[i].q15c, users[i].q16, users[i].q17, users[i].q18a, users[i].q18b, users[i].q18c, users[i].q19, users[i].q20a, users[i].q20b, users[i].q20c, users[i].q20d, users[i].q20e, users[i].q21, users[i].q22, users[i].q23a, users[i].q23b, users[i].q23c, users[i].q24, users[i].q25, users[i].q26, users[i].q27, users[i].q28, users[i].q29, users[i].q30a, users[i].q30b, users[i].q30c, users[i].q30d, users[i].q30e, users[i].q31a, users[i].q31b, users[i].q32, users[i].q33, users[i].q34, users[i].q35, users[i].q36, users[i].q37a, users[i].q37b, users[i].q38a, users[i].q38b, users[i].q38c, users[i].q38d, users[i].q38e, users[i].q39a, users[i].q39b, users[i].q40, users[i].q41])
+---
+objects:
+  - users[i].i_912_fee_waiver: ALDocument.using(title=f"{users[i]} - Request for Fee Waiver", filename=space_to_underscore(f"{users[i]} - Request for Fee Waiver"), has_addendum=False)
+---
+code: |
+  users[i].i_912_fee_waiver.enabled = users[i].application_is_approved and users[i].fee_waiver_needed
 ---
 attachment:
   name: TPS_yes_answer_addendum
@@ -2238,9 +2593,9 @@ attachment:
     #- "is_form_g28_attached": ${ users[i].is_form_g28_attached }
     #- "attorney_online_account_number": ${ preparer.attorney_online_account_number }
     # Part 1
-    - "application_reason_employment": 'Yes'
-    - "application_reason_replacement": ''
-    - "application_reason_renewal": ''
+    - "application_reason_employment": ${ users[i].is_first_EAD_application == 'initial' }
+    - "application_reason_replacement": ${ users[i].is_first_EAD_application == 'replacement' }
+    - "application_reason_renewal": ${ users[i].is_first_EAD_application == 'renewal' }
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
@@ -2322,7 +2677,12 @@ attachment:
     - "passport_expiration_date": ${ users[i].passport_expiration_date.format('MM/dd/yyyy') }
     - "date_of_last_arrival": ${ users[i].date_of_last_entry.format('MM/dd/yyyy') }
     - "place_of_last_arrival": ${ users[i].city_of_entry }${ ', ' if showifdef('users[i].city_of_entry') else '' }${ users[i].state_of_entry }
-    - "immigration_status_at_last_arrival": ${ users[i].immigration_status_last_entry }
+    - "immigration_status_at_last_arrival": |
+        % if users[i].immigration_status_last_entry == "other":
+        ${ users[i].other_immigration_status_last_entry }
+        % else:
+        ${ users[i].immigration_status_last_entry }
+        % endif
     - "current_immigration_status": |
         % if users[i].current_immigration_status == "other":
         ${ users[i].other_immigration_status }
@@ -2384,7 +2744,7 @@ attachment:
     - "users1_email": ${ users[i].email }
     - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
     - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
- #   - "is_abc_salvadoran_guatemalan_national": ${ users[i].country_of birth == "Guatemala" or users[i].country_of birth == "El Salvador" or xxxxxxxxx##### }
+    # - "is_abc_salvadoran_guatemalan_national": ${ users[i].country_of birth == "Guatemala" or users[i].country_of birth == "El Salvador" or xxxxxxxxx##### }
     - "interpreter_name_last": |
         % if interpreter_present:
         ${ interpreter.name.last }
@@ -2425,8 +2785,8 @@ attachment:
     - "preparer_is_attorney_no": ${ not preparer_is_attorney }
     - "preparer_full_rep": No
     - "preparer_limited_rep": ${ preparer_is_attorney }
-#   # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
-#   # - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
+    # - "interpreter_mailing_address_city": ${ interpreter.mailing_address.city }
+    # - "interpreter_mailing_address_zip": ${ interpreter.mailing_address.zip }
     - "preparer_mailing_address_address": |
         % if preparer.address.address:
         ${ preparer.address.address }
@@ -2448,13 +2808,13 @@ attachment:
         ${ preparer.address.zip }
         % endif
     - "preparer_mailing_address_country": 'USA'
-#   # - "preparer_organization": ${ preparer.organization }
-#   # - "interpreter_phone_number": ${ interpreter.phone_number }
-#   # - "interpreter_mobile_number": ${ interpreter.mobile_number }
-#   # - "interpreter_email": ${ interpreter.email }
-#   # - "preparer_phone_number": ${ preparer.phone_number }
-#   # - "preparer_mobile_number": ${ preparer.mobile_number }
-#   # - "preparer_email": ${ preparer.email } 
+    # - "preparer_organization": ${ preparer.organization }
+    # - "interpreter_phone_number": ${ interpreter.phone_number }
+    # - "interpreter_mobile_number": ${ interpreter.mobile_number }
+    # - "interpreter_email": ${ interpreter.email }
+    # - "preparer_phone_number": ${ preparer.phone_number }
+    # - "preparer_mobile_number": ${ preparer.mobile_number }
+    # - "preparer_email": ${ preparer.email } 
     # Part 6
     - "additional_name_last": ${ users[i].name.last }
     - "additional_name_first": ${ users[i].name.first }
@@ -2479,3 +2839,528 @@ attachment:
     - "Page Number_2": ${ Page_Number_2 }
     - "Part Number_2": ${ Part_Number_2 }
     - "Item Number_2": ${ Item_Number_2 }
+---
+attachment:
+  variable name: users[i].i_912_fee_waiver[j]
+  name: ${ users[i] } - Request for Fee Waiver
+  filename: ${ space_to_underscore(f"{users[i]} - Request for Fee Waiver") }
+  pdf template file: I-912.pdf
+  skip undefined: True
+  editable: False
+  fields:
+    - "receives_benefits": ${ users[i].fee_waiver_bases['benefits'] }
+    - "poverty_guidelines": ${ users[i].fee_waiver_bases['guidelines'] }
+    - "financial_hardship": ${ users[i].fee_waiver_bases['hardship'] }
+    - "current_immigration_status": |
+        % if users[i].current_immigration_status == "other":
+        ${ users[i].other_immigration_status }
+        % else:
+        ${ users[i].current_immigration_status }
+        % endif 
+    - "parent_guardian": ${ users[i].age_in_years() <= 14 }
+    - "users1_name_last": ${ users[i].name.last }
+    - "users1_name_first": ${ users[i].name.first }
+    - "users1_name_middle": ${ users[i].name.middle }
+    - "users1_previous_names1_last": ${ users[i].aliases.item(0).last }
+    - "users1_previous_names1_first": ${ users[i].aliases.item(0).first }
+    - "users1_previous_names1_middle": ${ users[i].aliases.item(0).middle }
+    - "users1_previous_names2_last": ${ users[i].aliases.item(1).last }
+    - "users1_previous_names2_first": ${ users[i].aliases.item(1).first }
+    - "users1_previous_names2_middle": ${ users[i].aliases.item(1).middle }
+    - "users1_a_number": ${ users[i].a_number }
+    - "users1_uscis_account_number": ${ users[i].uscis_account_number }
+    # Part 2
+    - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
+    - "users1_ssn": |
+        % if users[i].has_ssn:
+        ${ users[i].ssn }
+        % endif
+    - "is_married": ${ users[i].marital_status == 'married' }
+    - "is_unmarried": ${ users[i].marital_status == 'single, never married' }
+    - "is_divorced": ${ users[i].marital_status == 'divorced' }
+    - "is_widowed": ${ users[i].marital_status == 'widowed' }
+    - "is_separated": ${ users[i].marital_status == 'separated' }
+    - "is_annulled": ${ users[i].marital_status == 'marriage annulled' }
+    - "is_other_marital_status": ${ users[i].marital_status == 'other' }
+    - "marital_status_other_explanation": ${ users[i].marital_status_other }
+    # Part 4
+    - "users1_name": ${ users[i].name.full(middle="full") }
+    - "forms_filed": |
+        % if application_kind == "ead_only":
+        I-765
+        % else:
+        I-821 & I-765
+        % endif
+    - "benefit_received1": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 1:
+            ${ users[i].means_benefits[0].recipient }
+          % endif
+        % endif
+    - "benefit_relationship1": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 1:
+            ${ users[i].means_benefits[0].relationship }
+          % endif
+        % endif
+    - "benefit_agency1": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 1:
+            ${ users[i].means_benefits[0].agency }
+          % endif    
+        % endif
+    - "benefit_type1": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 1:
+            ${ users[i].means_benefits[0].type }
+          % endif
+        % endif
+    - "benefit_award_date1": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 1:
+            ${ users[i].means_benefits[0].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif  
+    - "benefit_expires_date1": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 1:
+            ${ users[i].means_benefits[0].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_received2": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 2:
+            ${ users[i].means_benefits[1].recipient }
+          % endif
+        % endif
+    - "benefit_relationship2": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 2:
+            ${ users[i].means_benefits[1].relationship }
+          % endif
+        % endif
+    - "benefit_agency2": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 2:
+            ${ users[i].means_benefits[1].agency }
+          % endif
+        % endif
+    - "benefit_type2": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 2:
+            ${ users[i].means_benefits[1].type }
+          % endif
+        % endif     
+    - "benefit_award_date2": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 2:
+            ${ users[i].means_benefits[1].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif  
+    - "benefit_expires_date2": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 2:
+            ${ users[i].means_benefits[1].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_received3": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 3:
+            ${ users[i].means_benefits[2].recipient }
+          % endif
+        % endif
+    - "benefit_relationship3": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 3:
+            ${ users[i].means_benefits[2].relationship }
+          % endif
+        % endif
+    - "benefit_agency3": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 3:
+            ${ users[i].means_benefits[2].agency }
+          % endif
+        % endif
+    - "benefit_type3": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 3:
+            ${ users[i].means_benefits[2].type }
+          % endif        
+        % endif
+    - "benefit_award_date3": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 3:
+            ${ users[i].means_benefits[2].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_expires_date3": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 3:
+            ${ users[i].means_benefits[2].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_received4": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 4:
+            ${ users[i].means_benefits[3].recipient }
+          % endif
+        % endif
+    - "benefit_relationship4": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 4:
+            ${ users[i].means_benefits[3].relationship }
+          % endif
+        % endif
+    - "benefit_agency4": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 4:
+            ${ users[i].means_benefits[3].agency }
+          % endif
+        % endif    
+    - "benefit_type4": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 4:
+            ${ users[i].means_benefits[3].type }
+          % endif
+        % endif        
+    - "benefit_award_date4": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 4:
+            ${ users[i].means_benefits[3].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif     
+    - "benefit_expires_date4": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 4:
+            ${ users[i].means_benefits[3].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_received5": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 5:
+            ${ users[i].means_benefits[4].recipient }
+          % endif
+        % endif
+    - "benefit_relationship5": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 5:
+            ${ users[i].means_benefits[4].relationship }
+          % endif
+        % endif
+    - "benefit_agency5": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 5:
+            ${ users[i].means_benefits[4].agency }
+          % endif
+        % endif
+    - "benefit_type5": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 5:
+            ${ users[i].means_benefits[4].type }
+          % endif
+        % endif    
+    - "benefit_award_date5": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 5:
+            ${ users[i].means_benefits[4].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif 
+    - "benefit_expires_date5": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 5:
+            ${ users[i].means_benefits[4].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_received6": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 6:
+            ${ users[i].means_benefits[5].recipient }
+          % endif
+        % endif
+    - "benefit_relationship6": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 6:
+            ${ users[i].means_benefits[5].relationship }
+          % endif
+        % endif
+    - "benefit_agency6": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 6:
+            ${ users[i].means_benefits[5].agency }
+          % endif
+        % endif
+    - "benefit_type6": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 6:
+            ${ users[i].means_benefits[5].type }
+          % endif
+        % endif
+    - "benefit_award_date6": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 6:
+            ${ users[i].means_benefits[5].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_expires_date6": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 6:
+            ${ users[i].means_benefits[5].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_received7": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 7:
+            ${ users[i].means_benefits[6].recipient }
+          % endif
+        % endif
+    - "benefit_relationship7": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 7:
+            ${ users[i].means_benefits[6].relationship }
+          % endif
+        % endif
+    - "benefit_agency7": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 7:
+            ${ users[i].means_benefits[6].agency }
+          % endif
+        % endif    
+    - "benefit_type7": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 7:
+            ${ users[i].means_benefits[6].type }
+          % endif
+        % endif    
+    - "benefit_award_date7": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 7:
+            ${ users[i].means_benefits[6].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_expires_date7": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 7:
+            ${ users[i].means_benefits[6].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_received8": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 8:
+            ${ users[i].means_benefits[7].recipient }
+          % endif
+        % endif
+    - "benefit_relationship8": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 8:
+            ${ users[i].means_benefits[7].relationship }
+          % endif
+        % endif
+    - "benefit_agency8": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 8:
+            ${ users[i].means_benefits[7].agency }
+          % endif    
+        % endif    
+    - "benefit_type8": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 8:
+            ${ users[i].means_benefits[7].type }
+          % endif
+        % endif
+    - "benefit_award_date8": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 8:
+            ${ users[i].means_benefits[7].awarded_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    - "benefit_expires_date8": |
+        % if users[i].fee_waiver_bases['benefits']:
+          % if users[i].means_benefits.number_gathered() >= 8:
+            ${ users[i].means_benefits[7].expiration_date.format('MM/dd/yyyy') }
+          % endif
+        % endif
+    # Part 5
+    - "is_employed": ${ users[i].employment_status == "employed" }
+    - "is_unemployed": ${ users[i].employment_status == "unemployed" or users[i].employment_status == "not_employed" }
+    - "is_retired": ${ users[i].employment_status == "retired" }
+    - "is_other_employment": ${ users[i].employment_status == "other" }
+    - "other_employment_explanation": |
+        % if users[i].employment_status == "other":
+          ${ users[i].employment_status_other }
+        % endif
+    - "unemployment_benefits": ${ users[i].unemployed_receiving_benefits }
+    - "unemployment_date": ${ users[i].unemployed_date.format('MM/dd/yyyy') }
+    - "household_size": ${ users[i].household_size }
+    - "household_earning": ${ users[i].household_income }
+    - "head_of_household_name": ${ users[i].head_of_household }
+    - "individual_agi": ${ thousands(users[i].annual_household_income, show_decimals=True) }
+    - "family_agi": ${ thousands(users[i].annual_family_income, show_decimals=True) }
+    - "total_agi": ${ thousands(users[i].annual_household_income + users[i].annual_family_income, show_decimals=True) }
+    - "federal_tax_changes": ${ users[i].tax_changed }
+    - "explanation": |
+        % if users[i].tax_changed:
+          ${ users[i].tax_changes_explained }
+        % endif
+
+    # Part 6
+    - "hardship_details": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if not users[i].homeless_shelter:
+        ${ users[i].hardship_details }
+          % else:
+        I am currently homeless and residing in a city-run shelter. I respectfully request that USCIS waive the fee for my employment authorization due to my current financial hardship and homelessness.
+          % endif
+        % endif
+    - "asset_type_1": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if users[i].assets.number_gathered() >= 1:
+            ${ users[i].assets[0].type }
+          % endif
+        % endif
+    - "asset_value_1": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if users[i].assets.number_gathered() >= 1:
+            ${ '$' + thousands(users[i].assets[0].value, show_decimals=True) }
+          % endif
+        % endif
+    - "asset_type_2": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if users[i].assets.number_gathered() >= 2:
+            ${ users[i].assets[1].type }
+          % endif
+        % endif
+    - "asset_value_2": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if users[i].assets.number_gathered() >= 2:
+            ${ '$' + thousands(users[i].assets[1].value, show_decimals=True) }
+          % endif
+        % endif
+    - "asset_type_3": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if users[i].assets.number_gathered() == 3:
+            ${ users[i].assets[2].type }
+          % endif
+        % endif
+    - "asset_value_3": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if users[i].assets.number_gathered() == 3:
+            ${ '$' + thousands(users[i].assets[2].value, show_decimals=True) }
+          % endif
+        % endif
+    - "total_value_assets": |
+        % if users[i].fee_waiver_bases['hardship']:
+          % if users[i].assets.number_gathered() > 0:
+            ${ '$' + thousands(sum_if_defined(
+                  'users[i].assets[0].value',
+                  'users[i].assets[1].value',
+                  'users[i].assets[2].value'
+                  ), show_decimals=True) }
+          % endif
+        % endif
+    - "total_expenses": ${ thousands(users[i].monthly_expenses, show_decimals=True) }
+    - "rent_mortgage": ${ users[i].expense_list['house'] }
+    - "food": ${ users[i].expense_list['food'] }
+    - "utilities": ${ users[i].expense_list['utilities'] }
+    - "family_care": ${ users[i].expense_list['care'] }
+    - "insurance": ${ users[i].expense_list['insurance'] }
+    - "debts": ${ users[i].expense_list['debts'] }
+    - "vehicle": ${ users[i].expense_list['transportation'] }
+    - "commute": ${ users[i].expense_list['commute'] }
+    - "medical": ${ users[i].expense_list['medical'] }
+    - "school": ${ users[i].expense_list['school'] }
+    - "has_other_expenses": ${ users[i].expense_list['other'] }
+    - "other_expenses": |
+        % if users[i].expense_list['other']:
+          ${ thousands(users[i].other_expenses, show_decimals=True) }
+        % endif
+
+    # Part 7
+    - "user_reads_english": ${ users[i].user_reads_english }
+    - "user_used_interpreter": ${ users[i].user_used_interpreter }
+    - "interpreter_spoke_language": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif
+    - "interpreter_spoke_language__1": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif
+    - "user_used_preparer": True
+    - "preparer_name_applicant_statement": ${ preparer }
+    - "users1_phone_number": ${ users[i].phone_number}
+    - "users1_mobile_number": ${ users[i].mobile_number }
+    - "users1_email": ${ users[i].email }
+    - "signature_date": ${ signature_date.format('MM/dd/yyyy') }
+    # Part 8
+    - "interpreter_name_last": |
+        % if interpreter_present:
+        ${ interpreter.name.last }
+        % endif
+    - "interpreter_name_first": |
+        % if interpreter_present:
+        ${ interpreter.name.first }
+        % endif
+    - "interpreter_organization": |
+        % if interpreter_present:
+        ${ interpreter.organization }
+        % endif
+    - "interpreter_mailing_address_address": |
+        % if interpreter_present:
+        ${ interpreter.address.address }
+        % endif
+    - "interpreter_mailing_address_unit": |
+        % if interpreter_present:
+        ${ interpreter.address.unit }
+        % endif
+    - "interpreter_mailing_address_city": |
+        % if interpreter_present:
+        ${ interpreter.address.city }
+        % endif
+    - "interpreter_mailing_address_state": |
+        % if interpreter_present:
+        ${ interpreter.address.state }
+        % endif
+    - "interpreter_mailing_address_zip":  |
+        % if interpreter_present:
+        ${ interpreter.address.zip }
+        % endif
+    - "interpreter_mailing_address_country": ${ 'USA' if interpreter_present else '' }
+    - "interpreted_into_language": |
+        % if interpreter_present:
+        ${ interpreter.language }
+        % endif 
+    - "signature_date__1": |
+        % if interpreter_present: 
+        ${ signature_date.format('MM/dd/yyyy') }
+        % endif
+    # Part 9
+    - "preparer_name_first": ${ preparer.name.first }
+    - "preparer_name_last": ${ preparer.name.last }
+    - "preparer_is_attorney_yes": ${ preparer_is_attorney }
+    - "preparer_is_attorney_no": ${ not preparer_is_attorney }
+    - "preparer_full_rep": No
+    - "preparer_limited_rep": ${ preparer_is_attorney }
+    - "preparer_mailing_address_address": |
+        % if preparer.address.address:
+        ${ preparer.address.address }
+        % endif
+    - "preparer_mailing_address_unit": |
+        % if preparer.address.unit:
+        ${ preparer.address.unit }
+        % endif
+    - "preparer_mailing_address_city": |
+        % if preparer.address.city:
+        ${ preparer.address.city }
+        % endif
+    - "preparer_mailing_address_state": |
+        % if preparer.address.state:
+        ${ preparer.address.state }
+        % endif
+    - "preparer_mailing_address_zip": |
+        % if preparer.address.zip:
+        ${ preparer.address.zip }
+        % endif
+    - "preparer_mailing_address_country": 'USA'
+    - "signature_date__2": ${ signature_date.format('MM/dd/yyyy') }
+
+---

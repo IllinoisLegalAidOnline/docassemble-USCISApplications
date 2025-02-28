@@ -82,9 +82,9 @@ code: |
   nav.set_section("section_retainer")
   agrees_to_retainer
   set_progress(10)
-  for user in users:
-    if user.age_in_years() > 13:
-      user.signature
+  # for user in users:
+  #   if user.age_in_years() > 13:
+  #     user.signature
   nav.set_section("section_screener")
   application_kind
   change_kind
@@ -121,10 +121,15 @@ code: |
       user.signpost
       if application_kind == "ead_and_tps":
         user.is_first_TPS_application
+        user.is_first_EAD_application
+      else:
+        user.is_first_EAD_application
       if user.age_in_years() < 14:
         user.parent
       user.user_reads_english
       if application_kind == "ead_and_tps":
+        user.ethnicity
+      else:
         user.sex
       user.alternate_birthdates.gather()
       user.address.address
@@ -146,6 +151,23 @@ code: |
       user.signpost
       user.check_work
 
+  nav.set_section("section_fees")
+  for idx,user in enumerate(users):
+    if user.application_is_approved:
+      if user.fee_waiver_needed:
+        user.fee_waiver_bases
+        if user.fee_waiver_bases['benefits']:
+          user.means_benefits.gather()
+        if user.fee_waiver_bases['guidelines']:
+          user.employment_status
+          user.annual_household_income
+        if user.fee_waiver_bases['hardship']:
+          if not user.homeless_shelter:
+            user.hardship_details
+          if user.has_assets:
+            user.assets.gather()
+          user.monthly_expenses
+
   if application_kind == "ead_and_tps" and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
     for user in users:
       if user.application_is_approved:
@@ -156,14 +178,15 @@ code: |
   # COV and COA
   if change_kind != "no":
     nav.set_section("section_covcoa")
-    if change_kind == "coa_only":
-      removal.address.address
-    else:
-      immigration_judge.name.first
-      # representative.type
-      # representative.name.first
-      removal.address.address
-      dhs.address.address
+    for idx,user in enumerate(users):
+      if change_kind == "coa_only":
+        user.previous.date
+      else:
+        user.immigration_judge.name.first
+        user.previous.date
+        user.notice_appear_date
+        user.type_of_relief
+        user.dhs.address.address
 
   nav.set_section("section_download")
   store_variables_snapshot(
@@ -197,17 +220,18 @@ data:
   - section_screener: Verify eligibility
   - section_application: Application
   #- review_USCIS_Applications: Review 
+  - section_fees: Fee Waiver (optional)
   - section_covcoa: Change of Venue/Address
   - section_download: Download and print
 ---
 code: |
   if len(users) > 1:
-    sections = default_sections[:-3]
+    sections = default_sections[:-4]
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-2:]
+    sections.extend(default_sections[-3:]
     )
     nav.set_sections(sections)
   update_sections = True
@@ -587,13 +611,13 @@ subquestion: |
   On the next screens, we'll review the limited scope retainer.
 continue button field: review_initial_user_list
 ---
-id: signatures for users i
-question: |
-  ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
-signature: users[i].signature
-under: |
-  ${ users[i] }
-required: False
+# id: signatures for users i
+# question: |
+#   ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
+# signature: users[i].signature
+# under: |
+#   ${ users[i] }
+# required: False
 ---
 id: kind of interview
 question: |
@@ -1028,6 +1052,9 @@ subquestion: |
   ${ action_button_html(url_of("new_session"), label="Start a new application", icon="square-plus", size="lg", color="secondary") }
 ---
 objects:
+  - users[i].g_1145_attachment: ALDocument.using(title=f"{users[i]} - Electronic Notification", filename=space_to_underscore(f"{users[i]} - Electronic Notification"), has_addendum=False)
+---
+objects:
   - users[i].limited_scope_retainer: ALDocument.using(title=f"{users[i]} - Limited Scope Retainer", filename=space_to_underscore(f"{users[i]} - Limited Scope Retainer"), has_addendum=False)
 ---
 objects:
@@ -1068,22 +1095,22 @@ objects:
 # ---
 # code: |
 #   users[i].applicant_intake_worksheet.enabled = users[i].application_is_approved
----
-objects:
-  - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
----
+# --- 
+# objects:
+#   - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
+# ---
 objects:
   - users[i].cover_page: ALDocument.using(title=f"Cover Page", filename="cover_page", has_addendum=False, enabled=True)
   - users[i].ending_page: ALDocument.using(title=f"Ending Page", filename="ending_page", has_addendum=False, enabled=True)
 ---
-code: |
-  users[i].fee_waiver_ead.enabled = users[i].application_is_approved and application_kind == "ead_only"
+# code: |
+#   users[i].fee_waiver_ead.enabled = users[i].application_is_approved and application_kind == "ead_only"
 ---
-objects:
-  - users[i].fee_waiver_tps: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
----
-code: |
-  users[i].fee_waiver_tps.enabled = users[i].application_is_approved and not application_kind == "ead_only"
+# objects:
+#   - users[i].fee_waiver_tps: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
+# ---
+# code: |
+#   users[i].fee_waiver_tps.enabled = users[i].application_is_approved and not application_kind == "ead_only"
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
@@ -1092,6 +1119,7 @@ objects:
         users[i].ead_legal_screener,
         users[i].tps_legal_screener,
         users[i].limited_scope_retainer,
+        users[i].g_1145_attachment,
         users[i].i_821_attachment,
         users[i].military_service_addendum,
         users[i].transit_through_ca_addendum,
@@ -1100,12 +1128,11 @@ objects:
         users[i].smuggling_addendum,
         users[i].continuous_residence_addendum,
         users[i].tps_yes_answer_addendum,
-        users[i].fee_waiver_tps,
         users[i].i_765_attachment,
+        users[i].i_912_fee_waiver,
         users[i].ead_interim_parole_addendum,
         users[i].ead_order_of_supervision_addendum,
         users[i].ead_asylum_checklist,
-        users[i].fee_waiver_ead,
         users[i].cov_coa_instructions,
         users[i].eoir_61_cov,
         users[i].motion_addendum,
@@ -1118,6 +1145,9 @@ code: |
     users[i].limited_scope_retainer.enabled = True
   else:
     users[i].limited_scope_retainer.enabled = False
+---
+code: |
+  users[i].g_1145_attachment.enabled = users[i].application_is_approved
 ---
 code: |
   users[i].military_service_addendum.enabled = users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("military_service"))
@@ -1235,28 +1265,42 @@ attachment:
   docx template file: TPS_legal_screener_AID_edited.docx
   skip undefined: True
 ---
+attachment:
+  variable name: users[i].g_1145_attachment[j]
+  name: ${ users[i] } - Electronic Notification
+  filename: ${ space_to_underscore(f"{users[i]} - Electronic Notification") }
+  pdf template file: G-1145.pdf
+  skip undefined: True
+  editable: False
+  fields:
+    - "users1_name_last": ${ users[i].name.last }
+    - "users1_name_first": ${ users[i].name.first }
+    - "users1_name_middle": ${ users[i].name.middle }
+    - "users1_mobile_number": ${ users[i].mobile_number }
+    - "users1_email": ${ users[i].email }
+---
 reconsider:
   - children_for_retainer
 attachment:
   variable name: users[i].limited_scope_retainer[j]
   name: ${ users[i] } - Limited Scope Retainer
   filename: ${ space_to_underscore(f"{users[i]} - Limited Scope Retainer") }
-  docx template file: Limited_Scope_Retainer.docx
+  docx template file: limited_scope_retainer_2025.docx
   skip undefined: True
 ---
-attachment:
-  variable name: users[i].fee_waiver_tps[j]
-  name: ${ users[i] } - Fee Waiver Request
-  filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
-  docx template file: Fee_Waiver_Cover_Letter_TPS.docx
-  skip undefined: True
----
-attachment:
-  variable name: users[i].fee_waiver_ead[j]
-  name: ${ users[i] } - Fee Waiver Request
-  filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
-  docx template file: Fee_Waiver_Cover_Letter_EAD.docx
-  skip undefined: True
+# attachment:
+#   variable name: users[i].fee_waiver_tps[j]
+#   name: ${ users[i] } - Fee Waiver Request
+#   filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
+#   docx template file: Fee_Waiver_Cover_Letter_TPS.docx
+#   skip undefined: True
+# ---
+# attachment:
+#   variable name: users[i].fee_waiver_ead[j]
+#   name: ${ users[i] } - Fee Waiver Request
+#   filename: ${ space_to_underscore(f"{users[i]} - Fee Waiver Request") }
+#   docx template file: Fee_Waiver_Cover_Letter_EAD.docx
+#   skip undefined: True
 ---
 code: |
   def uscis_countries_list():

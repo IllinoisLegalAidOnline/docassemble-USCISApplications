@@ -45,6 +45,7 @@ Scenario: EAD only, 2 applicants
     | users[1].signature | | users[1].signature |
     | application_kind | ead_only | | 
     | change_kind | no | |
+    | users[i].fee_waiver_needed | False | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 2 | | 
@@ -63,6 +64,7 @@ Scenario: EAD only, 2 applicants
     | users[0].addenda['ead_interim_parole'] | True | |
     | users[1].addenda['ead_interim_parole'] | True | |
     | users[i].is_first_TPS_application | First TPS Application | |
+    | users[i].is_first_EAD_application | initial | |
     | users[i].user_reads_english | False | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -85,6 +87,7 @@ Scenario: EAD only, 2 applicants
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 
@@ -176,6 +179,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[2].signature | | users[2].signature |
     | application_kind | ead_only | | 
     | change_kind | no | |
+    | users[i].fee_waiver_needed | False | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 0 | | 
@@ -198,6 +202,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[1].addenda['ead_interim_parole'] | True | | 
     | users[2].addenda['ead_interim_parole'] | True | | 
     | users[i].is_first_TPS_application | First TPS Application | |
+    | users[i].is_first_EAD_application | initial | |
     | users[i].user_reads_english | True | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -220,6 +225,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 
@@ -277,6 +283,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[2].signature | | users[2].signature |
     | application_kind | ead_only | | 
     | change_kind | no | |
+    | users[i].fee_waiver_needed | False | |
     | users[i].ead_required_documents['National ID'] | True | |
     | users[i].has_additional_citizenship | False | | 
     | users[i].number_children_applying | 0 | | 
@@ -303,6 +310,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[1].addenda['ead_interim_parole'] | True | | 
     | users[2].addenda['ead_interim_parole'] | True | | 
     | users[i].is_first_TPS_application | First TPS Application | |
+    | users[i].is_first_EAD_application | initial | |
     | users[i].user_reads_english | True | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -325,6 +333,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 
@@ -364,6 +373,7 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].signature | | users[0].signature |
     | application_kind | ead_only | | 
     | change_kind | no | |
+    | users[i].fee_waiver_needed | False | |
     | users[0].ead_required_documents['National ID'] | True | |
     | users[0].has_additional_citizenship | False | | 
     | users[0].number_children_applying | 0 | | 
@@ -380,6 +390,7 @@ Scenario: EAD, 1 applicant, some are screened
     | supervisor_name | Supervisor | |
     | users[0].addenda['ead_interim_parole'] | True | | 
     | users[i].is_first_TPS_application | First TPS Application | |
+    | users[i].is_first_EAD_application | initial | |
     | users[0].user_reads_english | True | |
     | users[0].sex | male | | 
     | users[0].ethnicity | hispanic | |
@@ -402,7 +413,8 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].state_of_entry | MA | | 
     | users[0].immigration_status_last_entry | Parolee | | 
     | users[0].current_immigration_status | Visitor | |
-    | users[0].father_first_name | FatherName | |
+    | users[i].has_been_in_immigration_proceedings | False | |
+    | users[i].father_first_name | FatherName | |
     | users[0].father_last_name | Last | |
     | users[0].mother_first_name | MotherName | | 
     | users[0].mother_last_name | Last | | 
@@ -451,6 +463,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[1].signature | | users[1].signature |
     | application_kind | ead_and_tps | | 
     | change_kind | no | |
+    | users[i].fee_waiver_needed | False | |
     | users[i].proof_of_birthplace['Birth certificate'] | True | |
     | users[i].method_of_entry | Presented at a port of entry | | 
     | users[i].parents_from_venezuela | False | | 
@@ -499,6 +512,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | approved_applications['users[1]'] | True | supervisor_overall_approval_status | 
     | supervisor_name | Supervisor | |
     | users[i].is_first_TPS_application | First TPS Application | |
+    | users[i].is_first_EAD_application | initial | |
     | users[i].user_reads_english | True | |
     | users[i].sex | male | | 
     | users[i].ethnicity | hispanic | |
@@ -521,6 +535,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[i].state_of_entry | MA | | 
     | users[i].immigration_status_last_entry | Parolee | | 
     | users[i].current_immigration_status | Visitor | |
+    | users[i].has_been_in_immigration_proceedings | False | |
     | users[i].father_first_name | FatherName | |
     | users[i].father_last_name | Last | |
     | users[i].mother_first_name | MotherName | | 

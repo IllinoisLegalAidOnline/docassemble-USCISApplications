@@ -755,3 +755,11 @@ fields:
 ---
 code: |
   users[i].application_is_approved = supervisor_overall_approval_status == "approved" or (supervisor_overall_approval_status == "mixed" and users[i] in approved_applications)
+---
+# Overriding the TPS/EAD application process for COV/COA only applications
+depends on:
+  - users[i].application_is_approved
+code: |
+  if application_kind in ['cov_and_coa','coa_only']:
+    users[i].application_is_approved = False
+---

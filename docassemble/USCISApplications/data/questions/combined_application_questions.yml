@@ -36,7 +36,7 @@ code: |
 ---
 id: your address first
 question: |
-  ${ users[0] }'s address
+  ${ users[0] }'s current address
 subquestion: |
   This is your current, physical address. Mailing address will be entered on another screen.
 fields:

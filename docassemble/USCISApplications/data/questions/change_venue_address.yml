@@ -39,6 +39,8 @@ question: |
   Relief ${ users[i] } is seeking
 fields:
   - What form of relief will you be seeking?: users[i].type_of_relief
+    datatype: area
+    rows: 2
     maxlength: 60
 ---
 # id: attorney or representative type
@@ -96,7 +98,7 @@ id: your previous address change
 question: |
   ${ users[i] }'s former address
 subquestion: |
-  This is not your current, physical or mailing address.
+  This is not your current/physical or mailing address.
 fields:
   - When did you move to Illinois?: users[i].previous.date
     datatype: ThreePartsDate

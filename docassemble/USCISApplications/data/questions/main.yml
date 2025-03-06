@@ -188,8 +188,8 @@ code: |
       if change_kind == "coa_only" or application_kind == 'coa_only':
         user.previous.date
       else:
-        user.immigration_judge.name.first
         user.previous.date
+        user.immigration_judge.name.first
         user.notice_appear_date
         user.type_of_relief
         user.dhs.address.address

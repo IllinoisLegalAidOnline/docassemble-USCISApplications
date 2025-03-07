@@ -631,6 +631,8 @@ continue button field: review_initial_user_list
 id: kind of interview
 question: |
   What kind of application will this family complete?
+subquestion: |
+  **Note:** You have the option to make Change of Venue (COV) and Change of Address forms (COV) if you select **TPS and EAD** or **EAD only.**
 field: application_kind
 buttons:
   - TPS and EAD: ead_and_tps

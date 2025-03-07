@@ -82,9 +82,9 @@ sets:
   - users[i].address.unit
   - users[i].address.state
 question: |
-  ${ users[i] }'s address
+  ${ users[i] }'s current address
 subquestion: |
-  This is a current, physical address. Mailing address will be entered on another screen.
+  This is your current, physical address. Mailing address will be entered on another screen.
 fields:
   - ${ users[i] }'s address is: users[i].address
     datatype: object_radio

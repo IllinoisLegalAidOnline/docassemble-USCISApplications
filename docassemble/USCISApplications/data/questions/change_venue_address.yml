@@ -135,6 +135,8 @@ sets:
   - users[i].dhs.address.zip
 question: |
   Office of the Principal Legal Advisor (OPLA) address
+subquestion: |
+  This is for ${ users[i] }'s case.
 fields: 
   - Street address: users[i].dhs.address.address
     address autocomplete: True

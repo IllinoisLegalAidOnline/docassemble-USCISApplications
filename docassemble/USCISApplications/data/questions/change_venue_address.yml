@@ -149,15 +149,24 @@ fields:
   - ZIP code: users[i].dhs.address.zip
   - note: |
       Is the OPLA location in a **different city and state** than the court?:
+    show if:
+      code: |
+        change_kind == "cov_and_coa"
   - no label: users[i].dhs.different_court_location
     datatype: yesnoradio
+    show if:
+      code: |
+        change_kind == "cov_and_coa"
   - Court city: users[i].dhs.court_city
-    required: False
-    show if: users[i].dhs.different_court_location 
+    show if:
+      code: |
+        change_kind == "cov_and_coa" and showifdef('users[i].dhs.different_court_location')
   - Court state: users[i].dhs.court_state
     code: |
       states_list()
-    show if: users[i].dhs.different_court_location 
+    show if: 
+      code: |
+        change_kind == "cov_and_coa" and showifdef('users[i].dhs.different_court_location')
 ---
 objects:
   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)

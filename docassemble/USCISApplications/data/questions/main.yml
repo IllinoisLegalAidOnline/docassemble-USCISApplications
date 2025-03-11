@@ -180,10 +180,11 @@ code: |
   if change_kind != "no": 
     nav.set_section("section_covcoa")
     for idx,user in enumerate(users):
+      # make sure we have address 
+      user.address.address
+      user.mailing_address.address
       if application_kind in ['cov_and_coa','coa_only']:
-        user.address.address
-        user.mailing_address.address
-        user.application_is_approved
+        user.application_is_approved # turn off TPS/EAD
 
       if change_kind == "coa_only" or application_kind == 'coa_only':
         user.previous.date

@@ -761,5 +761,5 @@ depends on:
   - users[i].application_is_approved
 code: |
   if application_kind in ['cov_and_coa','coa_only']:
-    users[i].application_is_approved = False
+    users[i].application_is_approved = True
 ---

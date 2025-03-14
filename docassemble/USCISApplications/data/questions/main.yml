@@ -80,12 +80,14 @@ code: |
   users.gather()
   review_initial_user_list
   nav.set_section("section_retainer")
+  set_progress(15)
   agrees_to_retainer
   set_progress(10)
   # for user in users:
   #   if user.age_in_years() > 13:
   #     user.signature
   nav.set_section("section_screener")
+  set_progress(40)
   application_kind
   if application_kind in ['ead_and_tps','ead_only']:
     change_kind
@@ -153,6 +155,7 @@ code: |
         user.check_work
 
     nav.set_section("section_fees")
+    set_progress(80)
     for idx,user in enumerate(users):
       if user.application_is_approved:
         if user.fee_waiver_needed:
@@ -179,22 +182,24 @@ code: |
   # COV and COA
   if change_kind != "no": 
     nav.set_section("section_covcoa")
+    set_progress(90)
     for idx,user in enumerate(users):
       # make sure we have address 
-      user.address.address
-      user.mailing_address.address
       if application_kind in ['cov_and_coa','coa_only']:
+        user.address.address
+        user.mailing_address.address
         user.application_is_approved # turn off TPS/EAD
 
-      if change_kind == "coa_only" or application_kind == 'coa_only':
-        user.previous.date
-        user.dhs.address.address
-      else:
-        user.previous.date
-        user.immigration_judge.name.first
-        user.notice_appear_date
-        user.type_of_relief
-        user.dhs.address.address
+      if user.application_is_approved:
+        if change_kind == "coa_only" or application_kind == 'coa_only':
+          user.previous.date
+          user.dhs.address.address
+        else:
+          user.previous.date
+          user.immigration_judge.name.first
+          user.notice_appear_date
+          user.type_of_relief
+          user.dhs.address.address
 
   nav.set_section("section_download")
   store_variables_snapshot(
@@ -662,8 +667,6 @@ depends on:
 code: |
   if application_kind in ['cov_and_coa','coa_only']:
     change_kind = application_kind
-    # Enabling this to avoid issues for non TPS/EAD applications
-    user.application_is_approved = False
 ---
 id: explain_add_explanations
 question: |

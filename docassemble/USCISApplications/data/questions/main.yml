@@ -443,10 +443,10 @@ fields:
 ---
 id: people
 question: |
-  How many people are applying for work authorization at this station?
+  How many people are applying today at this station?
 subquestion: |
   Get the names of all people who have a **family relationship** and are here
-  to get work authorization together today. For example: siblings, aunts, 
+  to apply together today. For example: siblings, aunts, 
   uncles, parents, cousins, children, and spouses or intimate partners.
 
   Please complete a separate interview for each person who is not in 

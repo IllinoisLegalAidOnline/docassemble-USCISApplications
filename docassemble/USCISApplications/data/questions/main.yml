@@ -443,11 +443,11 @@ fields:
 ---
 id: people
 question: |
-  How many people are applying today at this station?
+  How many people are requesting services at this station?
 subquestion: |
-  Get the names of all people who have a **family relationship** and are here
-  to apply together today. For example: siblings, aunts, 
-  uncles, parents, cousins, children, and spouses or intimate partners.
+  Get the names of all people who have a **family relationship** and are requesting services
+  together today. For example: siblings, aunts, uncles, parents, cousins, children, and 
+  spouses or intimate partners.
 
   Please complete a separate interview for each person who is not in 
   a family relationship with the others.
@@ -636,7 +636,7 @@ continue button field: review_initial_user_list
 ---
 id: kind of interview
 question: |
-  What kind of application will this family complete?
+  What kind of forms will this family complete?
 subquestion: |
   **Note:** You will have the option to make Change of Venue (COV) and Change of Address forms (COA) if you select **TPS and EAD** or **EAD only.**
 field: application_kind

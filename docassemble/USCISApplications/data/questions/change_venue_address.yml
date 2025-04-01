@@ -172,6 +172,13 @@ fields:
     js show if: |
       val("users[i].dhs.different_court_location")
 ---
+id: your previous address change
+question: |
+  Will ${ users[i] }'s be mailing the Change of Address request?
+fields:
+  - no label: users[i].cert_of_service
+    datatype: yesnoradio
+---
 objects:
   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)
 ---
@@ -300,9 +307,18 @@ attachment:
     - "no_service": False
 
     # Service instructions
-    - "service_name_line": ${ users[i].name.full() }
-    - "service_address_line_1": ${ users[i].mailing_address.line_one(bare=True) }
-    - "service_address_line_2": ${ users[i].mailing_address.line_two() }
+    - "service_name_line": |
+        % if users[i].cert_of_service:
+        ${ users[i].name.full() }
+        % endif
+    - "service_address_line_1": |
+        % if users[i].cert_of_service:
+        ${ users[i].mailing_address.line_one(bare=True) }
+        % endif
+    - "service_address_line_2":  |
+        % if users[i].cert_of_service:
+        ${ users[i].mailing_address.line_two() }
+        % endif
     - "service_address_line_3": ''
     - "court_address": |
         ${ users[i].dhs.address.line_one() }

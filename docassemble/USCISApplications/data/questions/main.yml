@@ -188,18 +188,20 @@ code: |
       if application_kind in ['cov_and_coa','coa_only']:
         user.address.address
         user.mailing_address.address
-        user.application_is_approved # turn off TPS/EAD
+        user.application_is_approved # approved only
 
       if user.application_is_approved:
         if change_kind == "coa_only" or application_kind == 'coa_only':
           user.previous.date
           user.dhs.address.address
+          user.cert_of_service
         else:
           user.previous.date
           user.immigration_judge.name.first
           user.notice_appear_date
           user.type_of_relief
           user.dhs.address.address
+          user.cert_of_service
 
   nav.set_section("section_download")
   store_variables_snapshot(

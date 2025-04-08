@@ -1150,6 +1150,7 @@ objects:
         users[i].tps_legal_screener,
         users[i].limited_scope_retainer,
         users[i].g_1145_attachment,
+        users[i].i_821_attachment,
         users[i].military_service_addendum,
         users[i].transit_through_ca_addendum,
         users[i].child_haitian_nationality_addendum,

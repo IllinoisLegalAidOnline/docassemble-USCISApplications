@@ -105,7 +105,7 @@ code: |
       users[0].nonlpr_8a_yes
     users[0].asylum_application
     users[0].general_fear
-    users[0].hurt_past
+    #users[0].hurt_past
     users[0].state_fear_government
     users[0].finishing_crime_yes
 

@@ -1,6 +1,6 @@
 import os
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from fnmatch import fnmatchcase
 from distutils.util import convert_path
 
@@ -52,9 +52,8 @@ setup(name='docassemble.USCISApplications',
       author_email='admin@admin.com',
       license='The MIT License (MIT)',
       url='https://docassemble.org',
-      packages=find_packages(),
-      namespace_packages=['docassemble'],
-      install_requires=['docassemble.ILAO', 'docassemble.AssemblyLine'],
+      packages=find_namespace_packages(),
+      install_requires=['docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main', 'docassemble.ILAO>=1.1.10'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/USCISApplications/', package='docassemble.USCISApplications'),
      )

@@ -1,6 +1,7 @@
 include:
   - docassemble.AssemblyLine:assembly_line.yml
   - docassemble.ILAO:ilao-interview-framework.yml
+  - screener_questions.yml
   - limited_scope_questions.yml
   - screeners.yml
   #- aiw.yml
@@ -70,155 +71,195 @@ id: interview_order_main
 mandatory: True
 code: |
   set_initial_sections
-  intro_main
   region
-  if interpreter_present:
-    interpreter.name.first
-  preparer.name.first
-  preparer_is_attorney
-  preparer.address.address
-  users.gather()
-  review_initial_user_list
-  nav.set_section("section_retainer")
-  set_progress(15)
-  agrees_to_retainer
-  set_progress(10)
-  # for user in users:
-  #   if user.age_in_years() > 13:
-  #     user.signature
-  nav.set_section("section_screener")
-  set_progress(40)
-  application_kind
-  if application_kind in ['ead_and_tps','ead_only']:
-    change_kind
-    signpost_screener
-    if len(users) > 1:
-      update_sections
-    for idx, user in enumerate(users):
-      nav.set_section(f"users_{idx}_signpost_screen")
-      if application_kind == "ead_only":
-        user.ead_screening_questions
-      else:
-        user.tps_screening_questions
-      # user.applicant_intake_worksheet_questions
-      set_progress((80/len(users.complete_elements())) * (idx + 1) + 10 )
-      # Trigger the more detailed questions on a per-user basis
-    if application_kind == "ead_only":
-      review_ead_screening_questions
-    if application_kind == "tps_and_ead":
-      review_tps_screening_questions
+  if comp_screener:
+    preparer.name.first
+    preparer_is_attorney
+    users[0].screening_user
+    users[0].current_rep
+    users[0].notice_to_appear
+    users[0].hearing
+    users[0].ice_check
+    users[0].history.gather()
+    users[0].immigration_1a_yes
+    users[0].application_2a_yes
+    if users[0].spouse:
+      users[0].marriage_date
+    if users[0].has_children:
+      users[0].children.gather()
+    users[0].other_family_status
+    users[0].pending_immigration
+    users[0].parents_status
+    users[0].military
+    users[0].criminal_3a_yes
+    users[0].criminal.gather()
+    users[0].education_level
+    users[0].citizenship_4a_yes
+    users[0].uvisa_5a_yes
+    users[0].tvisa_6a_yes
+    #users[0].sijs_lived_home
+    users[0].nacara
+    if users[0].lpr_signpost:
+      users[0].lpr_7a_yes
+    if users[0].nonlpr_signpost:
+      users[0].nonlpr_8a_yes
+    users[0].asylum_application
+    users[0].general_fear
+    users[0].hurt_past
+    users[0].state_fear_government
+    users[0].finishing_crime_yes
 
-    # End early if all users are screened out
-    if supervisor_overall_approval_status == "screened_out":
-      # still need to start the background process
-      generate_downloads_task
-      if generate_downloads_task.ready():
-        download_completed_ea_application
-      else:
-        waiting_screen
-
-
-    for idx,user in enumerate(users):
-      nav.set_section(f"users_{idx}_signpost_app")
-      if user.application_is_approved:
-        user.signpost
-        if application_kind == "ead_and_tps":
-          user.is_first_TPS_application
-          user.is_first_EAD_application
-        else:
-          user.is_first_EAD_application
-        if user.age_in_years() < 14:
-          user.parent
-        user.user_reads_english
-        if application_kind == "ead_and_tps":
-          user.ethnicity
-        else:
-          user.sex
-        user.alternate_birthdates.gather()
-        user.address.address
-        user.mailing_address.address
-        user.countries_of_residence.gather()
-        if user.countries_of_residence.there_are_any:
-          user.countries_of_residence_review
-        user.has_passport
-        user.travel_documents.gather()
-        user.i94_arrival_number
-        user.has_been_in_immigration_proceedings
-        user.father_first_name
-        user.previously_filed_I765
-        if application_kind == "ead_and_tps":
-          if user.traveled_through_other_countries:
-            user.date_entered_first_country_month
-          user.have_you_ever_questions
-        user.countries_of_citizenship
-        user.signpost
-        user.check_work
-
-    nav.set_section("section_fees")
-    set_progress(80)
-    for idx,user in enumerate(users):
-      if user.application_is_approved:
-        if user.fee_waiver_needed:
-          user.fee_waiver_bases
-          if user.fee_waiver_bases['benefits']:
-            user.means_benefits.gather()
-          if user.fee_waiver_bases['guidelines']:
-            user.employment_status
-            user.annual_household_income
-          if user.fee_waiver_bases['hardship']:
-            if not user.homeless_shelter:
-              user.hardship_details
-            if user.has_assets:
-              user.assets.gather()
-            user.monthly_expenses
-
-    if application_kind == "ead_and_tps" and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
-      for user in users:
-        if user.application_is_approved:
-          if any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]):
-            user.explain_add_explanations
-
-  
-  # COV and COA
-  if change_kind != "no": 
-    nav.set_section("section_covcoa")
-    set_progress(90)
-    for idx,user in enumerate(users):
-      # make sure we have address 
-      if application_kind in ['cov_and_coa','coa_only']:
-        user.address.address
-        user.mailing_address.address
-        user.application_is_approved # approved only
-
-      if user.application_is_approved:
-        if change_kind == "coa_only" or application_kind == 'coa_only':
-          user.previous.date
-          user.dhs.address.address
-          user.cert_of_service
-        else:
-          user.previous.date
-          user.immigration_judge.name.first
-          user.notice_appear_date
-          user.type_of_relief
-          user.dhs.address.address
-          user.cert_of_service
-
-  nav.set_section("section_download")
-  store_variables_snapshot(
-      persistent=True,
-      data={
-          "application_kind": application_kind,
-          "zip": showifdef("users[0].address.zip"),
-          "reached_interview_end": True,
-          "region": showifdef("region"),
-      },
-  )
-  children_for_retainer
-  generate_downloads_task
-  if generate_downloads_task.ready():
-    download_completed_ea_application
+    forms_assembling
+    get_docs_screen
   else:
-    waiting_screen
+    intro_main
+    if interpreter_present:
+      interpreter.name.first
+    preparer.name.first
+    preparer_is_attorney
+    preparer.address.address
+    users.gather()
+    review_initial_user_list
+    nav.set_section("section_retainer")
+    set_progress(15)
+    agrees_to_retainer
+    set_progress(10)
+    # for user in users:
+    #   if user.age_in_years() > 13:
+    #     user.signature
+    nav.set_section("section_screener")
+    set_progress(40)
+    application_kind
+    if application_kind in ['ead_and_tps','ead_only']:
+      change_kind
+      signpost_screener
+      if len(users) > 1:
+        update_sections
+      for idx, user in enumerate(users):
+        nav.set_section(f"users_{idx}_signpost_screen")
+        if application_kind == "ead_only":
+          user.ead_screening_questions
+        else:
+          user.tps_screening_questions
+        # user.applicant_intake_worksheet_questions
+        set_progress((80/len(users.complete_elements())) * (idx + 1) + 10 )
+        # Trigger the more detailed questions on a per-user basis
+      if application_kind == "ead_only":
+        review_ead_screening_questions
+      if application_kind == "tps_and_ead":
+        review_tps_screening_questions
+
+      # End early if all users are screened out
+      if supervisor_overall_approval_status == "screened_out":
+        # still need to start the background process
+        generate_downloads_task
+        if generate_downloads_task.ready():
+          download_completed_ea_application
+        else:
+          waiting_screen
+
+
+      for idx,user in enumerate(users):
+        nav.set_section(f"users_{idx}_signpost_app")
+        if user.application_is_approved:
+          user.signpost
+          if application_kind == "ead_and_tps":
+            user.is_first_TPS_application
+            user.is_first_EAD_application
+          else:
+            user.is_first_EAD_application
+          if user.age_in_years() < 14:
+            user.parent
+          user.user_reads_english
+          if application_kind == "ead_and_tps":
+            user.ethnicity
+          else:
+            user.sex
+          user.alternate_birthdates.gather()
+          user.address.address
+          user.mailing_address.address
+          user.countries_of_residence.gather()
+          if user.countries_of_residence.there_are_any:
+            user.countries_of_residence_review
+          user.has_passport
+          user.travel_documents.gather()
+          user.i94_arrival_number
+          user.has_been_in_immigration_proceedings
+          user.father_first_name
+          user.previously_filed_I765
+          if application_kind == "ead_and_tps":
+            if user.traveled_through_other_countries:
+              user.date_entered_first_country_month
+            user.have_you_ever_questions
+          user.countries_of_citizenship
+          user.signpost
+          user.check_work
+
+      nav.set_section("section_fees")
+      set_progress(80)
+      for idx,user in enumerate(users):
+        if user.application_is_approved:
+          if user.fee_waiver_needed:
+            user.fee_waiver_bases
+            if user.fee_waiver_bases['benefits']:
+              user.means_benefits.gather()
+            if user.fee_waiver_bases['guidelines']:
+              user.employment_status
+              user.annual_household_income
+            if user.fee_waiver_bases['hardship']:
+              if not user.homeless_shelter:
+                user.hardship_details
+              if user.has_assets:
+                user.assets.gather()
+              user.monthly_expenses
+
+      if application_kind == "ead_and_tps" and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
+        for user in users:
+          if user.application_is_approved:
+            if any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]):
+              user.explain_add_explanations
+
+    
+    # COV and COA
+    if change_kind != "no": 
+      nav.set_section("section_covcoa")
+      set_progress(90)
+      for idx,user in enumerate(users):
+        # make sure we have address 
+        if application_kind in ['cov_and_coa','coa_only']:
+          user.address.address
+          user.mailing_address.address
+          user.application_is_approved # approved only
+
+        if user.application_is_approved:
+          if change_kind == "coa_only" or application_kind == 'coa_only':
+            user.previous.date
+            user.dhs.address.address
+            user.cert_of_service
+          else:
+            user.previous.date
+            user.immigration_judge.name.first
+            user.notice_appear_date
+            user.type_of_relief
+            user.dhs.address.address
+            user.cert_of_service
+
+    nav.set_section("section_download")
+    store_variables_snapshot(
+        persistent=True,
+        data={
+            "application_kind": application_kind,
+            "zip": showifdef("users[0].address.zip"),
+            "reached_interview_end": True,
+            "region": showifdef("region"),
+        },
+    )
+    children_for_retainer
+    generate_downloads_task
+    if generate_downloads_task.ready():
+      download_completed_ea_application
+    else:
+      waiting_screen
 ---
 code: |
   users[i].name.first
@@ -341,6 +382,16 @@ fields:
       - Northern Illinois
       - Western Suburbs
       - Central & Downstate Illinois
+---
+id: signpost for screener or USCIS application
+questioN: |
+  Which below are they here to compelte today?
+fields:
+  - no label: comp_screener
+    datatype: radio
+    choices:
+      - "Comprehensive Screener": true
+      - "USCIS application forms": false
 ---
 id: signpost for main application questions
 continue button field: users[i].signpost

@@ -2019,6 +2019,8 @@ attachment:
     # - "attorney_online_account_number": ${ preparer.attorney_online_account_number }
     - "is_first_application": ${ users[i].is_first_TPS_application == 'First TPS Application' }
     - "is_re_application": ${ not users[i].is_first_TPS_application == 'First TPS Application' }
+    - "ead_yes": ${ application_kind == "ead_and_tps" }
+    - "ead_no": ${ application_kind == "tps_only" }
     - "tps_application_country": ${ users[i].tps_application_country }
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }

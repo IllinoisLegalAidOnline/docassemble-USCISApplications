@@ -1166,9 +1166,9 @@ objects:
 objects:
   - users[i].ead_interim_parole_addendum: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Interim Parole Addendum"), has_addendum=False)
 ---
-objects:
-  - users[i].ead_asylum_checklist: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Application Checklist for Category C08"), has_addendum=False)
----
+# objects:
+#   - users[i].ead_asylum_checklist: ALDocument.using(title=f"{users[i]} - EAD Interim Parole Addendum", filename=space_to_underscore(f"{users[i]} - EAD Application Checklist for Category C08"), has_addendum=False)
+# ---
 objects:
   - users[i].ead_order_of_supervision_addendum: ALDocument.using(title=f"{users[i]} - EAD Order of Supervision Addendum", filename=space_to_underscore(f"{users[i]} - EAD Order of Supervision Addendum"), has_addendum=False)
 ---
@@ -1220,7 +1220,6 @@ objects:
         users[i].i_912_fee_waiver,
         users[i].ead_interim_parole_addendum,
         users[i].ead_order_of_supervision_addendum,
-        users[i].ead_asylum_checklist,
         users[i].cov_coa_instructions,
         users[i].eoir_61_cov,
         users[i].motion_addendum,
@@ -1267,9 +1266,9 @@ code: |
 code: |
   users[i].ead_order_of_supervision_addendum.enabled = application_kind in ['ead_and_tps','ead_only'] and users[i].application_is_approved and (application_kind == "ead_only")  and (users[i].eligibility_category == "ead_supervision")
 ---
-code: |
-  users[i].ead_asylum_checklist.enabled = application_kind in ['ead_and_tps','ead_only'] and (users[i].application_is_approved and (application_kind == "ead_only")  and (users[i].eligibility_category == "ead_asylum"))
----
+# code: |
+#   users[i].ead_asylum_checklist.enabled = application_kind in ['ead_and_tps','ead_only'] and (users[i].application_is_approved and (application_kind == "ead_only")  and (users[i].eligibility_category == "ead_asylum"))
+# ---
 attachment:
   variable name: users[i].military_service_addendum[j]
   name: ${ users[i] } - Military Service Addendum
@@ -1319,13 +1318,13 @@ attachment:
   docx template file: EAD_addendum_interim_parole.docx
   skip undefined: True
 ---
-attachment:
-  variable name: users[i].ead_asylum_checklist[j]
-  name: ${ users[i] } - EAD Application Checklist for Category C08 
-  filename: ${ space_to_underscore(f"{users[i]} - EAD Application Checklist for Category C08") }
-  docx template file: EAD_asylum_checklist.docx
-  skip undefined: True
----
+# attachment:
+#   variable name: users[i].ead_asylum_checklist[j]
+#   name: ${ users[i] } - EAD Application Checklist for Category C08 
+#   filename: ${ space_to_underscore(f"{users[i]} - EAD Application Checklist for Category C08") }
+#   docx template file: EAD_asylum_checklist.docx
+#   skip undefined: True
+# ---
 attachment:
   variable name: users[i].ead_order_of_supervision_addendum[j]
   name: ${ users[i] } - EAD Order of Supervision Addendum

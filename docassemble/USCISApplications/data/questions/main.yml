@@ -2,6 +2,7 @@ include:
   - docassemble.AssemblyLine:assembly_line.yml
   - docassemble.ILAO:ilao-interview-framework.yml
   - screener_questions.yml
+  - screener_disclosures.yml
   - limited_scope_questions.yml
   - screeners.yml
   #- aiw.yml
@@ -52,8 +53,8 @@ code: |
   github_user = 'aidanielson'
 ---
 code: |
-  interview_short_title = "TPS/EAD application"
-  ilao_easy_form_title = "TPS/EAD application"
+  interview_short_title = "CLS Workshop Applications"
+  ilao_easy_form_title = "CLS Workshop Applications"
 ---
 code: |
   al_form_type = "other_form"
@@ -66,21 +67,33 @@ code: |
   nav.set_sections(default_sections)
   set_initial_sections = True
 ---
+code: |
+  nav.set_sections(screener_sections)
+  set_screener_sections = True
+---
 #################### Interview order #####################
 id: interview_order_main
 mandatory: True
 code: |
-  set_initial_sections
   region
+  new_start
   if comp_screener:
+    set_screener_sections
     preparer.name.first
     preparer_is_attorney
+    screener
+    nav.set_section("section_disclosures")
+    set_progress(15)
+    agrees_to_disclosures
     users[0].screening_user
     users[0].current_rep
     users[0].notice_to_appear
     users[0].hearing
     users[0].ice_check
     users[0].history.gather()
+    asylum_deadline
+    nav.set_section("section_applicant")
+    set_progress(40)
     users[0].immigration_1a_yes
     users[0].application_2a_yes
     if users[0].spouse:
@@ -95,23 +108,25 @@ code: |
     users[0].criminal.gather()
     users[0].education_level
     users[0].citizenship_4a_yes
+    nav.set_section("section_screener")
+    set_progress(75)
     users[0].uvisa_5a_yes
     users[0].tvisa_6a_yes
-    #users[0].sijs_lived_home
     users[0].nacara
     if users[0].lpr_signpost:
       users[0].lpr_7a_yes
     if users[0].nonlpr_signpost:
       users[0].nonlpr_8a_yes
     users[0].asylum_application
+    users[0].hurt_past
     users[0].general_fear
-    #users[0].hurt_past
-    users[0].state_fear_government
     users[0].finishing_crime_yes
-
+    nav.set_section("section_download")
+    set_progress(95)
     forms_assembling
     get_docs_screen
   else:
+    set_initial_sections
     intro_main
     if interpreter_present:
       interpreter.name.first
@@ -295,6 +310,13 @@ code: |
     nav.set_sections(sections)
   update_sections = True
 ---
+variable name: screener_sections
+data:
+  - section_disclosures: Disclosures
+  - section_applicant: Applicant
+  - section_screener: Eligibility
+  - section_download: Download and print
+---
 id: signpost_screener
 question: |
   Legal screener
@@ -352,27 +374,30 @@ fields:
   - Zip code: interpreter.address.zip
     show if: interpreter_present
 ---
-id: welcome
+id: new start
+continue button field: new_start
 question: |
-  Let's get started
+  CLS Workshop Applications
+
 subquestion: |
+  Welcome to the **CLS Workshop Applications** Easy Form.
 
-  This interview will help you complete employment authorization
-  paperwork for a family group.
+  This program can help advocates perform a comprehensive immigration relief screener to identify possible relief and next steps. For qualified applicants, it can be used to complete the following forms:
 
-  <h2 class="h4">Overview</h2>
+  * I-821 Application for Temporary Protected Status
+  * I-765 Application for Employment Authorization
+  * I-912 Request for Fee Waiver
+  * Motion for Change of Venue
+  * EOIR-33 Change of Address
 
-  You will work through the following sections:
-
-  1. Gather names
-  2. Complete the limited scope retainer
-  3. Verify eligibility
-  4. Complete the application, for the I-765 or the I-821 or both, for each applicant
-  5. Determine if you need a Fee Waiver Request. (optional)
-  6. If you need to complete a Change of Venue/Address during this application. 
-  7. Download and print your work. You will get a separate
-      set of documents for each person in the family group.
+  **Note:** This Easy Form is designed to be used by trained advocates in a clinical workshop setting. It is not for public use."
+---
+id: make forms
 continue button field: intro_main
+question: |
+  Make forms
+subquestion: |
+  The next screens will guide you through the process of making USCIS forms for an individual or family group."
 ---
 id: workshop region
 question: |
@@ -388,7 +413,10 @@ fields:
 ---
 id: signpost for screener or USCIS application
 questioN: |
-  Which below are they here to compelte today?
+  What do you want to do?
+subquestion: |
+  The Comprehensive Screener is a single individual application and the other application form
+  can be completed by a family group.
 fields:
   - no label: comp_screener
     datatype: radio

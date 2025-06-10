@@ -1,0 +1,40 @@
+---
+template: disclosures_template
+subject: |
+  Disclosure Agreement
+content: |
+  <p>I understand that the above information that I discussed today with the attorney or
+   legal representative will be used to determine my eligibility for immigration relief. 
+   I declare that I have not withheld any information during this screening session and 
+   that the information discussed is true and accurate to the best of my knowledge. </p>
+
+
+  
+  <p>If I am unable to receive further assistance at the centralized workshop, I would like
+   to be referred to other nonprofit organizations in Illinois. I understand and acknowledge
+    that as part of that referral process my contact information as well as a brief summary
+     of my case may be shared with partner organizations.  </p>
+
+     
+  ---
+
+  <p>Entiendo que la información anterior que discutí hoy con el abogado o representante
+   legal se utilizará para determinar mi elegibilidad para el alivio migratorio.  Declaro
+   que no he ocultado ninguna información durante esta sesión de selección y que la
+    información discutida es verdadera y precisa a mi leal saber y entender.</p>
+
+  <p>Si no puedo recibir más asistencia en el taller centralizado, me gustaría que me remitan a otras
+   organizaciones sin fines de lucro en Illinois. Entiendo y reconozco que, como parte de ese proceso 
+   de referencia, mi información de contacto, así como un breve resumen de mi caso, pueden compartirse
+   con organizaciones asociadas.</p>
+
+
+---
+id: disclosures
+question: |
+  Do you agree to the terms of the Disclosure Agreement?
+  ¿Está de acuerdo con los términos del Acuerdo de Divulgación?
+subquestion: |
+  ${ display_template(disclosures_template) }
+continue button field: agrees_to_disclosures
+continue button label: I Agree / Estoy de Acuerdo

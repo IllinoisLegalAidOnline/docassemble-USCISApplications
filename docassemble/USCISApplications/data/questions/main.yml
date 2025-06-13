@@ -16,16 +16,16 @@ default screen parts:
   right: |
 ---
 code: |
-  ilao_easy_form_title = "TPS/EAD application"
+  ilao_easy_form_title = "CLS Workshop Applications"
   ilao_easy_form_url = "None - this is an advocate only Easy Form"
 ---
 metadata:
   title: >-
-    TPS/EAD application
+    CLS Workshop Applications
   short title: >-
-    TPS/EAD application
+    CLS Workshop Applications
   description: |-
-    This interview helps someone in Illinois apply to the DHS for an Employment Authorization Document (EAD) or Temporary Protected Status (TPS).
+    This program can help advocates perform a comprehensive immigration relief screener to identify possible relief and next steps.
   tags:
     - "IM-00-00-00-00"
   authors:
@@ -75,13 +75,12 @@ code: |
 id: interview_order_main
 mandatory: True
 code: |
-  region
   new_start
+  region
   if comp_screener:
     set_screener_sections
-    preparer.name.first
-    preparer_is_attorney
-    screener
+    screener.name.first
+    screener_intro
     nav.set_section("section_disclosures")
     set_progress(15)
     agrees_to_disclosures
@@ -105,6 +104,7 @@ code: |
     users[0].parents_status
     users[0].military
     users[0].criminal_3a_yes
+    check_criminal_history
     users[0].criminal.gather()
     users[0].education_level
     users[0].citizenship_4a_yes
@@ -112,7 +112,7 @@ code: |
     set_progress(75)
     users[0].uvisa_5a_yes
     users[0].tvisa_6a_yes
-    users[0].nacara
+    users[0].nacara_parents
     if users[0].lpr_signpost:
       users[0].lpr_7a_yes
     if users[0].nonlpr_signpost:
@@ -415,8 +415,7 @@ id: signpost for screener or USCIS application
 questioN: |
   What do you want to do?
 subquestion: |
-  The Comprehensive Screener is a single individual application and the other application form
-  can be completed by a family group.
+  The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
 fields:
   - no label: comp_screener
     datatype: radio
@@ -1215,10 +1214,6 @@ objects:
 # objects:
 #   - users[i].fee_waiver_ead: ALDocument.using(title=f"{users[i]} - Fee Waiver Request", filename=space_to_underscore(f"{users[i]} - Fee Waiver Request"), has_addendum=False)
 # ---
-objects:
-  - users[i].cover_page: ALDocument.using(title=f"Cover Page", filename="cover_page", has_addendum=False, enabled=True)
-  - users[i].ending_page: ALDocument.using(title=f"Ending Page", filename="ending_page", has_addendum=False, enabled=True)
----
 # code: |
 #   users[i].fee_waiver_ead.enabled = users[i].application_is_approved and application_kind == "ead_only"
 ---
@@ -1231,7 +1226,6 @@ objects:
 objects:
   - al_user_bundle: ALDocumentBundle.using(title="All documents to print and file", filename="all_documents", enabled=True, elements=[])
   - users[i].document_bundle: ALDocumentBundle.using(title=f"{users[i]} - All documents to print and file", filename=space_to_underscore(f"{users[i]} - all_documents"), enabled=True, elements=[
-        users[i].cover_page,
         users[i].ead_legal_screener,
         users[i].tps_legal_screener,
         users[i].limited_scope_retainer,
@@ -1252,7 +1246,6 @@ objects:
         users[i].eoir_61_cov,
         users[i].motion_addendum,
         users[i].eoir_33_coa,
-        users[i].ending_page,
       ])
 ---
 code: |
@@ -1457,22 +1450,3 @@ code: |
     return country_names
 
 ---
-attachment:
-  variable name: users[i].cover_page[j]
-  name: Cover Page
-  filename: cover_page
-  pdf template file: cover_page.pdf
-  skip undefined: True
-  editable: False
-  fields:
-    - "document_set_for": ${ users[i].name.full(middle="full") }
----
-attachment:
-  variable name: users[i].ending_page[j]
-  name: Ending Page
-  filename: ending_page
-  pdf template file: ending_page.pdf
-  skip undefined: True
-  editable: False
-  fields:
-    - "document_set_for": ${ users[i].name.full(middle="full") }

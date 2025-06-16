@@ -108,6 +108,7 @@ fields:
       - Master Calendar Hearing (MC/MCH): mc
       - Individual Hearing (INDV): indv 
       - Bond: bond
+    show if: users[0].hearing
 ---
 id: ICE check in
 question: |
@@ -326,12 +327,14 @@ fields:
   - "Did you enter the United States as a minor (under 18 years old)?": users[0].immigration_1p_yes
     datatype: yesnomaybe
     #label above field: True
-  - note: |
-      Were you designated an unaccompanied minor (UAC) by  Office of Refugee Resettlement (ORR)? (If unsure: did you spend time in a children's
-      shelter? Review documents to confirm).
+  - Details: users[0].immigration_1p_details
+    datatype: area
+    rows: 2
     label above field: True
     js show if: |
-      val("users[0].immigration_1q_yes") == true || val("users[0].immigration_1q_yes") == "None"
+      val("users[0].immigration_1p_yes") == true || val("users[0].immigration_1p_yes") == "None"
+  - "Were you designated an unaccompanied minor (UAC) by  Office of Refugee Resettlement (ORR)? (If unsure: did you spend time in a children's shelter? Review documents to confirm).": users[0].immigration_1q_yes
+    datatype: yesnomaybe
   - Details: users[0].immigration_1q_details
     datatype: area
     rows: 2

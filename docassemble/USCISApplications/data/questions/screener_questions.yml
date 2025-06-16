@@ -1,5 +1,6 @@
 ---
 objects:
+  - screener: ALIndividual
   - users[i].history: DAList.using(object_type=DAObject, there_are_any=True, complete_attribute='complete')
   - users[i].children: ALPeopleList.using(there_are_any=True, complete_attribute='complete')
   - users[i].criminal: DAList.using(object_type=DAObject, there_are_any=False, complete_attribute='complete')
@@ -20,15 +21,42 @@ subquestion: |
   3. Additional family information such as your spouse, children, and parents.
   4. Complete the rest of the questions to consider your eligibility.
   5. At the end of the interview the comprehensive legal screener will downloadable and you will receive
-  your copy
-continue button field: screener
+  your copy.
+continue button field: screener_intro
+---
+sets:
+  - screener.name.first
+  - screener.name.middle
+  - screener.name.last
+id: screener name
+question: |
+  Who is helping with this screener?
+fields:
+  - Screener is: screener
+    datatype: object_radio
+    none of the above: Someone else
+    disable others:
+      - screener.name.first
+      - screener.name.middle
+      - screener.name.last
+    choices: |
+      [signed_in_user] if user_logged_in() else []
+  - note: |
+      <h2 class="h4">Screener's Name</h2>      
+  - code: |
+      screener.name_fields(person_or_business="person", show_suffix=False,)
 ---
 id: basic information
 question: |
     What is your full legal name?
 fields:
-  - code: |
-      users[0].name_fields(person_or_business="person", show_suffix=True)
+  - First name: users[0].name.first
+  - Middle name: users[0].name.middle
+    required: False
+  - Last name: users[0].name.last
+  - Suffix: users[0].name.suffix
+    required: False
+    code: name_suffix()
   - Country of birth: users[0].country_of_birth
     input type: dropdown
     code: |
@@ -48,11 +76,12 @@ question: |
 fields:
   - no label: users[0].current_rep
     datatype: yesnoradio
-  - Can you provide any details regarding this representative?: users[0].current_rep_detail
+  - note: |
+      List the name and contact information, status/location of your case, etc.
+    show if: users[0].current_rep
+  - Explain legal representation: users[0].current_rep_detail
     datatype: area
     rows: 2
-    help: |
-      List the name and contact information, status/location of your case, etc.
     show if: users[0].current_rep
 ---
 id: immigration nta
@@ -72,7 +101,6 @@ fields:
     show if: users[0].hearing
   - Hearing date: users[0].hearing_date
     datatype: ThreePartsDate
-    alMin: ${ today() }
     show if: users[0].hearing
   - Type of Hearing: users[0].options
     datatype: radio
@@ -98,29 +126,35 @@ id: immigration history
 question: |
   Immigration history
 fields:
-  - "Date of entry": users[0].history[i].entry_date
+  - "Date of ${ ordinal(i) } entry into the U.S.": users[0].history[i].entry_date
     datatype: ThreePartsDate
     alMax: ${ today() }
   - "Have you left the U.S. since then?": users[0].history[i].exit_yes
     datatype: yesnoradio
-  - "Date of exit (if applies)": users[0].history[i].exit_date
+  - "Date of exit": users[0].history[i].exit_date
     datatype: ThreePartsDate
     alMax: ${ today() }
     show if: users[0].history[i].exit_yes
   - "Manner of entry": users[0].history[i].manner_of_entry
     datatype: radio
     choices: 
-      - EWI: ewi
+      - Entry without inspection (EWI): ewi
       - Other: other
       - Presented at port of entry: port
       - Paroled: paroled 
-      - Entered with a visa.: visa
+      - Entered with a visa: visa
     required: False
-  - "Who did you enter with? Any encounters with CBP/ICE?": users[0].history[i].details # is this required? may not be properly applicable if applicant dod not arrive directly to a city/town...
+  - "Explain 'other' status": users[i].history[i].manner_of_entry_other
+    maxlength: 30
+    show if: 
+      variable: users[0].history[i].manner_of_entry
+      is: "other"
+  - "Who did you enter with?": users[0].history[i].enter_with 
     datatype: area
     rows: 2
-    required: False
-    default: |
+    required: False  
+  - "Any encounters with CBP/ICE?": users[0].history[i].encounters 
+    datatype: yesnoradio
 ---
 id: immigration history another
 question: |
@@ -144,145 +178,209 @@ code: |
 ---
 id: prior immigration encounters
 question: |
-  Prior Immigration Encounters 
+  Prior Immigration encounters 
 subquestion: |
   Check the boxes that apply even if you don't remember so you may provide any details.
 fields: 
   - "Did you leave your country with a visa or exit permit?": users[0].immigration_1a_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1a_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1a_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1a_yes") == true || val("users[0].immigration_1a_yes") == "None"
   - "Have you applied for a visa or immigration status in a country other than the United States?": users[0].immigration_1b_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1b_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1b_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1b_yes") == true || val("users[0].immigration_1b_yes") == "None"
   - "Have you ever helped anyone to enter the U.S. illegally?": users[0].immigration_1c_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - note: |
       For example: did your children enter with you? Or did you pay money to have someone bring them across?
     show if: users[0].immigration_1c_yes
   - Details: users[0].immigration_1c_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1c_yes
-  - "Have you ever attempted or entered the U.S. with false or borrowed documents?": users[0].immigration_1d_yes
-    datatype: yesnowide
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1c_yes") == true || val("users[0].immigration_1c_yes") == "None"
+  - "Were you designated an unaccompanied minor (UAC) by Office of Refugee Resettlement (ORR)?": users[0].immigration_1d_yes
+    datatype: yesnomaybe
+    #label above field: True
   - note: |
       For example: a green card, visa, driver's license, or birth certificate?
     show if: users[0].immigration_1d_yes
   - Details: users[0].immigration_1d_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1d_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1d_yes") == true || val("users[0].immigration_1d_yes") == "None"
   - "Have you ever given an immigration officer a different name or date of birth?": users[0].immigration_1e_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1e_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1e_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1e_yes") == true || val("users[0].immigration_1e_yes") == "None"
   - "Did an officer take your picture?": users[0].immigration_1f_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1f_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1f_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1f_yes") == true || val("users[0].immigration_1f_yes") == "None"
   - "Did an officer take your fingerprints?": users[0].immigration_1g_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1g_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1g_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1g_yes") == true || val("users[0].immigration_1g_yes") == "None"
   - "Did you sign any documents?": users[0].immigration_1h_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1h_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1h_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1h_yes") == true || val("users[0].immigration_1h_yes") == "None"
   - "Were you told that you were being removed or deported?": users[0].immigration_1i_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1i_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1i_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1i_yes") == true || val("users[0].immigration_1i_yes") == "None"
   - "Were you told that you could not come back for 3 years?": users[0].immigration_1j_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1j_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1j_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1j_yes") == true || val("users[0].immigration_1j_yes") == "None"
   - "Were you told that you could not come back for 5 years?": users[0].immigration_1k_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1k_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1k_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1k_yes") == true || val("users[0].immigration_1k_yes") == "None"
   - "Were you asked if you feared returning to your home country?": users[0].immigration_1l_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1l_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1l_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1l_yes") == true || val("users[0].immigration_1l_yes") == "None"
   - "At any moment during your encounter, did you request asylum?": users[0].immigration_1m_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1m_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1m_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1m_yes") == true || val("users[0].immigration_1m_yes") == "None"
   - "Were you given any documents ordering you to appear before an immigration judge?": users[0].immigration_1n_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1n_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1n_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1n_yes") == true || val("users[0].immigration_1n_yes") == "None"
   - "Do you have copies of any paperwork or documents you were given while detained?": users[0].immigration_1o_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].immigration_1o_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1o_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1o_yes") == true || val("users[0].immigration_1o_yes") == "None"
   - "Did you enter the United States as a minor (under 18 years old)?": users[0].immigration_1p_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - note: |
-      Were you designated an unaccompanied minor (UAC) by ORR? (If unsure: did you spend time in a children's
+      Were you designated an unaccompanied minor (UAC) by  Office of Refugee Resettlement (ORR)? (If unsure: did you spend time in a children's
       shelter? Review documents to confirm).
-    show if: users[0].immigration_1p_yes
-  - Details: users[0].immigration_1p_details
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1q_yes") == true || val("users[0].immigration_1q_yes") == "None"
+  - Details: users[0].immigration_1q_details
     datatype: area
     rows: 2
-    show if: users[0].immigration_1p_yes
+    label above field: True
+    js show if: |
+      val("users[0].immigration_1q_yes") == true || val("users[0].immigration_1q_yes") == "None"
 ---
 id: prior immigration applications
 question: |
-  Prior Immigration Applications
+  Prior Immigration applications
+subquestion: |
+  Check the boxes that apply even if you don't remember so you may provide any details.
 fields:
   - "Have you or a spouse ever filed an application to change your immigration status or be granted immigration relief?": users[0].application_2a_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].application_2a_details
     datatype: area
     rows: 2
-    show if: users[0].application_2a_yes
+    label above field: True
+    js show if: |
+      val("users[0].application_2a_yes") == true || val("users[0].application_2a_yes") == "None"
   - "Has a parent ever filed an application to change your immigration status or be granted immigration relief?": users[0].application_2b_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].application_2b_details
     datatype: area
     rows: 2
-    show if: users[0].application_2b_yes
+    label above field: True
+    js show if: |
+      val("users[0].application_2b_yes") == true || val("users[0].application_2b_yes") == "None"
   - "Has a parent ever filed an application to change their immigration status or be granted immigration relief when you were a minor?": users[0].application_2c_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].application_2c_details
     datatype: area
     rows: 2
-    show if: users[0].application_2c_yes
+    label above field: True
+    js show if: |
+      val("users[0].application_2c_yes") == true || val("users[0].application_2c_yes") == "None"
   - "Has an aunt/uncle/grandparent ever filed an application for your parent when you were a minor?": users[0].application_2d_yes
-    datatype: yesnowide
+    datatype: yesnomaybe
+    #label above field: True
   - Details: users[0].application_2d_details
     datatype: area
     rows: 2
-    show if: users[0].application_2d_yes
+    label above field: True
+    js show if: |
+      val("users[0].application_2d_yes") == true || val("users[0].application_2d_yes") == "None"
 ---
 id: spouse question
 question: |
@@ -303,14 +401,29 @@ fields:
   - Spouse status: users[0].marriage_status
   - Have either of you been previously married?: users[0].marriage_previously
     datatype: yesnoradio
-  - Date of marriage: users[0].previous_marriage_date
+    required: False
+  - Were you previously married?: users[0].user_marriage_previously
+    datatype: yesnoradio
+    show if: users[0].marriage_previously
+  - Date of marriage: users[0].user_previous_marriage_date
     datatype: ThreePartsDate
     alMax: ${ today() }
-    show if: users[0].marriage_previously
-  - Date of divorce: users[0].previous_divorce_date
+    show if: users[0].user_marriage_previously
+  - Date of divorce: users[0].user_previous_divorce_date
     datatype: ThreePartsDate
     alMax: ${ today() }
+    show if: users[0].user_marriage_previously
+  - Spouse previously married?: users[0].spouse_marriage_previously
+    datatype: yesnoradio
     show if: users[0].marriage_previously
+  - Date of marriage: users[0].spouse_previous_marriage_date
+    datatype: ThreePartsDate
+    alMax: ${ today() }
+    show if: users[0].spouse_marriage_previously
+  - Date of divorce: users[0].spouse_previous_divorce_date
+    datatype: ThreePartsDate
+    alMax: ${ today() }
+    show if: users[0].spouse_marriage_previously
   - note: |
       **INTERVIEWER ONLY DO NOT READ ALOUD**
   - Are there any concerns of marriage fraud?: users[0].marriage_fraud
@@ -325,7 +438,7 @@ fields:
 ---
 id: children details
 question: |
-  Tell us about the ${ ordinal(i) } child?
+  ${ capitalize(ordinal(i)) } child details
 fields:
   - First name of child: users[0].children[i].name.first
   - Date of birth: users[0].children[i].birthdate
@@ -369,33 +482,48 @@ fields:
   - Prior to coming to the U.S, who did you live with in your home country?: users[0].children[i].sijs_lived_home
     datatype: area
     rows: 2
+    label above field: True
   - Did you live with both of your parents?: users[0].children[i].sijs_parents
     datatype: yesnoradio
+    label above field: True
   - If not both parents, why?: users[0].children[i].sijs_parents_why
-    show if: users[0].children[i].sijs_parents
+    datatype: area 
+    rows: 2
+    show if: 
+      variable: users[0].children[i].sijs_parents
+      is: False
+    label above field: True
   - Who do you live with in the United States?: users[0].children[i].sijs_live_currently
     datatype: area
     rows: 2  
+    label above field: True
   - Were you attending school in your home country before coming to the U.S.?: users[0].children[i].sijs_prior_school
     datatype: yesnoradio
+    label above field: True
   - Where do your parents or the absent parent live now?: users[0].children[i].sijs_parents_live
     datatype: area
     rows: 2
+    label above field: True
   - How often do you talk to your parent(s)?: users[0].children[i].sijs_parents_talk
     datatype: area
     rows: 2
+    label above field: True
   - "If both your parents are present in your life, is there any physical violence between your parents or did either of your parents hit you or any of your siblings?": users[0].children[i].sijs_parents_violence
     datatype: yesnoradio
+    label above field: True
   - Details: users[0].children[i].sijs_parents_violence_details
     datatype: area
     rows: 2
     show if: users[0].children[i].sijs_parents_violence
+    label above field: True
   - "If both your parents are present in your life, did both or either of your parents scream or use harsh words against you or your siblings?": users[0].children[i].sijs_parents_language
     datatype: yesnoradio
+    label above field: True
   - Details: users[0].children[i].sijs_parents_language_details
     datatype: area
     rows: 2
     show if: users[0].children[i].sijs_parents_language
+    label above field: True
 ---
 id: additional children
 question: |
@@ -405,7 +533,7 @@ subquestion: |
 
   ${ users[0].children.table }
 fields:
-  - Do you have any additional children?: users[0].children.there_is_another
+  - Do you have another child?: users[0].children.there_is_another
     datatype: yesnoradio
 ---
 code: |
@@ -418,7 +546,7 @@ id: other family
 question: |
   Does anyone in your family have status in the United States?
 subquestion: |
-  These would include any extended family, stepparents, stepchildren, or parents of stepchildren.
+  These would include extended family, stepparents, stepchildren, or parents of stepchildren.
 fields:
   - no label: users[0].other_family_status
     datatype: yesnoradio
@@ -466,7 +594,7 @@ fields:
   - no label: users[0].military
     datatype: yesnoradio
   - note: |
-      Provide the name, relationship, branch of service and current status (i.e )
+      Provide the name, relationship, branch of service and current status (active, reserve, retired).
     show if: users[0].military
   - Details: users[0].military_details
     datatype: area
@@ -475,72 +603,72 @@ fields:
 ---
 id: criminal history
 question: |
-  The following are questions regaring any prior criminal history.
+   Criminal history
 subquestion: |
   If yes please describe when it happened, what happened, what the charges were and what was the outcome.
 fields: 
   - "Have you, as an adult or juvenile, ever been stopped by the police?": users[0].criminal_3a_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3a_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3a_yes
   - "Have you ever been handcuffed, in a police car, or at a police station in the United States or any other country?": users[0].criminal_3b_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3b_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3b_yes
   - "Have you ever been fingerprinted or had your picture taken by the police (other than an immigration officer)?": users[0].criminal_3c_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3c_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3c_yes
   - "Have you ever been detained or taken to jail/prison anywhere in the U.S. or any other country?": users[0].criminal_3d_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3d_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3d_yes
   - "Have you ever been arrested for driving without a license?": users[0].criminal_3e_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3e_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3e_yes
   - "Have you ever received a DUI?": users[0].criminal_3f_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3f_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3f_yes
   - "Have you ever been to court in the United States or any other country?": users[0].criminal_3g_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3g_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3g_yes
   - "Do you now, or have you ever, used drugs or alcohol?": users[0].criminal_3h_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3h_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3h_yes
   - "Have you ever been involved or associated with any gangs, in the U.S. or any other country? Or accused of being involved with a gang?": users[0].criminal_3i_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3i_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3i_yes
   - "Have you ever been friends with or have family members who are known gang members, in the U.S. or any other country?": users[0].criminal_3j_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3j_details
     datatype: area
     rows: 2
     show if: users[0].criminal_3j_yes
   - "Do you have any tattoos?": users[0].criminal_3k_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].criminal_3k_details
     datatype: area
     rows: 2
@@ -549,23 +677,46 @@ fields:
 id: criminal history chart
 question: |
   Criminal history details
+subquestion: |
+  If you have more than one incident, you can add more on another screen.
 fields:
-  - Date of arrest: users[0].criminal[i].date 
+  - Date (usually arrest date): users[0].criminal[i].date 
     datatype: ThreePartsDate
     alMax: ${ today() }
   - Location: users[0].criminal[i].location 
     required: False
   - Charge: users[0].criminal[i].charge 
     required: False
-  - Outcome: users[0].criminal[i].outcome 
+  - Outcome (plea, conviction, acquittal, etc.): users[0].criminal[i].outcome 
   - Sentence: users[0].criminal[i].sentence 
     required: False
-  - Did you have a: users[0].criminal[i].rep 
+  - "What kind of lawyer represented you in court?": users[0].criminal[i].rep 
     datatype: radio
     choices:
       - Private attorney: lawyer
-      - Public Defender: pd
+      - Public Defender: PD
 ---
+id: additional criminal history
+question: |
+  Additonal criminal history
+subquestion: |
+  You already entered so far:
+
+  ${ users[0].criminal.table }
+fields:
+  - Do you need to add another?: users[0].criminal.there_is_another
+    datatype: yesnoradio
+---
+code: |
+  users[0].criminal[i].date
+  users[0].criminal[i].complete = True
+---
+code: |
+  if users[0].criminal_3a_yes or users[0].criminal_3b_yes or users[0].criminal_3c_yes or users[0].criminal_3d_yes or users[0].criminal_3e_yes or users[0].criminal_3f_yes or users[0].criminal_3g_yes or users[0].criminal_3h_yes or users[0].criminal_3i_yes or users[0].criminal_3j_yes or users[0].criminal_3k_yes:
+    users[0].criminal.there_are_any = True
+
+  check_criminal_history = True
+---    
 id: education and employment 
 question:
   Education and Employment  
@@ -584,9 +735,9 @@ fields:
     show if: users[0].currently_working
   - Do you remember ever filing out Form I-9?: users[0].i9_form
     datatype: yesnoradio
-    required: False
     show if: users[0].currently_working
   - Could you proivde details on how you completed Form I-9?: users[0].i9_details
+    required: False
     show if: users[0].i9_form
   - Have you ever used false or borrowed documents to work?: users[0].false_documents
     datatype: yesnoradio 
@@ -601,31 +752,31 @@ question: |
   Claims to U.S. citizenship
 fields: 
   - "Have you ever received public benefits in the U.S.?": users[0].citizenship_4a_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].citizenship_4a_details
     datatype: area
     rows: 2
     show if: users[0].citizenship_4a_yes
   - "Have you ever told anyone that you're a U.S. citizen, for example, to get a driver's license, to get a job, or for any other reason?": users[0].citizenship_4b_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].citizenship_4b_details
     datatype: area
     rows: 2
     show if: users[0].citizenship_4b_yes
   - "Have you ever used a U.S. citizen passport or driver's license or another document?": users[0].citizenship_4c_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].citizenship_4c_details
     datatype: area
     rows: 2
     show if: users[0].citizenship_4c_yes
   - "Have you ever registered to vote or voted in the U.S.?": users[0].citizenship_4d_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].citizenship_4d_details
     datatype: area
     rows: 2
     show if: users[0].citizenship_4d_yes
   - "Have you ever served on a jury or received a jury summons in the U.S.?": users[0].citizenship_4e_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].citizenship_4e_details
     datatype: area
     rows: 2
@@ -633,58 +784,58 @@ fields:
 ---
 id: U VISA/VAWA
 question: |
-  U VISA/VAWA ELIGBILITY
+  U Visa/VAWA eligibility
 fields:
   - "Have you ever called the police to report a crime?": users[0].uvisa_5a_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5a_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5a_yes
   - "Have you ever been a victim of a crime in the U.S.?": users[0].uvisa_5b_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5b_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5b_yes
   - "Have you witnessed a crime in the U.S.?": users[0].uvisa_5c_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5c_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5c_yes
   - "Has anyone hurt you in the United States?": users[0].uvisa_5d_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5d_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5d_yes
   - "Has anyone in your family been the victim of a crime in the U.S.?": users[0].uvisa_5e_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5e_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5e_yes
   - "Have you ever been physically, verbally, or emotionally hurt by a spouse, boyfriend, girlfriend, partner, parent, or child (e.g., hit, slapped, pushed, threatened, controlled, etc.)?": users[0].uvisa_5f_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5f_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5f_yes
   - "Has anyone in your family been physically, verbally, or emotionally hurt by a spouse, boyfriend, girlfriend, partner, parent, or child (e.g., hit, slapped, pushed, threatened, controlled, etc.)?": users[0].uvisa_5g_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5g_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5g_yes
   - "Have you ever collaborated as a witness with law enforcement in a criminal investigation or prosecution?": users[0].uvisa_5h_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5h_details
     datatype: area
     rows: 2
     show if: users[0].uvisa_5h_yes
   - "Have you ever been a plaintiff in a lawsuit against your employer (for example, union organizing or discrimination)?": users[0].uvisa_5i_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].uvisa_5i_details
     datatype: area
     rows: 2
@@ -692,52 +843,52 @@ fields:
 ---
 id: T VISA eligibility
 question: |
-  T VISA ELIGIBILITY
+  T Visa eligibility
 fields:
   - "Did anyone bring you to the U.S. by force, or trick or deceive you into coming to the U.S.?": users[0].tvisa_6a_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6a_details
     datatype: area
     rows: 2
     show if: users[0].tvisa_6a_yes
   - "While you have been in the U.S., has anyone forced you to work or perform an activity against your will?": users[0].tvisa_6b_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6b_details
     datatype: area
     rows: 2
     show if: users[0].tvisa_6b_yes
   - "While you have been in the U.S., has anyone ever hired you to do work with no intent to pay you, or paying you very little?": users[0].tvisa_6c_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6c_details
     datatype: area
     rows: 2
     show if: users[0].tvisa_6c_yes
   - "While you have been in the U.S., have you been held prisoner or had your liberty restrained?": users[0].tvisa_6d_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6d_details
     datatype: area
     rows: 2
     show if: users[0].tvisa_6d_yes
   - "Have you ever had to provide a sex act in exchange for food, shelter, or water?": users[0].tvisa_6e_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6e_details
     datatype: area
     rows: 2
     show if: users[0].tvisa_6e_yes
   - "Have you ever had to provide labor in exchange for food, shelter, or water?": users[0].tvisa_6f_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6f_details
     datatype: area
     rows: 2
     show if: users[0].tvisa_6f_yes
   - "Has anyone ever threatened to hurt you or someone you know?": users[0].tvisa_6g_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6g_details
     datatype: area
     rows: 2
     show if: users[0].tvisa_6g_yes
   - "Has anyone ever threatened to call the police or immigration to report you?": users[0].tvisa_6h_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].tvisa_6h_details
     datatype: area
     rows: 2
@@ -745,18 +896,39 @@ fields:
 ---
 #MOVED SIJS TO CHILDREN GATHER
 ---
-id: NACARA ELIGBILITY 
+id: NACARA eligibility
 question: |
-  NACARA ELIGBILITY 
-subquestion: |
-  *NOTE TO SCREENER: Do not skip this section if AT LEAST ONE PARENT is a national of:*
-  El Salvador, Guatemala, or the former Soviet bloc countries such as Russia, Latvia, Lithuania, Estonia, Albania, 
-  Bulgaria, Czechoslovakia, Hungary, Poland, Romania, Yugoslavia, or any state of the former Yugoslavia
+  NACARA eligibility
 fields:
-  - Did this parent or spouse become a lawful permanent resident via NACARA?: users[0].nacara
+  - note: |
+      Is one or both of your parents a national of El Salvador, Guatemala, or the former Soviet bloc countries such as Russia, 
+      Latvia, Lithuania, Estonia, Albania, Bulgaria, Czechoslovakia, Hungary, Poland, Romania, Yugoslavia, or any state of the 
+      former Yugoslavia?
+  - no label: users[0].nacara_parents
     datatype: yesnoradio
+  - Are any of your parents or your spouse a US citizen or Legal Permanent Resident (LPR)?: users[0].nacara_parent_spouse
+    datatype: yesnoradio
+    label above field: True
+  - Did this parent or spouse become a lawful permanent resident via NACARA?: users[0].nacara_lpr
+    datatype: yesnoradio
+    label above field: True
+    js show if: |
+      val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true
+  - Details: users[0].nacara_lpr_details
+    datatype: area
+    rows: 2
+    js show if: |
+      (val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true) && val("users[0].nacara_lpr") == true
   - Have you been physically present in the U.S. for at least 7 years?: users[0].nacara_eligible
     datatype: yesnoradio
+    label above field: True
+    js show if: |
+      val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true
+  - Details: users[0].nacara_eligible_details
+    datatype: area
+    rows: 2
+    js show if: |
+      (val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true) && val("users[0].nacara_eligible") == true
 ---
 id: LPR signpost 
 question: |
@@ -770,31 +942,33 @@ question: |
   LPR cancellation eligibility
 fields:
   - "Have you been issued a Notice to Appear (NTA)?": users[0].lpr_7a_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - "Provide details such as the dates of the letter and when to appear.": users[0].lpr_7a_details
     datatype: area
     rows: 2
     show if: users[0].lpr_7a_yes
+    label above field: True
   - "Have you ever been convicted of a crime?": users[0].lpr_7b_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - "Please list all convictions below, even if you received diversion, expungement, or post-conviction relief.": users[0].lpr_7b_details
     datatype: area
     rows: 2
     show if: users[0].lpr_7b_yes
+    label above field: True
   - "Have you been an LPR for at least five years?": users[0].lpr_7c_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].lpr_7c_details
     datatype: area
     rows: 2
     show if: users[0].lpr_7c_yes
   - "Have you lived in the United States for at least seven years after being admitted in any status?": users[0].lpr_7d_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].lpr_7d_details
     datatype: area
     rows: 2
     show if: users[0].lpr_7d_yes
   - "Have you ever been granted cancellation of removal, suspension of deportation, or 212(c) before?": users[0].lpr_7e_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].lpr_7e_details
     datatype: area
     rows: 2
@@ -812,33 +986,43 @@ question: |
   Non-LPR cancellation eligibility
 fields:
   - "Have you been issued a Notice to Appear (NTA)?": users[0].nonlpr_8a_yes
-    datatype: yesnowide
+    datatype: yesnoradio
+    label above field: True
   - "Provide details such as the dates of the letter and when to appear.": users[0].nonlpr_8a_details
     datatype: area
+    label above field: True
     rows: 2
     show if: users[0].nonlpr_8a_yes
   - "Have you ever been convicted of a crime?": users[0].lpr_8b_yes
-    datatype: yesnowide
+    datatype: yesnoradio
+    label above field: True
   - "Please list all convictions below, even if you received diversion, expungement, or post-conviction relief.": users[0].lpr_8b_details
     datatype: area
+    label above field: True
     rows: 2
     show if: users[0].lpr_8b_yes
   - "Do you have a spouse, child (under 21), or parent (including a stepparent) who is a U.S. citizen or lawful permanent resident (LPR)?": users[0].lpr_8c_yes
-    datatype: yesnowide
+    datatype: yesnoradio
+    label above field: True
   - Details: users[0].lpr_8c_details
     datatype: area
+    label above field: True
     rows: 2
     show if: users[0].lpr_8c_yes
   - "If you were to be deported, would your U.S. citizen or LPR spouse, child(ren), or parent(s) remain in the United States or go with you?": users[0].lpr_8d_yes
-    datatype: yesnowide
+    datatype: yesnoradio
+    label above field: True
   - Details: users[0].lpr_8d_details
     datatype: area
+    label above field: True
     rows: 2
     show if: users[0].lpr_8d_yes
   - "Do your U.S. citizen or LPR spouse, child(ren), or parent(s) have medical conditions, special needs, circumstances in home country, family and community ties, or any other factors that would cause them “exceptional and extremely unusual hardship” if you were to be deported?": users[0].lpr_8e_yes
-    datatype: yesnowide
+    datatype: yesnoradio
+    label above field: True
   - Details: users[0].lpr_8e_details
     datatype: area
+    label above field: True
     rows: 2
     show if: users[0].lpr_8e_yes
 ---
@@ -863,6 +1047,7 @@ fields:
     show if: users[0].asylum_application
   - Date of departure from country of origin: users[0].asylum_departure_date 
     datatype: ThreePartsDate
+    alMax: ${ today() }
     show if: users[0].asylum_application
 ---
 id: fear 
@@ -901,40 +1086,40 @@ subquestion: |
   These can be state/governemntal or non-governemntal representatives.
 fields:
   - "Are you afraid of being hurt if you return to your native country?": users[0].general_fear
-    datatype: yesnowide 
+    datatype: yesnoradio
   - "Did something happen to you (or a family member) in your home country that forced you to leave?": users[0].general_fear_flee
-    datatype: yesnowide
+    datatype: yesnoradio
     show if: users[0].general_fear
   - "What happened in your home country that made you leave?": users[0].past_persecution
     datatype: area
     rows: 2
     show if: users[0].general_fear_flee
   - "Are you afraid of government officials or government figures? (e.g. police, military, political party)?": users[0].state_fear_government
-    datatype: yesnowide 
+    datatype: yesnoradio
   - Details: users[0].state_fear_government_details
     datatype: area
     rows: 2
     show if: users[0].state_fear_government
   - "Are you afraid of non-governmental groups? (e.g. rival clan or ethnic group, death squad, rebel groups).": users[0].state_fear_non_government
-    datatype: yesnowide 
+    datatype: yesnoradio
   - Details: users[0].state_fear_non_government_details
     datatype: area
     rows: 2
     show if: users[0].state_fear_non_government
   - "If you fear a non-governmental entity, could you seek government protection? If not, why not?": users[0].fear_protection_non_govt
-    datatype: yesnowide 
+    datatype: yesnoradio
   - Details: users[0].fear_protection_non_govt_details
     datatype: area
     rows: 2
     show if: users[0].fear_protection_non_govt
   - "Before coming to the United States, did you try to live in another part of your home country? If so, why didn't you stay there? If not, why not?": users[0].internal_relocation_attempt
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].internal_relocation_attempt_details
     datatype: area
     rows: 2
     show if: users[0].internal_relocation_attempt
   - "Would it be reasonable to move to another part of your home country? If not, why not?": users[0].internal_relocation_reasonable
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].internal_relocation_reasonable_details
     datatype: area
     rows: 2
@@ -946,13 +1131,13 @@ fields:
     datatype: area
     rows: 2
   - "Have you or your family members received threats since leaving the country? If so, please provide details.": users[0].future_persecution_threats
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].future_persecution_threats_details
     datatype: area
     rows: 2
     show if: users[0].future_persecution_threats
   - "Do you know of other people in your situation who have been harmed? If so, please provide details.": users[0].future_persecution_others_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].future_persecution_others_details
     datatype: area
     rows: 2
@@ -960,46 +1145,46 @@ fields:
 --- 
 id: finishing up
 question: |
-  Just a few remaining questions.
+  Additional asylum eligbility questions
 fields: 
   - "Have you ever been arrested for, charged with, or convicted of a crime in another country?": users[0].finishing_crime_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].finishing_crime_details
     datatype: area
     rows: 2
     show if: users[0].finishing_crime_yes
   - "Have you ever persecuted or physically hurt another person, even if you did not want to?": users[0].finishing_hurt_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].finishing_hurt_details
     datatype: area
     rows: 2
     show if: users[0].finishing_hurt_yes
   - "Have you ever been a police officer or a member of a military, paramilitary, or any other group that uses violence?": users[0].finishing_military_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].finishing_military_details
     datatype: area
     rows: 2
     show if: users[0].finishing_military_yes
   - "Have you ever arrested, detained, interrogated, or physically hurt another person, including as part of your official duties?": users[0].finishing_duties_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].finishing_duties_details
     datatype: area
     rows: 2
     show if: users[0].finishing_duties_yes
   - "Did you travel through after leaving your home country?": users[0].finishing_travel_countries_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - "Provide details of which countries.": users[0].finishing_travel_countries
     datatype: area
     rows: 2
     show if: users[0].finishing_travel_countries_yes
   - "Did you live in any of those countries for longer than three months?": users[0].finishing_long_stay_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].finishing_long_stay_details
     datatype: area
     rows: 2
     show if: users[0].finishing_long_stay_yes
   - "Did you have any kind of legal status or work authorization in another country, for example, citizenship, residency, or temporary humanitarian protection?": users[0].finishing_legal_status_yes
-    datatype: yesnowide
+    datatype: yesnoradio
   - Details: users[0].finishing_legal_status_details
     datatype: area
     rows: 2
@@ -1022,8 +1207,6 @@ event: get_docs_screen
 question: |
   Download the completed screener
 subquestion: |
-
-  ${ action_button_html(url_action('review_answers'), label=':edit: Make changes', color='success', size="md") }
 
   ${ users[0].comp_legal_screener.as_pdf() }
 
@@ -1066,6 +1249,17 @@ columns:
   - DOB: row_item.birthdate.format("MM/dd/yyyy")
   - Edit to change details: |
       action_button_html(url_action(row_item.attr_name("name.first")), label="Edit", icon="pencil-alt")
+delete buttons: True
+confirm: True
+---
+id: criminal history table
+table: users[0].criminal.table
+rows: users[0].criminal
+columns:
+  - Date: row_item.date.format("MM/dd/yyyy")
+  - Outcome: row_item.outcome
+  - Edit to change details: |
+      action_button_html(url_action(row_item.attr_name("date")), label="Edit", icon="pencil-alt")
 delete buttons: True
 confirm: True
 ---

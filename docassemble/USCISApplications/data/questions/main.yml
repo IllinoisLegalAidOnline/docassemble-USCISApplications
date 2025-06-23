@@ -32,6 +32,7 @@ metadata:
     - Quinten Steenhuis
     - Anthony Danielson
     - Matt Newsted
+    - Jim Graszer
   allowed_courts: []
   typical_role: "na"
   al_weaver_version: "playground"
@@ -390,14 +391,14 @@ subquestion: |
   * Motion for Change of Venue
   * EOIR-33 Change of Address
 
-  **Note:** This Easy Form is designed to be used by trained advocates in a clinical workshop setting. It is not for public use."
+  **Note:** This Easy Form is designed to be used by trained advocates in a clinical workshop setting. It is not for public use.
 ---
 id: make forms
 continue button field: intro_main
 question: |
-  Make forms
+  Make USCIS forms
 subquestion: |
-  The next screens will guide you through the process of making USCIS forms for an individual or family group."
+  The next screens will guide you through the process of making USCIS forms for an individual or family group.
 ---
 id: workshop region
 question: |

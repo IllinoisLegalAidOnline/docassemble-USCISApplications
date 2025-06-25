@@ -96,7 +96,7 @@ code: |
     set_progress(40)
     users[0].immigration_1a_yes
     users[0].application_2a_yes
-    if users[0].spouse:
+    if users[0].married:
       users[0].marriage_date
     if users[0].has_children:
       users[0].children.gather()
@@ -113,6 +113,8 @@ code: |
     set_progress(75)
     users[0].uvisa_5a_yes
     users[0].tvisa_6a_yes
+    if users[0].birthdate.age_in_years() < 21 and not users[0].married and not users[0].has_children:
+      users[0].sijs_lived_home
     users[0].nacara_parents
     if users[0].lpr_signpost:
       users[0].lpr_7a_yes

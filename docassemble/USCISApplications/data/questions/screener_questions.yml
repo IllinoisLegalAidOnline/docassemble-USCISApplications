@@ -169,6 +169,8 @@ fields:
     datatype: yesnoradio
 ---
 code: |
+  first_entry_date = format_date(users[0].history[0].entry_date)
+  entry_age = date_difference(starting=users[0].birthdate, ending=first_entry_date).years
   asylum_date = format_date(users[0].history[users[0].history.number_gathered()-1].entry_date + date_interval(years=1))
   debug_deadline = date_difference(starting=today(), ending=asylum_date).days
   asylum_deadline = date_difference(starting=today(), ending=asylum_date).days >= 60
@@ -385,11 +387,11 @@ fields:
     js show if: |
       val("users[0].application_2d_yes") == true || val("users[0].application_2d_yes") == "None"
 ---
-id: spouse question
+id: married question
 question: |
   Are you or were you legally married?
 fields:
-  - no label: users[0].spouse
+  - no label: users[0].married
     datatype: yesnoradio
 ---
 id: spouse details
@@ -478,15 +480,15 @@ fields:
   - Are they married?: users[0].children[i].married
     datatype: yesnoradio
 ---
-id: SIJS eligibility
+id: SIJS eligibility child
 question: |
   SIJS eligibility for ${ users[0].children[i].name.full() }
 fields: 
-  - Prior to coming to the U.S, who did you live with in your home country?: users[0].children[i].sijs_lived_home
+  - Prior to coming to the U.S, did they live with you in your home country?: users[0].children[i].sijs_lived_home
     datatype: area
     rows: 2
     label above field: True
-  - Did you live with both of your parents?: users[0].children[i].sijs_parents
+  - Did they live with both parents?: users[0].children[i].sijs_parents
     datatype: yesnoradio
     label above field: True
   - If not both parents, why?: users[0].children[i].sijs_parents_why
@@ -496,22 +498,22 @@ fields:
       variable: users[0].children[i].sijs_parents
       is: False
     label above field: True
-  - Who do you live with in the United States?: users[0].children[i].sijs_live_currently
+  - Who do they live with now in the United States?: users[0].children[i].sijs_live_currently
     datatype: area
     rows: 2  
     label above field: True
-  - Were you attending school in your home country before coming to the U.S.?: users[0].children[i].sijs_prior_school
+  - Were they attending school in your home country before coming to the U.S.?: users[0].children[i].sijs_prior_school
     datatype: yesnoradio
     label above field: True
-  - Where do your parents or the absent parent live now?: users[0].children[i].sijs_parents_live
+  - Where do their parents or the absent parent live now?: users[0].children[i].sijs_parents_live
     datatype: area
     rows: 2
     label above field: True
-  - How often do you talk to your parent(s)?: users[0].children[i].sijs_parents_talk
+  - How often do you talk to you?: users[0].children[i].sijs_parents_talk
     datatype: area
     rows: 2
     label above field: True
-  - "If both your parents are present in your life, is there any physical violence between your parents or did either of your parents hit you or any of your siblings?": users[0].children[i].sijs_parents_violence
+  - "If both of their parents are present in their life, is there any physical violence between their parents or did either of their parents hit you or any of their siblings?": users[0].children[i].sijs_parents_violence
     datatype: yesnoradio
     label above field: True
   - Details: users[0].children[i].sijs_parents_violence_details
@@ -519,7 +521,7 @@ fields:
     rows: 2
     show if: users[0].children[i].sijs_parents_violence
     label above field: True
-  - "If both your parents are present in your life, did both or either of your parents scream or use harsh words against you or your siblings?": users[0].children[i].sijs_parents_language
+  - "If both their parents are present in their life, did both or either of their parents scream or use harsh words against you or your siblings?": users[0].children[i].sijs_parents_language
     datatype: yesnoradio
     label above field: True
   - Details: users[0].children[i].sijs_parents_language_details
@@ -541,7 +543,7 @@ fields:
 ---
 code: |
   users[0].children[i].name.first
-  if not users[0].children[i].married and users[0].children[i].age_in_years() < 21:
+  if not users[0].children[i].married and users[0].children[i].age_in_years() < 21 and users[0].children[i].country_of_birth != "United States":
     users[0].children[i].sijs_lived_home
   users[0].children[i].complete = True
 ---
@@ -897,7 +899,55 @@ fields:
     rows: 2
     show if: users[0].tvisa_6h_yes
 ---
-#MOVED SIJS TO CHILDREN GATHER
+id: SIJS eligibility
+question: |
+  SIJS eligibility for ${ users[0].name.full() }
+fields: 
+  - Prior to coming to the U.S, who did you live with in your home country?: users[0].sijs_lived_home
+    datatype: area
+    rows: 2
+    label above field: True
+  - Did you live with both of your parents?: users[0].sijs_parents
+    datatype: yesnoradio
+    label above field: True
+  - If not both parents, why?: users[0].sijs_parents_why
+    datatype: area 
+    rows: 2
+    show if: 
+      variable: users[0].sijs_parents
+      is: False
+    label above field: True
+  - Who do you live with in the United States?: users[0].sijs_live_currently
+    datatype: area
+    rows: 2  
+    label above field: True
+  - Were you attending school in your home country before coming to the U.S.?: users[0].sijs_prior_school
+    datatype: yesnoradio
+    label above field: True
+  - Where do your parents or the absent parent live now?: users[0].sijs_parents_live
+    datatype: area
+    rows: 2
+    label above field: True
+  - How often do you talk to your parent(s)?: users[0].sijs_parents_talk
+    datatype: area
+    rows: 2
+    label above field: True
+  - "If both your parents are present in your life, is there any physical violence between your parents or did either of your parents hit you or any of your siblings?": users[0].sijs_parents_violence
+    datatype: yesnoradio
+    label above field: True
+  - Details: users[0].sijs_parents_violence_details
+    datatype: area
+    rows: 2
+    show if: users[0].sijs_parents_violence
+    label above field: True
+  - "If both your parents are present in your life, did both or either of your parents scream or use harsh words against you or your siblings?": users[0].sijs_parents_language
+    datatype: yesnoradio
+    label above field: True
+  - Details: users[0].sijs_parents_language_details
+    datatype: area
+    rows: 2
+    show if: users[0].sijs_parents_language
+    label above field: True
 ---
 id: NACARA eligibility
 question: |
@@ -996,16 +1046,15 @@ fields:
     label above field: True
     rows: 2
     show if: users[0].nonlpr_8a_yes
-    label above field: True
   - "Have you ever been convicted of a crime?": users[0].lpr_8b_yes
     datatype: yesnoradio
     label above field: True
+    show if: users[0].criminal.number_gathered() == 0
   - "Please list all convictions below, even if you received diversion, expungement, or post-conviction relief.": users[0].lpr_8b_details
     datatype: area
     label above field: True
     rows: 2
     show if: users[0].lpr_8b_yes
-    label above field: True
   - "Do you have a spouse, child (under 21), or parent (including a stepparent) who is a U.S. citizen or lawful permanent resident (LPR)?": users[0].lpr_8c_yes
     datatype: yesnoradio
     label above field: True
@@ -1072,6 +1121,8 @@ fields:
 id: hurt
 question: |
   Has someone hurt you in the past?
+subquestion: |
+  In order to determine asylum eligbility prior to coming to the U.S. were you hurt in the past?
 fields: 
   - no label: users[0].hurt_past
     datatype: yesnoradio 

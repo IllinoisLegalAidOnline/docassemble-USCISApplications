@@ -1003,6 +1003,7 @@ fields:
     label above field: True
   - "Have you ever been convicted of a crime?": users[0].lpr_7b_yes
     datatype: yesnoradio
+    show if: users[0].criminal.number_gathered() == 0
   - "Please list all convictions below, even if you received diversion, expungement, or post-conviction relief.": users[0].lpr_7b_details
     datatype: area
     rows: 2

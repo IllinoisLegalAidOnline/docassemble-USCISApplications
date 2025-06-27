@@ -36,5 +36,15 @@ question: |
   ¿Está de acuerdo con los términos del Acuerdo de Divulgación?
 subquestion: |
   ${ display_template(disclosures_template) }
+fields:
+  - no label: informed_consent
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I have read the disclosures agreement to the applicant: Yes
+    validation messages:
+      minlength: |
+        You cannot continue unless you have read the disclosures agreement to the applicant
 continue button field: agrees_to_disclosures
 continue button label: I Agree / Estoy de Acuerdo

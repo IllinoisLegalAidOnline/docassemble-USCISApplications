@@ -111,7 +111,7 @@ fields:
 ---
 id: immigration nta
 question: |
-  Do you have a notice to appear?
+  Do you have a Notice to Appear?
 fields:
   - no label: users[0].notice_to_appear
     datatype: yesnoradio
@@ -165,10 +165,10 @@ fields:
     datatype: radio
     choices: 
       - Entry without inspection (EWI): ewi
-      - Other: other
       - Presented at port of entry: port
       - Paroled: paroled 
       - Entered with a visa: visa
+      - Other: other
     required: False
   - "Explain 'other' status": users[i].history[i].manner_of_entry_other
     maxlength: 30
@@ -194,7 +194,9 @@ fields:
     datatype: yesnoradio
 ---
 code: |
-  first_entry_date = format_date(users[0].history[0].entry_date)
+  check_decade = False
+  if not users[0].history[users[0].history.number_gathered()-1].exit_yes:
+    check_decade = date_difference(starting=users[0].history[users[0].history.number_gathered()-1].entry_date, ending=today()).years >= 10
   entry_age = date_difference(starting=users[0].birthdate, ending=first_entry_date).years
   asylum_date = format_date(users[0].history[users[0].history.number_gathered()-1].entry_date + date_interval(years=1))
   debug_deadline = date_difference(starting=today(), ending=asylum_date).days
@@ -240,8 +242,10 @@ fields:
     required: False
     js show if: |
       val("users[0].immigration_1c_yes") == true || val("users[0].immigration_1c_yes") == "None"
-  - "Were you designated an unaccompanied minor (UAC) by Office of Refugee Resettlement (ORR)? (If unsure, did you spend time in a children's chelter? Review documents to confirm.)": users[0].immigration_1d_yes
+  - "Were you designated an unaccompanied minor (UAC) by Office of Refugee Resettlement (ORR)?": users[0].immigration_1d_yes
     datatype: yesnomaybe
+  - note: | 
+      **Note:** If unsure, ask: Did you spend time in a children's shelter? Review their documents to confirm.
   - note: |
       For example: a green card, visa, driver's license, or birth certificate?
     show if: users[0].immigration_1d_yes
@@ -994,26 +998,27 @@ fields:
   - Are any of your parents or your spouse a US citizen or Legal Permanent Resident (LPR)?: users[0].nacara_parent_spouse
     datatype: yesnoradio
     label above field: True
+    show if: users[0].nacara_parents
   - Did this parent or spouse become a lawful permanent resident via NACARA?: users[0].nacara_lpr
     datatype: yesnoradio
     label above field: True
     js show if: |
-      val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true
+      val("users[0].nacara_parents") == true || val("users[0].nacara_parent_spouse") == true
   - Details: users[0].nacara_lpr_details
     datatype: area
     rows: 2
     js show if: |
-      (val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true) && val("users[0].nacara_lpr") == true
+      (val("users[0].nacara_parents") == true || val("users[0].nacara_parent_spouse") == true) && val("users[0].nacara_lpr") == true
   - Have you been physically present in the U.S. for at least 7 years?: users[0].nacara_eligible
     datatype: yesnoradio
     label above field: True
     js show if: |
-      val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true
+      val("users[0].nacara_parents") == true || val("users[0].nacara_parent_spouse") == true
   - Details: users[0].nacara_eligible_details
     datatype: area
     rows: 2
     js show if: |
-      (val("users[0].nacara_parents") == false || val("users[0].nacara_parent_spouse") == true) && val("users[0].nacara_eligible") == true
+      (val("users[0].nacara_parents") == true || val("users[0].nacara_parent_spouse") == true) && val("users[0].nacara_eligible") == true
 ---
 id: LPR signpost 
 question: |
@@ -1028,6 +1033,7 @@ question: |
 fields:
   - "Have you been issued a Notice to Appear (NTA)?": users[0].lpr_7a_yes
     datatype: yesnoradio
+    default: 
   - "Provide details such as the dates of the letter and when to appear.": users[0].lpr_7a_details
     datatype: area
     rows: 2
@@ -1035,12 +1041,15 @@ fields:
     label above field: True
   - "Have you ever been convicted of a crime?": users[0].lpr_7b_yes
     datatype: yesnoradio
-    show if: users[0].criminal.number_gathered() == 0
+    required: False
+    js show if: |
+      val("users[0].criminal.there_are_any") == False
   - "Please list all convictions below, even if you received diversion, expungement, or post-conviction relief.": users[0].lpr_7b_details
     datatype: area
+    required: False
     rows: 2
-    show if: users[0].lpr_7b_yes
     label above field: True
+    show if: users[0].lpr_7b_yes
   - "Have you been an LPR for at least five years?": users[0].lpr_7c_yes
     datatype: yesnoradio
   - Details: users[0].lpr_7c_details
@@ -1074,44 +1083,50 @@ fields:
   - "Have you been issued a Notice to Appear (NTA)?": users[0].nonlpr_8a_yes
     datatype: yesnoradio
     label above field: True
+    default: users[0].notice_to_appear
   - "Provide details such as the dates of the letter and when to appear.": users[0].nonlpr_8a_details
     datatype: area
     label above field: True
     rows: 2
     show if: users[0].nonlpr_8a_yes
-  - "Have you ever been convicted of a crime?": users[0].lpr_8b_yes
+  - "Have you ever been convicted of a crime?": users[0].nonlpr_8b_yes
+    datatype: yesnoradio
+    required: False
+    label above field: True
+    js show if: |
+      val("users[0].criminal.there_are_any") == False
+  - "Please list all convictions below, even if you received diversion, expungement, or post-conviction relief.": users[0].nonlpr_8b_details
+    datatype: area
+    required: False
+    label above field: True
+    rows: 2
+    show if: users[0].nonlpr_8b_yes
+  - "Do you have a spouse, child (under 21), or parent (including a stepparent) who is a U.S. citizen or lawful permanent resident (LPR)?": users[0].nonlpr_8c_yes
     datatype: yesnoradio
     label above field: True
-    show if: users[0].criminal.number_gathered() == 0
-  - "Please list all convictions below, even if you received diversion, expungement, or post-conviction relief.": users[0].lpr_8b_details
+  - Details: users[0].nonlpr_8c_details
     datatype: area
     label above field: True
     rows: 2
-    show if: users[0].lpr_8b_yes
-  - "Do you have a spouse, child (under 21), or parent (including a stepparent) who is a U.S. citizen or lawful permanent resident (LPR)?": users[0].lpr_8c_yes
+    show if: users[0].nonlpr_8c_yes
+  - "If you were to be deported, would your U.S. citizen or LPR spouse, child(ren), or parent(s) remain in the United States or go with you?": users[0].nonlpr_8d_yes
     datatype: yesnoradio
     label above field: True
-  - Details: users[0].lpr_8c_details
+    show if: users[0].nonlpr_8c_yes
+  - Details: users[0].nonlpr_8d_details
     datatype: area
     label above field: True
     rows: 2
-    show if: users[0].lpr_8c_yes
-  - "If you were to be deported, would your U.S. citizen or LPR spouse, child(ren), or parent(s) remain in the United States or go with you?": users[0].lpr_8d_yes
+    show if: users[0].nonlpr_8d_yes
+  - "Do your U.S. citizen or LPR spouse, child(ren), or parent(s) have medical conditions, special needs, circumstances in home country, family and community ties, or any other factors that would cause them “exceptional and extremely unusual hardship” if you were to be deported?": users[0].nonlpr_8e_yes
     datatype: yesnoradio
     label above field: True
-  - Details: users[0].lpr_8d_details
+    show if: users[0].nonlpr_8c_yes
+  - Details: users[0].nonlpr_8e_details
     datatype: area
     label above field: True
     rows: 2
-    show if: users[0].lpr_8d_yes
-  - "Do your U.S. citizen or LPR spouse, child(ren), or parent(s) have medical conditions, special needs, circumstances in home country, family and community ties, or any other factors that would cause them “exceptional and extremely unusual hardship” if you were to be deported?": users[0].lpr_8e_yes
-    datatype: yesnoradio
-    label above field: True
-  - Details: users[0].lpr_8e_details
-    datatype: area
-    label above field: True
-    rows: 2
-    show if: users[0].lpr_8e_yes
+    show if: users[0].nonlpr_8e_yes
 ---
 id: asylum eligibility
 question: |

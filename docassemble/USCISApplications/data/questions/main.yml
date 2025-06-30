@@ -88,8 +88,8 @@ code: |
     users[0].screening_user
     users[0].aliases.gather()
     users[0].current_rep
-    users[0].notice_to_appear
-    users[0].hearing
+    if users[0].notice_to_appear:
+      users[0].hearing
     users[0].ice_check
     users[0].history.gather()
     asylum_deadline
@@ -104,8 +104,8 @@ code: |
     users[0].other_family_status
     users[0].pending_immigration
     users[0].parents_status
-    if users[0].age_in_years() >= 14:
-      users[0].military
+    if users[0].age_in_years() > 13:
+       users[0].military
     users[0].criminal_3a_yes
     check_criminal_history
     users[0].criminal.gather()
@@ -115,12 +115,12 @@ code: |
     set_progress(75)
     users[0].uvisa_5a_yes
     users[0].tvisa_6a_yes
-    if users[0].age_in_years() < 21 and not users[0].married and not users[0].has_children:
+    if users[0].age_in_years() < 21 and not users[0].married and not users[0].has_children and not users[0].country_of_birth == 'United States':
       users[0].sijs_lived_home
     users[0].nacara_parents
     if users[0].lpr_signpost:
       users[0].lpr_7a_yes
-    if users[0].nonlpr_signpost:
+    if check_decade or users[0].nonlpr_signpost:
       users[0].nonlpr_8a_yes
     users[0].asylum_application
     users[0].hurt_past

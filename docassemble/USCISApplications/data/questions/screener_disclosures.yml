@@ -42,9 +42,9 @@ fields:
     none of the above: False
     minlength: 1
     choices:
-      - I have read the disclosures agreement to the applicant: Yes
+      - I have read the disclosures agreement to the applicant.: Yes
     validation messages:
       minlength: |
-        You cannot continue unless you have read the disclosures agreement to the applicant
+        You cannot continue unless you have read the disclosures agreement to the applicant.
 continue button field: agrees_to_disclosures
 continue button label: I Agree / Estoy de Acuerdo

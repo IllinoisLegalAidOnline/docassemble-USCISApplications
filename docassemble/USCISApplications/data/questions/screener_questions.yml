@@ -197,7 +197,6 @@ code: |
   check_decade = False
   if not users[0].history[users[0].history.number_gathered()-1].exit_yes:
     check_decade = date_difference(starting=users[0].history[users[0].history.number_gathered()-1].entry_date, ending=today()).years >= 10
-  entry_age = date_difference(starting=users[0].birthdate, ending=first_entry_date).years
   asylum_date = format_date(users[0].history[users[0].history.number_gathered()-1].entry_date + date_interval(years=1))
   debug_deadline = date_difference(starting=today(), ending=asylum_date).days
   asylum_deadline = date_difference(starting=today(), ending=asylum_date).days >= 60

@@ -16,6 +16,7 @@ Scenario: EAD only, 2 applicants
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
+    | comp_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -141,6 +142,7 @@ Scenario: EAD, 3 applicants, some are screened
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
+    | comp_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -245,6 +247,7 @@ Scenario: EAD, 3 applicants, some are screened
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
+    | comp_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -353,6 +356,7 @@ Scenario: EAD, 1 applicant, some are screened
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
+    | comp_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -434,6 +438,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
+    | comp_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |

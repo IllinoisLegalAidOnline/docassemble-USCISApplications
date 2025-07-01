@@ -603,7 +603,7 @@ table: users.initial_review_table
 rows: users
 columns:
   - Name: |
-      row_item.name.full(middle="full")
+      row_item.name_full()
   - Country of birth: |
       row_item.country_of_birth
   - City of birth: |
@@ -1386,7 +1386,7 @@ attachment:
   skip undefined: True
   editable: False
   fields:
-    - "document_set_for": ${ users[i].name.full(middle="full") }
+    - "document_set_for": ${ users[i].name_full() }
 ---
 attachment:
   variable name: users[i].ending_page[j]
@@ -1396,4 +1396,4 @@ attachment:
   skip undefined: True
   editable: False
   fields:
-    - "document_set_for": ${ users[i].name.full(middle="full") }
+    - "document_set_for": ${ users[i].name_full() }

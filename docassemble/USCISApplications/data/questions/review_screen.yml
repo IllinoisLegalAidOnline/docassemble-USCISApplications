@@ -25,7 +25,7 @@ review:
 
       &nbsp; | &nbsp;
       -------|-------
-      Name | ${ users[i].name.full(middle="full") }
+      Name | ${ users[i].name_full() }
       Birthplace | ${ showifdef("users[i].city_of_birth")}, ${ showifdef("users[i].state_of_birth") } ${ showifdef("users[i].country_of_birth") }
       Date of birth | ${ users[i].birthdate }, age ${ users[i].age_in_years() }
       A-number | ${ users[i].a_number }

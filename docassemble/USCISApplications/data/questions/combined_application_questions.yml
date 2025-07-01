@@ -2886,7 +2886,7 @@ attachment:
     - "is_other_marital_status": ${ users[i].marital_status == 'other' }
     - "marital_status_other_explanation": ${ users[i].marital_status_other }
     # Part 4
-    - "users1_name": ${ users[i].name.full(middle="full") }
+    - "users1_name": ${ users[i].name_full() }
     - "forms_filed": |
         % if application_kind == "ead_only":
         I-765

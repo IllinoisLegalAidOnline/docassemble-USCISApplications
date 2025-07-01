@@ -261,7 +261,7 @@ attachment:
     # - "practitioner_email": ${ representative.email }
     # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
-    - "users1_full_name": ${ users[i].name.full(middle="full") }
+    - "users1_full_name": ${ users[i].name_full() }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
     - "pos_dhs_address_full": ${ users[i].dhs.address.on_one_line(bare=True) }
 
@@ -285,7 +285,7 @@ attachment:
   editable: False
   fields:
 
-    - "users1_name": ${ users[i].name.full(middle="full") }
+    - "users1_name": ${ users[i].name_full() }
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''

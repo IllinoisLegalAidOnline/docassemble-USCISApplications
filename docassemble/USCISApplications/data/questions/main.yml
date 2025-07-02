@@ -120,8 +120,9 @@ code: |
     users[0].nacara_parents
     if users[0].lpr_signpost:
       users[0].lpr_questions
-    if check_decade or users[0].nonlpr_signpost:
-      users[0].nonlpr_questions
+    else:
+      if check_decade:
+        users[0].nonlpr_questions
     users[0].asylum_application
     users[0].hurt_past
     users[0].general_fear

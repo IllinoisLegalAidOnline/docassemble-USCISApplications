@@ -539,28 +539,20 @@ fields:
     datatype: area
     rows: 2
     label above field: True
-    show if: 
-      variable: users[0].children[i].sijs_parents
-      is: False
+    required: False
   - How often does ${ users[0].children[i].name.first } talk to their absent parent?: users[0].children[i].sijs_parents_talk
     datatype: area
     rows: 2
     label above field: True
-    show if: 
-      variable: users[0].children[i].sijs_parents
-      is: False
+    required: False
   - Does the absent parent provide financial support for the child?: users[0].children[i].sijs_parents_financial
     datatype: yesnoradio
     label above field: True
-    show if: 
-      variable: users[0].children[i].sijs_parents
-      is: False
+    required: False
   - "Did the absent parent ever hit or use physical violence against ${ users[0].children[i].name.first }?": users[0].children[i].sijs_parents_violence
     datatype: yesnoradio
     label above field: True
-    show if: 
-      variable: users[0].children[i].sijs_parents
-      is: False
+    required: False
   - Details: users[0].children[i].sijs_parents_violence_details
     datatype: area
     rows: 2
@@ -569,9 +561,7 @@ fields:
   - "Did the absent parent ever scream or use harsh words against ${ users[0].children[i].name.first }?": users[0].children[i].sijs_parents_language
     datatype: yesnoradio
     label above field: True
-    show if: 
-      variable: users[0].children[i].sijs_parents
-      is: False
+    required: False
   - Details: users[0].children[i].sijs_parents_language_details
     datatype: area
     rows: 2
@@ -977,29 +967,17 @@ fields:
   - Where do your parents or the absent parent live now?: users[0].sijs_parents_live
     datatype: area
     rows: 2
-    label above field: True
-    show if: 
-      variable: users[0].sijs_parents
-      is: False
+    required: False
   - How often do you talk to your absent parent?: users[0].sijs_parents_talk
     datatype: area
     rows: 2
-    label above field: True
-    show if: 
-      variable: users[0].sijs_parents
-      is: False
+    required: False
   - Does your absent parent provide financial support?: users[0].sijs_parents_financial
     datatype: yesnoradio
-    label above field: True
-    show if: 
-      variable: users[0].sijs_parents
-      is: False
+    required: False
   - "If both your parents are present in your life, is there any physical violence between your parents or did either of your parents hit you or any of your siblings?": users[0].sijs_parents_violence
     datatype: yesnoradio
-    label above field: True
-    show if: 
-      variable: users[0].sijs_parents
-      is: False
+    required: False
   - Details: users[0].sijs_parents_violence_details
     datatype: area
     rows: 2
@@ -1007,10 +985,7 @@ fields:
     label above field: True
   - "If both your parents are present in your life, did both or either of your parents scream or use harsh words against you or your siblings?": users[0].sijs_parents_language
     datatype: yesnoradio
-    label above field: True
-    show if: 
-      variable: users[0].sijs_parents
-      is: False
+    required: False
   - Details: users[0].sijs_parents_language_details
     datatype: area
     rows: 2
@@ -1030,6 +1005,7 @@ fields:
   - Are any of your parents or your spouse a US citizen or Legal Permanent Resident (LPR)?: users[0].nacara_parent_spouse
     datatype: yesnoradio
     label above field: True
+    show if: users[0].nacara_parents
   - Did this parent or spouse become a lawful permanent resident via NACARA?: users[0].nacara_lpr
     datatype: yesnoradio
     label above field: True
@@ -1062,14 +1038,6 @@ id: LPR questions
 question: |
   LPR cancellation eligibility
 fields:
-  - "Have you been issued a Notice to Appear (NTA)?": users[0].lpr_7a_yes
-    datatype: yesnoradio
-    default: 
-  - "Provide details such as the dates of the letter and when to appear.": users[0].lpr_7a_details
-    datatype: area
-    rows: 2
-    show if: users[0].lpr_7a_yes
-    label above field: True
   - "Have you ever been convicted of a crime?": users[0].lpr_7b_yes
     datatype: yesnoradio
     required: False
@@ -1111,15 +1079,6 @@ id: Non-LPR questions
 question: |
   Non-LPR cancellation eligibility
 fields:
-  - "Have you been issued a Notice to Appear (NTA)?": users[0].nonlpr_8a_yes
-    datatype: yesnoradio
-    label above field: True
-    default: users[0].notice_to_appear
-  - "Provide details such as the dates of the letter and when to appear.": users[0].nonlpr_8a_details
-    datatype: area
-    label above field: True
-    rows: 2
-    show if: users[0].nonlpr_8a_yes
   - "Have you ever been convicted of a crime?": users[0].nonlpr_8b_yes
     datatype: yesnoradio
     required: False

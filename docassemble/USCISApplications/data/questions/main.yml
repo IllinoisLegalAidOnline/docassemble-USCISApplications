@@ -119,9 +119,9 @@ code: |
       users[0].sijs_lived_home
     users[0].nacara_parents
     if users[0].lpr_signpost:
-      users[0].lpr_7a_yes
+      users[0].lpr_7b_yes
     if check_decade or users[0].nonlpr_signpost:
-      users[0].nonlpr_8a_yes
+      users[0].nonlpr_8b_yes
     users[0].asylum_application
     users[0].hurt_past
     users[0].general_fear

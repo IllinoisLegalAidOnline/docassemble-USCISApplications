@@ -1067,6 +1067,7 @@ fields:
     datatype: area
     rows: 2
     show if: users[0].lpr_7e_yes
+continue button field: users[0].lpr_questions
 ---
 id: Non-LPR signpost 
 question: |
@@ -1117,6 +1118,7 @@ fields:
     label above field: True
     rows: 2
     show if: users[0].nonlpr_8e_yes
+continue button field: users[0].nonlpr_questions
 ---
 id: asylum eligibility
 question: |

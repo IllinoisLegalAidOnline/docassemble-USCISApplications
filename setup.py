@@ -44,7 +44,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.USCISApplications',
-      version='10.8.12',
+      version='10.8.13',
       description=('CLS Workshop Applications'),
       long_description='readme',
       long_description_content_type='text/markdown',

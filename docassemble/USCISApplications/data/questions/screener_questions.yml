@@ -45,9 +45,7 @@ fields:
       <h2 class="h4">Screener's Name</h2>      
   - code: |
       screener.name_fields(person_or_business="person", show_suffix=False,)
-  - Have you explained your professional role to the applicant?: screener_explained
-    datatype: yesnoradio
-  - I am a: screener_professional_role
+  - My professional role is: screener_professional_role
     datatype: radio
     choices:
       - Attorney: attorney
@@ -60,6 +58,15 @@ fields:
     show if: 
       variable: screener_professional_role
       is: "other"
+  - no label: screener_explained
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I have explained my professional role to the applicant.: Yes
+    validation messages:
+      minlength: |
+        You cannot continue unless you have explained your professional role to the applicant.
 ---
 id: basic information
 question: |

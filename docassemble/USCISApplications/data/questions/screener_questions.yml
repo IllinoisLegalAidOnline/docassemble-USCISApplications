@@ -52,7 +52,7 @@ fields:
       - DOJ Accredited Representative: rep
       - Paralegal: paralegal
       - Other: other
-  - "Provide 'other' for your professional role": screener_professional_role_other
+  - "Other professional role": screener_professional_role_other
     maxlength: 30
     show if: 
       variable: screener_professional_role

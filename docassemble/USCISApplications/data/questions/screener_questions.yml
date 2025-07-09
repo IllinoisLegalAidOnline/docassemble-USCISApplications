@@ -45,6 +45,11 @@ fields:
       <h2 class="h4">Screener's Name</h2>      
   - code: |
       screener.name_fields(person_or_business="person", show_suffix=False,)
+---
+id: screener role
+question: |
+  ${ screener.name }'s professional role details
+fields:
   - My professional role is: screener_professional_role
     datatype: radio
     choices:
@@ -57,7 +62,47 @@ fields:
     show if: 
       variable: screener_professional_role
       is: "other"
-  - no label: screener_explained
+---
+id: informed
+question: |
+  Inform the applicant before beginning the screener.
+subquestion: |
+  Today's meeting is only a consultation intended to give legal advice. I'll explain your rights,
+  legal processes, and review relief options (if any). This is a consultation only and any advice
+  given does not initiate or constitute an attorney-client relationship. All information discussed
+  today is confidential and it is important that you provide true and accurate information to 
+  determine how to best assist and protect you. 
+fields:
+  - no label: informed_yes
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I have read this information to the applicant.: Yes
+    validation messages:
+      minlength: |
+        You cannot continue unless you have read the above to the applicant.
+continue button field: informed_agreement
+---
+id: explained role
+question: |
+  Explain your professional role to the applicant.
+subquestion: |
+  I am an 
+  % if screener_professional_role == 'attorney':
+  Attorney 
+  % elif screener_professional_role == 'rep':
+  DOJ Representative
+  % elif screener_professional_role == 'paralegal':
+  Paralegal
+  % else:
+  ${ screener_professional_role_other }
+  % endif 
+  . I do not work for the government, and I won't share your 
+  information with the government without your approval and consent. Any information gathered 
+  today is solely for our records and for grant funding purposes. 
+fields:
+  - no label: explained_yes
     datatype: checkboxes
     none of the above: False
     minlength: 1
@@ -66,6 +111,27 @@ fields:
     validation messages:
       minlength: |
         You cannot continue unless you have explained your professional role to the applicant.
+continue button field: explained_role
+---
+id: required consent
+question: |
+  Consent is required before beginning the screener.
+subquestion: |
+  You agree to allow legal service provider to share information about your case, but not your 
+  identity, with collaborating nonprofits, for assistance and/or referral purposes (if needed). 
+  You agree to share some biographic data and case type data with our grant providers to continue
+  to offer services free of charge.
+fields:
+  - no label: consent_yes
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I have read this consent agreement and have been given permission by the applicant.: Yes
+    validation messages:
+      minlength: |
+        You cannot continue unless you have read this consent agreement and have been given permission by the applicant.
+continue button field: consent_agreement
 ---
 id: basic information
 question: |
@@ -124,22 +190,27 @@ fields:
 ---
 id: immigration hearing
 question: |
-  Does the Notice to Appear have a hearing date?
+  Notice to Appear hearing details
+subquestion: |
+  Enter information about the hearing. If this isn't available on the Notice to Appear, you may be 
+  able to find hearing details by using the EOIR system with the applicant's A- number.
 fields:
-  - no label: users[0].hearing
+  - Does the Notice to Appear have a hearing date?: users[0].hearing
     datatype: yesnoradio
+    required: False
   - Hearing location (city, state): users[0].hearing_location
-    show if: users[0].hearing
+    required: False
   - Hearing date: users[0].hearing_date
     datatype: ThreePartsDate
-    show if: users[0].hearing
+    required: False
   - Type of Hearing: users[0].options
     datatype: radio
     choices: 
       - Master Calendar Hearing (MC/MCH): mc
       - Individual Hearing (INDV): indv 
       - Bond: bond
-    show if: users[0].hearing
+      - I don't know: idk
+    required: False
 ---
 id: ICE check in
 question: |
@@ -247,10 +318,8 @@ fields:
     required: False
     js show if: |
       val("users[0].immigration_1c_yes") == true || val("users[0].immigration_1c_yes") == "None"
-  - "Were you designated an unaccompanied minor (UAC) by Office of Refugee Resettlement (ORR)?": users[0].immigration_1d_yes
+  - "Have you ever attempted or entered the U.S. with false or borrowed documents?": users[0].immigration_1d_yes
     datatype: yesnomaybe
-  - note: | 
-      **Note:** If unsure, ask: Did you spend time in a children's shelter? Review their documents to confirm.
   - note: |
       For example: a green card, visa, driver's license, or birth certificate?
     show if: users[0].immigration_1d_yes
@@ -369,8 +438,10 @@ fields:
     required: False
     js show if: |
       val("users[0].immigration_1p_yes") == true || val("users[0].immigration_1p_yes") == "None"
-  - "Were you designated an unaccompanied minor (UAC) by  Office of Refugee Resettlement (ORR)? (If unsure: did you spend time in a children's shelter? Review documents to confirm).": users[0].immigration_1q_yes
+  - "Were you designated an unaccompanied minor (UAC) by  Office of Refugee Resettlement (ORR)?": users[0].immigration_1q_yes
     datatype: yesnomaybe
+  - note: | 
+      **Note:** If unsure, ask: Did you spend time in a children's shelter? Review their documents to confirm.
   - Details: users[0].immigration_1q_details
     datatype: area
     rows: 2

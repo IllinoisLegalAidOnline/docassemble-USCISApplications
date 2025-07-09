@@ -37,7 +37,7 @@ question: |
 subquestion: |
   ${ display_template(disclosures_template) }
 fields:
-  - no label: informed_consent
+  - no label: disclosure_agree
     datatype: checkboxes
     none of the above: False
     minlength: 1

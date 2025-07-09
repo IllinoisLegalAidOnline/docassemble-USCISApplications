@@ -80,16 +80,19 @@ code: |
   region
   if comp_screener:
     set_screener_sections
-    screener.name.first
     screener_intro
+    screener.name.first
+    screener_professional_role
+    informed_agreement
+    explained_role
+    consent_agreement
     nav.set_section("section_disclosures")
     set_progress(15)
-    agrees_to_disclosures
     users[0].screening_user
     users[0].aliases.gather()
     users[0].current_rep
-    if users[0].notice_to_appear:
-      users[0].hearing
+    users[0].notice_to_appear
+    users[0].hearing
     users[0].ice_check
     users[0].history.gather()
     asylum_deadline
@@ -127,6 +130,7 @@ code: |
     users[0].hurt_past
     users[0].general_fear
     users[0].finishing_crime_yes
+    agrees_to_disclosures
     nav.set_section("section_download")
     set_progress(95)
     forms_assembling

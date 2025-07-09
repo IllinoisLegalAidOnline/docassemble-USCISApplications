@@ -45,11 +45,6 @@ fields:
       <h2 class="h4">Screener's Name</h2>      
   - code: |
       screener.name_fields(person_or_business="person", show_suffix=False,)
----
-id: screener role
-question: |
-  ${ screener.name }'s professional role details
-fields:
   - My professional role is: screener_professional_role
     datatype: radio
     choices:
@@ -65,7 +60,7 @@ fields:
 ---
 id: informed
 question: |
-  Inform the applicant before beginning the screener.
+  Inform the applicant
 subquestion: |
   Today's meeting is only a consultation intended to give legal advice. I'll explain your rights,
   legal processes, and review relief options (if any). This is a consultation only and any advice
@@ -86,19 +81,19 @@ continue button field: informed_agreement
 ---
 id: explained role
 question: |
-  Explain your professional role to the applicant.
+  Explain your professional role
 subquestion: |
   I am an 
   % if screener_professional_role == 'attorney':
-  Attorney 
+  Attorney. 
   % elif screener_professional_role == 'rep':
-  DOJ Representative
+  DOJ Representative. 
   % elif screener_professional_role == 'paralegal':
-  Paralegal
+  Paralegal. 
   % else:
-  ${ screener_professional_role_other }
+  ${ screener_professional_role_other }. 
   % endif 
-  . I do not work for the government, and I won't share your 
+  I do not work for the government, and I won't share your 
   information with the government without your approval and consent. Any information gathered 
   today is solely for our records and for grant funding purposes. 
 fields:
@@ -115,22 +110,21 @@ continue button field: explained_role
 ---
 id: required consent
 question: |
-  Consent is required before beginning the screener.
-subquestion: |
-  You agree to allow legal service provider to share information about your case, but not your 
-  identity, with collaborating nonprofits, for assistance and/or referral purposes (if needed). 
-  You agree to share some biographic data and case type data with our grant providers to continue
-  to offer services free of charge.
+  Obtain consent
 fields:
+  - note: |
+      Do you agree to allow legal service provider to share information about your case, but not your identity, with collaborating nonprofits, for assistance and/or referral purposes (if needed)?
+  - note: |
+      Do you agree to share some biographic data and case type data with our grant providers to continue to offer services free of charge?
   - no label: consent_yes
     datatype: checkboxes
     none of the above: False
     minlength: 1
     choices:
-      - I have read this consent agreement and have been given permission by the applicant.: Yes
+      - I agree to the above.: Yes
     validation messages:
       minlength: |
-        You cannot continue unless you have read this consent agreement and have been given permission by the applicant.
+        You cannot continue unless you agree to the above statements.
 continue button field: consent_agreement
 ---
 id: basic information

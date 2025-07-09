@@ -83,16 +83,16 @@ id: explained role
 question: |
   Explain your professional role
 subquestion: |
-  I am a/an 
+  I am 
   % if screener_professional_role == 'attorney':
-  Attorney. 
+  an attorney.
   % elif screener_professional_role == 'rep':
-  DOJ Representative. 
+  a DOJ Representative.
   % elif screener_professional_role == 'paralegal':
-  Paralegal. 
+  a paralegal.
   % else:
-  ${ screener_professional_role_other }. 
-  % endif 
+  ${ indefinite_article(screener_professional_role_other) }.
+  % endif
   I do not work for the government, and I won't share your 
   information with the government without your approval and consent. Any information gathered 
   today is solely for our records and for grant funding purposes. 

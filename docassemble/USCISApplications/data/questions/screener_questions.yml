@@ -83,7 +83,7 @@ id: explained role
 question: |
   Explain your professional role
 subquestion: |
-  I am an 
+  I am a/an 
   % if screener_professional_role == 'attorney':
   Attorney. 
   % elif screener_professional_role == 'rep':

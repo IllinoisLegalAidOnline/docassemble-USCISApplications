@@ -564,6 +564,7 @@ fields:
       - Parolee
       - Visitor
       - Student
+      - Living abroad
       - No Status
       - Other immigration status (not listed above): other
   - Enter their immigration status: users[0].children[i].other_immigration_status
@@ -652,7 +653,7 @@ fields:
 ---
 code: |
   users[0].children[i].name.first
-  if not users[0].children[i].married and users[0].children[i].age_in_years() < 21 and not (users[0].children[i].country_of_birth == "United States" or users[0].children[i].immigration_status == 'USC'):
+  if not users[0].children[i].married and users[0].children[i].age_in_years() < 21 and not (users[0].children[i].country_of_birth == "United States" or users[0].children[i].immigration_status == 'USC' or users[0].children[i].immigration_status == 'Living abroad'):
     users[0].children[i].sijs_lived_home
   users[0].children[i].complete = True
 ---
@@ -826,7 +827,7 @@ code: |
   users[0].criminal[i].complete = True
 ---
 code: |
-  if users[0].criminal_3a_yes or users[0].criminal_3b_yes or users[0].criminal_3c_yes or users[0].criminal_3d_yes or users[0].criminal_3e_yes or users[0].criminal_3f_yes or users[0].criminal_3g_yes or users[0].criminal_3h_yes or users[0].criminal_3i_yes or users[0].criminal_3j_yes or users[0].criminal_3k_yes:
+  if users[0].criminal_3a_yes or users[0].criminal_3b_yes or users[0].criminal_3d_yes or users[0].criminal_3e_yes or users[0].criminal_3f_yes or users[0].criminal_3g_yes or users[0].criminal_3i_yes or users[0].criminal_3j_yes:
     users[0].criminal.there_are_any = True
 
   check_criminal_history = True

@@ -20,7 +20,7 @@ subquestion: |
   2. Completing the immigration history and encounters.
   3. Additional family information such as your spouse, children, and parents.
   4. Complete the rest of the questions to consider your eligibility.
-  5. At the end of the interview the comprehensive legal screener will downloadable and you will receive
+  5. At the end of the interview the comprehensive legal screener will be downloadable and you will receive
   your copy.
 continue button field: screener_intro
 ---
@@ -148,6 +148,11 @@ fields:
     code: |
       uscis_countries_list()  
   - Country of citizenship: users[0].country_of_citizenship
+    input type: dropdown
+    required: False
+    code: |
+      uscis_countries_list()
+  - Additional citizenship: users[0].additional_citizenship
     input type: dropdown
     required: False
     code: |
@@ -546,6 +551,10 @@ question: |
   ${ capitalize(ordinal(i)) } child details
 fields:
   - First name of child: users[0].children[i].name.first
+  - A Number (do not include A-): users[0].children[i].a_number
+    required: False
+    validate: |
+      lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
   - Date of birth: users[0].children[i].birthdate
     datatype: BirthDate
     alMax: ${ today() }
@@ -561,11 +570,8 @@ fields:
     datatype: radio
     choices:
       - USC
-      - Parolee
-      - Visitor
-      - Student
-      - Living abroad
       - No Status
+      - Living abroad
       - Other immigration status (not listed above): other
   - Enter their immigration status: users[0].children[i].other_immigration_status
     maxlength: 27
@@ -642,7 +648,7 @@ fields:
 ---
 id: additional children
 question: |
-  Additonal children
+  Additional children
 subquestion: |
   You already entered so far:
 
@@ -810,6 +816,7 @@ fields:
     choices:
       - Private attorney: lawyer
       - Public Defender: PD
+      - No lawyer/self-represented: N/A
 ---
 id: additional criminal history
 question: |
@@ -1255,7 +1262,7 @@ id: fear of state
 question: |
   General fear and fear of state
 subquestion: |
-  These can be state/governemntal or non-governemntal representatives.
+  These can be state/governmental or non-governmental representatives.
 fields:
   - "Are you afraid of being hurt if you return to your native country?": users[0].general_fear
     datatype: yesnoradio
@@ -1283,19 +1290,22 @@ fields:
   - Details: users[0].fear_protection_non_govt_details
     datatype: area
     rows: 2
-    show if: users[0].fear_protection_non_govt
+    js show if: |
+      val("users[0].fear_protection_non_govt") == true || val("users[0].fear_protection_non_govt") == false
   - "Before coming to the United States, did you try to live in another part of your home country? If so, why didn't you stay there? If not, why not?": users[0].internal_relocation_attempt
     datatype: yesnoradio
   - Details: users[0].internal_relocation_attempt_details
     datatype: area
     rows: 2
-    show if: users[0].internal_relocation_attempt
+    js show if: |
+      val("users[0].internal_relocation_attempt") == true || val("users[0].internal_relocation_attempt") == false
   - "Would it be reasonable to move to another part of your home country? If not, why not?": users[0].internal_relocation_reasonable
     datatype: yesnoradio
   - Details: users[0].internal_relocation_reasonable_details
     datatype: area
     rows: 2
-    show if: users[0].internal_relocation_reasonable
+    js show if: |
+      val("users[0].internal_relocation_reasonable") == true || val("users[0].internal_relocation_reasonable") == false
   - "How and for what reasons do you think you might be harmed in the future?": users[0].future_persecution_reasons
     datatype: area
     rows: 2

@@ -257,6 +257,9 @@ fields:
     required: False  
   - "Any encounters with CBP/ICE?": users[0].history[i].encounters 
     datatype: yesnoradio
+validation code: |
+  if users[0].history[i].exit_yes and users[0].history[i].exit_date <= users[0].history[i].entry_date:
+    validation_error("Please make sure the exit date is after the entry date.")
 ---
 id: immigration history another
 question: |

@@ -261,7 +261,7 @@ attachment:
     # - "practitioner_email": ${ representative.email }
     # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
-    - "users1_full_name": ${ users[i].name.full(middle="full") }
+    - "users1_full_name": ${ users[i].name_full() }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
     - "pos_dhs_address_full": ${ users[i].dhs.address.on_one_line(bare=True) }
 
@@ -285,7 +285,7 @@ attachment:
   editable: False
   fields:
 
-    - "users1_name": ${ users[i].name.full(middle="full") }
+    - "users1_name": ${ users[i].name_full() }
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
@@ -299,7 +299,7 @@ attachment:
     - "users1_email_current": ${ users[i].email }
 
     # Proof of service
-    - "pos_name": ${ users[i].name.full() }
+    - "pos_name": ${ users[i].name_full() }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
     - "dhs_address_line1": ${ users[i].dhs.address.line_one(bare=True) }
     - "dhs_address_line2": ${ users[i].dhs.address.line_two() }
@@ -309,7 +309,7 @@ attachment:
     # Service instructions
     - "service_name_line": |
         % if users[i].cert_of_service:
-        ${ users[i].name.full() }
+        ${ users[i].name_full() }
         % endif
     - "service_address_line_1": |
         % if users[i].cert_of_service:

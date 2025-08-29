@@ -1544,7 +1544,7 @@ table: users.table2
 rows: users
 columns:
   - Name: |
-      row_item.name.full() if defined("row_item.name.middle") else ""
+      row_item.name_full() if defined("row_item.name.middle") else ""
   - Previous names[0]: |
       row_item.aliases[0] if defined("row_item.aliases[0].middle") else ""
   - Birthdate: |

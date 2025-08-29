@@ -693,7 +693,7 @@ table: users.initial_review_table
 rows: users
 columns:
   - Name: |
-      row_item.name.full(middle="full")
+      row_item.name_full()
   - Country of birth: |
       row_item.country_of_birth
   - City of birth: |

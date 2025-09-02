@@ -39,6 +39,14 @@ jobs:
       # relative paths to action files
       - uses: actions/checkout@v4
 
+      # Install the required dependencies globally into the runner environment
+      - name: Install required packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade \
+            "git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main" \
+            "docassemble.ILAO>=1.1.10"
+
       - name: ALKiln - Start the isolated temporary docassemble server on GitHub
         id: github_server
         #### Developer note: you'll need to replace `.` with the path to

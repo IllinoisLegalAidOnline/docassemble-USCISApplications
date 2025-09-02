@@ -593,7 +593,7 @@ fields:
 ---
 id: SIJS eligibility child
 question: |
-  SIJS eligibility for ${ users[0].children[i].name.full() }
+  SIJS eligibility for ${ users[0].children[i].name_full() }
 fields: 
   - Prior to coming to the U.S, who did ${ users[0].children[i].name.first } live with?: users[0].children[i].sijs_lived_home
     datatype: area
@@ -1023,7 +1023,7 @@ fields:
 ---
 id: SIJS eligibility
 question: |
-  SIJS eligibility for ${ users[0].name.full() }
+  SIJS eligibility for ${ users[0].name_full() }
 fields: 
   - Prior to coming to the U.S, who did you live with both in your home country?: users[0].sijs_lived_home
     datatype: area

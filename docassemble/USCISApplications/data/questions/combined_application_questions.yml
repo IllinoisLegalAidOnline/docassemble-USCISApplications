@@ -633,7 +633,7 @@ fields:
 ---
 id: type of application TPS
 question: |
-  First TPS application for ${users[i].name.full()}?
+  First TPS application for ${ users[i].name_full() }?
 fields:
   - "Is this your first TPS application, or are you applying to re-register your TPS?": users[i].is_first_TPS_application
     datatype: radio
@@ -656,7 +656,7 @@ fields:
 ---
 id: reason for applying EAD
 question: |
-  First EAD application for ${users[i].name.full()}?
+  First EAD application for ${ users[i].name_full() }?
 fields:
   - "Is this your first EAD application, or are you applying to re-register or renew your EAD?": users[i].is_first_EAD_application
     datatype: radio
@@ -2740,7 +2740,7 @@ attachment:
         ${ interpreter.language }
         % endif
     - "user_used_preparer": True
-    - "preparer_name": ${ preparer.name.full() }
+    - "preparer_name": ${ preparer.name_full() }
     - "users1_phone_number": ${ users[i].phone_number}
     - "users1_mobile_number": ${ users[i].mobile_number }
     - "users1_email": ${ users[i].email }
@@ -2886,7 +2886,7 @@ attachment:
     - "is_other_marital_status": ${ users[i].marital_status == 'other' }
     - "marital_status_other_explanation": ${ users[i].marital_status_other }
     # Part 4
-    - "users1_name": ${ users[i].name.full(middle="full") }
+    - "users1_name": ${ users[i].name_full() }
     - "forms_filed": |
         % if application_kind == "ead_only":
         I-765

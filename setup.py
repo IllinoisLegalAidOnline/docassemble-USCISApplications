@@ -44,7 +44,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.USCISApplications',
-      version='10.8.22',
+      version='10.8.23',
       description=('CLS Workshop Applications'),
       long_description='readme',
       long_description_content_type='text/markdown',
@@ -53,7 +53,7 @@ setup(name='docassemble.USCISApplications',
       license='MIT',
       url='https://docassemble.org',
       packages=find_namespace_packages(),
-      install_requires=['docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main', 'docassemble.ILAO>=1.1.10'],
+      install_requires=[''],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/USCISApplications/', package='docassemble.USCISApplications'),
      )

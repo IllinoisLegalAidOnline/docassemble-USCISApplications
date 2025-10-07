@@ -1146,7 +1146,7 @@ subquestion: |
   This can take a few minutes.
 
   <div class="spinner-border text-primary d-flex justify-content-center" role="status" style="border: 0.25rem solid #0079d0;">
-    <span class="sr-only">Creating PDFs...</span>
+    <span class="visually-hidden">Creating PDFs...</span>
   </div>
 event: waiting_screen
 reload: True

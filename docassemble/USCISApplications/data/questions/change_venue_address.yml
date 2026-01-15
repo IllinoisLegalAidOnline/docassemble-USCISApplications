@@ -173,7 +173,7 @@ fields:
     js show if: |
       val("users[i].dhs.different_court_location")
 ---
-id: your previous address change
+id: proof of service
 question: |
   Will ${ users[i] }'s be mailing the Change of Address request?
 subquestion: |

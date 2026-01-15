@@ -150,9 +150,9 @@ code: |
     set_progress(15)
     agrees_to_retainer
     set_progress(10)
-    # for user in users:
-    #   if user.age_in_years() > 13:
-    #     user.signature
+    for user in users:
+      if user.age_in_years() > 13:
+        user.signature
     nav.set_section("section_screener")
     set_progress(40)
     application_kind
@@ -723,13 +723,13 @@ subquestion: |
   On the next screens, we'll review the limited scope retainer.
 continue button field: review_initial_user_list
 ---
-# id: signatures for users i
-# question: |
-#   ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
-# signature: users[i].signature
-# under: |
-#   ${ users[i] }
-# required: False
+id: signatures for users i
+question: |
+  ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
+signature: users[i].signature
+under: |
+  ${ users[i] }
+required: False
 ---
 id: kind of interview
 question: |
@@ -1254,9 +1254,9 @@ objects:
         users[i].i_912_fee_waiver,
         users[i].ead_interim_parole_addendum,
         users[i].ead_order_of_supervision_addendum,
-        users[i].cov_coa_instructions,
         users[i].eoir_61_cov,
         users[i].motion_addendum,
+        users[i].eoir_33_coa_page1,
         users[i].eoir_33_coa,
       ])
 ---
@@ -1390,7 +1390,7 @@ attachment:
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
-    - "users1_mobile_number": ${ users[i].mobile_number }
+    - "users1_mobile_number": ${ users[i].phone_number }
     - "users1_email": ${ users[i].email }
 ---
 reconsider:

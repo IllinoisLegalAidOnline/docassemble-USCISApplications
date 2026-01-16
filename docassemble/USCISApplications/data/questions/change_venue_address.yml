@@ -270,8 +270,14 @@ attachment:
     # - "practitioner_email": ${ representative.email }
     # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
-    - "users1_full_name": ${ users[i].name_full() }
-    - "pos_date": ${ today().format('MM/dd/yyyy') }
+    - "users1_full_name": |
+      % if users[i].cert_of_service:
+      ${ users[i].name_full() }
+      % endif
+    - "pos_date": |
+      % if users[i].cert_of_service:
+      ${ today().format('MM/dd/yyyy') }
+      % endif
     - "pos_dhs_address_full": ${ users[i].dhs.address.on_one_line(bare=True) }
 
 ---

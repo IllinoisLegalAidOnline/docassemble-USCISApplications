@@ -85,7 +85,8 @@ fields:
 #       states_list()
 #   - ZIP code: representative.address.zip
 #   - Phone number: representative.phone_number
-#     datatype: al_international_phone
+#     datatype: al_international_
+
 #     required: False
 #   - FAX number: representative.fax_number
 #     datatype: al_international_phone
@@ -172,15 +173,17 @@ fields:
     js show if: |
       val("users[i].dhs.different_court_location")
 ---
-id: your previous address change
+id: proof of service
 question: |
   Will ${ users[i] }'s be mailing the Change of Address request?
+subquestion: |
+  Select **No** if you want to add a name and address of sender to the EOIR-33 Proof of Service later.
 fields:
   - no label: users[i].cert_of_service
     datatype: yesnoradio
 ---
-objects:
-  - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)
+# objects:
+#   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)
 ---
 objects:
   - users[i].motion_addendum: ALDocument.using(title=f"{users[i]} - Motion Addendum", filename=space_to_underscore(f"{users[i]} -  Motion Addendum"), has_addendum=False)
@@ -189,10 +192,13 @@ objects:
   - users[i].eoir_61_cov: ALDocument.using(title="EIOR-61 Change of venue", filename="EIOR-61 Change of venue", has_addendum=False )
 ---
 objects:
+  - users[i].eoir_33_coa_page1: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
+---
+objects:
   - users[i].eoir_33_coa: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
 ---
-code: |
-  users[i].cov_coa_instructions.enabled = users[i].application_is_approved and change_kind != "no"
+# code: |
+#   users[i].cov_coa_instructions.enabled = users[i].application_is_approved and change_kind != "no"
 ---
 code: |
   users[i].eoir_61_cov.enabled = users[i].application_is_approved and change_kind == "cov_and_coa" 
@@ -201,14 +207,17 @@ code: |
   users[i].motion_addendum.enabled = users[i].application_is_approved and change_kind == "cov_and_coa"
 ---
 code: |
-  users[i].eoir_33_coa.enabled = users[i].application_is_approved and change_kind != "no"
+  users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and users[i].cert_of_service == False and change_kind != "no"
 ---
-attachment:
-  variable name: users[i].cov_coa_instructions[j]
-  name: ${ users[i] } - COV COA Instructions
-  filename: ${ space_to_underscore(f"{users[i]} - COV COA Instructions") }
-  docx template file: COA_COV_checklist.docx
-  skip undefined: True
+code: |
+  users[i].eoir_33_coa.enabled = users[i].application_is_approved and users[i].cert_of_service and change_kind != "no"
+---
+# attachment:
+#   variable name: users[i].cov_coa_instructions[j]
+#   name: ${ users[i] } - COV COA Instructions
+#   filename: ${ space_to_underscore(f"{users[i]} - COV COA Instructions") }
+#   docx template file: COA_COV_checklist.docx
+#   skip undefined: True
 ---
 ################### EIOR-61 COV ####################
 ---
@@ -279,13 +288,13 @@ attachment:
 attachment:
   name: EIOR-33
   filename: EIOR-33
-  variable name: users[i].eoir_33_coa[j]
+  variable name: users[i].eoir_33_coa_page1[j]
   skip undefined: True
-  pdf template file: eoir-33_coa.pdf
+  pdf template file: eoir-33_coa_page1.pdf
   editable: False
   fields:
 
-    - "users1_name": ${ users[i].name_full() }
+    - "users1_name": ${ users[i].name.last } ${ users[i].name.first } ${ users[i].name.middle }
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
@@ -299,8 +308,50 @@ attachment:
     - "users1_email_current": ${ users[i].email }
 
     # Proof of service
-    - "pos_name": ${ users[i].name_full() }
-    - "pos_date": ${ today().format('MM/dd/yyyy') }
+    - "pos_name": |
+        % if users[i].cert_of_service:
+        ${ users[i].name_full() }
+        % endif
+    - "pos_date": |
+        % if users[i].cert_of_service:
+        ${ today().format('MM/dd/yyyy') }
+        % endif
+    - "dhs_address_line1": ${ users[i].dhs.address.line_one(bare=True) }
+    - "dhs_address_line2": ${ users[i].dhs.address.line_two() }
+    - "pos_type": by mail service
+    - "no_service": False
+---
+attachment:
+  name: EIOR-33
+  filename: EIOR-33
+  variable name: users[i].eoir_33_coa[j]
+  skip undefined: True
+  pdf template file: eoir-33_coa.pdf
+  editable: False
+  fields:
+
+    - "users1_name": ${ users[i].name.last } ${ users[i].name.first } ${ users[i].name.middle }
+    - "users1_a_number": ${ users[i].a_number }
+    - "care_name_current": ''
+    - "care_name_former": ''
+    - "users1_address_line1_former": ${ users[i].previous.address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ users[i].mailing_address.line_one(bare=True) }
+    - "users1_address_line2_former": ${ users[i].previous.address.line_two() }
+    - "users1_address_line2_current": ${ users[i].mailing_address.line_two() }
+    - "users1_phone_former": ${ phone_number_formatted(users[i].previous.phone_number) }
+    - "users1_phone_current": ${ phone_number_formatted(users[i].phone_number) }
+    - "users1_email_former": ${ users[i].previous.email }
+    - "users1_email_current": ${ users[i].email }
+
+    # Proof of service
+    - "pos_name": |
+        % if users[i].cert_of_service:
+        ${ users[i].name_full() }
+        % endif
+    - "pos_date": |
+        % if users[i].cert_of_service:
+        ${ today().format('MM/dd/yyyy') }
+        % endif
     - "dhs_address_line1": ${ users[i].dhs.address.line_one(bare=True) }
     - "dhs_address_line2": ${ users[i].dhs.address.line_two() }
     - "pos_type": by mail service

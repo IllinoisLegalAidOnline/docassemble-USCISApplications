@@ -1604,16 +1604,16 @@ fields:
         interpreter_present
 ---
 ############################ FEE WAIVER ############################
-id: fee waiver needed
-question: |
-  Does ${ users[i] }'s application need a fee waiver?
-subquestion: |
-  You may be eligible for a fee waiver if you meet eligibility criteria.
-fields:
-  - no label: users[i].fee_waiver_needed
-    datatype: yesnoradio
-    default: ${ showifdef("users[0].fee_waiver_needed") if i > 0 else ''}
-    label above field: True
+# id: fee waiver needed
+# question: |
+#   Does ${ users[i] }'s application need a fee waiver?
+# subquestion: |
+#   You may be eligible for a fee waiver if you meet eligibility criteria.
+# fields:
+#   - no label: users[i].fee_waiver_needed
+#     datatype: yesnoradio
+#     default: ${ showifdef("users[0].fee_waiver_needed") if i > 0 else ''}
+#     label above field: True
 ---
 id: basis for your request
 question: |
@@ -1997,7 +1997,7 @@ objects:
   - users[i].i_912_fee_waiver: ALDocument.using(title=f"{users[i]} - Request for Fee Waiver", filename=space_to_underscore(f"{users[i]} - Request for Fee Waiver"), has_addendum=False)
 ---
 code: |
-  users[i].i_912_fee_waiver.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved and users[i].fee_waiver_needed
+  users[i].i_912_fee_waiver.enabled = application_kind in ['ead_and_tps','tps_only'] and users[i].application_is_approved and users[i].fee_waiver_needed
 ---
 attachment:
   name: TPS_yes_answer_addendum

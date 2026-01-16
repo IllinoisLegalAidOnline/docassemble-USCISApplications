@@ -150,9 +150,9 @@ code: |
     set_progress(15)
     agrees_to_retainer
     set_progress(10)
-    # for user in users:
-    #   if user.age_in_years() > 13:
-    #     user.signature
+    for user in users:
+      if user.age_in_years() > 13:
+        user.signature
     nav.set_section("section_screener")
     set_progress(40)
     application_kind
@@ -224,23 +224,23 @@ code: |
           user.signpost
           user.check_work
 
-      nav.set_section("section_fees")
-      set_progress(80)
-      for idx,user in enumerate(users):
-        if user.application_is_approved:
-          if user.fee_waiver_needed:
-            user.fee_waiver_bases
-            if user.fee_waiver_bases['benefits']:
-              user.means_benefits.gather()
-            if user.fee_waiver_bases['guidelines']:
-              user.employment_status
-              user.annual_household_income
-            if user.fee_waiver_bases['hardship']:
-              if not user.homeless_shelter:
-                user.hardship_details
-              if user.has_assets:
-                user.assets.gather()
-              user.monthly_expenses
+      # nav.set_section("section_fees")
+      # set_progress(80)
+      # for idx,user in enumerate(users):
+      #   if user.application_is_approved:
+      #     if user.fee_waiver_needed:
+      #       user.fee_waiver_bases
+      #       if user.fee_waiver_bases['benefits']:
+      #         user.means_benefits.gather()
+      #       if user.fee_waiver_bases['guidelines']:
+      #         user.employment_status
+      #         user.annual_household_income
+      #       if user.fee_waiver_bases['hardship']:
+      #         if not user.homeless_shelter:
+      #           user.hardship_details
+      #         if user.has_assets:
+      #           user.assets.gather()
+      #         user.monthly_expenses
 
       if application_kind in ['ead_and_tps','tps_only'] and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
         for user in users:
@@ -305,7 +305,7 @@ data:
   - section_screener: Verify eligibility
   - section_application: Application
   #- review_USCIS_Applications: Review 
-  - section_fees: Fee Waiver (optional)
+  #- section_fees: Fee Waiver (optional)
   - section_covcoa: Change of Venue/Address
   - section_download: Download and print
 ---
@@ -723,13 +723,13 @@ subquestion: |
   On the next screens, we'll review the limited scope retainer.
 continue button field: review_initial_user_list
 ---
-# id: signatures for users i
-# question: |
-#   ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
-# signature: users[i].signature
-# under: |
-#   ${ users[i] }
-# required: False
+id: signatures for users i
+question: |
+  ${ users[i].name.first }, please sign here to agree / firma aqui para aceptar
+signature: users[i].signature
+under: |
+  ${ users[i] }
+required: False
 ---
 id: kind of interview
 question: |
@@ -1254,9 +1254,9 @@ objects:
         users[i].i_912_fee_waiver,
         users[i].ead_interim_parole_addendum,
         users[i].ead_order_of_supervision_addendum,
-        users[i].cov_coa_instructions,
         users[i].eoir_61_cov,
         users[i].motion_addendum,
+        users[i].eoir_33_coa_page1,
         users[i].eoir_33_coa,
       ])
 ---
@@ -1390,7 +1390,7 @@ attachment:
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
-    - "users1_mobile_number": ${ users[i].mobile_number }
+    - "users1_mobile_number": ${ users[i].phone_number }
     - "users1_email": ${ users[i].email }
 ---
 reconsider:

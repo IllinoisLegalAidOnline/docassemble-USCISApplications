@@ -207,10 +207,10 @@ code: |
   users[i].motion_addendum.enabled = users[i].application_is_approved and change_kind == "cov_and_coa"
 ---
 code: |
-  users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and users[i].cert_of_service == False and change_kind != "no"
+  users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and change_kind != "no" and users[i].cert_of_service == False 
 ---
 code: |
-  users[i].eoir_33_coa.enabled = users[i].application_is_approved and users[i].cert_of_service and change_kind != "no"
+  users[i].eoir_33_coa.enabled = users[i].application_is_approved and change_kind != "no" and users[i].cert_of_service
 ---
 # attachment:
 #   variable name: users[i].cov_coa_instructions[j]

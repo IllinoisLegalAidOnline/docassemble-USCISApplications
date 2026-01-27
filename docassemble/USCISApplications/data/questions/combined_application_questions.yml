@@ -992,17 +992,7 @@ fields:
     maxlength: 9
     minlength: 9
     show if: users[i].has_ssn
-  - "Do you want the SSA to issue you a Social Security card?": users[i].issue_social
-    datatype: yesnoradio
-    show if:
-      variable: users[i].has_ssn
-      is: False
-  - note: |
-      **Consent for Disclosure:** I authorize disclosure of information from this application to the SSA as required for the purpose of assigning me an SSN and issuing me a Social Security card.
-    show if: users[i].issue_social      
-  - Do you consent to the above terms?: users[i].ssa_consent
-    datatype: yesnoradio
-    show if: users[i].issue_social
+
 ---
 id: father and mother birth name
 question: |
@@ -2588,7 +2578,7 @@ attachment:
   filename: I-765
   variable name: users[i].i_765_attachment[j]
   skip undefined: True
-  pdf template file: I-765_updated_050525.pdf
+  pdf template file: I-765_updated_012226.pdf
   editable: False
   fields:
     # - "US Citizenship and Immigration Services": ${ US_Citizenship_and_Immigration_Services }
@@ -2615,22 +2605,22 @@ attachment:
         % if users[i].has_ssn:
         ${ users[i].ssn }
         % endif
-    - "issue_social_yes": |
-        % if not users[i].has_ssn:
-        ${ users[i].issue_social }
-        % endif
-    - "issue_social_no": |
-        % if not users[i].has_ssn:
-        ${ not users[i].issue_social }
-        % endif
-    - "ssa_consent_yes": |
-        % if not users[i].has_ssn:
-        ${ users[i].ssa_consent }
-        % endif
-    - "ssa_consent_no": |
-        % if not users[i].has_ssn:
-        ${ not users[i].ssa_consent }
-        % endif
+    # - "issue_social_yes": |
+    #     % if not users[i].has_ssn:
+    #     ${ users[i].issue_social }
+    #     % endif
+    # - "issue_social_no": |
+    #     % if not users[i].has_ssn:
+    #     ${ not users[i].issue_social }
+    #     % endif
+    # - "ssa_consent_yes": |
+    #     % if not users[i].has_ssn:
+    #     ${ users[i].ssa_consent }
+    #     % endif
+    # - "ssa_consent_no": |
+    #     % if not users[i].has_ssn:
+    #     ${ not users[i].ssa_consent }
+    #     % endif
     - "users1_mailing_address_is_apt": ${ users[i].mailing_address.address_type == 'apt' }
     - "users1_mailing_address_is_suite": ${ users[i].mailing_address.address_type == 'suite' }
     - "users1_mailing_address_is_floor": ${ users[i].mailing_address.address_type == 'floor' }
@@ -2657,10 +2647,10 @@ attachment:
     - "marital_status_married": ${ users[i].marital_status in ['married','separated'] }
     - "marital_status_divorced": ${ users[i].marital_status == 'divorced' }
     - "marital_status_widowed": ${ users[i].marital_status == 'widowed' }
-    - "father_name_last": ${ users[i].father_last_name}
-    - "father_name_first": ${ users[i].father_first_name }
-    - "mother_name_last": ${ users[i].mother_last_name }
-    - "mother_name_first": ${ users[i].mother_first_name }
+    # - "father_name_last": ${ users[i].father_last_name}
+    # - "father_name_first": ${ users[i].father_first_name }
+    # - "mother_name_last": ${ users[i].mother_last_name }
+    # - "mother_name_first": ${ users[i].mother_first_name }
     - "citizen_country_1": ${ users[i].countries_of_citizenship.item(0) }
     - "citizen_country_2": ${ users[i].countries_of_citizenship.item(1) }
     - "previously_filed_i765": ${ users[i].previously_filed_I765 }

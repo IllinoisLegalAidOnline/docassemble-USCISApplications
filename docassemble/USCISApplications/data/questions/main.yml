@@ -214,7 +214,7 @@ code: |
           user.i94_arrival_number
           user.has_been_in_immigration_proceedings
           if application_kind in ['ead_and_tps','ead_only']:
-            user.father_first_name
+            #user.father_first_name
             user.previously_filed_I765
           if application_kind in ['ead_and_tps','tps_only']:
             if user.traveled_through_other_countries:
@@ -272,6 +272,13 @@ code: |
             user.type_of_relief
             user.dhs.address.address
             user.cert_of_service
+
+      # Determine what to do if they're not approved
+      if cov_supervisor_overall_approval_status == "denied":
+        cov_supervisor_kickout
+
+      create_motion_ordering
+      set_motion_order
 
     nav.set_section("section_download")
     store_variables_snapshot(

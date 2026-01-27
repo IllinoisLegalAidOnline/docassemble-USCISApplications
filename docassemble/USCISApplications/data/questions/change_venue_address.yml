@@ -6,6 +6,7 @@ objects:
   #- representative: ALIndividual
   - users[i].dhs: ALIndividual
   - users[i].dhs.address: ALAddress
+  - motion_users: DAList
 ---
 id: change of venue
 continue button field: cov_intro
@@ -42,6 +43,82 @@ fields:
     datatype: area
     rows: 2
     maxlength: 60
+---
+id: review_cov_questions
+continue button field: review_cov_questions
+question: |
+  COV screener
+subquestion: |
+  <div class="alert alert-info ilao-info" role="alert">
+    <h2 class="h4">Call a supervisor to review NTA</h2>
+    <p>
+      Wait for the supervisor to check your work and decide if each applicant can continue or not.
+    </p>
+    <p>
+    If any applicant is screened out, continue the interview for the remaining applicants.
+    The applicant should stay until you are able to print the screener and retainer agreement.
+    </p>
+  </div>
+
+fields:
+  - Have you hired an attorney for your immigration case?: cov_attorney
+    datatype: yesnoradio
+  - Who is the lead respondent?: lead_applicant
+    datatype: object_radio
+    choices: |
+      [user for user in users]
+    none of the above: Other
+  - What is the name of the other lead respondent?: other_applicant
+    show if: 
+      variable: lead_applicant
+      is: "Other"
+  - How many riders are on the case?: cov_riders
+    datatype: integer
+  - Have you previously appeared in immigration court?: previous_court
+    datatype: yesnoradio
+  - Do all the parties on the case want the venue changed?: all_change_venue
+    datatype: yesnoradio
+
+
+  - What should happen with this change of venue?: cov_supervisor_overall_approval_status
+    datatype: radio
+    choices:
+      - All applicants can **continue**: approved
+      - All applicants are **not elibible**: denied
+      - "**Some** applications can continue": mixed
+    show if:
+      code: |
+        len(users) > 1
+  - What should happen with this application?: cov_supervisor_overall_approval_status
+    datatype: radio
+    choices:
+      - Continue application: approved
+      - Do not continue: denied
+    show if:
+      code: |
+        len(users) == 1
+    minlength: 1
+  - Which applications should be **approved**?: approved_applications
+    datatype: object_checkboxes
+    choices:
+      - users
+    show if:
+      variable: cov_supervisor_overall_approval_status
+      is: mixed
+  - Supervisor name: cov_supervisor_name
+  - Supervisor notes: cov_supervisor_notes
+    required: False
+    datatype: area
+---
+id: cov kickout
+event: cov_supervisor_kickout
+question: |
+  Sorry
+subquestion: |
+  The supervisor did not approve the application.
+buttons:
+  - Exit: exit
+  - Restart: restart
 ---
 # id: attorney or representative type
 # question: |
@@ -181,6 +258,28 @@ subquestion: |
 fields:
   - no label: users[i].cert_of_service
     datatype: yesnoradio
+---
+code: |
+  motion_users.clear()
+  for user in users:
+    motion_users.append(user)
+  motion_users.gathered = True
+  create_motion_ordering = True
+---
+id: motion name ordering
+question: |
+  Parties to the case
+subquestion: |
+  ${ motion_users_table }
+continue button field: set_motion_order
+---
+table: motion_users_table
+rows: motion_users
+columns:
+  - Last Name: row_item.name.last
+  - First Name: row_item.name.first
+  - A Number: row_item.a_number
+allow reordering: True
 ---
 # objects:
 #   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)

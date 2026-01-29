@@ -157,7 +157,8 @@ code: |
     set_progress(40)
     application_kind
     if application_kind in ['ead_and_tps','tps_only','ead_only']:
-      change_kind
+      if change_kind == "no":
+        change_sections
       signpost_screener
       if len(users) >= 1:
         update_sections
@@ -323,10 +324,19 @@ code: |
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-2:]
-    )
+    if change_kind == "no":
+      sections.extend(default_sections[-1:])
+    else:  
+      sections.extend(default_sections[-2:])
     nav.set_sections(sections)
   update_sections = True
+---
+code: |
+  sections = default_sections[:-2]
+  sections.extend(default_sections[-1:])
+  nav.set_sections(sections)
+
+  change_sections = True
 ---
 variable name: screener_sections
 data:
@@ -1184,7 +1194,7 @@ subquestion: |
   ${ action_button_html(user.cached_pdf.url_for(), label=f"{ user.name_full()}'s forms", icon="file-pdf", size="lg", color="primary") }
   % endfor
 
-  ${ action_button_html(url_of("new_session"), label="Start a set of forms", icon="square-plus", size="lg", color="secondary") }
+  ${ action_button_html(url_of("new_session"), label="Start a new set of forms", icon="square-plus", size="lg", color="secondary") }
 ---
 objects:
   - users[i].g_1145_attachment: ALDocument.using(title=f"{users[i]} - Electronic Notification", filename=space_to_underscore(f"{users[i]} - Electronic Notification"), has_addendum=False)

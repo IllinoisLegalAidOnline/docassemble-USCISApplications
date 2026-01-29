@@ -986,8 +986,10 @@ question: |
 fields:
   - Have you previously filed Form I-765?: users[i].previously_filed_I765
     datatype: yesnoradio
-  - "Has the Social Security Administration (SSA) ever officially issued a card to you?": users[i].has_ssn
+  - "Do you have a Social Security Number?": users[i].has_ssn
     datatype: yesnoradio
+    help: |
+       Select **Yes** to enter SSN
   - "U.S. Social Security Number (without -)": users[i].ssn
     maxlength: 9
     minlength: 9

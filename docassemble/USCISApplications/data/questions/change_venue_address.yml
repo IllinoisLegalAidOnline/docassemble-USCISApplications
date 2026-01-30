@@ -6,7 +6,7 @@ objects:
   #- representative: ALIndividual
   - users[i].dhs: ALIndividual
   - users[i].dhs.address: ALAddress
-  - motion_users: DAList
+  - motion_users: DAList.using(object_type=Individual,complete_attribute='names_only', gathered=True)
 ---
 id: change of venue
 continue button field: cov_intro
@@ -260,6 +260,11 @@ fields:
     datatype: yesnoradio
 ---
 code: |
+  motion_users[i].name.first
+  motion_users[i].a_number
+  motion_users[i].names_only = True
+---
+code: |
   motion_users.clear()
   for user in users:
     motion_users.append(user)
@@ -271,6 +276,9 @@ question: |
   Parties to the case
 subquestion: |
   ${ motion_users_table }
+
+  
+  ${ motion_users.add_action(label="Add person") }
 continue button field: set_motion_order
 ---
 table: motion_users_table
@@ -280,6 +288,19 @@ columns:
   - First Name: row_item.name.first
   - A Number: row_item.a_number
 allow reordering: True
+---
+id: add to Motion
+question: |
+  Add to Motion
+fields:
+  - First name: motion_users[i].name.first
+  - Middle name: motion_users[i].name.middle
+    required: False
+  - Last name: motion_users[i].name.last
+  - A Number (do not include A-): motion_users[i].a_number
+    required: False
+    validate: |
+      lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
 ---
 # objects:
 #   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)

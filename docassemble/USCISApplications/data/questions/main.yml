@@ -157,9 +157,10 @@ code: |
     set_progress(40)
     application_kind
     if application_kind in ['ead_and_tps','tps_only','ead_only']:
-      change_kind
+      if change_kind == "no":
+        change_sections
       signpost_screener
-      if len(users) > 1:
+      if len(users) >= 1:
         update_sections
       for idx, user in enumerate(users):
         nav.set_section(f"users_{idx}_signpost_screen")
@@ -214,7 +215,7 @@ code: |
           user.i94_arrival_number
           user.has_been_in_immigration_proceedings
           if application_kind in ['ead_and_tps','ead_only']:
-            user.father_first_name
+            #user.father_first_name
             user.previously_filed_I765
           if application_kind in ['ead_and_tps','tps_only']:
             if user.traveled_through_other_countries:
@@ -273,6 +274,13 @@ code: |
             user.dhs.address.address
             user.cert_of_service
 
+      # Determine what to do if they're not approved
+      if cov_supervisor_overall_approval_status == "denied":
+        cov_supervisor_kickout
+
+      create_motion_ordering
+      set_motion_order
+
     nav.set_section("section_download")
     store_variables_snapshot(
         persistent=True,
@@ -303,23 +311,32 @@ data:
   - section_family: Applicant names
   - section_retainer: Limited Retainer
   - section_screener: Verify eligibility
-  - section_application: Application
+  #- section_application: Application
   #- review_USCIS_Applications: Review 
   #- section_fees: Fee Waiver (optional)
   - section_covcoa: Change of Venue/Address
   - section_download: Download and print
 ---
 code: |
-  if len(users) > 1:
+  if len(users) >= 1:
     sections = default_sections[:-4]
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
     for idx, user in enumerate(users):
       sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    sections.extend(default_sections[-3:]
-    )
+    if change_kind == "no":
+      sections.extend(default_sections[-1:])
+    else:  
+      sections.extend(default_sections[-2:])
     nav.set_sections(sections)
   update_sections = True
+---
+code: |
+  sections = default_sections[:-2]
+  sections.extend(default_sections[-1:])
+  nav.set_sections(sections)
+
+  change_sections = True
 ---
 variable name: screener_sections
 data:
@@ -398,9 +415,10 @@ subquestion: |
 
   * I-821 Application for Temporary Protected Status
   * I-765 Application for Employment Authorization
-  * I-912 Request for Fee Waiver
   * Motion for Change of Venue
   * EOIR-33 Change of Address
+  * G-1145 e-Notification of Application/Petition Acceptance
+  * EOIR-61 Notice of Entry of Limited Appearance for Document Assistance Before the Immigration Court
 
   **Note:** This Easy Form is designed to be used by trained advocates in a clinical workshop setting. It is not for public use.
 ---
@@ -1171,12 +1189,12 @@ question: |
   Download the completed application
 subquestion: |
   % for user in users:
-  <h2 class="h4">${ user.name.first }'s application</h2>
+  <h2 class="h4">${ user.name_full() }'s forms</h2>
 
-  ${ action_button_html(user.cached_pdf.url_for(), label=f"{ user}'s application", icon="file-pdf", size="lg", color="primary") }
+  ${ action_button_html(user.cached_pdf.url_for(), label=f"{ user.name_full()}'s forms", icon="file-pdf", size="lg", color="primary") }
   % endfor
 
-  ${ action_button_html(url_of("new_session"), label="Start a new application", icon="square-plus", size="lg", color="secondary") }
+  ${ action_button_html(url_of("new_session"), label="Start a new set of forms", icon="square-plus", size="lg", color="secondary") }
 ---
 objects:
   - users[i].g_1145_attachment: ALDocument.using(title=f"{users[i]} - Electronic Notification", filename=space_to_underscore(f"{users[i]} - Electronic Notification"), has_addendum=False)

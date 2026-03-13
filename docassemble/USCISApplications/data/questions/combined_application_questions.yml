@@ -1974,10 +1974,10 @@ objects:
   - users[i].i_765_attachment: ALDocument.using(title="I-765", filename="I-765", has_addendum=False )
 ---
 code: |
-  users[i].i_821_attachment.enabled = users[i].application_is_approved and application_kind in ['ead_and_tps','tps_only']
+  users[i].i_821_attachment.enabled = application_kind in ['ead_and_tps','tps_only'] and users[i].application_is_approved
 ---
 code: |
-  users[i].i_765_attachment.enabled = users[i].application_is_approved and application_kind in ['ead_and_tps','ead_only']
+  users[i].i_765_attachment.enabled = application_kind in ['ead_and_tps','ead_only'] and users[i].application_is_approved
 ---
 objects:
   - users[i].tps_yes_answer_addendum: ALDocument.using(title="TPS Yes Answer Addendum", filename="TPS Yes Answer Addendum", has_addendum=False )

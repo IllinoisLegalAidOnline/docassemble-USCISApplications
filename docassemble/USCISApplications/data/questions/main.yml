@@ -87,6 +87,8 @@ code: |
     informed_agreement
     explained_role
     consent_agreement
+    if not consent_yes:
+      consent_kickout
     nav.set_section("section_applicant")
     set_progress(40)
     users[0].screening_user
@@ -254,32 +256,45 @@ code: |
     if change_kind != "no": 
       nav.set_section("section_covcoa")
       set_progress(90)
-      for idx,user in enumerate(users):
-        # make sure we have address 
-        if application_kind in ['cov_and_coa','coa_only']:
-          user.address.address
-          user.mailing_address.address
-          user.application_is_approved # approved only
+      
+      # Motion flow - COV or standalone COA/COA only (uses motion_users)
+      if application_kind in ['cov_and_coa'] or change_kind == 'cov_and_coa':
+        # COV supervisor approval - only for COV flows (not standalone coa_only)
+        if application_kind in ['cov_and_coa'] or change_kind == 'cov_and_coa':
+          if cov_supervisor_overall_approval_status == "denied":
+            cov_supervisor_kickout
 
-        if user.application_is_approved:
-          if change_kind == "coa_only" or application_kind == 'coa_only':
-            user.previous.date
-            user.dhs.address.address
-            user.cert_of_service
-          else:
-            user.previous.date
-            user.immigration_judge.name.first
-            user.notice_appear_date
-            user.type_of_relief
-            user.dhs.address.address
-            user.cert_of_service
+        create_motion_ordering
+        set_motion_order     
+        motion_users[0].address.address
+        motion_users[0].mailing_address.address
+        motion_users[0].previous.address.address
+        for idx in range(1, len(motion_users)):
+          motion_users[idx].address.address
+          motion_users[idx].mailing_address.address
+          motion_users[idx].previous.address.address
+          motion_users[idx].previous_copied
 
-      # Determine what to do if they're not approved
-      if cov_supervisor_overall_approval_status == "denied":
-        cov_supervisor_kickout
+      if change_kind == "coa_only" or application_kind == 'coa_only':
+        for idx,user in enumerate(users):
+          # For COA only flows (standalone or TPS/EAD + coa_only) collect users[i] previous address
+          if application_kind == 'coa_only' or (application_kind in ['ead_and_tps', 'tps_only', 'ead_only'] and change_kind == 'coa_only'):
+            user.address.address
+            user.mailing_address.address
+            user.previous.address.address
+            if application_kind != 'coa_only':
+              user.application_is_approved # approved only for TPS/EAD flows
 
-      create_motion_ordering
-      set_motion_order
+        illinois_move_date
+        dhs.address.address
+        cert_of_service
+      else:
+        illinois_move_date
+        immigration_judge.name.first
+        notice_appear_date
+        type_of_relief
+        dhs.address.address
+        cert_of_service
 
     nav.set_section("section_download")
     store_variables_snapshot(
@@ -1174,6 +1189,16 @@ code: |
   download_response = {}
   for idx, user in enumerate(users):
     download_response[idx] = user.document_bundle.as_pdf()
+  # Adding the COV workflow to users[0] only
+  if application_kind in ['cov_and_coa'] or (application_kind in ['ead_and_tps', 'tps_only', 'ead_only'] and defined('change_kind') and change_kind == 'cov_and_coa'):
+    motion_pdfs = [download_response[0]]
+    if users[0].motion_addendum.enabled:
+      motion_pdfs.append(users[0].motion_addendum[0])
+    # Adding COA for each motion_users
+    for mu in motion_users:
+      motion_pdfs.append(mu.document_bundle.as_pdf())
+    if len(motion_pdfs) > 1:
+      download_response[0] = pdf_concatenate(motion_pdfs)
   background_response_action('save_downloads', download_response=download_response)
 ---
 event: save_downloads
@@ -1273,7 +1298,6 @@ objects:
         users[i].ead_interim_parole_addendum,
         users[i].ead_order_of_supervision_addendum,
         users[i].eoir_61_cov,
-        users[i].motion_addendum,
         users[i].eoir_33_coa_page1,
         users[i].eoir_33_coa,
       ])

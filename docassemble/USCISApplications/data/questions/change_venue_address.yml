@@ -1,7 +1,6 @@
 ##### CHANGE OF VENUE/ADDRESS (COV/COA) #####
 objects:
   - immigration_judge: ALIndividual
-  - lead_respondent: ALIndividual
   - dhs: ALIndividual
   - dhs.address: ALAddress
   - motion_users: ALPeopleList.using(complete_attribute='names_only', auto_gather=True)
@@ -236,6 +235,13 @@ fields:
     rows: 2
     maxlength: 60
 ---
+code: |
+  lead_choices = []
+  lead_choices.clear()
+  for user in users:
+    lead_choices.append(user.name_full())
+  lead_choices.append("Other")
+---
 id: review_cov_questions
 continue button field: review_cov_questions
 question: |
@@ -256,14 +262,13 @@ fields:
   - Have you hired an attorney for your immigration case?: cov_attorney
     datatype: yesnoradio
   - Who is the lead respondent?: lead_respondent
-    datatype: object_radio
-    choices: |
-      [user for user in users]
-    none of the above: Other
+    datatype: radio
+    code: |
+      lead_choices
   - note: |
       We will collect the name of the lead respondent
     show if:
-      variable: lead_applicant
+      variable: lead_respondent
       is: "Other"
   - How many riders are on the case?: cov_riders
     datatype: integer

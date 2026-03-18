@@ -8,6 +8,7 @@ include:
   #- aiw.yml
   - combined_application_questions.yml
   - change_venue_address.yml
+  - records_request.yml
   - review_screen.yml
 ---
 default screen parts:
@@ -156,7 +157,24 @@ code: |
     nav.set_section("section_screener")
     set_progress(40)
     application_kind
-    if application_kind in ['ead_and_tps','tps_only','ead_only']:
+    if application_kind.get('records_request'):
+      records_request_intro
+      for idx,user in enumerate(users):
+        user.address.address
+        user.mailing_address.address
+        if user.ask_previous:
+          user.previous.address.address
+        user.countries_of_citizenship
+        user.city_of_birth
+        user.release_type
+        user.recipient.name.first
+        user.recipient.in_care_name
+        if user.recipient.recipient_type == "parent":
+          user.recipient.parent.birthdate
+          user.proof_relationship_consent
+
+
+    if application_kind.get('tps_only') or application_kind.get('ead_only'):
       if change_kind == "no":
         change_sections
       signpost_screener
@@ -164,16 +182,16 @@ code: |
         update_sections
       for idx, user in enumerate(users):
         nav.set_section(f"users_{idx}_signpost_screen")
-        if application_kind == "ead_only":
+        if application_kind.get('ead_only') and not application_kind.get('tps_only'):
           user.ead_screening_questions
         else:
           user.tps_screening_questions
         # user.applicant_intake_worksheet_questions
         set_progress((80/len(users.complete_elements())) * (idx + 1) + 10 )
         # Trigger the more detailed questions on a per-user basis
-      if application_kind == "ead_only":
+      if application_kind.get('ead_only') and not application_kind.get('tps_only'):
         review_ead_screening_questions
-      if application_kind in ['ead_and_tps','tps_only']:
+      if application_kind.get('tps_only'):
         review_tps_screening_questions
 
       # End early if all users are screened out
@@ -190,17 +208,17 @@ code: |
         nav.set_section(f"users_{idx}_signpost_app")
         if user.application_is_approved:
           user.signpost
-          if application_kind == "ead_and_tps":
+          if application_kind.get('tps_only') and application_kind.get('ead_only'):
             user.is_first_TPS_application
             user.is_first_EAD_application
-          elif application_kind == "tps_only":
+          elif application_kind.get('tps_only'):
             user.is_first_TPS_application
           else:
             user.is_first_EAD_application
           if user.age_in_years() < 14:
             user.parent
           user.user_reads_english
-          if application_kind in ['ead_and_tps','tps_only']:
+          if application_kind.get('tps_only'):
             user.ethnicity
           else:
             user.sex
@@ -214,10 +232,10 @@ code: |
           user.travel_documents.gather()
           user.i94_arrival_number
           user.has_been_in_immigration_proceedings
-          if application_kind in ['ead_and_tps','ead_only']:
+          if application_kind.get('ead_only'):
             #user.father_first_name
             user.previously_filed_I765
-          if application_kind in ['ead_and_tps','tps_only']:
+          if application_kind.get('tps_only'):
             if user.traveled_through_other_countries:
               user.date_entered_first_country_month
             user.have_you_ever_questions
@@ -243,7 +261,7 @@ code: |
       #           user.assets.gather()
       #         user.monthly_expenses
 
-      if application_kind in ['ead_and_tps','tps_only'] and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
+      if application_kind.get('tps_only') and any([any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]) for user in users if user.application_is_approved]):
         for user in users:
           if user.application_is_approved:
             if any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]):
@@ -251,18 +269,18 @@ code: |
 
     
     # COV and COA
-    if change_kind != "no": 
+    if application_kind.get('cov_and_coa') or application_kind.get('coa_only'): 
       nav.set_section("section_covcoa")
       set_progress(90)
       for idx,user in enumerate(users):
         # make sure we have address 
-        if application_kind in ['cov_and_coa','coa_only']:
+        if application_kind.get('cov_and_coa'):
           user.address.address
           user.mailing_address.address
           user.application_is_approved # approved only
 
         if user.application_is_approved:
-          if change_kind == "coa_only" or application_kind == 'coa_only':
+          if application_kind.get('cov_and_coa'):
             user.previous.date
             user.dhs.address.address
             user.cert_of_service
@@ -459,9 +477,9 @@ question: |
   The next questions are about ${ bold(users[i]) }
 subquestion: |
   We will cover 
-  % if application_kind == "ead_only":
+  % if application_kind.get('ead_only') and not application_kind.get('tps_only'):
   EAD application questions.
-  % elif application_kind == "tps_only":
+  % elif application_kind.get('tps_only') and not application_kind.get('ead_only'):
   TPS application questions.
   % else:
   TPS and EAD application questions.
@@ -753,19 +771,22 @@ id: kind of interview
 question: |
   What kind of forms will this family complete?
 subquestion: |
-  **Note:** You will have the option to make Change of Venue (COV) and Change of Address forms (COA) if you select **TPS and EAD** or **EAD only.**
-field: application_kind
-buttons:
-  - TPS and EAD: ead_and_tps
-    image: shield-halved
-  - TPS only: tps_only
-    image: user-shield
-  - EAD only: ead_only
-    image: briefcase
-  - COV and COA only: cov_and_coa
-    image: landmark
-  - COA only: coa_only
-    image: envelope
+  Select all that apply. You can combine TPS/EAD applications with Change of Venue or Change of Address forms.
+fields:
+  - no label: application_kind
+    datatype: checkboxes
+    choices:
+      - Temporary protected status (I-821): tps_only
+      - Employment authorization (I-765): ead_only
+      - Change of venue motion (EOIR-61) and Change of address forms (EOIR-33): cov_and_coa
+      - Change of address (EOIR-33): coa_only
+      - Release of records (EOIR-59): records_request
+    none of the above: False
+validation code: |
+  if not any([application_kind.get('tps_only'), application_kind.get('ead_only'), application_kind.get('cov_and_coa'), application_kind.get('coa_only'), application_kind.get('records_request')]):
+    validation_error("Please select at least one form type.")
+  if application_kind.get('cov_and_coa') and application_kind.get('coa_only'):
+    validation_error("Please select either Change of Venue (which includes COA) or Change of Address only, not both.")
 ---
 id: change of venue address
 question: |
@@ -782,8 +803,13 @@ buttons:
 depends on:
   - application_kind
 code: |
-  if application_kind in ['cov_and_coa','coa_only']:
-    change_kind = application_kind
+  # Compute change_kind from application_kind checkboxes for backwards compatibility
+  if application_kind.get('cov_and_coa'):
+    change_kind = 'cov_and_coa'
+  elif application_kind.get('coa_only'):
+    change_kind = 'coa_only'
+  else:
+    change_kind = 'no'
 ---
 id: explain_add_explanations
 question: |
@@ -1276,6 +1302,7 @@ objects:
         users[i].motion_addendum,
         users[i].eoir_33_coa_page1,
         users[i].eoir_33_coa,
+        users[i].eoir_59_request,
       ])
 ---
 code: |
@@ -1285,37 +1312,37 @@ code: |
     users[i].limited_scope_retainer.enabled = False
 ---
 code: |
-  users[i].g_1145_attachment.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved
+  users[i].g_1145_attachment.enabled = (application_kind.get('tps_only') or application_kind.get('ead_only')) and users[i].application_is_approved
 ---
 code: |
-  users[i].military_service_addendum.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("military_service"))
+  users[i].military_service_addendum.enabled = (application_kind.get('tps_only') or application_kind.get('ead_only')) and users[i].application_is_approved and (application_kind.get('tps_only') and users[i].addenda.get("military_service"))
 ---
 code: |
-  users[i].transit_through_ca_addendum.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("transit_through_ca"))
+  users[i].transit_through_ca_addendum.enabled = (application_kind.get('tps_only') or application_kind.get('ead_only')) and users[i].application_is_approved and (application_kind.get('tps_only') and users[i].addenda.get("transit_through_ca"))
 ---
 code: |
-  users[i].child_haitian_nationality_addendum.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("child_haitian_nationality"))
+  users[i].child_haitian_nationality_addendum.enabled = (application_kind.get('tps_only') or application_kind.get('ead_only')) and users[i].application_is_approved and (application_kind.get('tps_only') and users[i].addenda.get("child_haitian_nationality"))
 ---
 code: |
-  users[i].child_venezuelan_nationals_addendum.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("child_venezuelan_nationals"))
+  users[i].child_venezuelan_nationals_addendum.enabled = (application_kind.get('tps_only') or application_kind.get('ead_only')) and users[i].application_is_approved and (application_kind.get('tps_only') and users[i].addenda.get("child_venezuelan_nationals"))
 ---
 code: |
-  users[i].smuggling_addendum.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("smuggling"))
+  users[i].smuggling_addendum.enabled = (application_kind.get('tps_only') or application_kind.get('ead_only')) and users[i].application_is_approved and (application_kind.get('tps_only') and users[i].addenda.get("smuggling"))
 ---
 code: |
-  users[i].continuous_residence_addendum.enabled = application_kind in ['ead_and_tps','tps_only','ead_only'] and users[i].application_is_approved and (application_kind != "ead_only" and users[i].addenda.get("continuous_residence"))
+  users[i].continuous_residence_addendum.enabled = (application_kind.get('tps_only') or application_kind.get('ead_only')) and users[i].application_is_approved and (application_kind.get('tps_only') and users[i].addenda.get("continuous_residence"))
 ---
 code: |
-  users[i].ead_legal_screener.enabled = application_kind == "ead_only"
+  users[i].ead_legal_screener.enabled = application_kind.get('ead_only') and not application_kind.get('tps_only')
 ---
 code: |
-  users[i].tps_legal_screener.enabled = application_kind in ['ead_and_tps','tps_only']
+  users[i].tps_legal_screener.enabled = application_kind.get('tps_only')
 ---
 code: |
-  users[i].ead_interim_parole_addendum.enabled = application_kind in ['ead_and_tps','ead_only'] and users[i].application_is_approved and (application_kind == "ead_only") and users[i].addenda["ead_interim_parole"]
+  users[i].ead_interim_parole_addendum.enabled = application_kind.get('ead_only') and users[i].application_is_approved and (application_kind.get('ead_only') and not application_kind.get('tps_only')) and users[i].addenda["ead_interim_parole"]
 ---
 code: |
-  users[i].ead_order_of_supervision_addendum.enabled = application_kind in ['ead_and_tps','ead_only'] and users[i].application_is_approved and (application_kind == "ead_only")  and (users[i].eligibility_category == "ead_supervision")
+  users[i].ead_order_of_supervision_addendum.enabled = application_kind.get('ead_only') and users[i].application_is_approved and (application_kind.get('ead_only') and not application_kind.get('tps_only')) and (users[i].eligibility_category == "ead_supervision")
 ---
 # code: |
 #   users[i].ead_asylum_checklist.enabled = application_kind in ['ead_and_tps','ead_only'] and (users[i].application_is_approved and (application_kind == "ead_only")  and (users[i].eligibility_category == "ead_asylum"))

@@ -277,13 +277,11 @@ fields:
   - Do all the parties on the case want the venue changed?: all_change_venue
     datatype: yesnoradio
 
-
   - What should happen with this change of venue?: cov_supervisor_overall_approval_status
     datatype: radio
     choices:
       - All applicants can **continue**: approved
-      - All applicants are **not elibible**: denied
-      - "**Some** applications can continue": mixed
+      - Do not continue: denied
     show if:
       code: |
         len(users) > 1
@@ -296,27 +294,25 @@ fields:
       code: |
         len(users) == 1
     minlength: 1
-  - Which applications should be **approved**?: approved_applications
-    datatype: object_checkboxes
-    choices:
-      - users
-    show if:
-      variable: cov_supervisor_overall_approval_status
-      is: mixed
   - Supervisor name: cov_supervisor_name
   - Supervisor notes: cov_supervisor_notes
     required: False
     datatype: area
 ---
 id: cov kickout
-event: cov_supervisor_kickout
 question: |
   Sorry
 subquestion: |
-  The supervisor did not approve the application.
-buttons:
-  - Exit: exit
-  - Restart: restart
+  The Change of Venue and Motion are not approved. Only the Change of Address will be completed.
+continue button field: cov_supervisor_kickout
+---
+code: |
+  if cov_supervisor_overall_approval_status == "denied":
+    if 'coa_only' not in application_kind or 'coa_only' not in change_kind:
+      application_kind = "coa_only"
+      change_kind = "coa_only" # existing logic
+
+  update_cov_to_coa_only = True
 ---
 # id: attorney or representative type
 # question: |

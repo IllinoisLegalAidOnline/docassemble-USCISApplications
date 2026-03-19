@@ -1,0 +1,375 @@
+##### EOIR-59 REQUEST FOR RECORD OF PROCEEDING #####
+---
+objects:
+  - users[i].recipient: ALIndividual
+  - users[i].recipient.parent: ALIndividual
+---
+id: Records Request
+question: |
+  EOIR-59: Request for Record of Proceeding
+subquestion: |
+  This form allows you to request copies of your immigration court records from the Executive Office for Immigration Review (EOIR).
+
+  **What this form does:**
+
+  * Authorizes EOIR to release your case file or Record of Proceeding (documents and audio recordings, if applicable)
+  * Allows you to send records to an attorney, accredited representative, or other third party
+  * Lets you request all records or specific documents from your case
+
+  **Important information:**
+
+  * You must provide accurate identity information to verify who you are
+  * Incomplete forms may delay or result in denial of your request
+  * Providing false information may result in criminal penalties
+
+  **You will need:**
+
+  * Your A-Number
+  * Your current and previous addresses
+  * Contact information for the person or organization receiving the records
+  * If the recipient is a parent or guardian: their date of birth, address, and proof of relationship
+continue button field: records_request_intro
+---
+# Part A EOIR-59 will use the user[i] information gathered
+---
+id: Subject previous address
+question: |
+  Is there a prior address to include?
+fields:
+  - no label: users[i].ask_previous
+    datatype: yesnoradio
+---
+id: Records release type
+question: |
+  What records are you requesting?
+subquestion: |
+  EOIR-59 allows you to request a copy of your immigration court records.
+fields:
+  - Type of release: users[i].release_type
+    datatype: radio
+    choices:
+      - All records in this proceeding: all
+      - Exact copies of specific records: exact
+  - Specify which records: users[i].release_details
+    datatype: area
+    rows: 3
+    maxlength: 200
+    show if:
+      variable: users[i].release_type
+      is: exact
+---
+# Part B EOIR-59 Recipient Information
+---
+id: Records recipient name and organization
+sets:
+  - users[i].recipient.name.first
+  - users[i].recipient.name.last
+  - users[i].recipient.address.address
+  - users[i].recipient.address.city
+  - users[i].recipient.address.state
+  - users[i].recipient.address.zip
+question: |
+  Recipient contact name
+fields:
+  - code: |
+      users[i].recipient.name_fields(person_or_business="person", show_suffix=False)
+  - Organization (if applicable): users[i].recipient.organization
+    required: False
+---
+id: Records recipient address
+question: Recipient contact information
+subquestion: |
+  Enter the contact information for the person or organization who will receive the records.
+fields:
+  - In care of (if applicable): users[i].recipient.in_care_name
+    required: False
+  - Street address: users[i].recipient.address.address
+    address autocomplete: True
+  - Address is a: users[i].recipient.address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Unit number: users[i].recipient.address.unit
+    required: False
+  - City or Town: users[i].recipient.address.city
+  - State: users[i].recipient.address.state
+    code: |
+      states_list()
+    default: ${ AL_DEFAULT_STATE }
+  - ZIP: users[i].recipient.address.zip
+    required: False
+  - Country: users[i].recipient.address.country
+    code: |
+      countries_list()
+    default: "United States"
+  - Phone number (optional): users[i].recipient.phone_number
+    required: False
+  - Email address (optional): users[i].recipient.email
+    required: False
+    datatype: email
+---
+id: Recipient relationship
+question: |
+  What is your relationship?
+fields:
+  - Recipient type: users[i].recipient.recipient_type
+    datatype: radio
+    choices:
+      - Attorney or representative: lawyer
+      - Parent or legal guardian: parent
+      - Other: other
+  - Please explain relationship: users[i].recipient.recipient_type_other
+    maxlength: 100
+    show if:
+      variable: users[i].recipient.recipient_type
+      is: other
+  - EOIR ID number (if applicable): users[i].recipient.eoir_number
+    required: False
+    show if:
+      variable: users[i].recipient.recipient_type
+      is: lawyer
+    help: |
+      This is the attorney's EOIR registration number, if applicable.
+---
+# Part C EOIR-59 Parent/Guardian Information
+---
+id: Records parent information
+question: |
+  Parent or legal guardian information
+subquestion: |
+  Because the recipient is a parent or legal guardian, please provide additional information.
+fields:
+  - Parent/guardian date of birth: users[i].recipient.parent.birthdate
+    datatype: ThreePartsDate
+    alMax: ${ today() }
+  - Parent/guardian place of birth: users[i].recipient.parent.place_of_birth
+  - Street address: users[i].recipient.parent.address.address
+    address autocomplete: True
+  - Address is a: users[i].recipient.parent.address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: users[i].recipient.parent.address.unit
+    required: False
+  - City or Town: users[i].recipient.parent.address.city
+  - State or Province: users[i].recipient.parent.address.state
+    code: |
+      states_list()
+    default: ${ AL_DEFAULT_STATE }
+  - ZIP: users[i].recipient.parent.address.zip
+    required: False
+  - Country: users[i].recipient.parent.address.country
+    code: |
+      countries_list()
+    default: "United States"
+  - Relationship to applicant: users[i].recipient.parent.relationship
+    datatype: radio
+    choices:
+      - Mother
+      - Father
+      - Legal Guardian
+      - Other
+---
+id: Proof of relationship
+question: |
+  Do you have proof of relationship?
+subquestion:
+  By checking this box, I understand that 28 C.F.R. § 16.41 requires that I attach proof of my relationship
+  to the subject of the record if I am requesting a copy of a Record of Proceeding or requesting copies of
+  records under the Freedom of Information Act or the Privacy Act.
+fields:
+  - no label: users[i].recipient.parent.proof_relationship
+    datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    choices:
+      - I acknowledge: Yes
+    validation messages:
+      minlength: |
+        You must check the box to provide proof of the relationship to continue.
+continue button field: users[i].recipient.parent.proof_relationship_consent
+---
+objects:
+  - users[i].eoir_59_request: ALDocument.using(title=f"{users[i]} - EOIR-59 Request for Record of Proceeding", filename=space_to_underscore(f"{users[i]} - EOIR-59 Request for Record of Proceeding"), has_addendum=False)
+---
+code: |
+  users[i].eoir_59_request.enabled = application_kind.get('records_request')
+---
+attachment:
+  name: EOIR-59
+  filename: EOIR-59
+  variable name: users[i].eoir_59_request[j]
+  skip undefined: True
+  pdf template file: eoir-59_rop_request.pdf
+  editable: False
+  fields:
+    # Section 1: Applicant Information
+    - "users1_a_number": ${ users[i].a_number }
+    - "users1_name": ${ users[i].name.last }, ${ users[i].name.first } ${ users[i].name.middle }
+    - "users1_previous_names": |
+        % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 0:
+          ${ comma_list(users[i].aliases.elements) }
+        % endif
+    # Mailing Address
+    - "users1_mailing_address_address": ${ users[i].mailing_address.address }
+    - "users1_mailing_address_unit": |
+        % if users[i].mailing_address.address_type == 'apt':
+        Apt. ${ users[i].mailing_address.unit }
+        % elif users[i].mailing_address.address_type == 'suite':
+        Ste. ${ users[i].mailing_address.unit }
+        % elif users[i].mailing_address.address_type == 'floor':
+        Fl. ${ users[i].mailing_address.unit }
+        % else:
+        ${ showifdef('users[i].mailing_address.unit') }
+        % endif
+    - "users1_mailing_address_city_state": ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
+    - "users1_mailing_address_country": United States
+    - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
+    - "users1_phone_area": ${ phone_number_part(phone_number_formatted(users[i].phone_number), 0) }
+    - "users1_phone_number": ${ phone_number_part(phone_number_formatted(users[i].phone_number), 1) + "-" + phone_number_part(phone_number_formatted(users[i].phone_number), 2)  }
+    
+    # Previous Address
+    - "users1_previous_address_address": |
+        % if defined('users[i].previous.address.address'):
+        ${ users[i].previous.address.address }
+        % endif
+    - "users1_previous_address_unit": |
+        % if defined('users[i].previous.address.unit'):
+        % if users[i].previous.address.address_type == 'apt':
+        Apt. ${ users[i].previous.address.unit }
+        % elif users[i].previous.address.address_type == 'suite':
+        Ste. ${ users[i].previous.address.unit }
+        % elif users[i].previous.address.address_type == 'floor':
+        Fl. ${ users[i].previous.address.unit }
+        % else:
+        ${ users[i].previous.address.unit }
+        % endif
+        % endif
+    - "users1_previous_address_city_state": |
+        % if defined('users[i].previous.address.city'):
+        ${ users[i].previous.address.city }, ${ users[i].previous.address.state }
+        % endif
+    - "users1_previous_address_country": |
+        % if defined('users[i].previous.address.address'):
+        United States
+        % endif
+    - "users1_previous_address_zip": |
+        % if defined('users[i].previous.address.zip'):
+        ${ users[i].previous.address.zip }
+        % endif
+    - "users1_previous_phone_area": |
+        % if defined('users[i].previous.phone_number'):
+        ${ phone_number_part(phone_number_formatted(users[i].previous.phone_number), 0) }
+        % endif
+    - "users1_previous_phone_number": |
+        % if defined('users[i].previous.phone_number'):
+        ${ phone_number_formatted(users[i].previous.phone_number) }
+        % endif
+    
+    # Biographical Information
+    - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
+    - "country_of_citizenship": |
+        % if defined('users[i].countries_of_citizenship') and len(users[i].countries_of_citizenship) > 0:
+        ${ comma_list(users[i].countries_of_citizenship.elements) }
+        % endif
+    - "place_of_birth": |
+        % if defined('users[i].city_of_birth'):
+        ${ users[i].city_of_birth }, ${ users[i].country_of_birth }
+        % else:
+        ${ users[i].country_of_birth }
+        % endif
+    
+    # Section 2: Release Type
+    - "release_all": ${ users[i].release_type == 'all' }
+    - "release_exact": ${ users[i].release_type == 'exact' }
+    - "release_records": |
+        % if users[i].release_type == 'exact':
+        ${ users[i].release_details }
+        % endif
+    
+    # Section 3: Recipient Information
+    - "recipient_name": ${ users[i].recipient.name_full() }
+    - "recipient_org": ${ showifdef('users[i].recipient.organization') }
+    - "recipient_mailing_care_name": ${ showifdef('users[i].recipient.in_care_name') }
+    - "recipient_mailing_address_address": ${ users[i].recipient.address.address }
+    - "recipient_mailing_address_unit": |
+        % if users[i].recipient.address.address_type == 'apt':
+        Apt. ${ users[i].recipient.address.unit }
+        % elif users[i].recipient.address.address_type == 'suite':
+        Ste. ${ users[i].recipient.address.unit }
+        % elif users[i].recipient.address.address_type == 'floor':
+        Fl. ${ users[i].recipient.address.unit }
+        % else:
+        ${ showifdef('users[i].recipient.address.unit') }
+        % endif
+    - "recipient_mailing_address_city_state": ${ users[i].recipient.address.city }, ${ users[i].recipient.address.state }
+    - "recipient_mailing_address_country": ${ users[i].recipient.address.country }
+    - "recipient_mailing_address_zip": ${ users[i].recipient.address.zip }
+    - "recipient_mailing_phone_area": ${ phone_number_formatted(users[i].recipient.phone_number) }
+    - "recipient_mailing_phone_number": ${ phone_number_formatted(users[i].recipient.phone_number) }
+    - "recipient_email": ${ showifdef('users[i].recipient.email') }
+    
+    # Recipient Type checkboxes
+    - "recipient_lawyer": ${ users[i].recipient.recipient_type == 'lawyer' }
+    - "recipient_parent": ${ users[i].recipient.recipient_type == 'parent' }
+    - "recipient_other": ${ users[i].recipient.recipient_type == 'other' }
+    - "recipient_other_explain": |
+        % if users[i].recipient.recipient_type == 'other':
+        ${ users[i].recipient.recipient_type_other }
+        % endif
+    - "recipient_eoir_number": ${ showifdef('users[i].recipient.eoir_number') }
+    
+    # Section 4: Parent Information (only if recipient is parent)
+    - "parent_birthdate": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.birthdate.format('MM/dd/yyyy') }
+        % endif
+    - "parent_place_of_birth": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.place_of_birth }
+        % endif
+    - "parent_address_address": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.address.address }
+        % endif
+    - "parent_address_unit": |
+        % if users[i].recipient.recipient_type == 'parent':
+        % if users[i].recipient.parent.address.address_type == 'apt':
+        Apt. ${ users[i].recipient.parent.address.unit }
+        % elif users[i].recipient.parent.address.address_type == 'suite':
+        Ste. ${ users[i].recipient.parent.address.unit }
+        % elif users[i].recipient.parent.address.address_type == 'floor':
+        Fl. ${ users[i].recipient.parent.address.unit }
+        % else:
+        ${ showifdef('users[i].recipient.parent.address.unit') }
+        % endif
+        % endif
+    - "parent_address_city_state": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.address.city }, ${ users[i].recipient.parent.address.state }
+        % endif
+    - "parent_address_country": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.address.country }
+        % endif
+    - "parent_address_zip": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.address.zip }
+        % endif
+    - "parent_relationship": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.relationship }
+        % endif
+    - "proof_relationship": |
+        % if users[i].recipient.recipient_type == 'parent':
+        ${ users[i].recipient.parent.proof_relationship }
+        % endif
+    
+    # Section 5: Signature
+    # Physical signature and date on this form

@@ -452,6 +452,7 @@ subquestion: |
   * EOIR-33 Change of Address
   * G-1145 e-Notification of Application/Petition Acceptance
   * EOIR-61 Notice of Entry of Limited Appearance for Document Assistance Before the Immigration Court
+  * EOIR-59 Certification and Release of Records
 
   **Note:** This Easy Form is designed to be used by trained advocates in a clinical workshop setting. It is not for public use.
 ---
@@ -485,6 +486,23 @@ fields:
     choices:
       - "Comprehensive Screener": true
       - "USCIS application forms": false
+  - no label: application_kind
+    datatype: checkboxes
+    choices:
+      - Temporary protected status (I-821): tps_only
+      - Employment authorization (I-765): ead_only
+      - Change of venue motion (EOIR-61) and Change of address forms (EOIR-33): cov_and_coa
+      - Change of address (EOIR-33): coa_only
+      - Release of records (EOIR-59): records_request
+    none of the above: False
+    show if:
+      variable: comp_screener
+      is: False
+validation code: |
+  if not any([application_kind.get('tps_only'), application_kind.get('ead_only'), application_kind.get('cov_and_coa'), application_kind.get('coa_only'), application_kind.get('records_request')]):
+    validation_error("Please select at least one form type.")
+  if application_kind.get('cov_and_coa') and application_kind.get('coa_only'):
+    validation_error("Please select either Change of Venue (which includes COA) or Change of Address only, not both.")
 ---
 id: signpost for main application questions
 continue button field: users[i].signpost
@@ -781,27 +799,6 @@ signature: users[i].signature
 under: |
   ${ users[i] }
 required: False
----
-id: kind of interview
-question: |
-  What kind of forms will this family complete?
-subquestion: |
-  Select all that apply. You can combine TPS/EAD applications with Change of Venue or Change of Address forms.
-fields:
-  - no label: application_kind
-    datatype: checkboxes
-    choices:
-      - Temporary protected status (I-821): tps_only
-      - Employment authorization (I-765): ead_only
-      - Change of venue motion (EOIR-61) and Change of address forms (EOIR-33): cov_and_coa
-      - Change of address (EOIR-33): coa_only
-      - Release of records (EOIR-59): records_request
-    none of the above: False
-validation code: |
-  if not any([application_kind.get('tps_only'), application_kind.get('ead_only'), application_kind.get('cov_and_coa'), application_kind.get('coa_only'), application_kind.get('records_request')]):
-    validation_error("Please select at least one form type.")
-  if application_kind.get('cov_and_coa') and application_kind.get('coa_only'):
-    validation_error("Please select either Change of Venue (which includes COA) or Change of Address only, not both.")
 ---
 id: change of venue address
 question: |

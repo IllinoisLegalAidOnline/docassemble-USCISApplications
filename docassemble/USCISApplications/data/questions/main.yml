@@ -159,22 +159,6 @@ code: |
     nav.set_section("section_screener")
     set_progress(40)
     application_kind
-    if application_kind.get('records_request'):
-      records_request_intro
-      for idx,user in enumerate(users):
-        user.address.address
-        user.mailing_address.address
-        if user.ask_previous:
-          user.previous.address.address
-        user.countries_of_citizenship
-        user.city_of_birth
-        user.release_type
-        user.recipient.name.first
-        user.recipient.in_care_name
-        if user.recipient.recipient_type == "parent":
-          user.recipient.parent.birthdate
-          user.proof_relationship_consent
-
 
     if application_kind.get('tps_only') or application_kind.get('ead_only'):
       if change_kind == "no":
@@ -324,6 +308,25 @@ code: |
             "region": showifdef("region"),
         },
     )
+
+    # Records Request
+    if application_kind.get('records_request'):
+      records_request_intro
+      for idx,user in enumerate(users):
+        user.address.address
+        user.mailing_address.address
+        if user.ask_previous:
+          user.previous.address.address
+        user.countries_of_citizenship
+        user.city_of_birth
+        user.release_type
+        user.recipient.name.first
+        user.recipient.in_care_name
+        if user.recipient.recipient_type == "parent":
+          user.recipient.parent.birthdate
+          user.proof_relationship_consent
+
+
     children_for_retainer
     generate_downloads_task
     if generate_downloads_task.ready():
@@ -348,6 +351,7 @@ data:
   #- review_USCIS_Applications: Review 
   #- section_fees: Fee Waiver (optional)
   - section_covcoa: Change of Venue/Address
+  - section_records: Release of Records
   - section_download: Download and print
 ---
 code: |
@@ -489,20 +493,18 @@ fields:
   - no label: application_kind
     datatype: checkboxes
     choices:
-      - Temporary protected status (I-821): tps_only
-      - Employment authorization (I-765): ead_only
-      - Change of venue motion (EOIR-61) and Change of address forms (EOIR-33): cov_and_coa
-      - Change of address (EOIR-33): coa_only
-      - Release of records (EOIR-59): records_request
+      - Temporary Protected Status (I-821): tps_only
+      - Employment Authorization (I-765 ): ead_only
+      - Motion for Change of Venue, Limited Appearance for Documents (EOIR-61), and Change of Address (EOIR-33): cov_and_coa
+      - Change of Address (EOIR-33): coa_only
+      - Release of Records (EOIR-59): records_request
     none of the above: False
     show if:
       variable: comp_screener
       is: False
-validation code: |
-  if not any([application_kind.get('tps_only'), application_kind.get('ead_only'), application_kind.get('cov_and_coa'), application_kind.get('coa_only'), application_kind.get('records_request')]):
-    validation_error("Please select at least one form type.")
-  if application_kind.get('cov_and_coa') and application_kind.get('coa_only'):
-    validation_error("Please select either Change of Venue (which includes COA) or Change of Address only, not both.")
+    validation messages:
+      if not comp_screener: |
+        Please select at least one form type.
 ---
 id: signpost for main application questions
 continue button field: users[i].signpost

@@ -39,6 +39,17 @@ fields:
   - no label: users[i].ask_previous
     datatype: yesnoradio
 ---
+id: countries of citizenship
+question: |
+  What countries is ${ users[i] } a citizen of?
+subquestion: |
+  Select all that apply.
+fields:
+  - Country of Nationality or Citizenship: users[i].countries_of_citizenship
+    label above field: True
+    code: |
+      [next(iter(item.values())) for item in countries_list()]
+---
 id: Records release type
 question: |
   What records are you requesting?
@@ -52,7 +63,7 @@ fields:
       - Exact copies of specific records: exact
   - Specify which records: users[i].release_details
     datatype: area
-    rows: 3
+    rows: 5
     maxlength: 200
     show if:
       variable: users[i].release_type
@@ -231,8 +242,7 @@ attachment:
     - "users1_mailing_address_city_state": ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
     - "users1_mailing_address_country": United States
     - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
-    - "users1_phone_area": ${ phone_number_part(phone_number_formatted(users[i].phone_number), 0) }
-    - "users1_phone_number": ${ phone_number_part(phone_number_formatted(users[i].phone_number), 1) + "-" + phone_number_part(phone_number_formatted(users[i].phone_number), 2)  }
+    - "users1_phone_number": ${ phone_number_formatted(users[i].phone_number) }
     
     # Previous Address
     - "users1_previous_address_address": |
@@ -263,10 +273,6 @@ attachment:
         % if defined('users[i].previous.address.zip'):
         ${ users[i].previous.address.zip }
         % endif
-    - "users1_previous_phone_area": |
-        % if defined('users[i].previous.phone_number'):
-        ${ phone_number_part(phone_number_formatted(users[i].previous.phone_number), 0) }
-        % endif
     - "users1_previous_phone_number": |
         % if defined('users[i].previous.phone_number'):
         ${ phone_number_formatted(users[i].previous.phone_number) }
@@ -274,10 +280,7 @@ attachment:
     
     # Biographical Information
     - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
-    - "country_of_citizenship": |
-        % if defined('users[i].countries_of_citizenship') and len(users[i].countries_of_citizenship) > 0:
-        ${ comma_list(users[i].countries_of_citizenship.elements) }
-        % endif
+    - "country_of_citizenship": ${ users[i].countries_of_citizenship }
     - "place_of_birth": |
         % if defined('users[i].city_of_birth'):
         ${ users[i].city_of_birth }, ${ users[i].country_of_birth }
@@ -311,7 +314,6 @@ attachment:
     - "recipient_mailing_address_city_state": ${ users[i].recipient.address.city }, ${ users[i].recipient.address.state }
     - "recipient_mailing_address_country": ${ users[i].recipient.address.country }
     - "recipient_mailing_address_zip": ${ users[i].recipient.address.zip }
-    - "recipient_mailing_phone_area": ${ phone_number_formatted(users[i].recipient.phone_number) }
     - "recipient_mailing_phone_number": ${ phone_number_formatted(users[i].recipient.phone_number) }
     - "recipient_email": ${ showifdef('users[i].recipient.email') }
     
@@ -323,7 +325,10 @@ attachment:
         % if users[i].recipient.recipient_type == 'other':
         ${ users[i].recipient.recipient_type_other }
         % endif
-    - "recipient_eoir_number": ${ showifdef('users[i].recipient.eoir_number') }
+    - "recipient_eoir_number": |
+        % if users[i].recipient.recipient_type == 'lawyer':
+        ${ users[i].recipient.eoir_number }
+        % endif
     
     # Section 4: Parent Information (only if recipient is parent)
     - "parent_birthdate": |

@@ -308,10 +308,8 @@ continue button field: cov_supervisor_kickout
 ---
 code: |
   if cov_supervisor_overall_approval_status == "denied":
-    if 'coa_only' not in application_kind or 'coa_only' not in change_kind:
-      application_kind = "coa_only"
-      change_kind = "coa_only" # existing logic
-
+    application_kind['cov_and_coa'] = False
+    application_kind['coa_only'] = True
   update_cov_to_coa_only = True
 ---
 # id: attorney or representative type
@@ -644,18 +642,20 @@ objects:
       ])
 ---
 code: |
-  if application_kind in ['cov_and_coa']:
+  if application_kind.get('cov_and_coa'):
     users[i].motion_addendum.enabled = True
-  elif application_kind in ['ead_and_tps', 'tps_only', 'ead_only'] and defined('change_kind') and change_kind == 'cov_and_coa':
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
     users[i].motion_addendum.enabled = True
   else:
     users[i].motion_addendum.enabled = False
 ---
 code: |
-  users[i].motion_addendum.enabled = application_kind.get('cov_and_coa')
----
-code: |
-  motion_users[i].document_bundle.enabled = application_kind.get('cov_and_coa')
+  if application_kind.get('cov_and_coa'):
+    motion_users[i].document_bundle.enabled = True
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    motion_users[i].document_bundle.enabled = True
+  else:
+    motion_users[i].document_bundle.enabled = False
 ---
 code: |
   if application_kind.get('cov_and_coa'):
@@ -663,6 +663,8 @@ code: |
       users[i].eoir_61_cov.enabled = users[i].application_is_approved
     else:
       users[i].eoir_61_cov.enabled = True
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    users[i].eoir_61_cov.enabled = users[i].application_is_approved
   else:
     users[i].eoir_61_cov.enabled = False
 ---
@@ -672,6 +674,8 @@ code: |
       users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and not cert_of_service
     else:
       users[i].eoir_33_coa_page1.enabled = not cert_of_service
+  elif defined('change_kind') and change_kind == 'coa_only':
+    users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and not cert_of_service
   else:
     users[i].eoir_33_coa_page1.enabled = False
 ---
@@ -681,14 +685,26 @@ code: |
       users[i].eoir_33_coa.enabled = users[i].application_is_approved and cert_of_service
     else:
       users[i].eoir_33_coa.enabled = cert_of_service
+  elif defined('change_kind') and change_kind == 'coa_only':
+    users[i].eoir_33_coa.enabled = users[i].application_is_approved and cert_of_service
   else:
     users[i].eoir_33_coa.enabled = False
 ---
 code: |
-  motion_users[i].eoir_33_coa_page1.enabled = application_kind.get('cov_and_coa') and not cert_of_service
+  if application_kind.get('cov_and_coa'):
+    motion_users[i].eoir_33_coa_page1.enabled = not cert_of_service
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    motion_users[i].eoir_33_coa_page1.enabled = not cert_of_service
+  else:
+    motion_users[i].eoir_33_coa_page1.enabled = False
 ---
 code: |
-  motion_users[i].eoir_33_coa.enabled = application_kind.get('cov_and_coa') and cert_of_service
+  if application_kind.get('cov_and_coa'):
+    motion_users[i].eoir_33_coa.enabled = cert_of_service
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    motion_users[i].eoir_33_coa.enabled = cert_of_service
+  else:
+    motion_users[i].eoir_33_coa.enabled = False
 ---
 attachment:
   name: EIOR-61

@@ -276,7 +276,7 @@ code: |
       set_progress(90)
       
       # Motion flow - COV or standalone COA/COA only (uses motion_users)
-      if application_kind in ['cov_and_coa'] or change_kind == 'cov_and_coa':
+      if application_kind.get('cov_and_coa') or change_kind == 'cov_and_coa':
         if cov_supervisor_overall_approval_status == "denied":
           cov_supervisor_kickout
           update_cov_to_coa_only
@@ -293,14 +293,14 @@ code: |
             motion_users[idx].previous.address.address
             motion_users[idx].previous_copied
 
-      if change_kind == "coa_only" or application_kind == 'coa_only':
+      if change_kind == "coa_only" or application_kind.get('coa_only'):
         for idx,user in enumerate(users):
           # For COA only flows (standalone or TPS/EAD + coa_only) collect users[i] previous address
-          if application_kind == 'coa_only' or (application_kind in ['ead_and_tps', 'tps_only', 'ead_only'] and change_kind == 'coa_only'):
+          if application_kind.get('coa_only') or ((application_kind.get('tps_only') or application_kind.get('ead_only')) and change_kind == 'coa_only'):
             user.address.address
             user.mailing_address.address
             user.previous.address.address
-            if application_kind != 'coa_only':
+            if application_kind.get('tps_only') or application_kind.get('ead_only'):
               user.application_is_approved # approved only for TPS/EAD flows
 
         illinois_move_date

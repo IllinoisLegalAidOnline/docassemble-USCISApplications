@@ -117,15 +117,26 @@ fields:
   - note: |
       Do you agree to share some biographic data and case type data with our grant providers to continue to offer services free of charge?
   - no label: consent_yes
-    datatype: checkboxes
-    none of the above: False
-    minlength: 1
+    input type: radio
     choices:
-      - I agree to the above.: Yes
-    validation messages:
-      minlength: |
-        You cannot continue unless you agree to the above statements.
+      - I agree to the above.: True
+      - I do not consent.: False
+  - note: |
+      Call a supervisor over to help further explain that consent is required in order to continue the interview.
+    show if:
+      variable: consent_yes
+      is: False
 continue button field: consent_agreement
+---
+id: consent kickout
+event: consent_kickout
+question: |
+  Sorry
+subquestion: |
+  We cannot continue at this time without your consent.
+buttons:
+  - Exit: exit
+  - Restart: restart
 ---
 id: basic information
 question: |

@@ -760,6 +760,6 @@ code: |
 depends on:
   - users[i].application_is_approved
 code: |
-  if application_kind in ['cov_and_coa','coa_only']:
+  if (application_kind.get('cov_and_coa') or application_kind.get('coa_only')) and not (application_kind.get('tps_only') or application_kind.get('ead_only')):
     users[i].application_is_approved = True
 ---

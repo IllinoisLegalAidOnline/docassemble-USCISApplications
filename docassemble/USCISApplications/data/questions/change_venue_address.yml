@@ -1,48 +1,258 @@
-
+##### CHANGE OF VENUE/ADDRESS (COV/COA) #####
 objects:
-  - users[i].immigration_judge: ALIndividual
+  - immigration_judge: ALIndividual
+  - dhs: ALIndividual
+  - dhs.address: ALAddress
+  - motion_users: ALPeopleList.using(complete_attribute='names_only', auto_gather=True)
+  - motion_users[i].address: ALAddress
+  - motion_users[i].mailing_address: ALAddress
+  - motion_users[i].previous: ALIndividual
+  - motion_users[i].previous.address: ALAddress
   - users[i].previous: ALIndividual
-  - users[i].previous.address: ALAddress 
-  #- representative: ALIndividual
-  - users[i].dhs: ALIndividual
-  - users[i].dhs.address: ALAddress
-  - motion_users: DAList.using(object_type=Individual,complete_attribute='names_only', gathered=True)
+  - users[i].previous.address: ALAddress
+  - illinois_move_date: Date
 ---
-id: change of venue
-continue button field: cov_intro
+sets:
+  - motion_users[0].address.address
+  - motion_users[0].address.city
+  - motion_users[0].address.zip
+  - motion_users[0].address.unit
+  - motion_users[0].address.state
+id: motion users address first
 question: |
-  Change of venue
+  ${ motion_users[0] }'s current address
+subquestion: |
+  This is your current, physical address. Mailing address will be entered on another screen.
+fields:
+  - Street address: motion_users[0].address.address
+    address autocomplete: True
+  - Address is a: motion_users[0].address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: motion_users[0].address.unit
+    required: False
+  - City or Town: motion_users[0].address.city
+  - State: motion_users[0].address.state
+    required: False
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
+  - ZIP: motion_users[0].address.zip
+  - Daytime Phone Number (optional): motion_users[0].phone_number
+    datatype: al_international_phone
+    required: false
+  - Mobile Telephone Number (optional): motion_users[0].mobile_number
+    datatype: al_international_phone
+    required: false
+  - Email address (optional): motion_users[0].email
+    datatype: email
+    required: false
+---
+code: |
+  address_choices = []
+  address_choices.clear()
+  for user in motion_users.complete_elements():
+    if hasattr(user.address, 'address'):
+      address_choices.append(user.address)
+---
+id: your address
+sets:
+  - motion_users[i].address.address
+  - motion_users[i].address.city
+  - motion_users[i].address.zip
+  - motion_users[i].address.unit
+  - motion_users[i].address.state
+question: |
+  ${ motion_users[i] }'s current address
+subquestion: |
+  This is your current, physical address. Mailing address will be entered on another screen.
+fields:
+  - ${ motion_users[i] }'s address is: motion_users[i].address
+    datatype: object_radio
+    choices:
+      - address_choices
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others:
+      - motion_users[i].address.address
+      - motion_users[i].address.city
+      - motion_users[i].address.zip
+      - motion_users[i].address.unit
+      - motion_users[i].address.state
+      - motion_users[i].address.address_type
+    default: |
+      motion_users[0].address if i > 0 else None
+  - Street address: motion_users[i].address.address
+    address autocomplete: True
+    # default: ${ showifdef("motion_users[0].address.address ") }
+  - Address is a: motion_users[i].address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: motion_users[i].address.unit
+    required: False
+  - City or Town: motion_users[i].address.city
+  - State: motion_users[i].address.state
+    required: False
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
+  - ZIP: motion_users[i].address.zip
+  - Daytime Phone Number (optional): motion_users[i].phone_number
+    datatype: al_international_phone
+    required: false
+    default: |
+      ${ showifdef("motion_users[0].phone_number") if i > 0 else ""}
+  - Mobile Telephone Number (optional): motion_users[i].mobile_number
+    datatype: al_international_phone
+    required: false
+    default: |
+      ${ showifdef("motion_users[0].mobile_number") if i > 0 else ""}
+  - Email address (optional): motion_users[i].email
+    datatype: email
+    required: false
+---
+sets:
+  - motion_users[0].mailing_address.address
+  - motion_users[0].mailing_address.address_type
+  - motion_users[0].mailing_address.city
+  - motion_users[0].mailing_address.state
+  - motion_users[0].mailing_address.zip
+id: motion users mailing address first
+question: |
+  What is ${ motion_users[0] }'s mailing address?
+fields:
+  - ${ motion_users[0] }'s mailing address is: motion_users[0].mailing_address
+    datatype: object_radio
+    choices:
+      - motion_users[0].mailing_address if defined("motion_users[0].mailing_address.address") else motion_users[0].address if defined("motion_users[0].address.address") else None
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others: True
+    show if:
+      code: |
+        defined("motion_users[0].address.address")
+    default: |
+      motion_users[0].address
+  - ${ motion_users[0].address.address_label }: motion_users[0].mailing_address.address
+    address autocomplete: True
+  - Address is a: motion_users[0].mailing_address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: motion_users[0].mailing_address.unit
+    required: False
+  - City or Town: motion_users[0].mailing_address.city
+  - State: motion_users[0].mailing_address.state
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
+  - ZIP: motion_users[0].mailing_address.zip
+---
+sets:
+  - motion_users[i].mailing_address.address
+id: motion users mailing address
+question: |
+  What is ${ motion_users[i] }'s mailing address?
+fields:
+  - ${ motion_users[i] }'s mailing address is: motion_users[i].mailing_address
+    datatype: object_radio
+    choices:
+      - motion_users[0].mailing_address if defined("motion_users[0].mailing_address.address") else None
+      - motion_users[i].address if defined("motion_users[i].address.address") else None
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others: True      
+    show if:
+      code: |
+        defined("motion_users[i].address.address")
+    default: |
+      motion_users[0].mailing_address if i > 0 else None
+  - ${ motion_users[i].address.address_label}: motion_users[i].mailing_address.address
+    address autocomplete: True
+  - Address is a: motion_users[i].mailing_address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Apartment/Suite/Floor number: motion_users[i].mailing_address.unit
+    required: False
+  - City or Town: motion_users[i].mailing_address.city
+  - State: motion_users[i].mailing_address.state
+    code: |
+      states_list(country_code=AL_DEFAULT_COUNTRY)
+    default: ${ AL_DEFAULT_STATE }
+  - ZIP: motion_users[i].mailing_address.zip
+---
+id: move to United States
+question: |
+  When did you enter the U.S. (and has resided in the U.S. since) on what date?
+fields:
+  - no label: entry_to_us_date
+    datatype: ThreePartsDate
+    alMax: ${ today() }
+---
+id: move to illinois
+question: |
+  When did you move to Illinois?
+fields:
+  - no label: illinois_move_date
+    datatype: ThreePartsDate
+    alMax: ${ today() }
 ---
 id: immigration judge
 question: |
-  Immigration court information for ${ users[i] }
+  Immigration court information
 subquestion: |
   Enter the name of the Immigration Judge and the next hearing date.
 fields:
-  - First name: users[i].immigration_judge.name.first
-  - Middle name: users[i].immigration_judge.name.middle
+  - First name: immigration_judge.name.first
+  - Middle name: immigration_judge.name.middle
     required: False
-  - Last name: users[i].immigration_judge.name.last
-  - Next hearing date: users[i].hearing_datetime 
+  - Last name: immigration_judge.name.last
+  - Next hearing date: hearing_datetime 
     datatype: ThreePartsDate
     alMin: ${ today().format("yyyy-MM-dd") }
 ---
 id: notice to appear
 question: |
-  Notice to Appear for ${ users[i] }
+  Notice to Appear
 fields:
-  - When was the Notice to Appear letter dated?: users[i].notice_appear_date
+  - When was the Notice to Appear letter dated?: notice_appear_date
     datatype: ThreePartsDate
     alMax: ${ today().format("yyyy-MM-dd") }
 ---
 id: type of relief
 question: |
-  Relief ${ users[i] } is seeking
+  What form of relief will you be seeking?
 fields:
-  - What form of relief will you be seeking?: users[i].type_of_relief
-    datatype: area
-    rows: 2
+  - no label: type_of_relief
     maxlength: 60
+---
+code: |
+  lead_choices = []
+  lead_choices.clear()
+  for user in users:
+    lead_choices.append(user.name_full())
+  lead_choices.append("Other")
 ---
 id: review_cov_questions
 continue button field: review_cov_questions
@@ -63,14 +273,14 @@ subquestion: |
 fields:
   - Have you hired an attorney for your immigration case?: cov_attorney
     datatype: yesnoradio
-  - Who is the lead respondent?: lead_applicant
-    datatype: object_radio
-    choices: |
-      [user for user in users]
-    none of the above: Other
-  - What is the name of the other lead respondent?: other_applicant
-    show if: 
-      variable: lead_applicant
+  - Who is the lead respondent?: lead_respondent
+    datatype: radio
+    code: |
+      lead_choices
+  - note: |
+      We will collect the name of the lead respondent
+    show if:
+      variable: lead_respondent
       is: "Other"
   - How many riders are on the case?: cov_riders
     datatype: integer
@@ -79,13 +289,11 @@ fields:
   - Do all the parties on the case want the venue changed?: all_change_venue
     datatype: yesnoradio
 
-
   - What should happen with this change of venue?: cov_supervisor_overall_approval_status
     datatype: radio
     choices:
       - All applicants can **continue**: approved
-      - All applicants are **not elibible**: denied
-      - "**Some** applications can continue": mixed
+      - Do not continue: denied
     show if:
       code: |
         len(users) > 1
@@ -98,27 +306,23 @@ fields:
       code: |
         len(users) == 1
     minlength: 1
-  - Which applications should be **approved**?: approved_applications
-    datatype: object_checkboxes
-    choices:
-      - users
-    show if:
-      variable: cov_supervisor_overall_approval_status
-      is: mixed
   - Supervisor name: cov_supervisor_name
   - Supervisor notes: cov_supervisor_notes
     required: False
     datatype: area
 ---
 id: cov kickout
-event: cov_supervisor_kickout
 question: |
   Sorry
 subquestion: |
-  The supervisor did not approve the application.
-buttons:
-  - Exit: exit
-  - Restart: restart
+  The Change of Venue Motion is not approved. Only the Change of Address will be completed.
+continue button field: cov_supervisor_kickout
+---
+code: |
+  if cov_supervisor_overall_approval_status == "denied":
+    application_kind['cov_and_coa'] = False
+    application_kind['coa_only'] = True
+  update_cov_to_coa_only = True
 ---
 # id: attorney or representative type
 # question: |
@@ -172,15 +376,122 @@ buttons:
 #     datatype: email
 #     required: False
 # ---
-id: your previous address change
+sets:
+  - motion_users[0].previous.address.address
+  - motion_users[0].previous.address.city
+  - motion_users[0].previous.address.zip
+  - motion_users[0].previous.address.unit
+  - motion_users[0].previous.address.state
+id: motion users previous address first
+question: |
+  ${ motion_users[0] }'s former address
+subquestion: |
+  This is not your current/physical or mailing address.
+fields:
+  - Previous street address: motion_users[0].previous.address.address
+    address autocomplete: True
+  - Previous address was a: motion_users[0].previous.address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Previous apartment/suite/floor number: motion_users[0].previous.address.unit
+    required: False
+  - Previous city: motion_users[0].previous.address.city
+  - Previous state: motion_users[0].previous.address.state
+    code: |
+      states_list()
+  - Previous ZIP: motion_users[0].previous.address.zip
+  - Previous Daytime Phone Number (optional): motion_users[0].previous.phone_number
+    datatype: al_international_phone
+    required: false
+  - Previous Mobile Telephone Number (optional): motion_users[0].previous.mobile_number
+    datatype: al_international_phone
+    required: false
+  - Previous Email address (optional): motion_users[0].previous.email
+    datatype: email
+    required: false
+---
+sets:
+  - motion_users[i].previous.address.address
+  - motion_users[i].previous.address.city
+  - motion_users[i].previous.address.zip
+  - motion_users[i].previous.address.unit
+  - motion_users[i].previous.address.state
+id: motion users previous address
+question: |
+  ${ motion_users[i] }'s former address
+subquestion: |
+  This is not your current/physical or mailing address.
+fields:
+  - ${ motion_users[i] }'s previous address is: motion_users[i].previous_same_as_first
+    datatype: object_radio
+    choices:
+      - motion_users[0].previous.address if defined("motion_users[0].previous.address.address") else None
+    object labeler: |
+      lambda y: y.on_one_line()
+    none of the above: |
+      Somewhere else
+    disable others: True
+    show if:
+      code: |
+        defined("motion_users[i].previous.address")
+    default: |
+      motion_users[0].previous.address if i > 0 else None
+  - Previous street address: motion_users[i].previous.address.address
+    address autocomplete: True
+  - Previous address was a: motion_users[i].previous.address.address_type
+    datatype: radio
+    choices:
+      - Apartment: apt
+      - Suite: suite
+      - Floor: floor
+      - Other (including house): other
+  - Previous apartment/suite/floor number: motion_users[i].previous.address.unit
+    required: False
+  - Previous city: motion_users[i].previous.address.city
+  - Previous state: motion_users[i].previous.address.state
+    code: |
+      states_list()
+  - Previous ZIP: motion_users[i].previous.address.zip
+  - Previous Daytime Phone Number (optional): motion_users[i].previous.phone_number
+    datatype: al_international_phone
+    required: false
+    default: |
+      ${ showifdef("motion_users[0].phone_number") if i > 0 else ""}
+  - Previous Mobile Telephone Number (optional): motion_users[i].previous.mobile_number
+    datatype: al_international_phone
+    required: false
+    default: |
+      ${ showifdef("motion_users[0].mobile_number") if i > 0 else ""}
+  - Previous Email address (optional): motion_users[i].previous.email
+    datatype: email
+    required: false
+---
+code: |
+  if defined("motion_users[i].previous_same_as_first") and motion_users[i].previous_same_as_first:
+    motion_users[i].previous.address.address = motion_users[0].previous.address.address
+    motion_users[i].previous.address.city = motion_users[0].previous.address.city
+    motion_users[i].previous.address.state = motion_users[0].previous.address.state
+    motion_users[i].previous.address.zip = motion_users[0].previous.address.zip
+    motion_users[i].previous.address.unit = motion_users[0].previous.address.unit if hasattr(motion_users[0].previous.address, 'unit') else ''
+    motion_users[i].previous.address.address_type = motion_users[0].previous.address.address_type if hasattr(motion_users[0].previous.address, 'address_type') else 'other'
+  motion_users[i].previous_copied = True
+---
+sets:
+  - users[i].previous.address.address
+  - users[i].previous.address.city
+  - users[i].previous.address.zip
+  - users[i].previous.address.unit
+  - users[i].previous.address.state
+id: users previous address
 question: |
   ${ users[i] }'s former address
 subquestion: |
   This is not your current/physical or mailing address.
 fields:
-  - When did you move to Illinois?: users[i].previous.date
-    datatype: ThreePartsDate
-    alMax: ${ today() }
   - Previous street address: users[i].previous.address.address
     address autocomplete: True
   - Previous address was a: users[i].previous.address.address_type
@@ -197,66 +508,66 @@ fields:
     code: |
       states_list()
   - Previous ZIP: users[i].previous.address.zip
-    required: False      
-  - Previous phone number (optional): users[i].previous.phone_number
+  - Previous Daytime Phone Number (optional): users[i].previous.phone_number
     datatype: al_international_phone
-    required: False
-  - Previous email address (optional): users[i].previous.email    
+    required: false
+  - Previous Mobile Telephone Number (optional): users[i].previous.mobile_number
+    datatype: al_international_phone
+    required: false
+  - Previous Email address (optional): users[i].previous.email
     datatype: email
-    required: False
+    required: false
 ---
 id: dhs information 
 sets:
-  - users[i].dhs.address.address
-  - users[i].dhs.address.city
-  - users[i].dhs.address.state
-  - users[i].dhs.address.zip
+  - dhs.address.address
+  - dhs.address.city
+  - dhs.address.state
+  - dhs.address.zip
 question: |
   Office of the Principal Legal Advisor (OPLA) address
-subquestion: |
-  This is for ${ users[i] }'s case.
 fields: 
-  - Street address: users[i].dhs.address.address
+  - Street address: dhs.address.address
     address autocomplete: True
-  - Address line 2: users[i].dhs.address.unit
+  - Address line 2: dhs.address.unit
     required: False
-  - City: users[i].dhs.address.city
-  - State: users[i].dhs.address.state
+  - City: dhs.address.city
+  - State: dhs.address.state
     code: |
       states_list()
-  - ZIP code: users[i].dhs.address.zip
+  - ZIP code: dhs.address.zip
   - note: |
       Is the OPLA location in a **different city and state** than the court?:
     show if:
       code: |
         change_kind == "cov_and_coa"
-  - no label: users[i].dhs.different_court_location
+  - no label: dhs.different_court_location
     datatype: yesnoradio
     show if:
       code: |
         change_kind == "cov_and_coa"
-  - Court city: users[i].dhs.court_city
+  - Court city: dhs.court_city
     show if:
       code: |
         change_kind == "cov_and_coa"
     js show if: |
-      val("users[i].dhs.different_court_location")
-  - Court state: users[i].dhs.court_state
+      val("dhs.different_court_location")
+  - Court state: dhs.court_state
     code: |
       states_list()
     show if:
       code: |
         change_kind == "cov_and_coa"
     js show if: |
-      val("users[i].dhs.different_court_location")
+      val("dhs.different_court_location")
 ---
 id: proof of service
 question: |
-  Will ${ users[i] }'s be mailing the Change of Address request?
+  Will you be mailing the Change of Address request?
 subquestion: |
   Select **No** if you want to add a name and address of sender to the EOIR-33 Proof of Service later.
 fields:
-  - no label: users[i].cert_of_service
+  - no label: cert_of_service
     datatype: yesnoradio
 ---
 code: |
@@ -266,15 +577,45 @@ code: |
 ---
 code: |
   motion_users.clear()
-  for user in users:
-    motion_users.append(user)
+  for idx, user in enumerate(users):
+    new_user = motion_users[idx]
+    new_user.name.first = user.name.first
+    new_user.name.middle = user.name.middle if hasattr(user.name, 'middle') else ''
+    new_user.name.last = user.name.last
+    new_user.a_number = user.a_number if hasattr(user, 'a_number') else ''
+    new_user.birthdate = user.birthdate if hasattr(user, 'birthdate') else None
+    # Copy address from user if they did any prior forms
+    if hasattr(user, 'address') and hasattr(user.address, 'address'):
+      new_user.address.address = user.address.address
+      new_user.address.city = user.address.city
+      new_user.address.state = user.address.state
+      new_user.address.zip = user.address.zip
+      new_user.address.unit = user.address.unit if hasattr(user.address, 'unit') else ''
+      new_user.address.address_type = user.address.address_type if hasattr(user.address, 'address_type') else 'other'
+    if hasattr(user, 'mailing_address') and hasattr(user.mailing_address, 'address'):
+      new_user.mailing_address.address = user.mailing_address.address
+      new_user.mailing_address.city = user.mailing_address.city
+      new_user.mailing_address.state = user.mailing_address.state
+      new_user.mailing_address.zip = user.mailing_address.zip
+      new_user.mailing_address.unit = user.mailing_address.unit if hasattr(user.mailing_address, 'unit') else ''
+    if hasattr(user, 'phone_number'):
+      new_user.phone_number = user.phone_number
+    if hasattr(user, 'mobile_number'):
+      new_user.mobile_number = user.mobile_number
+    if hasattr(user, 'email'):
+      new_user.email = user.email
+    new_user.names_only = True
+  motion_users.there_is_another = False
+  motion_users.there_are_any = True
   motion_users.gathered = True
   create_motion_ordering = True
 ---
 id: motion name ordering
 question: |
-  Parties to the case
+  Order of names on Motion
 subquestion: |
+  The lead respondent should be listed first.
+
   ${ motion_users_table }
 
   
@@ -302,12 +643,6 @@ fields:
     validate: |
       lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
 ---
-# objects:
-#   - users[i].cov_coa_instructions: ALDocument.using(title=f"{users[i]} - COV COA Instructions", filename=space_to_underscore(f"{users[i]} - COV COA Instructions"), has_addendum=False)
----
-objects:
-  - users[i].motion_addendum: ALDocument.using(title=f"{users[i]} - Motion Addendum", filename=space_to_underscore(f"{users[i]} -  Motion Addendum"), has_addendum=False)
----
 objects:
   - users[i].eoir_61_cov: ALDocument.using(title="EIOR-61 Change of venue", filename="EIOR-61 Change of venue", has_addendum=False )
 ---
@@ -317,29 +652,85 @@ objects:
 objects:
   - users[i].eoir_33_coa: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
 ---
-# code: |
-#   users[i].cov_coa_instructions.enabled = users[i].application_is_approved and change_kind != "no"
+objects:
+  - users[i].motion_addendum: ALDocument.using(title="Motion Addendum", filename=space_to_underscore("Motion Addendum"), has_addendum=False)
+---
+objects:
+  - motion_users[i].eoir_33_coa_page1: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
+---
+objects:
+  - motion_users[i].eoir_33_coa: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
+---
+objects:
+  - motion_users[i].document_bundle: ALDocumentBundle.using(title="Motion documents", filename="motion_documents", elements=[
+        motion_users[i].eoir_33_coa_page1,
+        motion_users[i].eoir_33_coa,
+      ])
 ---
 code: |
-  users[i].eoir_61_cov.enabled = users[i].application_is_approved and change_kind == "cov_and_coa" 
+  if application_kind.get('cov_and_coa'):
+    users[i].motion_addendum.enabled = True
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    users[i].motion_addendum.enabled = True
+  else:
+    users[i].motion_addendum.enabled = False
 ---
 code: |
-  users[i].motion_addendum.enabled = users[i].application_is_approved and change_kind == "cov_and_coa"
+  if application_kind.get('cov_and_coa'):
+    motion_users[i].document_bundle.enabled = True
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    motion_users[i].document_bundle.enabled = True
+  else:
+    motion_users[i].document_bundle.enabled = False
 ---
 code: |
-  users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and change_kind != "no" and users[i].cert_of_service == False 
+  if application_kind.get('cov_and_coa'):
+    if application_kind.get('tps_only') or application_kind.get('ead_only'):
+      users[i].eoir_61_cov.enabled = users[i].application_is_approved
+    else:
+      users[i].eoir_61_cov.enabled = True
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    users[i].eoir_61_cov.enabled = users[i].application_is_approved
+  else:
+    users[i].eoir_61_cov.enabled = False
 ---
 code: |
-  users[i].eoir_33_coa.enabled = users[i].application_is_approved and change_kind != "no" and users[i].cert_of_service
+  if application_kind.get('coa_only'):
+    if application_kind.get('tps_only') or application_kind.get('ead_only'):
+      users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and not cert_of_service
+    else:
+      users[i].eoir_33_coa_page1.enabled = not cert_of_service
+  elif defined('change_kind') and change_kind == 'coa_only':
+    users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and not cert_of_service
+  else:
+    users[i].eoir_33_coa_page1.enabled = False
 ---
-# attachment:
-#   variable name: users[i].cov_coa_instructions[j]
-#   name: ${ users[i] } - COV COA Instructions
-#   filename: ${ space_to_underscore(f"{users[i]} - COV COA Instructions") }
-#   docx template file: COA_COV_checklist.docx
-#   skip undefined: True
+code: |
+  if application_kind.get('coa_only'):
+    if application_kind.get('tps_only') or application_kind.get('ead_only'):
+      users[i].eoir_33_coa.enabled = users[i].application_is_approved and cert_of_service
+    else:
+      users[i].eoir_33_coa.enabled = cert_of_service
+  elif defined('change_kind') and change_kind == 'coa_only':
+    users[i].eoir_33_coa.enabled = users[i].application_is_approved and cert_of_service
+  else:
+    users[i].eoir_33_coa.enabled = False
 ---
-################### EIOR-61 COV ####################
+code: |
+  if application_kind.get('cov_and_coa'):
+    motion_users[i].eoir_33_coa_page1.enabled = not cert_of_service
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    motion_users[i].eoir_33_coa_page1.enabled = not cert_of_service
+  else:
+    motion_users[i].eoir_33_coa_page1.enabled = False
+---
+code: |
+  if application_kind.get('cov_and_coa'):
+    motion_users[i].eoir_33_coa.enabled = cert_of_service
+  elif defined('change_kind') and change_kind == 'cov_and_coa':
+    motion_users[i].eoir_33_coa.enabled = cert_of_service
+  else:
+    motion_users[i].eoir_33_coa.enabled = False
 ---
 attachment:
   name: EIOR-61
@@ -392,18 +783,110 @@ attachment:
     # Page 2
     - "users1_full_name": ${ users[i].name_full() }
     - "pos_date": ${ today().format('MM/dd/yyyy') }
-    - "pos_dhs_address_full": ${ users[i].dhs.address.on_one_line(bare=True) }
+    - "pos_dhs_address_full": ${ dhs.address.on_one_line(bare=True) }
 
 ---
 ################### MOTION ####################
 attachment:
   variable name: users[i].motion_addendum[j]
-  name: ${ users[i] } - Motion Addendum
-  filename: ${ space_to_underscore(f"{users[i]} - Motion Addendum") }
+  name: Motion Addendum
+  filename: ${ space_to_underscore("Motion Addendum") }
   docx template file: COV_motion.docx
   skip undefined: True
 ---
-################### EIOR-33 COA ####################
+################### MOTION ONLY EIOR-33 COA ####################
+---
+attachment:
+  name: EIOR-33
+  filename: EIOR-33
+  variable name: motion_users[i].eoir_33_coa_page1[j]
+  skip undefined: True
+  pdf template file: eoir-33_coa_page1.pdf
+  editable: False
+  fields:
+
+    - "users1_name": ${ motion_users[i].name.last } ${ motion_users[i].name.first } ${ motion_users[i].name.middle }
+    - "users1_a_number": ${ motion_users[i].a_number }
+    - "care_name_current": ''
+    - "care_name_former": ''
+    - "users1_address_line1_former": ${ motion_users[i].previous.address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ motion_users[i].mailing_address.line_one(bare=True) }
+    - "users1_address_line2_former": ${ motion_users[i].previous.address.line_two() }
+    - "users1_address_line2_current": ${ motion_users[i].mailing_address.line_two() }
+    - "users1_phone_former": ${ phone_number_formatted(motion_users[i].previous.phone_number) }
+    - "users1_phone_current": ${ phone_number_formatted(motion_users[i].phone_number) }
+    - "users1_email_former": ${ motion_users[i].previous.email }
+    - "users1_email_current": ${ motion_users[i].email }
+
+    # Proof of service
+    - "pos_name": |
+        % if motion_users[i].cert_of_service:
+        ${ motion_users[i].name_full() }
+        % endif
+    - "pos_date": |
+        % if motion_users[i].cert_of_service:
+        ${ today().format('MM/dd/yyyy') }
+        % endif
+    - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
+    - "dhs_address_line2": ${ dhs.address.line_two() }
+    - "pos_type": by mail service
+    - "no_service": False
+---
+attachment:
+  name: EIOR-33
+  filename: EIOR-33
+  variable name: motion_users[i].eoir_33_coa[j]
+  skip undefined: True
+  pdf template file: eoir-33_coa.pdf
+  editable: False
+  fields:
+
+    - "users1_name": ${ motion_users[i].name.last } ${ motion_users[i].name.first } ${ motion_users[i].name.middle }
+    - "users1_a_number": ${ motion_users[i].a_number }
+    - "care_name_current": ''
+    - "care_name_former": ''
+    - "users1_address_line1_former": ${ motion_users[i].previous.address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ motion_users[i].mailing_address.line_one(bare=True) }
+    - "users1_address_line2_former": ${ motion_users[i].previous.address.line_two() }
+    - "users1_address_line2_current": ${ motion_users[i].mailing_address.line_two() }
+    - "users1_phone_former": ${ phone_number_formatted(motion_users[i].previous.phone_number) }
+    - "users1_phone_current": ${ phone_number_formatted(motion_users[i].phone_number) }
+    - "users1_email_former": ${ motion_users[i].previous.email }
+    - "users1_email_current": ${ motion_users[i].email }
+
+    # Proof of service
+    - "pos_name": |
+        % if cert_of_service:
+        ${ motion_users[0].name_full() }
+        % endif
+    - "pos_date": |
+        % if cert_of_service:
+        ${ today().format('MM/dd/yyyy') }
+        % endif
+    - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
+    - "dhs_address_line2": ${ dhs.address.line_two() }
+    - "pos_type": by mail service
+    - "no_service": False
+
+    # Service instructions
+    - "service_name_line": |
+        % if cert_of_service:
+        ${ motion_users[0].name_full() }
+        % endif
+    - "service_address_line_1": |
+        % if cert_of_service:
+        ${ motion_users[0].mailing_address.line_one(bare=True) }
+        % endif
+    - "service_address_line_2":  |
+        % if cert_of_service:
+        ${ motion_users[0].mailing_address.line_two() }
+        % endif
+    - "service_address_line_3": ''
+    - "court_address": |
+        ${ dhs.address.line_one() }
+        ${ dhs.address.line_two() }
+---
+################### EIOR-33 COA NO MOTION ####################
 ---
 attachment:
   name: EIOR-33
@@ -429,15 +912,15 @@ attachment:
 
     # Proof of service
     - "pos_name": |
-        % if users[i].cert_of_service:
+        % if cert_of_service:
         ${ users[i].name_full() }
         % endif
     - "pos_date": |
-        % if users[i].cert_of_service:
+        % if cert_of_service:
         ${ today().format('MM/dd/yyyy') }
         % endif
-    - "dhs_address_line1": ${ users[i].dhs.address.line_one(bare=True) }
-    - "dhs_address_line2": ${ users[i].dhs.address.line_two() }
+    - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
+    - "dhs_address_line2": ${ dhs.address.line_two() }
     - "pos_type": by mail service
     - "no_service": False
 ---
@@ -465,33 +948,33 @@ attachment:
 
     # Proof of service
     - "pos_name": |
-        % if users[i].cert_of_service:
+        % if cert_of_service:
         ${ users[i].name_full() }
         % endif
     - "pos_date": |
-        % if users[i].cert_of_service:
+        % if cert_of_service:
         ${ today().format('MM/dd/yyyy') }
         % endif
-    - "dhs_address_line1": ${ users[i].dhs.address.line_one(bare=True) }
-    - "dhs_address_line2": ${ users[i].dhs.address.line_two() }
+    - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
+    - "dhs_address_line2": ${ dhs.address.line_two() }
     - "pos_type": by mail service
     - "no_service": False
 
     # Service instructions
     - "service_name_line": |
-        % if users[i].cert_of_service:
+        % if cert_of_service:
         ${ users[i].name_full() }
         % endif
     - "service_address_line_1": |
-        % if users[i].cert_of_service:
+        % if cert_of_service:
         ${ users[i].mailing_address.line_one(bare=True) }
         % endif
     - "service_address_line_2":  |
-        % if users[i].cert_of_service:
+        % if cert_of_service:
         ${ users[i].mailing_address.line_two() }
         % endif
     - "service_address_line_3": ''
     - "court_address": |
-        ${ users[i].dhs.address.line_one() }
-        ${ users[i].dhs.address.line_two() }
+        ${ dhs.address.line_one() }
+        ${ dhs.address.line_two() }
 ---

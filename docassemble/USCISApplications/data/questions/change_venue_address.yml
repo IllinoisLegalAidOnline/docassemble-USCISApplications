@@ -576,7 +576,6 @@ code: |
   motion_users[i].names_only = True
 ---
 code: |
-  # Create new ALIndividual objects for motion_users without users reference
   motion_users.clear()
   for idx, user in enumerate(users):
     new_user = motion_users[idx]
@@ -599,6 +598,12 @@ code: |
       new_user.mailing_address.state = user.mailing_address.state
       new_user.mailing_address.zip = user.mailing_address.zip
       new_user.mailing_address.unit = user.mailing_address.unit if hasattr(user.mailing_address, 'unit') else ''
+    if hasattr(user, 'phone_number'):
+      new_user.phone_number = user.phone_number
+    if hasattr(user, 'mobile_number'):
+      new_user.mobile_number = user.mobile_number
+    if hasattr(user, 'email'):
+      new_user.email = user.email
     new_user.names_only = True
   motion_users.there_is_another = False
   motion_users.there_are_any = True

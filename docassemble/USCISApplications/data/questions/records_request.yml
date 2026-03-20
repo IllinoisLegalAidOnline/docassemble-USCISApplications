@@ -34,14 +34,14 @@ continue button field: records_request_intro
 ---
 id: Subject previous address
 question: |
-  Is there a prior address to include?
+  Is there a former address of ${ users[i].name_full() } to include?
 fields:
   - no label: users[i].ask_previous
     datatype: yesnoradio
 ---
 id: citizenship
 question: |
-  What is your country of nationality or citizenship?
+  What is ${ users[i].name_full() }'s country of nationality or citizenship?
 fields:
   - no label: users[i].citizenship
     label above field: True
@@ -127,7 +127,7 @@ fields:
 ---
 id: Recipient relationship
 question: |
-  What is your relationship?
+  What is ${ users[i].recipient.name_full() }'s relationship to ${ users[i].name_full() }?
 fields:
   - Recipient type: users[i].recipient.recipient_type
     datatype: radio

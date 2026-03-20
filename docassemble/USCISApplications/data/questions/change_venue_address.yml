@@ -237,8 +237,6 @@ question: |
   What form of relief will you be seeking?
 fields:
   - no label: type_of_relief
-    datatype: area
-    rows: 2
     maxlength: 60
 ---
 code: |
@@ -309,7 +307,7 @@ id: cov kickout
 question: |
   Sorry
 subquestion: |
-  The Change of Venue and Motion are not approved. Only the Change of Address will be completed.
+  The Change of Venue Motion is not approved. Only the Change of Address will be completed.
 continue button field: cov_supervisor_kickout
 ---
 code: |

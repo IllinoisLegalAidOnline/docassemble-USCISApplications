@@ -39,13 +39,11 @@ fields:
   - no label: users[i].ask_previous
     datatype: yesnoradio
 ---
-id: Citizenship
+id: citizenship
 question: |
-  What countries is ${ users[i] } a citizen of?
-subquestion: |
-  Select all that apply.
+  What is your country of nationality or citizenship?
 fields:
-  - Country of Nationality or Citizenship: users[i].citizenship
+  - no label: users[i].citizenship
     label above field: True
     code: |
       [next(iter(item.values())) for item in countries_list()]
@@ -81,10 +79,14 @@ sets:
   - users[i].recipient.address.zip
 question: |
   Recipient contact name
+subquestion: |
+  Enter the name and organization (if any) where the records should be sent.
 fields:
+  - note: |
+      Recipient name
   - code: |
       users[i].recipient.name_fields(person_or_business="person", show_suffix=False)
-  - Organization (if applicable): users[i].recipient.organization
+  - Recipient organization (if applicable): users[i].recipient.organization
     required: False
 ---
 id: Records recipient address

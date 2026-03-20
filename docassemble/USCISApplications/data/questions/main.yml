@@ -511,7 +511,7 @@ fields:
     js show if: |
       val("application_kind['cov_and_coa']") && val("application_kind['coa_only']")
 validation code: |
-  if comp_screener == False:
+  if not comp_screener:
     if application_kind.get('cov_and_coa') and application_kind.get('coa_only'):
       validation_error("Please select either Change of Venue (which includes COA) or Change of Address only, not both.", field="application_kind")
 ---
@@ -1224,7 +1224,7 @@ code: |
   for idx, user in enumerate(users):
     download_response[idx] = user.document_bundle.as_pdf()
   # Adding the COV workflow to users[0] only
-  if application_kind in ['cov_and_coa'] or (application_kind in ['ead_and_tps', 'tps_only', 'ead_only'] and defined('change_kind') and change_kind == 'cov_and_coa'):
+  if application_kind.get('cov_and_coa') or ((application_kind.get('tps_only') or application_kind.get('ead_only')) and defined('change_kind') and change_kind == 'cov_and_coa'):
     motion_pdfs = [download_response[0]]
     if users[0].motion_addendum.enabled:
       motion_pdfs.append(users[0].motion_addendum[0])
@@ -1467,7 +1467,7 @@ attachment:
     - "users1_name_last": ${ users[i].name.last }
     - "users1_name_first": ${ users[i].name.first }
     - "users1_name_middle": ${ users[i].name.middle }
-    - "users1_mobile_number": ${ users[i].phone_number }
+    - "users1_mobile_number": ${ phone_number_formatted(users[i].phone_number) }
     - "users1_email": ${ users[i].email }
 ---
 reconsider:

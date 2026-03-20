@@ -290,6 +290,7 @@ code: |
         dhs.address.address
         cert_of_service
       else:
+        entry_to_us_date
         illinois_move_date
         immigration_judge.name.first
         notice_appear_date

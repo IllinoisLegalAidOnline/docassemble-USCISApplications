@@ -202,6 +202,14 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ZIP: motion_users[i].mailing_address.zip
 ---
+id: move to United States
+question: |
+  When did you enter the U.S. (and has resided in the U.S. since) on what date?
+fields:
+  - no label: entry_to_us_date
+    datatype: ThreePartsDate
+    alMax: ${ today() }
+---
 id: move to illinois
 question: |
   When did you move to Illinois?

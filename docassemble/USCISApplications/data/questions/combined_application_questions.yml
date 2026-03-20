@@ -59,10 +59,13 @@ fields:
     default: ${ AL_DEFAULT_STATE }
   - ZIP: users[0].address.zip
   - Daytime Phone Number (optional): users[0].phone_number
+    datatype: al_international_phone
     required: false
   - Mobile Telephone Number (optional): users[0].mobile_number
+    datatype: al_international_phone
     required: false
   - Email address (optional): users[0].email
+    datatype: email
     required: false
 ---
 code: |
@@ -127,14 +130,17 @@ fields:
   - ZIP: users[i].address.zip
     # default: ${ showifdef("users[0].address.zip ") }
   - Daytime Phone Number (optional): users[i].phone_number
+    datatype: al_international_phone
     required: false
     default: |
       ${ showifdef("users[0].phone_number") if i > 0 else ""}
   - Mobile Telephone Number (optional): users[i].mobile_number
+    datatype: al_international_phone
     required: false
     default: |
       ${ showifdef("users[0].mobile_number") if i > 0 else ""}
   - Email address (optional): users[i].email
+    datatype: email
     required: false
 ---
 id: your mailing address

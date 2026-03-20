@@ -225,7 +225,6 @@ code: |
             if user.traveled_through_other_countries:
               user.date_entered_first_country_month
             user.have_you_ever_questions
-          user.countries_of_citizenship
           user.signpost
           user.check_work
 
@@ -317,15 +316,14 @@ code: |
         user.mailing_address.address
         if user.ask_previous:
           user.previous.address.address
-        user.countries_of_citizenship
+        user.citizenship
         user.city_of_birth
         user.release_type
         user.recipient.name.first
         user.recipient.in_care_name
         if user.recipient.recipient_type == "parent":
           user.recipient.parent.birthdate
-          user.proof_relationship_consent
-
+          user.recipient.parent.proof_relationship_consent
 
     children_for_retainer
     generate_downloads_task
@@ -480,7 +478,7 @@ fields:
       - Central & Downstate Illinois
 ---
 id: signpost for screener or USCIS application
-questioN: |
+question: |
   What do you want to do?
 subquestion: |
   The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
@@ -492,6 +490,7 @@ fields:
       - "USCIS application forms": false
   - no label: application_kind
     datatype: checkboxes
+    minlength: 1
     choices:
       - Temporary Protected Status (I-821): tps_only
       - Employment Authorization (I-765 ): ead_only
@@ -503,8 +502,18 @@ fields:
       variable: comp_screener
       is: False
     validation messages:
-      if not comp_screener: |
+      minlength: |
         Please select at least one form type.
+  - note: |
+      <div class="alert alert-warning" role="alert">
+        <strong>Note:</strong> You cannot select both "Motion for Change of Venue" and "Change of Address only". Please select one or the other.
+      </div>
+    js show if: |
+      val("application_kind['cov_and_coa']") && val("application_kind['coa_only']")
+validation code: |
+  if comp_screener == False:
+    if application_kind.get('cov_and_coa') and application_kind.get('coa_only'):
+      validation_error("Please select either Change of Venue (which includes COA) or Change of Address only, not both.", field="application_kind")
 ---
 id: signpost for main application questions
 continue button field: users[i].signpost

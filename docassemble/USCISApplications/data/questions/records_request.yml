@@ -39,13 +39,13 @@ fields:
   - no label: users[i].ask_previous
     datatype: yesnoradio
 ---
-id: countries of citizenship
+id: Citizenship
 question: |
   What countries is ${ users[i] } a citizen of?
 subquestion: |
   Select all that apply.
 fields:
-  - Country of Nationality or Citizenship: users[i].countries_of_citizenship
+  - Country of Nationality or Citizenship: users[i].citizenship
     label above field: True
     code: |
       [next(iter(item.values())) for item in countries_list()]
@@ -117,6 +117,7 @@ fields:
       countries_list()
     default: "United States"
   - Phone number (optional): users[i].recipient.phone_number
+    datatype: al_international_phone
     required: False
   - Email address (optional): users[i].recipient.email
     required: False
@@ -280,7 +281,7 @@ attachment:
     
     # Biographical Information
     - "users1_birthdate": ${ users[i].birthdate.format('MM/dd/yyyy') }
-    - "country_of_citizenship": ${ users[i].countries_of_citizenship }
+    - "country_of_citizenship": ${ users[i].citizenship }
     - "place_of_birth": |
         % if defined('users[i].city_of_birth'):
         ${ users[i].city_of_birth }, ${ users[i].country_of_birth }

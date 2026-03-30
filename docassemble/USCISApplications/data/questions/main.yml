@@ -149,6 +149,7 @@ code: |
     preparer.address.address
     users.gather()
     review_initial_user_list
+    update_sections
     nav.set_section("section_retainer")
     set_progress(15)
     agrees_to_retainer
@@ -161,11 +162,7 @@ code: |
     application_kind
 
     if application_kind.get('tps_only') or application_kind.get('ead_only'):
-      if change_kind == "no":
-        change_sections
       signpost_screener
-      if len(users) >= 1:
-        update_sections
       for idx, user in enumerate(users):
         nav.set_section(f"users_{idx}_signpost_screen")
         if application_kind.get('ead_only') and not application_kind.get('tps_only'):
@@ -259,58 +256,49 @@ code: |
       set_progress(90)
       
       # Motion flow - COV or standalone COA/COA only (uses motion_users)
-      if application_kind.get('cov_and_coa') or change_kind == 'cov_and_coa':
+      if application_kind.get('cov_and_coa'):
         if cov_supervisor_overall_approval_status == "denied":
           cov_supervisor_kickout
           update_cov_to_coa_only
 
         else:
           create_motion_ordering
-          set_motion_order     
+          set_motion_order
           motion_users[0].address.address
           motion_users[0].mailing_address.address
           motion_users[0].previous.address.address
+          motion_users[0].cert_of_service
           for idx in range(1, len(motion_users)):
             motion_users[idx].address.address
             motion_users[idx].mailing_address.address
             motion_users[idx].previous.address.address
             motion_users[idx].previous_copied
+            motion_users[idx].cert_of_service
 
-      if change_kind == "coa_only" or application_kind.get('coa_only'):
+      if application_kind.get('coa_only'):
         for idx,user in enumerate(users):
           # For COA only flows (standalone or TPS/EAD + coa_only) collect users[i] previous address
-          if application_kind.get('coa_only') or ((application_kind.get('tps_only') or application_kind.get('ead_only')) and change_kind == 'coa_only'):
+          if application_kind.get('coa_only') or (application_kind.get('tps_only') or application_kind.get('ead_only')):
             user.address.address
             user.mailing_address.address
             user.previous.address.address
+            user.cert_of_service
             if application_kind.get('tps_only') or application_kind.get('ead_only'):
               user.application_is_approved # approved only for TPS/EAD flows
 
         illinois_move_date
         dhs.address.address
-        cert_of_service
       else:
         entry_to_us_date
         illinois_move_date
         immigration_judge.name.first
         notice_appear_date
-        type_of_relief
         dhs.address.address
-        cert_of_service
 
-    nav.set_section("section_download")
-    store_variables_snapshot(
-        persistent=True,
-        data={
-            "application_kind": application_kind,
-            "zip": showifdef("users[0].address.zip"),
-            "reached_interview_end": True,
-            "region": showifdef("region"),
-        },
-    )
 
     # Records Request
     if application_kind.get('records_request'):
+      nav.set_section("section_records")
       records_request_intro
       for idx,user in enumerate(users):
         user.address.address
@@ -325,6 +313,18 @@ code: |
         if user.recipient.recipient_type == "parent":
           user.recipient.parent.birthdate
           user.recipient.parent.proof_relationship_consent
+
+
+    nav.set_section("section_download")
+    store_variables_snapshot(
+        persistent=True,
+        data={
+            "application_kind": application_kind,
+            "zip": showifdef("users[0].address.zip"),
+            "reached_interview_end": True,
+            "region": showifdef("region"),
+        },
+    )
 
     children_for_retainer
     generate_downloads_task
@@ -355,24 +355,22 @@ data:
 ---
 code: |
   if len(users) >= 1:
-    sections = default_sections[:-4]
-    for idx, user in enumerate(users):
-      sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
-    for idx, user in enumerate(users):
-      sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
-    if change_kind == "no":
-      sections.extend(default_sections[-1:])
-    else:  
-      sections.extend(default_sections[-2:])
+    sections = list(default_sections[:2])
+    if application_kind.get("tps_only") or application_kind.get("ead_only"):
+      sections.append(default_sections[2])
+      for idx, user in enumerate(users):
+        sections.append({f"users_{idx}_signpost_screen": f"Eligibility for {user}"})
+      for idx, user in enumerate(users):
+        sections.append({f"users_{idx}_signpost_app": f"Application for {user}"})
+    for section in default_sections[3:]:
+      section_key = list(section.keys())[0]
+      if section_key == "section_covcoa" and not (application_kind.get("cov_and_coa") or application_kind.get("coa_only")):
+        continue
+      if section_key == "section_records" and not application_kind.get("records_request"):
+        continue
+      sections.append(section)
     nav.set_sections(sections)
   update_sections = True
----
-code: |
-  sections = default_sections[:-2]
-  sections.extend(default_sections[-1:])
-  nav.set_sections(sections)
-
-  change_sections = True
 ---
 variable name: screener_sections
 data:
@@ -812,29 +810,6 @@ under: |
   ${ users[i] }
 required: False
 ---
-id: change of venue address
-question: |
-  Does this family also need a change of venue/address?
-field: change_kind
-buttons:
-  - COV and COA: cov_and_coa
-    image: landmark
-  - COA only: coa_only
-    image: envelope
-  - Neither at this time: no
-    image: forward
----
-depends on:
-  - application_kind
-code: |
-  # Compute change_kind from application_kind checkboxes for backwards compatibility
-  if application_kind.get('cov_and_coa'):
-    change_kind = 'cov_and_coa'
-  elif application_kind.get('coa_only'):
-    change_kind = 'coa_only'
-  else:
-    change_kind = 'no'
----
 id: explain_add_explanations
 question: |
   ${ users[i] } answered "yes" to one of the TPS screening questions
@@ -1225,7 +1200,7 @@ code: |
   for idx, user in enumerate(users):
     download_response[idx] = user.document_bundle.as_pdf()
   # Adding the COV workflow to users[0] only
-  if application_kind.get('cov_and_coa') or ((application_kind.get('tps_only') or application_kind.get('ead_only')) and defined('change_kind') and change_kind == 'cov_and_coa'):
+  if application_kind.get('cov_and_coa') or (application_kind.get('tps_only') or application_kind.get('ead_only')):
     motion_pdfs = [download_response[0]]
     if users[0].motion_addendum.enabled:
       motion_pdfs.append(users[0].motion_addendum[0])

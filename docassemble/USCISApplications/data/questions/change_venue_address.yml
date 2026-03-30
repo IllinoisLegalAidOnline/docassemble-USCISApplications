@@ -53,11 +53,11 @@ fields:
     required: false
 ---
 code: |
-  address_choices = []
-  address_choices.clear()
+  motion_address_choices = []
+  motion_address_choices.clear()
   for user in motion_users.complete_elements():
     if hasattr(user.address, 'address'):
-      address_choices.append(user.address)
+      motion_address_choices.append(user.address)
 ---
 id: your address
 sets:
@@ -74,7 +74,7 @@ fields:
   - ${ motion_users[i] }'s address is: motion_users[i].address
     datatype: object_radio
     choices:
-      - address_choices
+      - motion_address_choices
     object labeler: |
       lambda y: y.on_one_line()
     none of the above: |
@@ -240,13 +240,14 @@ fields:
     datatype: ThreePartsDate
     alMax: ${ today().format("yyyy-MM-dd") }
 ---
-id: type of relief
-question: |
-  What form of relief will you be seeking?
-fields:
-  - no label: type_of_relief
-    maxlength: 60
----
+# Removed per Motion update from Peter 3/23/26
+# id: type of relief
+# question: |
+#   What form of relief will you be seeking?
+# fields:
+#   - no label: type_of_relief
+#     maxlength: 60
+# ---
 code: |
   lead_choices = []
   lead_choices.clear()
@@ -540,16 +541,16 @@ fields:
       Is the OPLA location in a **different city and state** than the court?:
     show if:
       code: |
-        change_kind == "cov_and_coa"
+        application_kind.get("cov_and_coa")
   - no label: dhs.different_court_location
     datatype: yesnoradio
     show if:
       code: |
-        change_kind == "cov_and_coa"
+        application_kind.get("cov_and_coa")
   - Court city: dhs.court_city
     show if:
       code: |
-        change_kind == "cov_and_coa"
+        application_kind.get("cov_and_coa")
     js show if: |
       val("dhs.different_court_location")
   - Court state: dhs.court_state
@@ -557,18 +558,43 @@ fields:
       states_list()
     show if:
       code: |
-        change_kind == "cov_and_coa"
+        application_kind.get("cov_and_coa")
     js show if: |
       val("dhs.different_court_location")
 ---
 id: proof of service
 question: |
-  Will you be mailing the Change of Address request?
+  Mailing the Change of Address Request
 subquestion: |
-  Select **No** if you want to add a name and address of sender to the EOIR-33 Proof of Service later.
+  Will ${ motion_users[i].name_full() } be mailing the 
+  % if application_kind.get('cov_and_coa'):
+    Change of Venue/Change of Address
+  % elif application_kind.get('coa_only'):
+    Change of Address
+  % endif
+  request?
 fields:
-  - no label: cert_of_service
+  - no label: motion_users[i].cert_of_service
     datatype: yesnoradio
+  - note: |
+      Select **No** if you want to add a name and address of sender to the EOIR-33 Proof of Service later.
+---
+id: proof of service
+question: |
+  Mailing the Change of Address Request
+subquestion: |
+  Will ${ users[i].name_full() } be mailing the 
+  % if application_kind.get('cov_and_coa'):
+    Change of Venue/Change of Address
+  % elif application_kind.get('coa_only'):
+    Change of Address
+  % endif
+  request?
+fields:
+  - no label: users[i].cert_of_service
+    datatype: yesnoradio
+  - note: |
+      Select **No** if you want to add a name and address of sender to the EOIR-33 Proof of Service later.
 ---
 code: |
   motion_users[i].name.first
@@ -670,15 +696,11 @@ objects:
 code: |
   if application_kind.get('cov_and_coa'):
     users[i].motion_addendum.enabled = True
-  elif defined('change_kind') and change_kind == 'cov_and_coa':
-    users[i].motion_addendum.enabled = True
   else:
     users[i].motion_addendum.enabled = False
 ---
 code: |
   if application_kind.get('cov_and_coa'):
-    motion_users[i].document_bundle.enabled = True
-  elif defined('change_kind') and change_kind == 'cov_and_coa':
     motion_users[i].document_bundle.enabled = True
   else:
     motion_users[i].document_bundle.enabled = False
@@ -689,48 +711,38 @@ code: |
       users[i].eoir_61_cov.enabled = users[i].application_is_approved
     else:
       users[i].eoir_61_cov.enabled = True
-  elif defined('change_kind') and change_kind == 'cov_and_coa':
-    users[i].eoir_61_cov.enabled = users[i].application_is_approved
   else:
     users[i].eoir_61_cov.enabled = False
 ---
 code: |
   if application_kind.get('coa_only'):
     if application_kind.get('tps_only') or application_kind.get('ead_only'):
-      users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and not cert_of_service
+      users[i].eoir_33_coa.enabled = users[i].application_is_approved and users[i].cert_of_service
     else:
-      users[i].eoir_33_coa_page1.enabled = not cert_of_service
-  elif defined('change_kind') and change_kind == 'coa_only':
-    users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and not cert_of_service
-  else:
-    users[i].eoir_33_coa_page1.enabled = False
----
-code: |
-  if application_kind.get('coa_only'):
-    if application_kind.get('tps_only') or application_kind.get('ead_only'):
-      users[i].eoir_33_coa.enabled = users[i].application_is_approved and cert_of_service
-    else:
-      users[i].eoir_33_coa.enabled = cert_of_service
-  elif defined('change_kind') and change_kind == 'coa_only':
-    users[i].eoir_33_coa.enabled = users[i].application_is_approved and cert_of_service
+      users[i].eoir_33_coa.enabled = users[i].cert_of_service
   else:
     users[i].eoir_33_coa.enabled = False
 ---
 code: |
-  if application_kind.get('cov_and_coa'):
-    motion_users[i].eoir_33_coa_page1.enabled = not cert_of_service
-  elif defined('change_kind') and change_kind == 'cov_and_coa':
-    motion_users[i].eoir_33_coa_page1.enabled = not cert_of_service
+  if application_kind.get('coa_only'):
+    if application_kind.get('tps_only') or application_kind.get('ead_only'):
+      users[i].eoir_33_coa_page1.enabled = users[i].application_is_approved and not users[i].cert_of_service
+    else:
+      users[i].eoir_33_coa_page1.enabled = not users[i].cert_of_service
   else:
-    motion_users[i].eoir_33_coa_page1.enabled = False
+    users[i].eoir_33_coa_page1.enabled = False
 ---
 code: |
   if application_kind.get('cov_and_coa'):
-    motion_users[i].eoir_33_coa.enabled = cert_of_service
-  elif defined('change_kind') and change_kind == 'cov_and_coa':
-    motion_users[i].eoir_33_coa.enabled = cert_of_service
+    motion_users[i].eoir_33_coa.enabled = motion_users[i].cert_of_service
   else:
     motion_users[i].eoir_33_coa.enabled = False
+---
+code: |
+  if application_kind.get('cov_and_coa'):
+    motion_users[i].eoir_33_coa_page1.enabled = not motion_users[i].cert_of_service
+  else:
+    motion_users[i].eoir_33_coa_page1.enabled = False
 ---
 attachment:
   name: EIOR-61
@@ -781,8 +793,14 @@ attachment:
     # - "practitioner_email": ${ representative.email }
     # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
-    - "users1_full_name": ${ users[i].name_full() }
-    - "pos_date": ${ today().format('MM/dd/yyyy') }
+    - "users1_full_name": |
+        % if users[i].cert_of_service:
+        ${ users[i].name_full() }
+        % endif
+    - "pos_date": |
+        % if users[i].cert_of_service:
+        ${ today().format('MM/dd/yyyy') }
+        % endif
     - "pos_dhs_address_full": ${ dhs.address.on_one_line(bare=True) }
 
 ---
@@ -856,11 +874,11 @@ attachment:
 
     # Proof of service
     - "pos_name": |
-        % if cert_of_service:
+        % if motion_users[i].cert_of_service:
         ${ motion_users[0].name_full() }
         % endif
     - "pos_date": |
-        % if cert_of_service:
+        % if motion_users[i].cert_of_service:
         ${ today().format('MM/dd/yyyy') }
         % endif
     - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
@@ -870,15 +888,15 @@ attachment:
 
     # Service instructions
     - "service_name_line": |
-        % if cert_of_service:
+        % if motion_users[i].cert_of_service:
         ${ motion_users[0].name_full() }
         % endif
     - "service_address_line_1": |
-        % if cert_of_service:
+        % if motion_users[i].cert_of_service:
         ${ motion_users[0].mailing_address.line_one(bare=True) }
         % endif
     - "service_address_line_2":  |
-        % if cert_of_service:
+        % if motion_users[i].cert_of_service:
         ${ motion_users[0].mailing_address.line_two() }
         % endif
     - "service_address_line_3": ''
@@ -912,11 +930,11 @@ attachment:
 
     # Proof of service
     - "pos_name": |
-        % if cert_of_service:
+        % if users[i].cert_of_service:
         ${ users[i].name_full() }
         % endif
     - "pos_date": |
-        % if cert_of_service:
+        % if users[i].cert_of_service:
         ${ today().format('MM/dd/yyyy') }
         % endif
     - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
@@ -948,11 +966,11 @@ attachment:
 
     # Proof of service
     - "pos_name": |
-        % if cert_of_service:
+        % if users[i].cert_of_service:
         ${ users[i].name_full() }
         % endif
     - "pos_date": |
-        % if cert_of_service:
+        % if users[i].cert_of_service:
         ${ today().format('MM/dd/yyyy') }
         % endif
     - "dhs_address_line1": ${ dhs.address.line_one(bare=True) }
@@ -962,15 +980,15 @@ attachment:
 
     # Service instructions
     - "service_name_line": |
-        % if cert_of_service:
+        % if users[i].cert_of_service:
         ${ users[i].name_full() }
         % endif
     - "service_address_line_1": |
-        % if cert_of_service:
+        % if users[i].cert_of_service:
         ${ users[i].mailing_address.line_one(bare=True) }
         % endif
     - "service_address_line_2":  |
-        % if cert_of_service:
+        % if users[i].cert_of_service:
         ${ users[i].mailing_address.line_two() }
         % endif
     - "service_address_line_3": ''

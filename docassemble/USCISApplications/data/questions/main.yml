@@ -249,7 +249,25 @@ code: |
             if any([user.q8a, user.q8b, user.q8c, user.q9a, user.q9b, user.q9c, user.q10a, user.q10b, user.q10c, user.q11, user.q12a, user.q12b, user.q12c, user.q12d, user.q12e, user.q13a, user.q13b, user.q13c, user.q13d, user.q14a, user.q14b, user.q14c, user.q14d, user.q15a, user.q15b, user.q15c, user.q16, user.q17, user.q18a, user.q18b, user.q18c, user.q19, user.q20a, user.q20b, user.q20c, user.q20d, user.q20e, user.q21, user.q22, user.q23a, user.q23b, user.q23c, user.q24, user.q25, user.q26, user.q27, user.q28, user.q29, user.q30a, user.q30b, user.q30c, user.q30d, user.q30e, user.q31a, user.q31b, user.q32, user.q33, user.q34, user.q35, user.q36, user.q37a, user.q37b, user.q38a, user.q38b, user.q38c, user.q38d, user.q38e, user.q39a, user.q39b, user.q40, user.q41]):
               user.explain_add_explanations
 
-    
+    # Records Request
+    if application_kind.get('records_request'):
+      nav.set_section("section_records")
+      records_request_intro
+      for idx,user in enumerate(users):
+        user.address.address
+        user.mailing_address.address
+        if user.ask_previous:
+          user.previous.address.address
+        user.citizenship
+        user.city_of_birth
+        user.release_type
+        if not user.self_request:
+          user.recipient.name.first
+          user.recipient.in_care_name
+          if user.recipient.recipient_type == "parent":
+            user.recipient.parent.birthdate
+            user.recipient.parent.proof_relationship_consent
+
     # COV and COA
     if application_kind.get('cov_and_coa') or application_kind.get('coa_only'): 
       nav.set_section("section_covcoa")
@@ -296,24 +314,6 @@ code: |
         dhs.address.address
 
 
-    # Records Request
-    if application_kind.get('records_request'):
-      nav.set_section("section_records")
-      records_request_intro
-      for idx,user in enumerate(users):
-        user.address.address
-        user.mailing_address.address
-        if user.ask_previous:
-          user.previous.address.address
-        user.citizenship
-        user.city_of_birth
-        user.release_type
-        user.recipient.name.first
-        user.recipient.in_care_name
-        if user.recipient.recipient_type == "parent":
-          user.recipient.parent.birthdate
-          user.recipient.parent.proof_relationship_consent
-
 
     nav.set_section("section_download")
     store_variables_snapshot(
@@ -349,8 +349,8 @@ data:
   #- section_application: Application
   #- review_USCIS_Applications: Review 
   #- section_fees: Fee Waiver (optional)
-  - section_covcoa: Change of Venue/Address
   - section_records: Release of Records
+  - section_covcoa: Change of Venue/Address
   - section_download: Download and print
 ---
 code: |
@@ -449,11 +449,11 @@ subquestion: |
 
   * I-821 Application for Temporary Protected Status
   * I-765 Application for Employment Authorization
+  * EOIR-59 Certification and Release of Records
   * Motion for Change of Venue
   * EOIR-33 Change of Address
   * G-1145 e-Notification of Application/Petition Acceptance
   * EOIR-61 Notice of Entry of Limited Appearance for Document Assistance Before the Immigration Court
-  * EOIR-59 Certification and Release of Records
 
   **Note:** This Easy Form is designed to be used by trained advocates in a clinical workshop setting. It is not for public use.
 ---
@@ -493,9 +493,9 @@ fields:
     choices:
       - Temporary Protected Status (I-821): tps_only
       - Employment Authorization (I-765 ): ead_only
+      - Release of Records (EOIR-59): records_request
       - Motion for Change of Venue, Limited Appearance for Documents (EOIR-61), and Change of Address (EOIR-33): cov_and_coa
       - Change of Address (EOIR-33): coa_only
-      - Release of Records (EOIR-59): records_request
     none of the above: False
     show if:
       variable: comp_screener

@@ -564,8 +564,6 @@ fields:
 ---
 id: proof of service
 question: |
-  Mailing the Change of Address Request
-subquestion: |
   Will ${ motion_users[i].name_full() } be mailing the 
   % if application_kind.get('cov_and_coa'):
     Change of Venue/Change of Address
@@ -576,13 +574,9 @@ subquestion: |
 fields:
   - no label: motion_users[i].cert_of_service
     datatype: yesnoradio
-  - note: |
-      Select **No** if you want to add a name and address of sender to the EOIR-33 Proof of Service later.
 ---
 id: proof of service
 question: |
-  Mailing the Change of Address Request
-subquestion: |
   Will ${ users[i].name_full() } be mailing the 
   % if application_kind.get('cov_and_coa'):
     Change of Venue/Change of Address
@@ -593,8 +587,6 @@ subquestion: |
 fields:
   - no label: users[i].cert_of_service
     datatype: yesnoradio
-  - note: |
-      Select **No** if you want to add a name and address of sender to the EOIR-33 Proof of Service later.
 ---
 code: |
   motion_users[i].name.first

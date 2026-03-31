@@ -69,6 +69,13 @@ fields:
 ---
 # Part B EOIR-59 Recipient Information
 ---
+id: records request Self
+question: |
+  Is ${ users[i].name_full() } also the recipient of the request?
+fields:
+  - no label: users[i].self_request
+    datatype: yesnoradio
+---
 id: Records recipient name and organization
 sets:
   - users[i].recipient.name.first
@@ -224,14 +231,17 @@ attachment:
   editable: False
   fields:
     # Section 1: Applicant Information
-    - "users1_a_number": ${ users[i].a_number }
-    - "users1_name": ${ users[i].name.last }, ${ users[i].name.first } ${ users[i].name.middle }
+    - "users1_a_number": |
+        ${ users[i].a_number }
+    - "users1_name": |
+        ${ users[i].name.last }, ${ users[i].name.first } ${ users[i].name.middle }
     - "users1_previous_names": |
         % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 0:
           ${ comma_list(users[i].aliases.elements) }
         % endif
     # Mailing Address
-    - "users1_mailing_address_address": ${ users[i].mailing_address.address }
+    - "users1_mailing_address_address": |
+        ${ users[i].mailing_address.address }
     - "users1_mailing_address_unit": |
         % if users[i].mailing_address.address_type == 'apt':
         Apt. ${ users[i].mailing_address.unit }
@@ -242,10 +252,14 @@ attachment:
         % else:
         ${ showifdef('users[i].mailing_address.unit') }
         % endif
-    - "users1_mailing_address_city_state": ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
-    - "users1_mailing_address_country": United States
-    - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
-    - "users1_phone_number": ${ phone_number_formatted(users[i].phone_number) }
+    - "users1_mailing_address_city_state": |
+        ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
+    - "users1_mailing_address_country": |
+        United States
+    - "users1_mailing_address_zip": |
+        ${ users[i].mailing_address.zip }
+    - "users1_phone_number": |
+        ${ phone_number_formatted(users[i].phone_number) }
     
     # Previous Address
     - "users1_previous_address_address": |
@@ -300,11 +314,22 @@ attachment:
         % endif
     
     # Section 3: Recipient Information
-    - "recipient_name": ${ users[i].recipient.name_full() }
+    - "recipient_name": |
+        % if not users[i].self_request:
+          ${ users[i].recipient.last }, ${ users[i].recipient.first } ${ users[i].recipient.middle }
+        % else:
+          ${ users[i].name.last }, ${ users[i].name.first } ${ users[i].name.middle }
+        % endif
     - "recipient_org": ${ showifdef('users[i].recipient.organization') }
     - "recipient_mailing_care_name": ${ showifdef('users[i].recipient.in_care_name') }
-    - "recipient_mailing_address_address": ${ users[i].recipient.address.address }
+    - "recipient_mailing_address_address": |
+        % if not users[i].self_request:
+          ${ users[i].recipient.address.address }
+        % else:
+          ${ users[i].mailing_address.address }
+        % endif
     - "recipient_mailing_address_unit": |
+        % if not users[i].self_request:
         % if users[i].recipient.address.address_type == 'apt':
         Apt. ${ users[i].recipient.address.unit }
         % elif users[i].recipient.address.address_type == 'suite':
@@ -314,40 +339,77 @@ attachment:
         % else:
         ${ showifdef('users[i].recipient.address.unit') }
         % endif
-    - "recipient_mailing_address_city_state": ${ users[i].recipient.address.city }, ${ users[i].recipient.address.state }
-    - "recipient_mailing_address_country": ${ users[i].recipient.address.country }
-    - "recipient_mailing_address_zip": ${ users[i].recipient.address.zip }
-    - "recipient_mailing_phone_number": ${ phone_number_formatted(users[i].recipient.phone_number) }
-    - "recipient_email": ${ showifdef('users[i].recipient.email') }
-    
+        % else:
+        % if users[i].mailing_address.address_type == 'apt':
+        Apt. ${ users[i].mailing_address.unit }
+        % elif users[i].mailing_address.address_type == 'suite':
+        Ste. ${ users[i].mailing_address.unit }
+        % elif users[i].mailing_address.address_type == 'floor':
+        Fl. ${ users[i].mailing_address.unit }
+        % else:
+        ${ showifdef('users[i].mailing_address.unit') }
+        % endif
+        % endif
+    - "recipient_mailing_address_city_state": |
+        % if not users[i].self_request:
+          ${ users[i].recipient.address.city }, ${ users[i].recipient.address.state }
+        % else:
+          ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
+        % endif
+    - "recipient_mailing_address_country": |
+        % if not users[i].self_request:
+          ${ users[i].recipient.address.country }
+        % else:
+          ${ users[i].mailing_address.country }
+        % endif
+    - "recipient_mailing_address_zip": |
+        % if not users[i].self_request:
+          ${ users[i].recipient.address.zip }
+        % else:
+          ${ users[i].mailing_address.zip }
+        % endif
+    - "recipient_mailing_phone_number": |
+        % if not users[i].self_request:
+          ${ phone_number_formatted(users[i].recipient.phone_number) }
+        % else:
+          ${ phone_number_formatted(users[i].phone_number) }
+        % endif
+    - "recipient_email": |
+        % if not users[i].self_request:
+          ${ showifdef('users[i].recipient.email') }
+        % else:
+          ${ showifdef('users[i].email') }
+        % endif
     # Recipient Type checkboxes
     - "recipient_lawyer": ${ users[i].recipient.recipient_type == 'lawyer' }
     - "recipient_parent": ${ users[i].recipient.recipient_type == 'parent' }
-    - "recipient_other": ${ users[i].recipient.recipient_type == 'other' }
+    - "recipient_other": ${ users[i].self_request or users[i].recipient.recipient_type == 'other' }
     - "recipient_other_explain": |
-        % if users[i].recipient.recipient_type == 'other':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'other':
         ${ users[i].recipient.recipient_type_other }
+        % elif users[i].self_request:
+        Self
         % endif
     - "recipient_eoir_number": |
-        % if users[i].recipient.recipient_type == 'lawyer':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'lawyer':
         ${ users[i].recipient.eoir_number }
         % endif
     
     # Section 4: Parent Information (only if recipient is parent)
     - "parent_birthdate": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.birthdate.format('MM/dd/yyyy') }
         % endif
     - "parent_place_of_birth": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.place_of_birth }
         % endif
     - "parent_address_address": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.address.address }
         % endif
     - "parent_address_unit": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         % if users[i].recipient.parent.address.address_type == 'apt':
         Apt. ${ users[i].recipient.parent.address.unit }
         % elif users[i].recipient.parent.address.address_type == 'suite':
@@ -359,23 +421,23 @@ attachment:
         % endif
         % endif
     - "parent_address_city_state": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.address.city }, ${ users[i].recipient.parent.address.state }
         % endif
     - "parent_address_country": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.address.country }
         % endif
     - "parent_address_zip": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.address.zip }
         % endif
     - "parent_relationship": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.relationship }
         % endif
     - "proof_relationship": |
-        % if users[i].recipient.recipient_type == 'parent':
+        % if not users[i].self_request and users[i].recipient.recipient_type == 'parent':
         ${ users[i].recipient.parent.proof_relationship }
         % endif
     

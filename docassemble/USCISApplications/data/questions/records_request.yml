@@ -316,7 +316,7 @@ attachment:
     # Section 3: Recipient Information
     - "recipient_name": |
         % if not users[i].self_request:
-          ${ users[i].recipient.last }, ${ users[i].recipient.first } ${ users[i].recipient.middle }
+          ${ users[i].recipient.name.last }, ${ users[i].recipient.name.first } ${ users[i].recipient.name.middle }
         % else:
           ${ users[i].name.last }, ${ users[i].name.first } ${ users[i].name.middle }
         % endif

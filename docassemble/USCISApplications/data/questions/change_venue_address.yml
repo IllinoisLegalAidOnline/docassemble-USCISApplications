@@ -651,8 +651,9 @@ question: |
 subquestion: |
   The lead respondent should be listed first.
 
-  ${ motion_users_table }
+  **Note:** Be sure to review this after you add each respondent.
 
+  ${ motion_users_table }
   
   ${ motion_users.add_action(label="Add person") }
 continue button field: set_motion_order
@@ -679,9 +680,6 @@ fields:
       lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
 ---
 objects:
-  - users[i].eoir_61_cov: ALDocument.using(title="EIOR-61 Change of venue", filename="EIOR-61 Change of venue", has_addendum=False )
----
-objects:
   - users[i].eoir_33_coa_page1: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
 ---
 objects:
@@ -691,6 +689,9 @@ objects:
   - users[i].motion_addendum: ALDocument.using(title="Motion Addendum", filename=space_to_underscore("Motion Addendum"), has_addendum=False)
 ---
 objects:
+  - motion_users[i].eoir_61_cov: ALDocument.using(title="EIOR-61 Change of venue", filename="EIOR-61 Change of venue", has_addendum=False )
+---
+objects:
   - motion_users[i].eoir_33_coa_page1: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
 ---
 objects:
@@ -698,6 +699,7 @@ objects:
 ---
 objects:
   - motion_users[i].document_bundle: ALDocumentBundle.using(title="Motion documents", filename="motion_documents", elements=[
+        motion_users[i].eoir_61_cov,
         motion_users[i].eoir_33_coa_page1,
         motion_users[i].eoir_33_coa,
       ])
@@ -717,11 +719,11 @@ code: |
 code: |
   if application_kind.get('cov_and_coa'):
     if application_kind.get('tps_only') or application_kind.get('ead_only'):
-      users[i].eoir_61_cov.enabled = users[i].application_is_approved
+      motion_users[i].eoir_61_cov.enabled = motion_users[i].application_is_approved
     else:
-      users[i].eoir_61_cov.enabled = True
+      motion_users[i].eoir_61_cov.enabled = True
   else:
-    users[i].eoir_61_cov.enabled = False
+    motion_users[i].eoir_61_cov.enabled = False
 ---
 code: |
   if application_kind.get('coa_only'):
@@ -756,20 +758,20 @@ code: |
 attachment:
   name: EIOR-61
   filename: EIOR-61
-  variable name: users[i].eoir_61_cov[j]
+  variable name: motion_users[i].eoir_61_cov[j]
   skip undefined: True
   pdf template file: eoir_61_cov.pdf
   editable: False
   fields:
-    - "users1_name_last": ${ users[i].name.last }
-    - "users1_name_first": ${ users[i].name.first }
-    - "users1_name_middle": ${ users[i].name.middle[:1] }
-    - "users1_mailing_address_address": ${ users[i].mailing_address.address }
-    - "users1_mailing_address_unit": ${ users[i].mailing_address.unit }
-    - "users1_mailing_address_city": ${ users[i].mailing_address.city }
-    - "users1_mailing_address_state": ${ users[i].mailing_address.state }
-    - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
-    - "users1_a_number": ${ users[i].a_number }
+    - "users1_name_last": ${ motion_users[i].name.last }
+    - "users1_name_first": ${ motion_users[i].name.first }
+    - "users1_name_middle": ${ motion_users[i].name.middle[:1] }
+    - "users1_mailing_address_address": ${ motion_users[i].mailing_address.address }
+    - "users1_mailing_address_unit": ${ motion_users[i].mailing_address.unit }
+    - "users1_mailing_address_city": ${ motion_users[i].mailing_address.city }
+    - "users1_mailing_address_state": ${ motion_users[i].mailing_address.state }
+    - "users1_mailing_address_zip": ${ motion_users[i].mailing_address.zip }
+    - "users1_a_number": ${ motion_users[i].a_number }
     # Entry of limited appearance always Motion
     - "type_application": False
     - "type_brief": False
@@ -803,11 +805,11 @@ attachment:
     # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
     - "users1_full_name": |
-        % if users[i].cert_of_service:
-        ${ users[i].name_full() }
+        % if motion_users[i].cert_of_service:
+        ${ motion_users[i].name_full() }
         % endif
     - "pos_date": |
-        % if users[i].cert_of_service:
+        % if motion_users[i].cert_of_service:
         ${ today().format('MM/dd/yyyy') }
         % endif
     - "pos_dhs_address_full": ${ dhs.address.on_one_line(bare=True) }

@@ -1307,10 +1307,9 @@ objects:
         users[i].i_912_fee_waiver,
         users[i].ead_interim_parole_addendum,
         users[i].ead_order_of_supervision_addendum,
-        users[i].eoir_61_cov,
+        users[i].eoir_59_request,
         users[i].eoir_33_coa_page1,
         users[i].eoir_33_coa,
-        users[i].eoir_59_request,
       ])
 ---
 code: |

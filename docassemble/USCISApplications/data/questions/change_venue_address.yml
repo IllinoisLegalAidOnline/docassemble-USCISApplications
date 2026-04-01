@@ -258,7 +258,7 @@ code: |
 id: review_cov_questions
 continue button field: review_cov_questions
 question: |
-  COV screener
+  Supervisor review for Change of Venue
 subquestion: |
   <div class="alert alert-info ilao-info" role="alert">
     <h2 class="h4">Call a supervisor to review NTA</h2>
@@ -279,7 +279,7 @@ fields:
     code: |
       lead_choices
   - note: |
-      We will collect the name of the lead respondent.
+      We will collect the name of the lead respondent on the next screen.
     show if:
       variable: lead_respondent
       is: "Other"
@@ -594,7 +594,6 @@ code: |
   motion_users[i].names_only = True
 ---
 code: |
-  motion_users.auto_gather = False
   motion_users.clear()
   for idx, user in enumerate(users):
     new_user = motion_users.appendObject()
@@ -833,7 +832,7 @@ attachment:
   editable: False
   fields:
 
-    - "users1_name": ${ motion_users[i].name.last } ${ motion_users[i].name.first } ${ motion_users[i].name.middle }
+    - "users1_name": ${ motion_users[i].name.last }, ${ motion_users[i].name.first } ${ motion_users[i].name.middle }
     - "users1_a_number": ${ motion_users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
@@ -869,7 +868,7 @@ attachment:
   editable: False
   fields:
 
-    - "users1_name": ${ motion_users[i].name.last } ${ motion_users[i].name.first } ${ motion_users[i].name.middle }
+    - "users1_name": ${ motion_users[i].name.last }, ${ motion_users[i].name.first } ${ motion_users[i].name.middle }
     - "users1_a_number": ${ motion_users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
@@ -925,7 +924,7 @@ attachment:
   editable: False
   fields:
 
-    - "users1_name": ${ users[i].name.last } ${ users[i].name.first } ${ users[i].name.middle }
+    - "users1_name": ${ users[i].name.last }, ${ users[i].name.first } ${ users[i].name.middle }
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''
@@ -961,7 +960,7 @@ attachment:
   editable: False
   fields:
 
-    - "users1_name": ${ users[i].name.last } ${ users[i].name.first } ${ users[i].name.middle }
+    - "users1_name": ${ users[i].name.last }, ${ users[i].name.first } ${ users[i].name.middle }
     - "users1_a_number": ${ users[i].a_number }
     - "care_name_current": ''
     - "care_name_former": ''

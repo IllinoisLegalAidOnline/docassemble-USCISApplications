@@ -276,7 +276,9 @@ code: |
             motion_users[idx].previous.address.address
             motion_users[idx].previous_copied
 
-      if change_kind == "coa_only" or application_kind.get('coa_only'):
+          update_reference_address
+
+      if application_kind.get('coa_only'):
         for idx,user in enumerate(users):
           # For COA only flows (standalone or TPS/EAD + coa_only) collect users[i] previous address
           if application_kind.get('coa_only') or ((application_kind.get('tps_only') or application_kind.get('ead_only')) and change_kind == 'coa_only'):

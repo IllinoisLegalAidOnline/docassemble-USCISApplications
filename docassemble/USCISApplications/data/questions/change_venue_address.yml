@@ -578,7 +578,12 @@ code: |
 code: |
   motion_users.clear()
   for idx, user in enumerate(users):
-    new_user = motion_users[idx]
+    new_user = motion_users.appendObject()
+    new_user.reference_object = user.instanceName
+    new_user.address = ALAddress()
+    new_user.mailing_address = ALAddress()
+    new_user.previous = ALIndividual()
+    new_user.previous.address = ALAddress()
     new_user.name.first = user.name.first
     new_user.name.middle = user.name.middle if hasattr(user.name, 'middle') else ''
     new_user.name.last = user.name.last
@@ -609,6 +614,32 @@ code: |
   motion_users.there_are_any = True
   motion_users.gathered = True
   create_motion_ordering = True
+---
+code: |
+  for user in motion_users:
+    if hasattr(user, 'reference_object') and user.reference_object:
+      temp_user = value(user.reference_object)
+      temp_user.address.address = user.address.address
+      temp_user.address.city = user.address.city
+      temp_user.address.state = user.address.state
+      temp_user.address.zip = user.address.zip
+      temp_user.address.unit = user.address.unit
+      temp_user.address.address_type = user.address.address_type
+      temp_user.mailing_address.address = user.mailing_address.address
+      temp_user.mailing_address.city = user.mailing_address.city
+      temp_user.mailing_address.state = user.mailing_address.state
+      temp_user.mailing_address.zip = user.mailing_address.zip
+      temp_user.mailing_address.unit = user.mailing_address.unit
+      temp_user.previous.address.address = user.previous.address.address
+      temp_user.previous.address.city = user.previous.address.city
+      temp_user.previous.address.state = user.previous.address.state
+      temp_user.previous.address.zip = user.previous.address.zip
+      temp_user.previous.address.unit = user.previous.address.unit
+      temp_user.previous.address.address_type = user.previous.address.address_type
+      temp_user.previous.phone_number = user.previous.phone_number
+
+  update_reference_address = True
+
 ---
 id: motion name ordering
 question: |
@@ -656,6 +687,9 @@ objects:
   - users[i].motion_addendum: ALDocument.using(title="Motion Addendum", filename=space_to_underscore("Motion Addendum"), has_addendum=False)
 ---
 objects:
+  - users[i].eoir_61_cov: ALDocument.using(title="EIOR-61 Change of venue", filename="EIOR-61 Change of venue", has_addendum=False )
+---
+objects:
   - motion_users[i].eoir_33_coa_page1: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
 ---
 objects:
@@ -689,8 +723,6 @@ code: |
       users[i].eoir_61_cov.enabled = users[i].application_is_approved
     else:
       users[i].eoir_61_cov.enabled = True
-  elif defined('change_kind') and change_kind == 'cov_and_coa':
-    users[i].eoir_61_cov.enabled = users[i].application_is_approved
   else:
     users[i].eoir_61_cov.enabled = False
 ---
@@ -781,8 +813,14 @@ attachment:
     # - "practitioner_email": ${ representative.email }
     # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
-    - "users1_full_name": ${ users[i].name_full() }
-    - "pos_date": ${ today().format('MM/dd/yyyy') }
+    - "users1_full_name": |
+        % if users[i].cert_of_service:
+        ${ users[i].name_full() }
+        % endif
+    - "pos_date": |
+        % if users[i].cert_of_service:
+        ${ today().format('MM/dd/yyyy') }
+        % endif
     - "pos_dhs_address_full": ${ dhs.address.on_one_line(bare=True) }
 
 ---

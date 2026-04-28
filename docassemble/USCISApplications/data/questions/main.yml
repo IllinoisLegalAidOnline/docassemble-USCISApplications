@@ -300,19 +300,9 @@ code: |
         dhs.address.address
         cert_of_service
 
-    nav.set_section("section_download")
-    store_variables_snapshot(
-        persistent=True,
-        data={
-            "application_kind": application_kind,
-            "zip": showifdef("users[0].address.zip"),
-            "reached_interview_end": True,
-            "region": showifdef("region"),
-        },
-    )
-
     # Records Request
     if application_kind.get('records_request'):
+      nav.set_section("section_records")
       records_request_intro
       for idx,user in enumerate(users):
         user.address.address
@@ -327,6 +317,17 @@ code: |
         if user.recipient.recipient_type == "parent":
           user.recipient.parent.birthdate
           user.recipient.parent.proof_relationship_consent
+
+    nav.set_section("section_download")
+    store_variables_snapshot(
+        persistent=True,
+        data={
+            "application_kind": application_kind,
+            "zip": showifdef("users[0].address.zip"),
+            "reached_interview_end": True,
+            "region": showifdef("region"),
+        },
+    )
 
     children_for_retainer
     generate_downloads_task

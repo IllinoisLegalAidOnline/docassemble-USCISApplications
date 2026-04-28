@@ -278,7 +278,7 @@ fields:
     code: |
       lead_choices
   - note: |
-      We will collect the name of the lead respondent
+      We will collect the name of the lead respondent on the next screen.
     show if:
       variable: lead_respondent
       is: "Other"
@@ -578,7 +578,12 @@ code: |
 code: |
   motion_users.clear()
   for idx, user in enumerate(users):
-    new_user = motion_users[idx]
+    new_user = motion_users.appendObject()
+    new_user.reference_object = user.instanceName
+    new_user.address = ALAddress()
+    new_user.mailing_address = ALAddress()
+    new_user.previous = ALIndividual()
+    new_user.previous.address = ALAddress()
     new_user.name.first = user.name.first
     new_user.name.middle = user.name.middle if hasattr(user.name, 'middle') else ''
     new_user.name.last = user.name.last
@@ -610,11 +615,52 @@ code: |
   motion_users.gathered = True
   create_motion_ordering = True
 ---
+code: |
+  for temp_user in motion_users:
+    if hasattr(temp_user, 'reference_object') and temp_user.reference_object:
+      temp_user = value(temp_user.reference_object)
+      temp_user.address.address = temp_user.address.address
+      temp_user.address.city = temp_user.address.city
+      temp_user.address.state = temp_user.address.state
+      temp_user.address.zip = user.address.zip
+      temp_user.address.unit = user.address.unit
+      temp_user.address.address_type = user.address.address_type
+      if hasattr(user, 'phone_number'):
+        temp_user.phone_number = user.phone_number
+      if hasattr(user, 'mobile_number'):
+        temp_user.mobile_number = user.mobile_number
+      if hasattr(user, 'email'):
+        temp_user.email = user.email
+      temp_user.mailing_address.address = user.mailing_address.address
+      temp_user.mailing_address.city = user.mailing_address.city
+      temp_user.mailing_address.state = user.mailing_address.state
+      temp_user.mailing_address.zip = user.mailing_address.zip
+      temp_user.mailing_address.unit = user.mailing_address.unit
+      temp_user.mailing_address.address_type = user.mailing_address.address_type
+
+      temp_user.previous.address.address = user.previous.address.address
+      temp_user.previous.address.city = user.previous.address.city
+      temp_user.previous.address.state = user.previous.address.state
+      temp_user.previous.address.zip = user.previous.address.zip
+      temp_user.previous.address.unit = user.previous.address.unit
+      temp_user.previous.address.address_type = user.previous.address.address_type
+      if hasattr(user.previous, 'phone_number'):
+        temp_user.previous.phone_number = user.previous.phone_number
+      if hasattr(user.previous, 'mobile_number'):
+        temp_user.previous.mobile_number = user.previous.mobile_number
+      if hasattr(user.previous, 'email'):
+        temp_user.previous.email = user.previous.email  
+
+  update_reference_address = True
+
+---
 id: motion name ordering
 question: |
   Order of names on Motion
 subquestion: |
   The lead respondent should be listed first.
+
+  **Note:** Check the order after **all** people are added to the motion.
 
   ${ motion_users_table }
 
@@ -656,6 +702,9 @@ objects:
   - users[i].motion_addendum: ALDocument.using(title="Motion Addendum", filename=space_to_underscore("Motion Addendum"), has_addendum=False)
 ---
 objects:
+  - users[i].eoir_61_cov: ALDocument.using(title="EIOR-61 Change of venue", filename="EIOR-61 Change of venue", has_addendum=False )
+---
+objects:
   - motion_users[i].eoir_33_coa_page1: ALDocument.using(title="EIOR-33 Change of address", filename="EIOR-33 Change of address", has_addendum=False )
 ---
 objects:
@@ -689,8 +738,6 @@ code: |
       users[i].eoir_61_cov.enabled = users[i].application_is_approved
     else:
       users[i].eoir_61_cov.enabled = True
-  elif defined('change_kind') and change_kind == 'cov_and_coa':
-    users[i].eoir_61_cov.enabled = users[i].application_is_approved
   else:
     users[i].eoir_61_cov.enabled = False
 ---
@@ -781,8 +828,14 @@ attachment:
     # - "practitioner_email": ${ representative.email }
     # - "practitioner_phone": ${ phone_number_formatted(representative.fax_number) }
     # Page 2
-    - "users1_full_name": ${ users[i].name_full() }
-    - "pos_date": ${ today().format('MM/dd/yyyy') }
+    - "users1_full_name": |
+        % if users[i].cert_of_service:
+        ${ users[i].name_full() }
+        % endif
+    - "pos_date": |
+        % if users[i].cert_of_service:
+        ${ today().format('MM/dd/yyyy') }
+        % endif
     - "pos_dhs_address_full": ${ dhs.address.on_one_line(bare=True) }
 
 ---
@@ -810,9 +863,9 @@ attachment:
     - "care_name_current": ''
     - "care_name_former": ''
     - "users1_address_line1_former": ${ motion_users[i].previous.address.line_one(bare=True) }
-    - "users1_address_line1_current": ${ motion_users[i].mailing_address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ motion_users[i].address.line_one(bare=True) }
     - "users1_address_line2_former": ${ motion_users[i].previous.address.line_two() }
-    - "users1_address_line2_current": ${ motion_users[i].mailing_address.line_two() }
+    - "users1_address_line2_current": ${ motion_users[i].address.line_two() }
     - "users1_phone_former": ${ phone_number_formatted(motion_users[i].previous.phone_number) }
     - "users1_phone_current": ${ phone_number_formatted(motion_users[i].phone_number) }
     - "users1_email_former": ${ motion_users[i].previous.email }
@@ -846,9 +899,9 @@ attachment:
     - "care_name_current": ''
     - "care_name_former": ''
     - "users1_address_line1_former": ${ motion_users[i].previous.address.line_one(bare=True) }
-    - "users1_address_line1_current": ${ motion_users[i].mailing_address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ motion_users[i].address.line_one(bare=True) }
     - "users1_address_line2_former": ${ motion_users[i].previous.address.line_two() }
-    - "users1_address_line2_current": ${ motion_users[i].mailing_address.line_two() }
+    - "users1_address_line2_current": ${ motion_users[i].address.line_two() }
     - "users1_phone_former": ${ phone_number_formatted(motion_users[i].previous.phone_number) }
     - "users1_phone_current": ${ phone_number_formatted(motion_users[i].phone_number) }
     - "users1_email_former": ${ motion_users[i].previous.email }
@@ -902,9 +955,9 @@ attachment:
     - "care_name_current": ''
     - "care_name_former": ''
     - "users1_address_line1_former": ${ users[i].previous.address.line_one(bare=True) }
-    - "users1_address_line1_current": ${ users[i].mailing_address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ users[i].address.line_one(bare=True) }
     - "users1_address_line2_former": ${ users[i].previous.address.line_two() }
-    - "users1_address_line2_current": ${ users[i].mailing_address.line_two() }
+    - "users1_address_line2_current": ${ users[i].address.line_two() }
     - "users1_phone_former": ${ phone_number_formatted(users[i].previous.phone_number) }
     - "users1_phone_current": ${ phone_number_formatted(users[i].phone_number) }
     - "users1_email_former": ${ users[i].previous.email }
@@ -938,9 +991,9 @@ attachment:
     - "care_name_current": ''
     - "care_name_former": ''
     - "users1_address_line1_former": ${ users[i].previous.address.line_one(bare=True) }
-    - "users1_address_line1_current": ${ users[i].mailing_address.line_one(bare=True) }
+    - "users1_address_line1_current": ${ users[i].address.line_one(bare=True) }
     - "users1_address_line2_former": ${ users[i].previous.address.line_two() }
-    - "users1_address_line2_current": ${ users[i].mailing_address.line_two() }
+    - "users1_address_line2_current": ${ users[i].address.line_two() }
     - "users1_phone_former": ${ phone_number_formatted(users[i].previous.phone_number) }
     - "users1_phone_current": ${ phone_number_formatted(users[i].phone_number) }
     - "users1_email_former": ${ users[i].previous.email }
@@ -967,11 +1020,11 @@ attachment:
         % endif
     - "service_address_line_1": |
         % if cert_of_service:
-        ${ users[i].mailing_address.line_one(bare=True) }
+        ${ users[i].address.line_one(bare=True) }
         % endif
     - "service_address_line_2":  |
         % if cert_of_service:
-        ${ users[i].mailing_address.line_two() }
+        ${ users[i].address.line_two() }
         % endif
     - "service_address_line_3": ''
     - "court_address": |

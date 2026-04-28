@@ -644,7 +644,7 @@ code: |
       temp_user.previous.address.zip = user.previous.address.zip
       temp_user.previous.address.unit = user.previous.address.unit
       temp_user.previous.address.address_type = user.previous.address.address_type
-      f hasattr(user.previous, 'phone_number'):
+      if hasattr(user.previous, 'phone_number'):
         temp_user.previous.phone_number = user.previous.phone_number
       if hasattr(user.previous, 'mobile_number'):
         temp_user.previous.mobile_number = user.previous.mobile_number

@@ -287,7 +287,6 @@ code: |
           # For COA only flows (standalone or TPS/EAD + coa_only) collect users[i] previous address
           if application_kind.get('coa_only') or ((application_kind.get('tps_only') or application_kind.get('ead_only')) and change_kind == 'coa_only'):
             user.address.address
-            user.mailing_address.address
             user.previous.address.address
             if application_kind.get('tps_only') or application_kind.get('ead_only'):
               user.application_is_approved # approved only for TPS/EAD flows

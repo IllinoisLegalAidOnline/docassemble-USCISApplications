@@ -73,12 +73,17 @@ code: |
   nav.set_sections(screener_sections)
   set_screener_sections = True
 ---
+code: |
+  comp_screener = False
+  skip_comp_screener = True
+---
 #################### Interview order #####################
 id: interview_order_main
 mandatory: True
 code: |
   new_start
   region
+  skip_comp_screener
   if comp_screener:
     set_screener_sections
     screener_intro
@@ -483,15 +488,16 @@ fields:
 ---
 id: signpost for screener or USCIS application
 question: |
-  What do you want to do?
+  What do you want to do?  
+# The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
 subquestion: |
-  The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
+  The USCIS applications can be completed for a family group.
 fields:
-  - no label: comp_screener
-    datatype: radio
-    choices:
-      - "Comprehensive Screener": true
-      - "USCIS application forms": false
+  # - no label: comp_screener
+  #   datatype: radio
+  #   choices:
+  #     - "Comprehensive Screener": true
+  #     - "USCIS application forms": false
   - no label: application_kind
     datatype: checkboxes
     minlength: 1
@@ -502,9 +508,6 @@ fields:
       - Change of Address (EOIR-33): coa_only
       - Release of Records (EOIR-59): records_request
     none of the above: False
-    show if:
-      variable: comp_screener
-      is: False
     validation messages:
       minlength: |
         Please select at least one form type.

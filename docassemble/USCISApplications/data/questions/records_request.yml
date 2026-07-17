@@ -230,21 +230,21 @@ attachment:
         % if showifdef("users[i].aliases") and len(users[i].aliases.elements) > 0:
           ${ comma_list(users[i].aliases.elements) }
         % endif
-    # Mailing Address
-    - "users1_mailing_address_address": ${ users[i].mailing_address.address }
+    # address is physical not mailing
+    - "users1_mailing_address_address": ${ users[i].address.address }
     - "users1_mailing_address_unit": |
-        % if users[i].mailing_address.address_type == 'apt':
-        Apt. ${ users[i].mailing_address.unit }
-        % elif users[i].mailing_address.address_type == 'suite':
-        Ste. ${ users[i].mailing_address.unit }
-        % elif users[i].mailing_address.address_type == 'floor':
-        Fl. ${ users[i].mailing_address.unit }
+        % if users[i].address.address_type == 'apt':
+        Apt. ${ users[i].address.unit }
+        % elif users[i].address.address_type == 'suite':
+        Ste. ${ users[i].address.unit }
+        % elif users[i].address.address_type == 'floor':
+        Fl. ${ users[i].address.unit }
         % else:
-        ${ showifdef('users[i].mailing_address.unit') }
+        ${ showifdef('users[i].address.unit') }
         % endif
-    - "users1_mailing_address_city_state": ${ users[i].mailing_address.city }, ${ users[i].mailing_address.state }
+    - "users1_mailing_address_city_state": ${ users[i].address.city }, ${ users[i].address.state }
     - "users1_mailing_address_country": United States
-    - "users1_mailing_address_zip": ${ users[i].mailing_address.zip }
+    - "users1_mailing_address_zip": ${ users[i].address.zip }
     - "users1_phone_number": ${ phone_number_formatted(users[i].phone_number) }
     
     # Previous Address

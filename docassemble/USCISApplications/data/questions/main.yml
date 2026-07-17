@@ -73,12 +73,17 @@ code: |
   nav.set_sections(screener_sections)
   set_screener_sections = True
 ---
+code: |
+  comp_screener = False
+  skip_comp_screener = True
+---
 #################### Interview order #####################
 id: interview_order_main
 mandatory: True
 code: |
   new_start
   region
+  skip_comp_screener
   if comp_screener:
     set_screener_sections
     screener_intro
@@ -141,7 +146,7 @@ code: |
     get_docs_screen
   else:
     set_initial_sections
-    intro_main
+    application_kind
     if interpreter_present:
       interpreter.name.first
     preparer.name.first
@@ -158,7 +163,6 @@ code: |
         user.signature
     nav.set_section("section_screener")
     set_progress(40)
-    application_kind
 
     if application_kind.get('tps_only') or application_kind.get('ead_only'):
       if change_kind == "no":
@@ -276,12 +280,13 @@ code: |
             motion_users[idx].previous.address.address
             motion_users[idx].previous_copied
 
-      if change_kind == "coa_only" or application_kind.get('coa_only'):
+          update_reference_address
+
+      if application_kind.get('coa_only'):
         for idx,user in enumerate(users):
           # For COA only flows (standalone or TPS/EAD + coa_only) collect users[i] previous address
           if application_kind.get('coa_only') or ((application_kind.get('tps_only') or application_kind.get('ead_only')) and change_kind == 'coa_only'):
             user.address.address
-            user.mailing_address.address
             user.previous.address.address
             if application_kind.get('tps_only') or application_kind.get('ead_only'):
               user.application_is_approved # approved only for TPS/EAD flows
@@ -298,23 +303,12 @@ code: |
         dhs.address.address
         cert_of_service
 
-    nav.set_section("section_download")
-    store_variables_snapshot(
-        persistent=True,
-        data={
-            "application_kind": application_kind,
-            "zip": showifdef("users[0].address.zip"),
-            "reached_interview_end": True,
-            "region": showifdef("region"),
-        },
-    )
-
     # Records Request
     if application_kind.get('records_request'):
+      nav.set_section("section_records")
       records_request_intro
       for idx,user in enumerate(users):
         user.address.address
-        user.mailing_address.address
         if user.ask_previous:
           user.previous.address.address
         user.citizenship
@@ -325,6 +319,17 @@ code: |
         if user.recipient.recipient_type == "parent":
           user.recipient.parent.birthdate
           user.recipient.parent.proof_relationship_consent
+
+    nav.set_section("section_download")
+    store_variables_snapshot(
+        persistent=True,
+        data={
+            "application_kind": application_kind,
+            "zip": showifdef("users[0].address.zip"),
+            "reached_interview_end": True,
+            "region": showifdef("region"),
+        },
+    )
 
     children_for_retainer
     generate_downloads_task
@@ -478,17 +483,18 @@ fields:
       - Western Suburbs
       - Central & Downstate Illinois
 ---
-id: signpost for screener or USCIS application
+id: USCIS forms
 question: |
-  What do you want to do?
+  What USCIS forms do you want to complete?
+# The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
 subquestion: |
-  The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
+  The USCIS forms can be completed for an individual or a family group.
 fields:
-  - no label: comp_screener
-    datatype: radio
-    choices:
-      - "Comprehensive Screener": true
-      - "USCIS application forms": false
+  # - no label: comp_screener
+  #   datatype: radio
+  #   choices:
+  #     - "Comprehensive Screener": true
+  #     - "USCIS application forms": false
   - no label: application_kind
     datatype: checkboxes
     minlength: 1
@@ -499,9 +505,6 @@ fields:
       - Change of Address (EOIR-33): coa_only
       - Release of Records (EOIR-59): records_request
     none of the above: False
-    show if:
-      variable: comp_screener
-      is: False
     validation messages:
       minlength: |
         Please select at least one form type.

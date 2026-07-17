@@ -147,6 +147,7 @@ code: |
   else:
     set_initial_sections
     intro_main
+    application_kind
     if interpreter_present:
       interpreter.name.first
     preparer.name.first
@@ -163,7 +164,6 @@ code: |
         user.signature
     nav.set_section("section_screener")
     set_progress(40)
-    application_kind
 
     if application_kind.get('tps_only') or application_kind.get('ead_only'):
       if change_kind == "no":
@@ -486,12 +486,12 @@ fields:
       - Western Suburbs
       - Central & Downstate Illinois
 ---
-id: signpost for screener or USCIS application
+id: USCIS forms
 question: |
-  What do you want to do?  
+  What USCIS forms do you want to complete?
 # The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
 subquestion: |
-  The USCIS applications can be completed for a family group.
+  The USCIS forms can be completed for an individual or a family group.
 fields:
   # - no label: comp_screener
   #   datatype: radio

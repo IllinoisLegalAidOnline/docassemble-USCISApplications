@@ -309,7 +309,6 @@ code: |
       records_request_intro
       for idx,user in enumerate(users):
         user.address.address
-        user.mailing_address.address
         if user.ask_previous:
           user.previous.address.address
         user.citizenship

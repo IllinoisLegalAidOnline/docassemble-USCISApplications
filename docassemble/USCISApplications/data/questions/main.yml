@@ -146,7 +146,6 @@ code: |
     get_docs_screen
   else:
     set_initial_sections
-    intro_main
     application_kind
     if interpreter_present:
       interpreter.name.first

@@ -1,0 +1,292 @@
+##### FRIEND OF THE COURT / COURT ACCOMPANIMENT INTAKE #####
+---
+objects:
+  - additional_riders: ALPeopleList.using(complete_attribute='complete', there_are_any=True)
+---
+id: intro
+question: |
+  Friend of the Court Accompaniment
+subquestion: |
+  This interview is for people preparing for an Immigration Court hearing and
+  requesting Friend of the Court accompaniment. It collects the information
+  needed to understand your case, prepare for your hearing, and identify any
+  follow-up needs.
+
+  You will be asked about:
+
+  1. Your contact information and upcoming hearing.
+  2. Your Notice to Appear and prior hearing history.
+  3. Your address and immigration applications or court filings.
+  4. Your interest in finding an attorney, requesting more time, or asking the
+     court to consolidate or separate cases.
+
+  The services provided through this interview are limited to information and
+  assistance connected with the workshop. Completing this form does not
+  guarantee legal representation or a volunteer to accompany you to court.
+
+continue button field: fotc_intro
+---
+sets:
+  - screener.name.first
+  - screener.name.middle
+  - screener.name.last
+id: fotc intake volunteer hearing
+question: |
+    Who is helping with this intake?
+subquestion: |
+    Look up case in EOIR: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/)
+fields:
+  - Name volunteer/staff: screener
+    datatype: object_radio
+    none of the above: Someone else
+    disable others:
+      - screener.name.first
+      - screener.name.middle
+      - screener.name.last
+    choices: |
+      [signed_in_user] if user_logged_in() else []
+  - code: |
+      screener.name_fields(person_or_business="person", show_suffix=False,)
+continue button field: users[0].fotc_intake
+---
+id: general information
+question: |
+    General information
+fields:
+    - First name: users[0].name.first
+    - Middle name: users[0].name.middle
+      required: False
+    - Last name: users[0].name.last
+    - Birthdate: users[0].birthdate
+      datatype: BirthDate
+      alMax: ${ today().format("yyyy-MM-dd") }
+    - A Number (do not include A-): users[0].a_number
+      required: False
+      validate: |
+        lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+    - Country of birth: users[0].country_of_birth
+      input type: dropdown
+      code: |
+        uscis_countries_list()
+    - Country of citizenship: users[0].country_of_citizenship
+      input type: dropdown
+      required: False
+      code: |
+       uscis_countries_list()
+    - Additional citizenship: users[0].additional_citizenship
+      input type: dropdown
+      required: False
+      code: |
+        uscis_countries_list()
+continue button field: users[0].fotc_user
+---
+id: has riders
+question: |
+  Do you have anyone else involved in your case?
+fields: 
+  - no label: users[0].has_riders
+    datatype: yesnoradio
+---
+id: additional riders
+question: |
+    Who is the ${ ordinal(i) } rider on this case?
+fields:
+    - First name: additional_riders[i].name.first
+    - Middle name: additional_riders[i].name.middle
+      required: False
+    - Last name: additional_riders[i].name.last
+    - Relationship to ${users[0].name.first}: additional_riders[i].relationship
+    - A Number (do not include A-): additional_riders[i].a_number
+      required: False
+      validate: |
+        lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+---
+id: any other riders
+question: |
+  Do you have any additional riders?
+subquestion: |
+  So far you have told us about ${comma_and_list(additional_riders.full_names())}.
+fields:
+  - Anyone else?: additional_riders.there_is_another
+    datatype: yesnoradio
+---
+code: |
+  additional_riders[i].name.first
+  additional_riders[i].complete = True
+---
+id: first hearing
+question: |
+    Is this your first hearing?
+fields:
+    - no label: users[0].fotc_first_hearing
+      datatype: yesnoradio
+    - Prior hearing date: users[0].fotc_prior_hearing_date
+      datatype: ThreePartsDate
+      required: False
+      show if:
+        variable: users[0].fotc_first_hearing
+        is: False
+    - What happened at your prior hearing?: users[0].fotc_prior_hearing_details
+      datatype: area
+      rows: 3
+      required: False
+      show if:
+        variable: users[0].fotc_first_hearing
+        is: False
+---
+id: immigration judge
+question: |
+  Immigration court information
+fields:
+    - note: |
+        <h4>Immigration Judge</h4>
+    - First name: immigration_judge.name.first
+    - Middle name: immigration_judge.name.middle
+      required: False
+    - Last name: immigration_judge.name.last
+    - note: |
+        <h4>Next Hearing</h4>
+    - Next hearing date: users[0].hearing_date
+      datatype: ThreePartsDate
+      alMin: ${ today().format("yyyy-MM-dd") }
+      required: False
+    - Hearing Time: users[0].hearing_time
+      datatype: time
+      required: False
+continue button field: users[0].immigration_judge_complete
+---
+id: review notice to appear
+question: |
+    Reviewing the Notice to Appear (NTA)
+fields:
+    - Do you have a Notice to Appear?: users[0].notice_to_appear
+      datatype: yesnoradio
+    - Is your name correct on the NTA?: users[0].notice_name
+      datatype: yesnoradio
+      show if: users[0].notice_to_appear
+    - Is your date of birth correct on the NTA?: users[0].notice_dob
+      datatype: yesnoradio
+      show if: users[0].notice_to_appear
+    - Are the allegations on the NTA true?: users[0].notice_allegations
+      datatype: yesnoradio
+      show if: users[0].notice_to_appear
+    - If not, explain: users[0].notice_allegations_details
+      datatype: area
+      rows: 2
+      required: False
+      show if:
+        variable: users[0].notice_allegations
+        is: False
+    - Does the NTA have a date/time of your first hearing?: users[0].notice_hearing
+      datatype: yesnoradio
+      required: False
+      show if: users[0].notice_to_appear
+    - Has the judge already spoken to you about your NTA?: users[0].notice_judge
+      datatype: yesnoradio
+      show if: users[0].notice_to_appear
+    - If yes, what did the judge say?: users[0].notice_judge_details
+      datatype: area
+      rows: 2
+      required: False
+      show if: users[0].notice_judge
+continue button field: users[0].review_nta_complete
+---
+id: fotc intake court filings
+question: |
+    Court filings
+fields:
+    - Have you moved since you last updated your address with the court?: users[0].moved_since
+      datatype: yesnoradio
+    - Have you filed any immigration applications?: users[0].immigration_application
+      datatype: yesnoradio
+    - For what and when?: users[0].other_immigration_applications
+      datatype: area
+      rows: 2
+      required: False
+      show if: users[0].immigration_application
+    - Have you been screened for eligibility for immigration relief?: users[0].screened_for_relief
+      datatype: yesnoradio
+    - Are you in the process of applying for an immigration application?: users[0].application_processing
+      datatype: yesnoradio
+    - Status of application: users[0].application_status
+      datatype: area
+      rows: 2
+      required: False
+      show if: users[0].application_processing
+    - If you have applied for asylum, is your clock running?: users[0].asylum_clock_running
+      datatype: yesnoradio
+    - Are the clocks running for any derivative applicants?: users[0].derivative_clock_running
+      datatype: yesnoradio
+    - Who?: users[0].derivative_clock_who
+      required: False
+      show if: 
+        variable: users[0].derivative_clock_running
+        is: False
+---
+id: case consolidation/seperation
+question: |
+    This section covers questions about consolidating or separating court cases.
+fields:
+    - Do you have any family members with a separate court case?: users[0].family_has_separate_case
+      datatype: yesnoradio
+    - Would you like to consolidate those cases?: users[0].wants_consolidation
+      datatype: yesnoradio
+      show if: users[0].family_has_separate_case
+    - Would you like to have a separate case from someone currently on your case?: users[0].wants_separate_case
+      datatype: yesnoradio
+    - Who?: users[0].separate_case_who
+      required: False
+      show if: users[0].wants_separate_case
+---
+id: attorney search
+question: |
+    This section covers questions about searching for an attorney to represent you in court.
+fields:
+    - Have you looked for an attorney to represent you in court?: users[0].looked_for_attorney
+      datatype: yesnoradio
+    - If yes, what have you done?: users[0].looked_for_attorney_details
+      datatype: area
+      rows: 2
+      required: False
+      show if: users[0].looked_for_attorney
+    - Would you like more time to look for an attorney? (Your asylum clock will stop): users[0].more_time_for_attorney
+      datatype: yesnoradio
+    - Would you like to schedule a final hearing in your asylum case?: users[0].schedule_final_asylum_hearing
+      datatype: yesnoradio
+---
+###################### DOWNLOAD SECTION #########################
+id: forms assembling
+continue button field: form_assembling
+question: |
+  Almost done
+subquestion: |
+  After you click **Next**, it may take a few moments to finish generating the form.
+  
+  ###### You do not need to refresh your screen. Hang in there!
+  
+  [NEWLINE]
+---
+id: download screen
+event: download_screen
+question: |
+  Download
+subquestion: |
+
+  ${ users[0].court_accompaniment_intake.as_pdf() }
+
+  ${ action_button_html(url_of("new_session"), label="Start a new application", icon="square-plus", size="lg", color="secondary") }
+---
+objects:
+  - users[i].court_accompaniment_intake: ALDocument.using(title="Court Accompaniment Intake", filename=space_to_underscore("Court Accompaniment Intake"), has_addendum=False)
+---
+code: |
+  users[i].court_accompaniment_intake.enabled = True
+---
+################### FOTC ####################
+attachment:
+  variable name: users[i].court_accompaniment_intake[j]
+  name: Court Accompaniment Intake
+  filename: ${ space_to_underscore("Court Accompaniment Intake") }
+  docx template file: Court_Accompaniment_Intake.docx
+  skip undefined: True
+---

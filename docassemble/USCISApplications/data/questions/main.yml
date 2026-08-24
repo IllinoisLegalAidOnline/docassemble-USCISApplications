@@ -4,7 +4,6 @@ include:
   - screener_questions.yml
   - screener_disclosures.yml
   - limited_scope_questions.yml
-  - limited_scope_authorization.yml
   - screeners.yml
   #- aiw.yml
   - combined_application_questions.yml
@@ -179,6 +178,7 @@ code: |
     users[0].moved_since
     users[0].family_has_separate_case
     users[0].looked_for_attorney
+    users[0].additional_notes
 
     nav.set_section("section_download")
     set_progress(100)

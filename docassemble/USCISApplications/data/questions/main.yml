@@ -151,11 +151,11 @@ code: |
     get_docs_screen
   elif fotc_screener:
     set_fotc_sections
-    fotc_intro
 
     nav.set_section("section_applicant")
     set_progress(40)
     users[0].fotc_intake
+    fotc_intro
     users[0].fotc_user
     if users[0].has_riders:
       additional_riders.gather()
@@ -532,9 +532,11 @@ fields:
 ---
 id: USCIS forms
 question: |
-  What USCIS forms do you want to complete?
+  What do you want to complete?
 # The Comprehensive Screener is for one person at a time. The USCIS applications can be completed for a family group.
 subquestion: |
+  The Court Accompaniment Intake is for one person at a time but can include multiple people attending the same court session. 
+  
   The USCIS forms can be completed for an individual or a family group.
 fields:
   # - no label: comp_screener

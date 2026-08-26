@@ -3,7 +3,7 @@
 objects:
   - additional_riders: ALPeopleList.using(complete_attribute='complete', there_are_any=True)
 ---
-id: intro
+id: fotc intro
 question: |
   Friend of the Court Accompaniment
 subquestion: |
@@ -14,11 +14,11 @@ subquestion: |
 
   You will be asked about:
 
-  1. Your contact information and upcoming hearing.
-  2. Your Notice to Appear and prior hearing history.
-  3. Your address and immigration applications or court filings.
-  4. Your interest in finding an attorney, requesting more time, or asking the
-     court to consolidate or separate cases.
+  - Your contact information and upcoming hearing,
+  - Your Notice to Appear and prior hearing history,
+  - Your address and immigration applications or court filings, and
+  - Your interest in finding an attorney, requesting more time, or asking the
+    court to consolidate or separate cases.
 
   The services provided through this interview are limited to information and
   assistance connected with the workshop. Completing this form does not
@@ -178,13 +178,14 @@ question: |
   Immigration court information
 fields:
     - note: |
-        <h4>Immigration Judge</h4>
+        **Immigration Judge**
     - First name: immigration_judge.name.first
     - Middle name: immigration_judge.name.middle
       required: False
     - Last name: immigration_judge.name.last
     - note: |
-        <h4>Next Hearing</h4>
+        <hr>
+        **Next Hearing**
     - Next hearing date: users[0].hearing_date
       datatype: ThreePartsDate
       alMin: ${ today().format("yyyy-MM-dd") }
@@ -246,14 +247,18 @@ fields:
       show if: users[0].application_processing
     - If you have applied for asylum, is your clock running?: users[0].asylum_clock_running
       datatype: yesnoradio
-    - If yes, when did it start?: users[0].asylum_clock_days
-      datatype: number
-      required: False
-      show if: users[0].asylum_clock_running
     - Are the clocks running for any derivative applicants?: users[0].derivative_clock_running
       datatype: yesnoradio
-    - Who?: users[0].derivative_clock_who
-      required: False
+    - Who stopped the clock?: users[0].derivative_clock_who
+      datatype: area
+      rows: 3
+      help: |
+        Derivative asylum applicants use the same 180-day asylum Employment
+        Authorization Document (EAD) clock as the principal applicant who filed
+        Form I-589. Please identify the principal applicant and describe any
+        known issue affecting the clock. The clock can stop when an
+        applicant-caused delay, such as a request to reschedule an interview,
+        occurs.
       show if: 
         variable: users[0].derivative_clock_running
         is: False
@@ -269,9 +274,15 @@ fields:
       show if: users[0].family_has_separate_case
     - Would you like to have a separate case from someone currently on your case?: users[0].wants_separate_case
       datatype: yesnoradio
-    - Who?: users[0].separate_case_who
-      required: False
+    - Who should have a separate case?: users[0].separate_case_who
+      datatype: checkboxes
+      code: |
+        [{rider.instanceName: rider.name.full()} for rider in additional_riders]
+      none of the above: False
       show if: users[0].wants_separate_case
+validation code: |
+  if users[0].wants_separate_case:
+    users[0].separate_case_name_list = [rider.name.full() for rider in additional_riders if users[0].separate_case_who[rider.instanceName]] if users[0].separate_case_who.any_true() else []
 ---
 id: attorney search
 question: |
@@ -289,9 +300,10 @@ id: additional notes
 question: |
     Additional notes
 fields:
-    - Additional notes: users[0].additional_notes
+    - no label: users[0].additional_notes
       datatype: area
       rows: 4
+      maxlength: 200
       required: False
 ---
 ###################### DOWNLOAD SECTION #########################

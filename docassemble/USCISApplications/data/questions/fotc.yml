@@ -1,7 +1,7 @@
 ##### FRIEND OF THE COURT / COURT ACCOMPANIMENT INTAKE #####
 ---
 objects:
-  - additional_riders: ALPeopleList.using(complete_attribute='complete', there_are_any=True)
+  - additional_riders: ALPeopleList.using(complete_attribute='complete', there_are_any=False)
 ---
 id: fotc intro
 question: |

@@ -303,7 +303,6 @@ fields:
     - no label: users[0].additional_notes
       datatype: area
       rows: 8
-      maxlength: 500
       required: False
 ---
 ###################### DOWNLOAD SECTION #########################

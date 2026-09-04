@@ -1,0 +1,427 @@
+##### FRIEND OF THE COURT / COURT ACCOMPANIMENT INTAKE #####
+---
+objects:
+  - additional_riders: ALPeopleList.using(complete_attribute='complete', there_are_any=False)
+---
+id: fotc intro
+question: |
+  Friend of the Court Accompaniment
+subquestion: |
+  This interview is for people preparing for an Immigration Court hearing and
+  requesting Friend of the Court accompaniment. It collects the information
+  needed to understand your case, prepare for your hearing, and identify any
+  follow-up needs.
+
+  You will be asked about:
+
+  - Your contact information and upcoming hearing,
+  - Your Notice to Appear and prior hearing history,
+  - Your address and immigration applications or court filings, and
+  - Your interest in finding an attorney, requesting more time, or asking the
+    court to consolidate or separate cases.
+
+  The services provided through this interview are limited to information and
+  assistance connected with the workshop. Completing this form does not
+  guarantee legal representation or a volunteer to accompany you to court.
+
+continue button field: fotc_intro
+---
+id: limited scope
+question: |
+  Limited Scope of Services and Authorization / Friend of the Court Accompaniment[NEWLINE][NEWLINE]Alcance limitado de servicios y autorización / Acompañamiento a audiencia en corte de inmigración
+fields:
+  - "Check for Spanish / Uncheck for English": enable_spanish
+    datatype: yesnowide
+    default: False
+  - note: |
+      The services provided by the Immigration Workshop are limited to the information and assistance given today at the workshop. No current or ongoing attorney-client relationship is created by the provision of today's services.
+
+      We need to learn some details about individual cases in order to prepare participants for their Immigration Court hearings. During the legal orientation, participants are responsible for giving accurate,  truthful information. All the information provided to the workshop  during this time will remain confidential with the exceptions noted below.
+
+      Please review the following to acknowledge understanding and agreement, then sign and date at the bottom of the page:
+
+      1. I understand that the organizations here today will help inform me of my legal rights, help me understand the legal process, and review my documents. The organizations or attorneys present today will not serve as my legal representative and will not represent me after today unless explicitly discussed.
+
+      2. I have voluntarily given my information to the Immigration Workshop today, and I authorize the Immigration Workshop to share my information as follows (check all that apply):
+    show if:
+      variable: enable_spanish
+      is: False
+  - note: |
+      Los servicios proporcionados por el taller de inmigración son limitados a la información y ayuda brindada hoy en el taller. Los servicios proporcionados hoy no crean ninguna relación entre usted y nosotros de abogado a cliente. 
+      
+      Necesitamos averiguar unos detalles sobre cada caso para poder preparar a cada participante para su audiencia en la corte de inmigración. Durante la orientación legal, los participantes son responsables de proporcionar información precisa y veraz. Toda la información compartida con el taller de inmigración durante este tiempo será confidencial, con las excepciones indicadas a continuación. 
+
+      Por favor revise lo siguiente para confirmar que entiende y está de acuerdo, y luego firme y coloque la fecha en la parte inferior de la página: 
+      
+      1.	Entiendo que las organizaciones presentes hoy me informaran sobre mis derechos legales, me ayudaran a comprender el proceso legal, y revisaran mis documentos. Las organizaciones o abogados presentes hoy no actuaran como mis representantes legales, ni me representaran después de hoy al menos que sea discutido específicamente.  
+
+      2.	He proporcionado mi información a el taller de inmigración voluntariamente, y autorizo al taller a compartir mi información de la siguiente manera (indique todo lo que aplica): 
+    show if: enable_spanish
+  - "<span style='color: red;'>*</span>I authorize the Immigration Workshop to contact a volunteer to accompany me to my hearing in Immigration Court. / Autorizo al taller de inmigración a comunicarse con un voluntario para que me acompañe a mi audiencia en la corte de inmigración.": users[0].fotc_scope_accompany
+    datatype: yesnowide
+  - "<span style='color: red;'>*</span>If a volunteer is available to accompany me, I authorize the Immigration Workshop to share a copy of the information I provided today with that volunteer prior to my hearing. / Si un voluntario está disponible para acompañarme, autorizo al taller de inmigración a compartir una copia de la información que proporcione hoy con ese voluntario antes de mi audiencia.": users[0].fotc_scope_information
+    datatype: yesnowide
+  - "If I am detained while attending my hearing, I authorize the Immigration Workshop to notify my family member/friend. (optional) / Si soy detenido durante mi audiencia, autorizo al taller de inmigración a notificar a mi ser querido/amigo. (opcional)": users[0].fotc_scope_notify
+    datatype: yesnowide
+    required: False
+  - "If I am detained while attending my hearing, I authorize The Immigration Workshop to use the information I shared today to create a referral to MIDA (Midwest Immigration Defenders Alliance) or other referral networks to try and find me legal representation while I am detained. (optional) / Si soy detenido durante mi audiencia, autorizo al taller de inmigración a usar la información que compartí hoy para crear un referido a MIDA (Midwest Immigration Defenders Alliance) u otras redes de referidos para intentar de conseguirme representación legal mientras estoy detenido. (opcional)": users[0].fotc_scope_referral
+    datatype: yesnowide
+    required: False
+  - note: |
+      3. I DO NOT consent to the sharing of my information except as authorized above.
+
+      4. I understand that my participation today does not guarantee that I will have legal representation/accompaniment in the future.
+
+      5. This Scope of Services and Authorization has been explained and/or translated to me in a language I understand.
+    show if:
+      variable: enable_spanish
+      is: False
+  - note: |
+      3.	NO autorizo a que se comparta mi información, excepto como indique en los párrafos anteriores. 
+
+      4.	Entiendo que mi participación en el taller hoy no garantiza que yo tendré representación legal/acompañamiento en el futuro. 
+
+      5.	Este Alcance Limitado de Servicios y Autorización se me explico y/o tradujo en un idioma que yo entiendo. 
+    show if: enable_spanish
+continue button field: agrees_to_retainer
+continue button label: I Agree
+validation code: |
+  if not (users[0].fotc_scope_accompany and users[0].fotc_scope_information):
+    validation_error("You must authorize <strong>both</strong> of the first two options in order to continue. / Debe autorizar <strong>ambas</strong> de las dos primeras opciones para continuar.", field="users[0].fotc_scope_information")
+---
+sets:
+  - screener.name.first
+  - screener.name.middle
+  - screener.name.last
+id: fotc intake volunteer hearing
+question: |
+    Who is helping with this intake?
+subquestion: |
+    Look up case in EOIR: [https://acis.eoir.justice.gov/en/](https://acis.eoir.justice.gov/en/)
+fields:
+  - Name volunteer/staff: screener
+    datatype: object_radio
+    none of the above: Someone else
+    disable others:
+      - screener.name.first
+      - screener.name.middle
+      - screener.name.last
+    choices: |
+      [signed_in_user] if user_logged_in() else []
+  - code: |
+      screener.name_fields(person_or_business="person", show_suffix=False,)
+continue button field: users[0].fotc_intake
+---
+id: applicant name
+question: |
+    What is your full legal name?
+fields:
+  - First name: users[0].name.first
+  - Middle name: users[0].name.middle
+    required: False
+  - Last name: users[0].name.last
+  - Suffix: users[0].name.suffix
+    required: False
+    code: name_suffix()
+continue button field: users[0].fotc_name_only
+---
+id: general information
+question: |
+    General information 
+subquestion: |
+    Additional details for ${users[0].name.first}
+fields:
+    - Birthdate: users[0].birthdate
+      datatype: BirthDate
+      alMax: ${ today().format("yyyy-MM-dd") }
+    - A Number (do not include A-): users[0].a_number
+      required: False
+      validate: |
+        lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+    - Country of birth: users[0].country_of_birth
+      input type: dropdown
+      code: |
+        uscis_countries_list()
+    - Country of citizenship: users[0].country_of_citizenship
+      input type: dropdown
+      required: False
+      code: |
+       uscis_countries_list()
+    - Additional citizenship: users[0].additional_citizenship
+      input type: dropdown
+      required: False
+      code: |
+        uscis_countries_list()
+continue button field: users[0].fotc_user
+---
+id: has riders
+question: |
+  Do you have anyone else involved in your case?
+fields: 
+  - no label: users[0].has_riders
+    datatype: yesnoradio
+---
+id: additional riders
+question: |
+    Who is the ${ ordinal(i) } rider on this case?
+fields:
+    - First name: additional_riders[i].name.first
+    - Middle name: additional_riders[i].name.middle
+      required: False
+    - Last name: additional_riders[i].name.last
+    - Relationship to ${users[0].name.first}: additional_riders[i].relationship
+    - A Number (do not include A-): additional_riders[i].a_number
+      required: False
+      validate: |
+        lambda y: (not y) or re.match(r'^\d{8,9}$', str(y)) or validation_error("Enter a valid 8 or 9 digit A number")
+---
+id: any other riders
+question: |
+  Do you have any additional riders?
+subquestion: |
+  So far you have told us about ${comma_and_list(additional_riders.full_names())}.
+fields:
+  - Anyone else?: additional_riders.there_is_another
+    datatype: yesnoradio
+---
+code: |
+  additional_riders[i].name.first
+  additional_riders[i].complete = True
+---
+id: first hearing
+question: |
+    Previous immigration hearings
+fields:
+    - Is this your first hearing?: users[0].fotc_first_hearing
+      datatype: yesnoradio
+    - Prior hearing date: users[0].fotc_prior_hearing_date
+      datatype: ThreePartsDate
+      required: False
+      show if:
+        variable: users[0].fotc_first_hearing
+        is: False
+    - What happened at your prior hearing?: users[0].fotc_prior_hearing_details
+      datatype: area
+      rows: 4
+      required: False
+      show if:
+        variable: users[0].fotc_first_hearing
+        is: False
+---
+id: immigration judge
+question: |
+  Immigration court information
+fields:
+    - note: |
+        **Immigration Judge**
+    - First name: immigration_judge.name.first
+    - Middle name: immigration_judge.name.middle
+      required: False
+    - Last name: immigration_judge.name.last
+    - note: |
+        <hr>
+        **Next Hearing**
+    - Next hearing date: users[0].hearing_date
+      datatype: ThreePartsDate
+      alMin: ${ today().format("yyyy-MM-dd") }
+      required: False
+    - Hearing Time: users[0].hearing_time
+      datatype: time
+      required: False
+continue button field: users[0].immigration_judge_complete
+---
+id: review notice to appear
+question: |
+    Reviewing the Notice to Appear (NTA)
+fields:
+    - Do you have a Notice to Appear?: users[0].notice_to_appear
+      datatype: yesnoradio
+    - Is your name correct on the NTA?: users[0].notice_name
+      datatype: yesnoradio
+      show if: users[0].notice_to_appear
+    - Is your date of birth correct on the NTA?: users[0].notice_dob
+      datatype: yesnoradio
+      show if: users[0].notice_to_appear
+    - Are the allegations on the NTA true?: users[0].notice_allegations
+      datatype: yesnoradio
+      show if: users[0].notice_to_appear
+    - If not, explain: users[0].notice_allegations_details
+      datatype: area
+      rows: 2
+      required: False
+      show if:
+        variable: users[0].notice_allegations
+        is: False
+    - Does the NTA have a date/time of your first hearing?: users[0].notice_hearing
+      datatype: yesnoradio
+      required: False
+      show if: users[0].notice_to_appear
+continue button field: users[0].review_nta_complete
+---
+id: fotc intake court filings
+question: |
+    Court filings
+fields:
+    - Have you moved since you last updated your address with the court?: users[0].moved_since
+      datatype: yesnoradio
+    - Have you filed any immigration applications?: users[0].immigration_application
+      datatype: yesnoradio
+    - For what and when?: users[0].other_immigration_applications
+      datatype: area
+      rows: 2
+      required: False
+      show if: users[0].immigration_application
+    - Have you been screened for eligibility for immigration relief?: users[0].screened_for_relief
+      datatype: yesnoradio
+    - Are you in the process of applying for an immigration application?: users[0].application_processing
+      datatype: yesnoradio
+    - Status of application: users[0].application_status
+      datatype: area
+      rows: 2
+      required: False
+      show if: users[0].application_processing
+    - If you have applied for asylum, is your clock running?: users[0].asylum_clock_running
+      datatype: yesnoradio
+    - Are the clocks running for any derivative applicants?: users[0].derivative_clock_running
+      datatype: yesnoradio
+    - Who stopped the clock?: users[0].derivative_clock_who
+      datatype: area
+      rows: 3
+      help: |
+        Derivative asylum applicants use the same 180-day asylum Employment
+        Authorization Document (EAD) clock as the principal applicant who filed
+        Form I-589. Please identify the principal applicant and describe any
+        known issue affecting the clock. The clock can stop when an
+        applicant-caused delay, such as a request to reschedule an interview,
+        occurs.
+      show if: 
+        variable: users[0].derivative_clock_running
+        is: False
+---
+id: case consolidation/seperation
+question: |
+    This section covers questions about consolidating or separating court cases.
+fields:
+    - Do you have any family members with a separate court case?: users[0].family_has_separate_case
+      datatype: yesnoradio
+    - Would you like to consolidate those cases?: users[0].wants_consolidation
+      datatype: yesnoradio
+      show if: users[0].family_has_separate_case
+    - Would you like to have a separate case from someone currently on your case?: users[0].wants_separate_case
+      datatype: yesnoradio
+    - Who should have a separate case?: users[0].separate_case_who
+      datatype: checkboxes
+      code: |
+        [{rider.instanceName: rider.name.full()} for rider in additional_riders]
+      none of the above: False
+      show if: users[0].wants_separate_case
+validation code: |
+  if users[0].wants_separate_case:
+    users[0].separate_case_name_list = [rider.name.full() for rider in additional_riders if users[0].separate_case_who[rider.instanceName]] if users[0].separate_case_who.any_true() else []
+---
+id: attorney search
+question: |
+    This section covers questions about searching for an attorney to represent you in court.
+fields:
+    - Have you looked for an attorney to represent you in court?: users[0].looked_for_attorney
+      datatype: yesnoradio
+    - If yes, what have you done?: users[0].looked_for_attorney_details
+      datatype: area
+      rows: 2
+      required: False
+      show if: users[0].looked_for_attorney
+---
+id: additional notes
+question: |
+    Additional notes
+fields:
+    - no label: users[0].additional_notes
+      datatype: area
+      rows: 8
+      required: False
+---
+###################### DOWNLOAD SECTION #########################
+id: forms assembling
+continue button field: form_assembling
+question: |
+  Almost done
+subquestion: |
+  After you click **Next**, it may take a few moments to finish generating the form.
+  
+  ###### You do not need to refresh your screen. Hang in there!
+  
+  [NEWLINE]
+---
+id: download screen
+event: download_screen
+question: |
+  Download
+subquestion: |
+
+  ${ users[0].court_accompaniment_bundle.as_pdf() }
+
+  ${ action_button_html(url_of("new_session"), label="Start a new application", icon="square-plus", size="lg", color="secondary") }
+---
+###### ATTACHMENTS #########
+
+################ DOCUMENT #######################
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[], filename="court_accompaniment_intake.pdf", title="Court Accompaniment Intake")
+---
+objects:
+  - users[i].court_accompaniment_bundle: ALDocumentBundle.using(title="Court Accompaniment Intake", filename="court_accompaniment_intake.pdf", enabled=True, elements=[
+        users[i].court_accompaniment_limited_scope,
+        users[i].court_accompaniment_limited_scope_es,
+        users[i].court_accompaniment_intake,
+        users[i].court_accompaniment_supervisor,
+        users[i].court_accompaniment_hearing,
+      ])
+---
+objects:
+  - users[i].court_accompaniment_intake: ALDocument.using(title="Court Accompaniment Intake", filename=space_to_underscore("Court Accompaniment Intake"), enabled=True, has_addendum=False)
+  - users[i].court_accompaniment_supervisor: ALDocument.using(title="Court Accompaniment Supervisor", filename=space_to_underscore("Court_Accompaniment_supervisor.pdf"), enabled=True, has_addendum=False)
+  - users[i].court_accompaniment_limited_scope: ALDocument.using(title="Court Accompaniment Limited Scope", filename=space_to_underscore("Court Accompaniment Limited Scope"), enabled=True, has_addendum=False)
+  - users[i].court_accompaniment_limited_scope_es: ALDocument.using(title="Court Accompaniment Limited Scope Spanish", filename=space_to_underscore("Court Accompaniment Limited Scope Spanish"), enabled=True, has_addendum=False)
+  - users[i].court_accompaniment_hearing: ALDocument.using(title="Court Accompaniment Hearing", filename=space_to_underscore("Court Accompaniment Hearing"), enabled=True, has_addendum=False)
+---
+################### FOTC ####################
+attachment:
+  variable name: users[i].court_accompaniment_intake[j]
+  name: Court Accompaniment Intake
+  filename: ${ space_to_underscore("Court Accompaniment Intake") }
+  docx template file: Court_Accompaniment_Intake.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].court_accompaniment_limited_scope[j]
+  name: Court Accompaniment Limited Scope
+  filename: ${ space_to_underscore("Court Accompaniment Limited Scope") }
+  docx template file: Court_Accompaniment_limited_scope.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].court_accompaniment_limited_scope_es[j]
+  name: Court Accompaniment Limited Scope Spanish
+  filename: ${ space_to_underscore("Court Accompaniment Limited Scope Spanish") }
+  docx template file: Court_Accompaniment_limited_scope_es.docx
+  skip undefined: True
+---
+attachment:
+  variable name: users[i].court_accompaniment_supervisor[j]
+  name: Court Accompaniment Supervisor
+  filename: ${ space_to_underscore("Court Accompaniment Supervisor") }
+  editable: False
+  skip undefined: True
+  pdf template file: Court_Accompaniment_supervisor.pdf
+  fields:
+    - "fake": ${ "" }
+---
+attachment:
+  variable name: users[i].court_accompaniment_hearing[j]
+  name: Court Accompaniment Hearing
+  filename: ${ space_to_underscore("Court Accompaniment Hearing") }
+  editable: False
+  skip undefined: True
+  pdf template file: Court_Accompaniment_hearing.pdf
+  fields:
+    - "fake": ${ "" }

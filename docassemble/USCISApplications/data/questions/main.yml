@@ -153,9 +153,12 @@ code: |
     set_fotc_sections
 
     nav.set_section("section_applicant")
-    set_progress(40)
+    set_progress(10)
     users[0].fotc_intake
     fotc_intro
+    users[0].fotc_name_only
+    agrees_to_retainer
+    users[0].signature
     users[0].fotc_user
     if users[0].has_riders:
       additional_riders.gather()
@@ -163,18 +166,13 @@ code: |
     users[0].hearing_time
     users[0].immigration_judge_complete
 
-    nav.set_section("section_agreement")
-    set_progress(15)
-    agrees_to_retainer
-    users[0].signature
-
     nav.set_section("section_nta")
     set_progress(40)
     users[0].address.address
     users[0].review_nta_complete
     
     nav.set_section("section_court")
-    set_progress(40)
+    set_progress(80)
     users[0].moved_since
     users[0].family_has_separate_case
     users[0].looked_for_attorney
@@ -429,8 +427,7 @@ data:
 ---
 variable name: fotc_sections
 data:
-  - section_applicant: General Information
-  - section_agreement: Accompaniment Agreement
+  - section_applicant: Friend of the Court Intake
   - section_nta: Review NTA
   - section_court: Court Filings
   - section_download: Download and print

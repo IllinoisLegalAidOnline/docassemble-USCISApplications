@@ -28,9 +28,7 @@ continue button field: fotc_intro
 ---
 id: limited scope
 question: |
-  Limited Scope of Services and Authorization / Alcance limitado de servicios y autorización:
-
-  Friend of the Court Accompaniment / Acompañamiento a audiencia en corte de inmigración
+  Limited Scope of Services and Authorization / Friend of the Court Accompaniment[NEWLINE][NEWLINE]Alcance limitado de servicios y autorización / Acompañamiento a audiencia en corte de inmigración
 fields:
   - "Check for Spanish / Uncheck for English": enable_spanish
     datatype: yesnowide
@@ -66,7 +64,7 @@ fields:
   - "If I am detained while attending my hearing, I authorize the Immigration Workshop to notify my family member/friend. (optional) / Si soy detenido durante mi audiencia, autorizo al taller de inmigración a notificar a mi ser querido/amigo. (opcional)": users[0].fotc_scope_notify
     datatype: yesnowide
     required: False
-  - "If I am detained while attending my hearing, I authorize The Immigration Workshop to use the information I shared today to create a referral to MIDA (Midwest Immigration Defenders Alliance) or other referral networks to try and find me legal representation while I am detained. / Si soy detenido durante mi audiencia, autorizo al taller de inmigración a usar la información que compartí hoy para crear un referido a MIDA (Midwest Immigration Defenders Alliance) u otras redes de referidos para intentar de conseguirme representación legal mientras estoy detenido. (opcional)": users[0].fotc_scope_referral
+  - "If I am detained while attending my hearing, I authorize The Immigration Workshop to use the information I shared today to create a referral to MIDA (Midwest Immigration Defenders Alliance) or other referral networks to try and find me legal representation while I am detained. (optional) / Si soy detenido durante mi audiencia, autorizo al taller de inmigración a usar la información que compartí hoy para crear un referido a MIDA (Midwest Immigration Defenders Alliance) u otras redes de referidos para intentar de conseguirme representación legal mientras estoy detenido. (opcional)": users[0].fotc_scope_referral
     datatype: yesnowide
     required: False
   - note: |

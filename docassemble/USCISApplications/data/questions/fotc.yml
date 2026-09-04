@@ -32,7 +32,7 @@ question: |
 
   Friend of the Court Accompaniment / Acompañamiento a audiencia en corte de inmigración
 fields:
-  - Versión en español: enable_spanish
+  - "Check for Spanish / Uncheck for English": enable_spanish
     datatype: yesnowide
     default: False
   - note: |

@@ -1,7 +1,7 @@
 ##### FRIEND OF THE COURT / COURT ACCOMPANIMENT INTAKE #####
 ---
 objects:
-  - additional_riders: ALPeopleList.using(complete_attribute='complete', there_are_any=False)
+  - additional_riders: ALPeopleList.using(complete_attribute='complete')
 ---
 id: fotc intro
 question: |
@@ -157,8 +157,10 @@ continue button field: users[0].fotc_user
 id: has riders
 question: |
   Do you have anyone else involved in your case?
+subquestion: |
+  if so, the full name, relationship, and A number (if applicable) of any additional riders will be collected in the next section.
 fields: 
-  - no label: users[0].has_riders
+  - no label: additional_riders.there_are_any
     datatype: yesnoradio
 ---
 id: additional riders
@@ -203,6 +205,7 @@ fields:
     - What happened at your prior hearing?: users[0].fotc_prior_hearing_details
       datatype: area
       rows: 4
+      maxlength: 140
       required: False
       show if:
         variable: users[0].fotc_first_hearing
@@ -275,7 +278,7 @@ fields:
       datatype: yesnoradio
     - Are you in the process of applying for an immigration application?: users[0].application_processing
       datatype: yesnoradio
-    - Status of application: users[0].application_status
+    - Status and type of application: users[0].application_status
       datatype: area
       rows: 2
       required: False
@@ -291,9 +294,8 @@ fields:
         Derivative asylum applicants use the same 180-day asylum Employment
         Authorization Document (EAD) clock as the principal applicant who filed
         Form I-589. Please identify the principal applicant and describe any
-        known issue affecting the clock. The clock can stop when an
-        applicant-caused delay, such as a request to reschedule an interview,
-        occurs.
+        known issue affecting the clock. The clock can stop for an applicant-caused delay, such as 
+        a request reschedule an interview, or a continuance for more time to look for an attorney
       show if: 
         variable: users[0].derivative_clock_running
         is: False

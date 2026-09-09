@@ -160,7 +160,7 @@ code: |
     agrees_to_retainer
     users[0].signature
     users[0].fotc_user
-    if users[0].has_riders:
+    if additional_riders.there_are_any:
       additional_riders.gather()
     users[0].fotc_first_hearing
     users[0].hearing_time

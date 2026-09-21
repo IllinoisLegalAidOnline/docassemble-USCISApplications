@@ -24,7 +24,7 @@ on:
 jobs:
 
   github-server-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         node-version: [20.x]
@@ -32,6 +32,8 @@ jobs:
     env:
       NORMAL_USER_EMAIL: alkiln@example.com
       NORMAL_USER_PASSWORD: User123^
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
       
     steps:
       #### Developer note: You probably don't need this
@@ -61,6 +63,14 @@ jobs:
           #### Developer note: Set this to True to show docker logs and
           #### allow ALKiln to create the docker logs output artifact.          
       - run: echo "ALKiln finished starting the isolated GitHub docassemble server"
+        shell: bash
+
+      # Surface the real docassemble/dainstall error even when SHOW_DOCKER_OUTPUT
+      # is off (it's forced off for push/pull_request_target triggers), since
+      # the container logs usually contain the actual reason `dainstall` failed.
+      - name: "Dump docassemble container logs on failure"
+        if: ${{ failure() }}
+        run: docker logs docassemble_container --tail 500 || true
         shell: bash
 
       #### Developer note: You can probably leave this out

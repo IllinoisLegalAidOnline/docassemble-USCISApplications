@@ -83,7 +83,7 @@ fields:
 
       5.	Este Alcance Limitado de Servicios y Autorización se me explico y/o tradujo en un idioma que yo entiendo. 
     show if: enable_spanish
-continue button field: agrees_to_retainer
+continue button field: fotc_agrees_to_retainer
 continue button label: I Agree
 validation code: |
   if not (users[0].fotc_scope_accompany and users[0].fotc_scope_information):

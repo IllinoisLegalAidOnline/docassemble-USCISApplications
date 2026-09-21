@@ -16,7 +16,7 @@ Scenario: EAD only, 2 applicants
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
-    | comp_screener | False | |
+    | fotc_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -44,7 +44,7 @@ Scenario: EAD only, 2 applicants
     | users[1].last_country_of_residence | Haiti | users[0].last_country_of_residence |
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
-    | application_kind | ead_only | | 
+    | application_kind['ead_only'] | | True |
     | change_kind | no | |
     | users[i].fee_waiver_needed | False | |
     | users[i].ead_required_documents['National ID'] | True | |
@@ -142,7 +142,7 @@ Scenario: EAD, 3 applicants, some are screened
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
-    | comp_screener | False | |
+    | fotc_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -179,7 +179,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
     | users[2].signature | | users[2].signature |
-    | application_kind | ead_only | | 
+    | application_kind['ead_only'] | | True |
     | change_kind | no | |
     | users[i].fee_waiver_needed | False | |
     | users[i].ead_required_documents['National ID'] | True | |
@@ -247,7 +247,7 @@ Scenario: EAD, 3 applicants, some are screened
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
-    | comp_screener | False | |
+    | fotc_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -284,7 +284,7 @@ Scenario: EAD, 3 applicants, some are screened
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
     | users[2].signature | | users[2].signature |
-    | application_kind | ead_only | | 
+    | application_kind['ead_only'] | | True |
     | change_kind | no | |
     | users[i].fee_waiver_needed | False | |
     | users[i].ead_required_documents['National ID'] | True | |
@@ -356,7 +356,7 @@ Scenario: EAD, 1 applicant, some are screened
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
-    | comp_screener | False | |
+    | fotc_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -375,7 +375,7 @@ Scenario: EAD, 1 applicant, some are screened
     | users[0].birthdate | 11/11/1111 | |
     | users[0].last_country_of_residence | United States | users[0].last_country_of_residence |
     | users[0].signature | | users[0].signature |
-    | application_kind | ead_only | | 
+    | application_kind['ead_only'] | | True |
     | change_kind | no | |
     | users[i].fee_waiver_needed | False | |
     | users[0].ead_required_documents['National ID'] | True | |
@@ -438,7 +438,7 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
   And I get to the question id "waiting screen" with this data:
     | var | value | trigger |
     | region | Chicago | |
-    | comp_screener | False | |
+    | fotc_screener | False | |
     | interpreter_present | False | |
     | preparer.name.first | Joe | |
     | preparer.name.last | Carpenter | |
@@ -466,7 +466,8 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
     | users[1].last_country_of_residence | Haiti | users[1].last_country_of_residence |
     | users[0].signature | | users[0].signature |
     | users[1].signature | | users[1].signature |
-    | application_kind | ead_and_tps | | 
+    | application_kind['ead_only'] | | True |
+    | application_kind['tps_only'] | | True |
     | change_kind | no | |
     | users[i].fee_waiver_needed | False | |
     | users[i].proof_of_birthplace['Birth certificate'] | True | |

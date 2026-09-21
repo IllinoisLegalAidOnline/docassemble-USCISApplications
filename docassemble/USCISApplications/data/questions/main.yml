@@ -157,7 +157,7 @@ code: |
     users[0].fotc_intake
     fotc_intro
     users[0].fotc_name_only
-    agrees_to_retainer
+    fotc_agrees_to_retainer
     users[0].signature
     users[0].fotc_user
     if additional_riders.there_are_any:

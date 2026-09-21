@@ -53,11 +53,11 @@ fields:
     required: false
 ---
 code: |
-  address_choices = []
-  address_choices.clear()
+  motion_address_choices = []
+  motion_address_choices.clear()
   for user in motion_users.complete_elements():
     if hasattr(user.address, 'address'):
-      address_choices.append(user.address)
+      motion_address_choices.append(user.address)
 ---
 id: your address
 sets:
@@ -74,7 +74,7 @@ fields:
   - ${ motion_users[i] }'s address is: motion_users[i].address
     datatype: object_radio
     choices:
-      - address_choices
+      - motion_address_choices
     object labeler: |
       lambda y: y.on_one_line()
     none of the above: |

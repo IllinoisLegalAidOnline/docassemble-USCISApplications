@@ -1,3 +1,7 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "docassemble.USCISApplications"
+dynamic = ["version", "description", "readme", "dependencies", "license", "authors"]

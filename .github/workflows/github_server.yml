@@ -33,7 +33,6 @@ jobs:
       NORMAL_USER_EMAIL: alkiln@example.com
       NORMAL_USER_PASSWORD: User123^
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-      SHOW_DOCKER_OUTPUT: true
       
     steps:
       #### Developer note: You probably don't need this
@@ -47,7 +46,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade \
             "git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main" \
-            "docassemble.ILAO>=1.1.10"
+            "docassemble.ILAO"
 
       - name: ALKiln - Start the isolated temporary docassemble server on GitHub
         id: github_server
@@ -56,29 +55,13 @@ jobs:
         #### suffolkLITLab/ALKiln/action_for_github_server@v5
         uses: suffolkLITLab/ALKiln/action_for_github_server@v5
         with:
-          SHOW_DOCKER_OUTPUT: true
+          SHOW_DOCKER_OUTPUT: "${{ github.event.inputs.show_docker_output }}"
           CONFIG_CONTENTS: "${{ secrets.CONFIG_CONTENTS }}"
           DOCASSEMBLECLI_VERSION: "0.0.25"
           DOCASSEMBLE_IMAGE: "ghcr.io/suffolklitlab/docassemble:latest"
           #### Developer note: Set this to True to show docker logs and
           #### allow ALKiln to create the docker logs output artifact.          
       - run: echo "ALKiln finished starting the isolated GitHub docassemble server"
-        shell: bash
-
-      # Surface the real docassemble/dainstall error even when SHOW_DOCKER_OUTPUT
-      # is off (the composite action forces it off unless the run was triggered
-      # via workflow_dispatch, regardless of the SHOW_DOCKER_OUTPUT input above).
-      - name: "Dump docassemble container logs on failure"
-        if: ${{ failure() }}
-        run: docker logs docassemble_container --tail 500 || true
-        shell: bash
-
-      # docassemblecli is already installed by the composite action above (that
-      # step succeeded); only `dainstall` failed, and its output was suppressed.
-      # Re-run it here, unsuppressed, to see the actual error.
-      - name: "Re-run dainstall with visible output on failure"
-        if: ${{ failure() }}
-        run: dainstall . --apiurl http://localhost --apikey "${{ steps.github_server.outputs.DOCASSEMBLE_DEVELOPER_API_KEY }}"
         shell: bash
 
       #### Developer note: You can probably leave this out
@@ -159,3 +142,15 @@ jobs:
           #### Developer note: Useful for temporarily shortening ALKiln tests
           #### to debug the docker install step
           #          ALKILN_TAG_EXPRESSION: "@1"
+
+      #### Developer note: Temporary diagnostic step - shows the real Python
+      #### traceback for "There was an error. Please contact the system
+      #### administrator." which only appears in docassemble's own log file,
+      #### not in docker's stdout/stderr.
+      - name: "Dump docassemble interview error log"
+        if: ${{ always() }}
+        run: |
+          container_name=$(docker ps --format '{{.Names}}' | head -n 1)
+          echo "container_name is $container_name"
+          docker exec "$container_name" tail -n 400 /usr/share/docassemble/log/docassemble.log || true
+        shell: bash

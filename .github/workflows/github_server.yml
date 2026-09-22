@@ -33,6 +33,7 @@ jobs:
       NORMAL_USER_EMAIL: alkiln@example.com
       NORMAL_USER_PASSWORD: User123^
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+      SHOW_DOCKER_OUTPUT: true
       
     steps:
       #### Developer note: You probably don't need this

@@ -32,7 +32,6 @@ jobs:
     env:
       NORMAL_USER_EMAIL: alkiln@example.com
       NORMAL_USER_PASSWORD: User123^
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
       
     steps:
       #### Developer note: You probably don't need this
@@ -46,7 +45,7 @@ jobs:
         #### suffolkLITLab/ALKiln/action_for_github_server@v5
         uses: suffolkLITLab/ALKiln/action_for_github_server@v5
         with:
-          SHOW_DOCKER_OUTPUT: "${{ github.event.inputs.show_docker_output }}"
+          SHOW_DOCKER_OUTPUT: "${{ inputs.show_docker_output || false }}"
           CONFIG_CONTENTS: "${{ secrets.CONFIG_CONTENTS }}"
           DOCASSEMBLECLI_VERSION: "0.0.25"
           DOCASSEMBLE_IMAGE: "ghcr.io/suffolklitlab/docassemble:sha-7d13853"

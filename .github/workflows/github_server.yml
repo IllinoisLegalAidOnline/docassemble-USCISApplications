@@ -24,7 +24,7 @@ on:
 jobs:
 
   github-server-tests:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [20.x]
@@ -39,15 +39,6 @@ jobs:
       # Place the root directory in this branch to access
       # relative paths to action files
       - uses: actions/checkout@v4
-
-      # Install the required dependencies globally into the runner environment
-      - name: Install required packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade \
-            "git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main" \
-            "docassemble.ILAO>=1.1.10"
-
       - name: ALKiln - Start the isolated temporary docassemble server on GitHub
         id: github_server
         #### Developer note: you'll need to replace `.` with the path to
@@ -58,7 +49,7 @@ jobs:
           SHOW_DOCKER_OUTPUT: "${{ github.event.inputs.show_docker_output }}"
           CONFIG_CONTENTS: "${{ secrets.CONFIG_CONTENTS }}"
           DOCASSEMBLECLI_VERSION: "0.0.25"
-          DOCASSEMBLE_IMAGE: "ghcr.io/suffolklitlab/docassemble:latest"
+          DOCASSEMBLE_IMAGE: "ghcr.io/suffolklitlab/docassemble:sha-7d13853"
           #### Developer note: Set this to True to show docker logs and
           #### allow ALKiln to create the docker logs output artifact.          
       - run: echo "ALKiln finished starting the isolated GitHub docassemble server"

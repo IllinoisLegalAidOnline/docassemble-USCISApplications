@@ -1,7 +1,24 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "docassemble.USCISApplications"
-dynamic = ["version", "description", "readme", "dependencies", "license", "authors"]
+version = "10.9.11"
+description = "CLS Workshop Applications"
+readme = "README.md"
+authors = [
+    { name="Matt Newsted", email="mnewsted@illinoislegalaid.org" },
+    ( name="Jim Graszer", email="jim@lemmalegal.com" ),
+]
+dependencies = [
+    "docassemble.AssemblyLine @ git+https://github.com/suffolklitlab/docassemble-AssemblyLine.git@main",
+    "docassemble.ILAO @ git@github.com:IllinoisLegalAidOnline/docassemble-ILAO.git@main",
+]
+license = { text = "The MIT License" }
+
+[project.urls]
+Homepage = "https://docassemble.org"
+
+[tool.setuptools.packages.find]
+where = ["."]

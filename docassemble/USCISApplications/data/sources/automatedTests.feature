@@ -643,9 +643,71 @@ Scenario: TPS, 2 applicants, 1 adult from Venezuela, 1 minor from another countr
   And the maximum seconds for each Step in this Scenario is 61
   And I wait 60 seconds
   Then the question id should be "get_docs_screen"
-    
 
-    
 
-    
-   
+@6
+Scenario: Court Accompaniment Intake - Applicant with rider
+  Given I start the interview at "main.yml"
+  And the maximum seconds for each Step in this Scenario is 30
+  And I get to the question id "download screen" with this data:
+    | var | value | trigger |
+    | region | Chicago | |
+    | fotc_agrees_to_retainer | True |  |
+    | fotc_intro | True |  |
+    | fotc_screener | True |  |
+    | skip_comp_screener | True |  |
+    | additional_riders[0].name.first | Rider |  |
+    | additional_riders[0].name.last | Name |  |
+    | additional_riders[0].relationship | child |  |
+    | additional_riders[0].a_number | 000000000 |  |
+    | additional_riders.target_number | 1 |  |
+    | immigration_judge.name.first | Judge |  |
+    | immigration_judge.name.last | Name |  |   
+    | screener.name.first | Screener |  |
+    | screener.name.last | Name |  |
+    | users.target_number | 2 | | 
+    | users[0].name.first | User | |
+    | users[0].name.last | Name | |
+    | users[0].aliases.there_are_any | False | |
+    | users[0].city_of_birth | Boston | |
+    | users[0].state_of_birth | MA | |
+    | users[0].country_of_birth | United States | users[0].country_of_birth |
+    | users[0].birthdate | 11/11/1111 | |
+    | users[0].a_number | 000000000 |  |
+    | users[0].address.address | 77 W Jackson Blvd | |
+    | users[0].address.address_type | suite |  |
+    | users[0].address.city | Chicago | |
+    | users[0].address.state | IL | | 
+    | users[0].address.zip | 60604 | | 
+    | users[0].application_processing | False |  |
+    | users[0].asylum_clock_running | False |  |
+    | users[0].derivative_clock_running | True |  |
+    | users[0].family_has_separate_case | True |  |
+    | users[0].fotc_first_hearing | True |  |
+    | users[0].fotc_intake | True |  |
+    | users[0].fotc_name_only | True |  |
+    | users[0].fotc_scope_accompany | True |  |
+    | users[0].fotc_scope_information | True |  |
+    | users[0].fotc_scope_notify | False |  |
+    | users[0].fotc_scope_referral | False |  |
+    | users[0].fotc_user | True |  |
+    | users[0].immigration_application | False |  |
+    | users[0].immigration_judge_complete | True |  |
+    | users[0].location.known | False |  |
+    | users[0].looked_for_attorney | False |  |
+    | users[0].mailing_address.location.known | False |  |
+    | users[0].mobile_number |  |  |
+    | users[0].moved_since | False |  |
+    | users[0].notice_allegations | True |  |
+    | users[0].notice_dob | True |  |
+    | users[0].notice_hearing | True |  |
+    | users[0].notice_name | True |  |
+    | users[0].notice_to_appear | True |  |
+    | users[0].review_nta_complete | True |  |
+    | users[0].screened_for_relief | False |  |
+    | users[0].wants_consolidation | False |  |
+    | users[0].wants_separate_case | False |  |
+  And the maximum seconds for each Step in this Scenario is 61
+  And I wait 60 seconds
+  Then the question id should be "download_screen"
+

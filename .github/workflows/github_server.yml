@@ -3,7 +3,7 @@ name: GitHub server installation
 on:
   push:
   # Default opened, reopened, synchronize. "edited" is something else.
-  pull_request_target:
+  pull_request:
   workflow_dispatch:
     inputs:
       tags:
@@ -39,16 +39,6 @@ jobs:
       # Place the root directory in this branch to access
       # relative paths to action files
       - uses: actions/checkout@v4
-
-      # DEBUG Might not be reaching the pyproject.toml
-      # Install the required dependencies globally into the runner environment
-      - name: Install required packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade \
-            "git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main" \
-            "docassemble.ILAO>=1.1.10"
-
       - name: ALKiln - Start the isolated temporary docassemble server on GitHub
         id: github_server
         #### Developer note: you'll need to replace `.` with the path to

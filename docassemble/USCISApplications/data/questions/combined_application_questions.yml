@@ -1995,7 +1995,8 @@ objects:
   - users[i].i_912_fee_waiver: ALDocument.using(title=f"{users[i]} - Request for Fee Waiver", filename=space_to_underscore(f"{users[i]} - Request for Fee Waiver"), has_addendum=False)
 ---
 code: |
-  users[i].i_912_fee_waiver.enabled = application_kind.get('tps_only') and users[i].application_is_approved and users[i].fee_waiver_needed
+  # fee_waiver_needed question is commented out above, so this is disabled until re-enabled
+  users[i].i_912_fee_waiver.enabled = False
 ---
 attachment:
   name: TPS_yes_answer_addendum

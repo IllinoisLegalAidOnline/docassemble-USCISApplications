@@ -9,11 +9,11 @@ description = "CLS Workshop Applications"
 readme = "README.md"
 authors = [
     { name="Matt Newsted", email="mnewsted@illinoislegalaid.org" },
-    ( name="Jim Graszer", email="jim@lemmalegal.com" ),
+    { name="Jim Graszer", email="jim@lemmalegal.com" },
 ]
 dependencies = [
     "docassemble.AssemblyLine @ git+https://github.com/suffolklitlab/docassemble-AssemblyLine.git@main",
-    "docassemble.ILAO @ git@github.com:IllinoisLegalAidOnline/docassemble-ILAO.git@main",
+    "docassemble.ILAO @ git+https://github.com/IllinoisLegalAidOnline/docassemble-ILAO.git@main",
 ]
 license = { text = "The MIT License" }
 

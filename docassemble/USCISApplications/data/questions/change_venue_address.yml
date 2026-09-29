@@ -204,7 +204,9 @@ fields:
 ---
 id: move to United States
 question: |
-  When did you enter the U.S. (and has resided in the U.S. since) on what date?
+  When did you enter the U.S.?
+subquestion: |
+  You should have lived in the U.S. continuously since this date.
 fields:
   - no label: entry_to_us_date
     datatype: ThreePartsDate
@@ -239,13 +241,6 @@ fields:
   - When was the Notice to Appear letter dated?: notice_appear_date
     datatype: ThreePartsDate
     alMax: ${ today().format("yyyy-MM-dd") }
----
-id: type of relief
-question: |
-  What form of relief will you be seeking?
-fields:
-  - no label: type_of_relief
-    maxlength: 60
 ---
 code: |
   lead_choices = []

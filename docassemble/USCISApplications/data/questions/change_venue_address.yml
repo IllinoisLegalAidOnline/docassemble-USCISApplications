@@ -240,13 +240,6 @@ fields:
     datatype: ThreePartsDate
     alMax: ${ today().format("yyyy-MM-dd") }
 ---
-id: type of relief
-question: |
-  What form of relief will you be seeking?
-fields:
-  - no label: type_of_relief
-    maxlength: 60
----
 code: |
   lead_choices = []
   lead_choices.clear()

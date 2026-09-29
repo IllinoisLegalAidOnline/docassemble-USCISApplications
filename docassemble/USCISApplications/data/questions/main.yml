@@ -337,7 +337,6 @@ code: |
         illinois_move_date
         immigration_judge.name.first
         notice_appear_date
-        type_of_relief
         dhs.address.address
         cert_of_service
 

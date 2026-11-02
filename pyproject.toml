@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docassemble.USCISApplications"
-version = "10.9.15"
+version = "10.9.16"
 description = "CLS Workshop Applications"
 readme = "README.md"
 authors = [

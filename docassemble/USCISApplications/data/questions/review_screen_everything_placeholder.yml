@@ -1554,9 +1554,9 @@ columns:
   - Gender: |
       row_item.sex if defined("row_item.sex") else ""
   - Mailing address: |
-      row_item.mailing_address.block() if defined("row_item.mailing_address.zip") else ""
+      row_item.mailing_address.on_one_line() if defined("row_item.mailing_address.zip") else ""
   - Address: |
-      row_item.address.block() if defined("row_item.address.country") else ""
+      row_item.address.on_one_line() if defined("row_item.address.country") else ""
   - Phone number: |
       row_item.phone_number if defined("row_item.phone_number") else ""
   - Mobile number: |
